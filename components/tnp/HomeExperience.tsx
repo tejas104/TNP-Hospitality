@@ -145,9 +145,9 @@ export default function HomeExperience() {
             >
               Explore the Experience <ArrowUpRight size={17} />
             </Link>
-            <Link className="ghost-btn" href="/freelancer" data-cursor="OPEN">
+            <a className="ghost-btn" href="/freelancer" data-cursor="OPEN">
               Join Our Network
-            </Link>
+            </a>
           </div>
           <p className="tagline">Luxury in Service, Excellence in Care</p>
         </div>
@@ -394,9 +394,9 @@ export default function HomeExperience() {
               </span>
             ))}
           </div>
-          <Link className="magnetic-btn dark" href="/admin">
+          <a className="magnetic-btn dark" href="/admin">
             Explore the Platform <ChevronRight size={16} />
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -474,12 +474,12 @@ export default function HomeExperience() {
           <h2>Your next event deserves more.</h2>
           <p>Let&apos;s create an experience people remember.</p>
           <div className="hero-actions">
-            <Link className="magnetic-btn" href="/client">
+            <a className="magnetic-btn" href="/client">
               Plan an Event
-            </Link>
-            <Link className="ghost-btn light" href="/freelancer">
+            </a>
+            <a className="ghost-btn light" href="/freelancer">
               Join TNP
-            </Link>
+            </a>
           </div>
           <span>Luxury in Service, Excellence in Care</span>
         </div>

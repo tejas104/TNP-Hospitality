@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import {
   ArrowUpRight,
   BadgeCheck,
@@ -540,9 +539,9 @@ function PortalHero({
         <p className="eyebrow">{label}</p>
         <h1>{title}</h1>
         <p>{copy}</p>
-        <Link className="ghost-btn light" href="/admin">
+        <a className="ghost-btn light" href="/admin">
           View Operations Demo
-        </Link>
+        </a>
       </div>
     </section>
   );

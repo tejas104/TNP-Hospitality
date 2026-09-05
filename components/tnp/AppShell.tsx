@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   BriefcaseBusiness,
@@ -162,28 +161,28 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <span>{label}</span>
       </div>
       <header className={`site-nav ${scrolled ? 'is-scrolled' : ''}`}>
-        <Link className="brand-mark" href="/" data-cursor="OPEN">
+        <a className="brand-mark" href="/" data-cursor="OPEN">
           <span>TNP</span>
           <small>Hospitality</small>
-        </Link>
+        </a>
         <nav className="desktop-nav" aria-label="Primary navigation">
           {navLinks.map((link) => (
-            <Link key={link.label} href={link.href}>
+            <a key={link.label} href={link.href}>
               {link.label}
-            </Link>
+            </a>
           ))}
         </nav>
         <div className="nav-actions">
-          <Link className="login-link" href="/planner">
+          <a className="login-link" href="/planner">
             Login
-          </Link>
-          <Link
+          </a>
+          <a
             className="magnetic-btn small"
             href="/client"
             data-cursor="EXPLORE"
           >
             Let&apos;s Talk
-          </Link>
+          </a>
           <button
             className="menu-toggle"
             type="button"
@@ -263,14 +262,14 @@ function PortalSwitcher({ pathname }: { pathname: string }) {
         {portalLinks.map((link, index) => {
           const Icon = icons[index];
           return (
-            <Link
+            <a
               key={link.href}
               href={link.href}
               aria-current={pathname === link.href ? 'page' : undefined}
             >
               <Icon size={20} strokeWidth={1.5} />
               <span>{link.label}</span>
-            </Link>
+            </a>
           );
         })}
       </nav>
@@ -282,9 +281,9 @@ function MobileMenu({ open }: { open: boolean }) {
   return (
     <div className={`mobile-menu ${open ? 'open' : ''}`} inert={!open}>
       {[...navLinks, ...portalLinks].map((link) => (
-        <Link key={`${link.label}-${link.href}`} href={link.href}>
+        <a key={`${link.label}-${link.href}`} href={link.href}>
           {link.label}
-        </Link>
+        </a>
       ))}
     </div>
   );
