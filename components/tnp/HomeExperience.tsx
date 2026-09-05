@@ -2,12 +2,13 @@
 
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { ArrowUpRight, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, ChevronRight, MapPin, Plus } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useEffect, useState } from 'react';
 import { byId, media } from '@/data/media';
 import { destinations, events, roles, services } from '@/data/tnp';
+import TeamOrbit from './TeamOrbit';
 
 const EventOrbit = dynamic(() => import('@/components/three/EventOrbit'), {
   ssr: false,
@@ -67,20 +68,22 @@ export default function HomeExperience() {
         },
       });
 
-      gsap.utils.toArray<HTMLElement>('[data-drift]').forEach((element, index) => {
-        const direction = index % 2 === 0 ? -1 : 1;
-        gsap.to(element, {
-          y: direction * 110,
-          x: direction * 28,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: element.parentElement,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: true,
-          },
+      gsap.utils
+        .toArray<HTMLElement>('[data-drift]')
+        .forEach((element, index) => {
+          const direction = index % 2 === 0 ? -1 : 1;
+          gsap.to(element, {
+            y: direction * 110,
+            x: direction * 28,
+            ease: 'none',
+            scrollTrigger: {
+              trigger: element.parentElement,
+              start: 'top bottom',
+              end: 'bottom top',
+              scrub: true,
+            },
+          });
         });
-      });
 
       gsap.to('.filmstrip-track', {
         xPercent: -58,
@@ -106,7 +109,9 @@ export default function HomeExperience() {
             start: 'top 85%',
           },
           onUpdate: () => {
-            element.textContent = Math.round(counter.value).toLocaleString('en-IN');
+            element.textContent = Math.round(counter.value).toLocaleString(
+              'en-IN',
+            );
           },
         });
       });
@@ -129,11 +134,15 @@ export default function HomeExperience() {
             <span>meet exceptional people.</span>
           </h1>
           <p className="hero-support">
-            Hospitality manpower, event professionals, planners and venues brought
-            together through one seamless experience.
+            Hospitality manpower, event professionals, planners and venues
+            brought together through one seamless experience.
           </p>
           <div className="hero-actions">
-            <Link className="magnetic-btn" href="#services" data-cursor="EXPLORE">
+            <Link
+              className="magnetic-btn"
+              href="#services"
+              data-cursor="EXPLORE"
+            >
               Explore the Experience <ArrowUpRight size={17} />
             </Link>
             <Link className="ghost-btn" href="/freelancer" data-cursor="OPEN">
@@ -146,15 +155,17 @@ export default function HomeExperience() {
 
       <section className="editorial-intro" id="about">
         <div className="editorial-images">
-          {['tablescape', 'floral', 'wedding-couple', 'architecture'].map((id, index) => (
-            <img
-              key={id}
-              data-drift
-              className={`intro-photo photo-${index + 1}`}
-              src={byId(id).src}
-              alt={byId(id).alt}
-            />
-          ))}
+          {['tablescape', 'floral', 'wedding-couple', 'architecture'].map(
+            (id, index) => (
+              <img
+                key={id}
+                data-drift
+                className={`intro-photo photo-${index + 1}`}
+                src={byId(id).src}
+                alt={byId(id).alt}
+              />
+            ),
+          )}
         </div>
         <div className="intro-type" data-reveal>
           <p>Luxury in Service, Excellence in Care</p>
@@ -191,32 +202,57 @@ export default function HomeExperience() {
         <div className="service-copy" data-reveal>
           <p className="section-kicker">SERVICES</p>
           <h2>People behind perfect experiences.</h2>
-          <div className="service-active">
-            <span>{activeService.number}</span>
-            <h3>{activeService.title}</h3>
-            <p>{activeService.copy}</p>
-          </div>
-          <div className="service-list" role="tablist" aria-label="TNP services">
+          <div className="service-list" aria-label="TNP services">
             {services.map((service, index) => (
-              <button
+              <div
+                className={`service-item ${index === serviceIndex ? 'active' : ''}`}
                 key={service.title}
-                type="button"
-                className={index === serviceIndex ? 'active' : ''}
-                onClick={() => setServiceIndex(index)}
-                data-cursor="EXPLORE"
+                onMouseEnter={() => setServiceIndex(index)}
               >
-                <span>{service.number}</span>
-                {service.title}
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setServiceIndex(index)}
+                  onFocus={() => setServiceIndex(index)}
+                  aria-expanded={index === serviceIndex}
+                  aria-controls={`service-detail-${index}`}
+                  data-cursor="EXPLORE"
+                >
+                  <span>{service.number}</span>
+                  <b>{service.title}</b>
+                  <Plus size={18} />
+                </button>
+                <div
+                  id={`service-detail-${index}`}
+                  className="service-detail"
+                  aria-hidden={index !== serviceIndex}
+                >
+                  <div>
+                    <p>{service.copy}</p>
+                  </div>
+                </div>
+              </div>
             ))}
           </div>
         </div>
-        <div className="service-visual" style={{ backgroundColor: activeService.tint }}>
-          <img src={activeService.image.src} alt={activeService.image.alt} />
+        <div
+          className="service-visual"
+          style={{ backgroundColor: activeService.tint }}
+        >
+          {services.map((service, index) => (
+            <img
+              key={service.title}
+              className={index === serviceIndex ? 'active' : ''}
+              src={service.image.src}
+              alt={index === serviceIndex ? service.image.alt : ''}
+              aria-hidden={index !== serviceIndex}
+              loading="lazy"
+            />
+          ))}
           <div className="service-counter">
             {activeService.number}
             <span>/ 06</span>
           </div>
+          <p className="service-image-caption">{activeService.title}</p>
         </div>
       </section>
 
@@ -242,12 +278,31 @@ export default function HomeExperience() {
         </div>
       </section>
 
-      <section className="destination-explorer">
+      <section className="destination-explorer" id="destinations">
         <div className="destination-copy" data-reveal>
           <p className="section-kicker">DESTINATIONS</p>
           <h2>Wherever the moment takes you.</h2>
         </div>
-        <div className="destination-grid">
+        <div className="destination-stage">
+          <div className="destination-scenes">
+            {destinations.map((destination, index) => (
+              <img
+                key={destination.city}
+                className={index === destinationIndex ? 'active' : ''}
+                src={destination.image.src}
+                alt={index === destinationIndex ? destination.image.alt : ''}
+                aria-hidden={index !== destinationIndex}
+                loading="eager"
+                decoding="async"
+              />
+            ))}
+          </div>
+          <div className="destination-meta" key={activeDestination.city}>
+            <span>
+              <MapPin size={16} /> {activeDestination.region}
+            </span>
+            <p>{activeDestination.mood}</p>
+          </div>
           <div className="destination-list">
             {destinations.map((destination, index) => (
               <button
@@ -255,17 +310,20 @@ export default function HomeExperience() {
                 type="button"
                 onMouseEnter={() => setDestinationIndex(index)}
                 onFocus={() => setDestinationIndex(index)}
+                onClick={() => setDestinationIndex(index)}
+                aria-pressed={index === destinationIndex}
                 className={index === destinationIndex ? 'active' : ''}
                 data-cursor="EXPLORE"
               >
                 <span>{destination.index}</span>
-                {destination.city}
+                <b>{destination.city}</b>
+                <ArrowUpRight size={24} />
               </button>
             ))}
           </div>
-          <div className="destination-image" data-cursor="VIEW">
-            <img src={activeDestination.image.src} alt={activeDestination.image.alt} />
-            <span>{activeDestination.city}</span>
+          <div className="destination-stamp" aria-hidden="true">
+            <span>{activeDestination.index} / 06</span>
+            <b key={activeDestination.city}>{activeDestination.city}</b>
           </div>
         </div>
       </section>
@@ -277,9 +335,22 @@ export default function HomeExperience() {
         </div>
         <div className="portrait-row">
           {roles.map((role, index) => (
-            <article key={role.role} className={`portrait-card portrait-${index + 1}`} data-drift>
-              <img src={role.image.src} alt={role.image.alt} data-cursor="VIEW" />
-              <h3>{role.role}</h3>
+            <article
+              key={role.role}
+              className={`portrait-card portrait-${index + 1}`}
+            >
+              <div className="portrait-image">
+                <img
+                  src={role.image.src}
+                  alt={role.image.alt}
+                  data-cursor="VIEW"
+                  loading="lazy"
+                />
+              </div>
+              <div className="portrait-title">
+                <span>0{index + 1}</span>
+                <h3>{role.role}</h3>
+              </div>
               <p>{role.caption}</p>
             </article>
           ))}
@@ -288,38 +359,40 @@ export default function HomeExperience() {
 
       <section className="model-visual">
         <div className="model-copy" data-reveal>
+          <p className="section-kicker">THE TNP CONNECTION</p>
           <h2>
             The right people.
             <span>At the right event.</span>
             <span>At the right time.</span>
           </h2>
         </div>
-        <div className="team-orbit" aria-label="Connected event team diagram">
-          <div className="event-node">1 EVENT</div>
-          <span className="node n1">1 Coordinator</span>
-          <span className="node n2">+10 Professionals</span>
-          <span className="node n3">Planner</span>
-          <span className="node n4">TNP Operations</span>
-          <strong>ONE CONNECTED TEAM</strong>
-        </div>
+        <TeamOrbit />
       </section>
 
       <section className="platform-reveal">
         <div className="platform-photos">
           <img src={byId('floral').src} alt={byId('floral').alt} />
-          <img src={byId('guest-experience').src} alt={byId('guest-experience').alt} />
+          <img
+            src={byId('guest-experience').src}
+            alt={byId('guest-experience').alt}
+          />
         </div>
         <div className="dashboard-preview" data-cursor="OPEN">
           <p className="section-kicker">BEHIND THE EXPERIENCE</p>
           <h2>Behind every seamless event is a system.</h2>
           <div className="ops-grid">
-            {['Workforce', 'Planners', 'Assignments', 'Attendance', 'Ratings', 'Payouts'].map(
-              (item, index) => (
-                <span key={item} style={{ animationDelay: `${index * 80}ms` }}>
-                  {item}
-                </span>
-              ),
-            )}
+            {[
+              'Workforce',
+              'Planners',
+              'Assignments',
+              'Attendance',
+              'Ratings',
+              'Payouts',
+            ].map((item, index) => (
+              <span key={item} style={{ animationDelay: `${index * 80}ms` }}>
+                {item}
+              </span>
+            ))}
           </div>
           <Link className="magnetic-btn dark" href="/admin">
             Explore the Platform <ChevronRight size={16} />
@@ -353,22 +426,29 @@ export default function HomeExperience() {
           </div>
           <div className="chat-preview">
             <p>
-              Hello Mr. Mehta, we&apos;re reaching out on behalf of the Sharma family
-              regarding tomorrow&apos;s wedding celebration. May we confirm your
-              attendance?
+              Hello Mr. Mehta, we&apos;re reaching out on behalf of the Sharma
+              family regarding tomorrow&apos;s wedding celebration. May we
+              confirm your attendance?
             </p>
-            {['Confirmed', 'Accommodation Required', 'ID Required', 'Final Guest List'].map(
-              (item) => (
-                <span key={item}>{item}</span>
-              ),
-            )}
+            {[
+              'Confirmed',
+              'Accommodation Required',
+              'ID Required',
+              'Final Guest List',
+            ].map((item) => (
+              <span key={item}>{item}</span>
+            ))}
           </div>
           <div className="rsvp-timeline">
-            {['Introduction', 'Confirmation', 'Follow-up', 'Documentation', 'Final Status'].map(
-              (step) => (
-                <span key={step}>{step}</span>
-              ),
-            )}
+            {[
+              'Introduction',
+              'Confirmation',
+              'Follow-up',
+              'Documentation',
+              'Final Status',
+            ].map((step) => (
+              <span key={step}>{step}</span>
+            ))}
           </div>
         </div>
       </section>

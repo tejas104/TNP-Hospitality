@@ -2,7 +2,7 @@
 
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import { Float, PerspectiveCamera } from '@react-three/drei';
-import { Suspense, useMemo, useRef } from 'react';
+import { Component, type ReactNode, Suspense, useMemo, useRef } from 'react';
 import { DoubleSide, Group, TextureLoader } from 'three';
 import { media } from '@/data/media';
 
@@ -37,18 +37,41 @@ const particlePoints = Array.from({ length: 90 }, (_, index) => {
 export default function EventOrbit() {
   return (
     <div className="event-orbit" aria-hidden="true">
-      <Canvas dpr={[1, 1.7]} gl={{ antialias: true, alpha: true }}>
-        <Suspense fallback={null}>
-          <PerspectiveCamera makeDefault position={[0, 0.35, 8.2]} fov={34} />
-          <ambientLight intensity={1.25} />
-          <pointLight position={[3, 4, 4]} color="#BBA879" intensity={1.3} />
-          <pointLight position={[-4, -2, 3]} color="#0F6B68" intensity={1.1} />
-          <OrbitGroup />
-          <Particles />
-        </Suspense>
-      </Canvas>
+      <OrbitBoundary>
+        <Canvas dpr={[1, 1.7]} gl={{ antialias: true, alpha: true }}>
+          <Suspense fallback={null}>
+            <PerspectiveCamera makeDefault position={[0, 0.35, 8.2]} fov={34} />
+            <ambientLight intensity={1.25} />
+            <pointLight position={[3, 4, 4]} color="#BBA879" intensity={1.3} />
+            <pointLight
+              position={[-4, -2, 3]}
+              color="#0F6B68"
+              intensity={1.1}
+            />
+            <OrbitGroup />
+            <Particles />
+          </Suspense>
+        </Canvas>
+      </OrbitBoundary>
     </div>
   );
+}
+
+class OrbitBoundary extends Component<
+  { children: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+
+  render() {
+    if (this.state.failed)
+      return <img className="orbit-fallback" src={orbitImages[2]} alt="" />;
+    return this.props.children;
+  }
 }
 
 function OrbitGroup() {
@@ -79,8 +102,10 @@ function OrbitGroup() {
   useFrame((_, delta) => {
     if (!group.current) return;
     group.current.rotation.y += delta * 0.07;
-    group.current.rotation.x += (pointer.y * 0.08 - group.current.rotation.x) * 0.04;
-    group.current.position.x += (pointer.x * viewport.width * 0.035 - group.current.position.x) * 0.05;
+    group.current.rotation.x +=
+      (pointer.y * 0.08 - group.current.rotation.x) * 0.04;
+    group.current.position.x +=
+      (pointer.x * viewport.width * 0.035 - group.current.position.x) * 0.05;
   });
 
   return (
@@ -95,7 +120,11 @@ function OrbitGroup() {
         >
           <mesh
             position={[plane.x, plane.y, plane.z]}
-            rotation={[0.04 * Math.sin(index), plane.rotY, 0.03 * Math.cos(index)]}
+            rotation={[
+              0.04 * Math.sin(index),
+              plane.rotY,
+              0.03 * Math.cos(index),
+            ]}
           >
             <planeGeometry args={plane.scale as [number, number, number]} />
             <meshBasicMaterial

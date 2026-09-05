@@ -2,11 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Menu, X } from 'lucide-react';
+import {
+  BriefcaseBusiness,
+  CalendarDays,
+  LayoutDashboard,
+  Menu,
+  UserRound,
+  UsersRound,
+  X,
+} from 'lucide-react';
 import Lenis from 'lenis';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { ReactNode, useEffect, useRef, useState } from 'react';
 import { navLinks, portalLinks } from '@/data/tnp';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -147,7 +155,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
     <>
       <Preloader active={showPreloader} />
       <CustomCursor />
-      <div className={`route-curtain ${routeAnimating ? 'active' : ''}`} aria-hidden="true">
+      <div
+        className={`route-curtain ${routeAnimating ? 'active' : ''}`}
+        aria-hidden="true"
+      >
         <span>{label}</span>
       </div>
       <header className={`site-nav ${scrolled ? 'is-scrolled' : ''}`}>
@@ -166,7 +177,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <Link className="login-link" href="/planner">
             Login
           </Link>
-          <Link className="magnetic-btn small" href="/client" data-cursor="EXPLORE">
+          <Link
+            className="magnetic-btn small"
+            href="/client"
+            data-cursor="EXPLORE"
+          >
             Let&apos;s Talk
           </Link>
           <button
@@ -180,22 +195,92 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
       </header>
-      <div className="portal-switcher" aria-label="Portal switcher">
-        {portalLinks.map((link) => (
-          <Link key={link.label} href={link.href} data-cursor="OPEN">
-            {link.label}
-          </Link>
-        ))}
-      </div>
+      <PortalSwitcher key={pathname} pathname={pathname} />
       <MobileMenu open={menuOpen} />
       {children}
     </>
   );
 }
 
+function PortalSwitcher({ pathname }: { pathname: string }) {
+  const [open, setOpen] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const hoverDismissed = useRef(false);
+  const icons = [UserRound, CalendarDays, BriefcaseBusiness, LayoutDashboard];
+
+  useEffect(() => {
+    if (!open) return;
+    const dismiss = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        hoverDismissed.current = true;
+        setOpen(false);
+        trigger.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', dismiss);
+    return () => window.removeEventListener('keydown', dismiss);
+  }, [open]);
+
+  return (
+    <div
+      className={`portal-switcher ${open ? 'is-open' : ''}`}
+      aria-label="Portal switcher"
+      onPointerEnter={(event) => {
+        if (event.pointerType === 'mouse' && !hoverDismissed.current)
+          setOpen(true);
+      }}
+      onPointerLeave={(event) => {
+        hoverDismissed.current = false;
+        if (!event.currentTarget.contains(document.activeElement))
+          setOpen(false);
+      }}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
+      }}
+    >
+      <button
+        ref={trigger}
+        className="portal-trigger"
+        type="button"
+        aria-label="Switch portal"
+        title="Switch portal"
+        aria-expanded={open}
+        aria-controls="portal-dial"
+        onClick={() => {
+          hoverDismissed.current = open;
+          setOpen((value) => !value);
+        }}
+      >
+        {open ? <X size={22} /> : <UsersRound size={24} />}
+      </button>
+      <nav
+        id="portal-dial"
+        className="portal-dial"
+        aria-label="Choose your portal"
+        inert={!open}
+      >
+        <p>YOUR TNP</p>
+        {portalLinks.map((link, index) => {
+          const Icon = icons[index];
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={pathname === link.href ? 'page' : undefined}
+            >
+              <Icon size={20} strokeWidth={1.5} />
+              <span>{link.label}</span>
+            </Link>
+          );
+        })}
+      </nav>
+    </div>
+  );
+}
+
 function MobileMenu({ open }: { open: boolean }) {
   return (
-    <div className={`mobile-menu ${open ? 'open' : ''}`}>
+    <div className={`mobile-menu ${open ? 'open' : ''}`} inert={!open}>
       {[...navLinks, ...portalLinks].map((link) => (
         <Link key={`${link.label}-${link.href}`} href={link.href}>
           {link.label}
@@ -207,7 +292,10 @@ function MobileMenu({ open }: { open: boolean }) {
 
 function Preloader({ active }: { active: boolean }) {
   return (
-    <div className={`preloader ${active ? 'active' : ''}`} aria-hidden={!active}>
+    <div
+      className={`preloader ${active ? 'active' : ''}`}
+      aria-hidden={!active}
+    >
       <div className="preloader-mark">
         <span>T</span>
         <span>N</span>
@@ -220,40 +308,45 @@ function Preloader({ active }: { active: boolean }) {
 }
 
 function CustomCursor() {
-  const [state, setState] = useState({ x: -100, y: -100, label: '' });
-  const isTouch = useMemo(
-    () => typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches,
-    [],
-  );
+  const cursor = useRef<HTMLDivElement>(null);
+  const [label, setLabel] = useState('');
 
   useEffect(() => {
-    if (isTouch) return;
+    if (window.matchMedia('(pointer: coarse)').matches) return;
     const move = (event: PointerEvent) => {
       const target = event.target as HTMLElement | null;
-      const cursorTarget = target?.closest?.('[data-cursor]') as HTMLElement | null;
-      setState({
-        x: event.clientX,
-        y: event.clientY,
-        label: cursorTarget?.dataset.cursor ?? '',
-      });
+      const cursorTarget = target?.closest?.(
+        '[data-cursor]',
+      ) as HTMLElement | null;
+      if (cursor.current) {
+        cursor.current.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
+        cursor.current.style.opacity = '1';
+      }
+      setLabel(cursorTarget?.dataset.cursor ?? '');
+    };
+    const hide = () => {
+      if (cursor.current) cursor.current.style.opacity = '0';
     };
     window.addEventListener('pointermove', move);
+    document.addEventListener('pointerleave', hide);
+    window.addEventListener('blur', hide);
     document.body.classList.add('has-custom-cursor');
     return () => {
       window.removeEventListener('pointermove', move);
+      document.removeEventListener('pointerleave', hide);
+      window.removeEventListener('blur', hide);
       document.body.classList.remove('has-custom-cursor');
     };
-  }, [isTouch]);
-
-  if (isTouch) return null;
+  }, []);
 
   return (
     <div
-      className={`custom-cursor ${state.label ? 'active' : ''}`}
-      style={{ transform: `translate3d(${state.x}px, ${state.y}px, 0)` }}
+      ref={cursor}
+      className={`custom-cursor ${label ? 'active' : ''}`}
       aria-hidden="true"
     >
-      <span>{state.label}</span>
+      <i className="cursor-ring" />
+      <span>{label}</span>
     </div>
   );
 }

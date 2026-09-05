@@ -54,19 +54,81 @@ export const events = [
 ].map(([title, place, image]) => ({ title, place, image: byId(image) }));
 
 export const destinations = [
-  ['Jaipur', 'palace-courtyard'],
-  ['Udaipur', 'architecture'],
-  ['Goa', 'resort'],
-  ['Mumbai', 'event-hall'],
-  ['Delhi', 'ballroom'],
-  ['Pune', 'banquet'],
-].map(([city, image], index) => ({ city, image: byId(image), index: `${index + 1}`.padStart(2, '0') }));
+  [
+    'Jaipur',
+    'Rajasthan',
+    'A royal setting. An unforgettable celebration.',
+    'photo-1617516202907-ff75846e6667',
+    'Hawa Mahal in Jaipur',
+  ],
+  [
+    'Udaipur',
+    'Rajasthan',
+    'Lakeside moments, made extraordinary.',
+    'photo-1589901164570-f9de6556e1c1',
+    'City Palace on Lake Pichola in Udaipur',
+  ],
+  [
+    'Goa',
+    'Western coast',
+    'Salt in the air. Celebration everywhere.',
+    'photo-1589428000126-afdd64ae1f3a',
+    'Palm-lined beach and sea in Goa',
+  ],
+  [
+    'Mumbai',
+    'Maharashtra',
+    'Big city energy. Personal attention.',
+    'photo-1598434192043-71111c1b3f41',
+    'Gateway of India in Mumbai',
+  ],
+  [
+    'Delhi',
+    'National Capital Territory',
+    'Timeless grandeur meets the here and now.',
+    'photo-1591689837200-57e6d0d7d199',
+    'India Gate in New Delhi',
+  ],
+  [
+    'Pune',
+    'Maharashtra',
+    'Rooted in culture. Ready to celebrate.',
+    'photo-1570356811230-2f3b816ebb29',
+    'Pune city skyline at dusk',
+  ],
+].map(([city, region, mood, photo, alt], index) => ({
+  city,
+  region,
+  mood,
+  index: `${index + 1}`.padStart(2, '0'),
+  image: {
+    src: `/images/destinations/${city.toLowerCase()}.jpg`,
+    source: `https://images.unsplash.com/${photo}`,
+    alt,
+  },
+}));
 
 export const roles = [
-  { role: 'Coordinator', image: byId('coordinator'), caption: 'Owns flow, escalation and client comfort.' },
-  { role: 'Executive', image: byId('team-briefing'), caption: 'Keeps movement, vendors and checkpoints aligned.' },
-  { role: 'Volunteer', image: byId('guest-experience'), caption: 'Supports guests and tasks with calm precision.' },
-  { role: 'Hostess', image: byId('hostess'), caption: 'Leads first impressions and guest-facing grace.' },
+  {
+    role: 'Coordinator',
+    image: byId('coordinator'),
+    caption: 'Owns flow, escalation and client comfort.',
+  },
+  {
+    role: 'Executive',
+    image: byId('team-briefing'),
+    caption: 'Keeps movement, vendors and checkpoints aligned.',
+  },
+  {
+    role: 'Volunteer',
+    image: byId('guest-experience'),
+    caption: 'Supports guests and tasks with calm precision.',
+  },
+  {
+    role: 'Hostess',
+    image: byId('hostess'),
+    caption: 'Leads first impressions and guest-facing grace.',
+  },
 ];
 
 export const navLinks = [
