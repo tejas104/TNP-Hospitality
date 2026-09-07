@@ -953,7 +953,7 @@ section[id] {
   background: var(--beige);
   min-height: 100vh;
   overflow: hidden;
-  padding: 90px 0;
+  padding: 90px 0 clamp(72px, 9vh, 124px);
 }
 
 .filmstrip-heading {
@@ -965,13 +965,14 @@ section[id] {
   display: flex;
   gap: 28px;
   padding-left: clamp(20px, 5vw, 76px);
+  padding-bottom: clamp(24px, 4vh, 52px);
   width: max-content;
 }
 
 .film-card {
   background: var(--black-teal);
   color: var(--ivory);
-  height: 68vh;
+  height: min(64vh, 680px);
   min-height: 460px;
   overflow: hidden;
   position: relative;
