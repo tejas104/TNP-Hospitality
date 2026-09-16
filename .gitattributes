@@ -4,3 +4,4 @@
 /docs/evidence/*.log -text
 /docs/references/*.pdf -text
 /docs/reviews/received/*.txt -text -whitespace
+/docs/reviews/received/*.md -text -whitespace
