@@ -1,6 +1,6 @@
 # TNP-FOUND-01 — READY: B shared foundation, S0 then S1
 
-Status: Ready. Reserved for the assigned B session; not yet observed Building.
+Status: Awaiting combined foundation review. Implementation reported complete; B writer lease PAUSED at fixed HEAD 502422c038c9292f4946b65c00ea0b2618515a9f.
 Dispatchable: YES after Ready launch gates; sole S0/S1 implementation milestone.
 Responsible human: Anjaneya (H1), integration captain.
 Lane/host: B / Anjaneya Laptop 1 / DESKTOP-DL9FDM7.
@@ -18,7 +18,7 @@ Independent human reviewer: Kartik; Anjaneya and Kartik approve S1 domain semant
 Astra gate: REPLACED by separate independent Sol review on Kartik Laptop 2, high effort, per explicit user approval. Use an independent review task, not this B author or Dev D. Review the final fixed foundation SHA.
 Reviewer host/availability: Kartik Laptop 2 has completed both required model reviews and supplied approval; the same human owns arranging Sonnet and independent Sol foundation review at completion. If availability changes, pause at the finished milestone; do not silently waive a gate. Final review sessions/SHAs are recorded when the work exists.
 Review sharing: B is authorized to commit and non-force push ONLY codex/tnp-foundation to origin at meaningful checked checkpoints, including S0 and final S1. No main push, moved review tags, force-push or deployment. Report branch/full SHA/checks to P after push. P may fetch/inspect; a push is not approval.
-Writer lease: RESERVED exclusively for Anjaneya's local Dev B task01a0aa5f-c6ee-76e2-93db-6b50e124d174, issued by P at 2026-09-16T23:25:27+05:30; TASK TNP-FOUND-01, branch/worktree above, expires at final fixed-commit review handoff or explicit P revocation. P's bootstrap writing lease closes before B starts. No other session may consume this lease; transfer requires P record.
+Writer lease: PAUSED FOR REVIEW at 502422c038c9292f4946b65c00ea0b2618515a9f; originally reserved exclusively for Anjaneya's local Dev B task01a0aa5f-c6ee-76e2-93db-6b50e124d174, issued by P at 2026-09-16T23:25:27+05:30; TASK TNP-FOUND-01, branch/worktree above, expires at final fixed-commit review handoff or explicit P revocation. P's bootstrap writing lease closes before B starts. No other session may consume this lease; transfer requires P record.
 
 ## Correct the old conversation role before starting
 The existing local task is titled Dev B but previously mistook itself for Kartik/Dev D. That old orientation is superseded. This lease is B under Anjaneya on DESKTOP-DL9FDM7. It is NOT D and not Laptop 2. Explicitly Set-Location to the absolute worktree above for EVERY command; scope every tool/file write there. If attached UI workspace still points to D:\TNP Hospitality, do not write that main checkout. Use the existing isolated folder, not an additional automatic worktree. No prior findings/reopened lease are required for this first implementation.
@@ -41,3 +41,6 @@ The bootstrap-only snapshot checker expects Draft consumers and unchanged app so
 
 ## Finish
 Commit and push the final branch checkpoint. Return TASK, actual model/effort/host/session, branch/worktree, SOURCE_SHA/initial LAUNCH_SHA/final HEAD, changed files, tests actually run, preview evidence, gaps and lease paused-for-review. One formal Sonnet + independent Sol + human review covers the entire foundation. Original builder fixes findings under reopened lease and re-review; no self-merge or automatic public/consumer task launch.
+
+## Fixed review handoff
+Received 2026-09-17T00:40:38+05:30. Review BASE/initial LAUNCH_SHA 77780970a8b0fdb52e1de70d3b35469fa78cb114; final HEAD 502422c038c9292f4946b65c00ea0b2618515a9f; S0 checkpoint d5be3bbee463538c17365708ca1415ffe5e4323d. P verified remote branch equality, clean builder worktree, launch ancestry and diff whitespace. The builder reports Sol/high, the assigned host/session, required app checks passing (9 service tests; 3 inherited lint warnings), five-route desktop/mobile checks and stopped preview server. These app/browser results remain builder evidence until independent review. Sonnet and independent Sol review the entire LAUNCH_SHA..HEAD once; no main integration or consumer launch yet. Review source worktrees may retain this task as Ready at the fixed app commit; this current main metadata records its subsequent pause. Do not edit/rebase the app commit merely to sync status.
