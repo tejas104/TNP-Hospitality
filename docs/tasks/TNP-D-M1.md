@@ -1,13 +1,13 @@
 # TNP-D-M1 — two-prompt frontend milestone for D
 
-Status: READY. Exclusive writer lease RESERVED 2026-09-17T03:55:41.9066584+05:30 for Kartik's existing Dev D session01a0aa6d-9b9a-75c3-839a-c0ac7b5f18a5 (identity from prior supplied task evidence; confirm on startup). No alternate session or second writer may claim it. Expires at final fixed review handoff or P revocation. Actual start not observed.
+Status: READY. Sole writer lease REASSIGNED 2026-09-17T04:10:06.3785088+05:30 to actual session01a0ac56-a986-79b2-b643-909e41fc4bae, Kartik / DESKTOP-VO8G3GR, per user-supplied startup evidence. Old session01a0aa6d-9b9a-75c3-839a-c0ac7b5f18a5 reservation REVOKED. One writer only; expires at fixed review handoff or P revocation. Effective upon metadata publication; implementation not yet observed.
 Human: Kartik / H2.
-Host: Kartik Laptop2, base D:\TNP-Hospitality, DESKTOP-VO8G3GR per prior reviewed host evidence. Report actual COMPUTERNAME/session at startup; mismatch pauses editing for factual reassignment. P cannot inspect/control Laptop2 directly.
+Host: Kartik Laptop2, DESKTOP-VO8G3GR; base clone D:\TNP-Hospitality. Confirmed by supplied startup report. This is the D-drive project; no C-drive move is needed. P does not claim direct Laptop2 access.
 Tool/model: assigned Codex gpt-5.6-sol / high, explicitly selected before resume; report actual runtime model/session on startup. Historical review role in Dev D does not make it an independent reviewer of its own implementation.
-Branch: codex/tnp-d-m1. Create on Laptop2 at the published LAUNCH_SHA after preflight; do not use moving main or the old foundation branch.
-Worktree: D:\TNP-worktrees\TNP-D-M1 on Laptop2, exclusively reserved. Host-side preflight must verify this destination/branch is unused before creation; P does not assert remote filesystem observations. If occupied, inspect/report rather than resetting/deleting it. Use this absolute worktree for every implementation command, never the base clone.
+Branch: codex/tnp-d-m1, already created at original LAUNCH_SHA. Reuse it; do not reset, recreate, rebase or switch to moving main.
+Worktree: D:\TNP-worktrees\TNP-D-M1 on Laptop2, already created and reported completely clean. Reuse it. Explicitly set this absolute working directory for all implementation commands. Do not edit the base clone or any C-drive copy.
 SOURCE_SHA: f2bfd882d738125e31f5de70896cf6a65d385990, published/verified main before this Ready commit. Integrated foundation dependency e6025cb0d16c433c0d29745d3eea1f9618718a67 is an ancestor; approved reviewed application d8473f888cc70819ff8a149f3544e81a6b6ea36b. Integrated13/13 tests, lint0 errors/3 inherited warnings, typecheck/build/provenance/whitespace passed.
-LAUNCH_SHA: this committed Ready contract; P supplies its full SHA externally after main publication. This is not SOURCE_SHA; never guess or embed its own hash.
+Original LAUNCH_SHA: 58c324953e0f2da775a77efb172059bb84534ae7. This reassignment is metadata only, not a new launch. SOURCE_SHA/ancestry/three-file launch allowlist remain unchanged. Read the newer contract through git show after fetch; do not merge main into the feature branch merely to absorb lease metadata.
 Dependencies: integrated TNP-FOUND-01; TNP-D-01 and TNP-D-02. The second phase's first-phase dependency is an internal checked checkpoint in this grouped milestone, not a separate integration.
 Owned paths: components/tnp/portals/operations/**, including feature-local styles.
 Mode: local labelled synthetic responsive-web preview.
@@ -17,7 +17,7 @@ Review appointment at final fixed milestone: P arranges a fresh independent Sol/
 Sharing authorized: this reserved Dev D builder may commit and non-force push only codex/tnp-d-m1 at checked checkpoints. P may fetch/inspect. No force-push, main merge/push, deployment or moved reviewed tags.
 
 ## Shared execution rules
-This Ready contract is the exclusive launch authority after publication at the supplied LAUNCH_SHA. Foundation is integrated and reviewed. Fetch origin from D:\TNP-Hospitality, verify the exact commit and host-side path availability, create the isolated branch/worktree at LAUNCH_SHA, then verify actual identity/model/HEAD/ancestry/cleanliness before editing. Return startup evidence to P for the serialized Building record; no additional permission is required when it matches. H2 has only this complex builder reservation; C remains unleased.
+After publication, this reassignment authorizes session01a0ac56-a986-79b2-b643-909e41fc4bae to resume the existing clean worktree at original launch58c324953e0f2da775a77efb172059bb84534ae7. Fetch origin and read this current contract/registers via git show. Select/report Sol-high, confirm the supplied session/host, branch, HEAD and cleanliness, and recheck port3104 before binding. Then execute BOTH prompts without further permission or an intermediate review. Return startup evidence to P for Building status. H2 has only this complex builder reservation; C remains unleased.
 
 At activation read AGENTS.md, TNP-START-HERE.md, docs/PRODUCT.md, docs/DESIGN.md, docs/DOMAIN-RULES.md, docs/ARCHITECTURE.md, docs/LAUNCH-PROTOCOL.md, docs/REVIEW-CADENCE.md, both foundation contracts and the referenced phase specifications. This grouped TASK supersedes their separate per-slice launch branches only when Ready. Verify actual host/model/session, clean initial HEAD=LAUNCH_SHA, SOURCE_SHA ancestry, integrated dependency ancestry and the launch three-file allowlist. Preserve unrelated changes; never reset to make a check pass.
 
