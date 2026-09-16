@@ -1,6 +1,6 @@
 # TNP-FOUND-01-FIX-03 — consolidated payout query edge corrections
 
-Status: prepared, NOT DISPATCHED. Original B only; lease remains PAUSED pending recorded activation/publication. Metadata main merge/push authorization remains unresolved. This packet does not retroactively claim earlier metadata was published.
+Status: AUTHORIZED correction for original B only, effective when this activation commit is published on main. User approved publication and reopening on 2026-09-17T03:03:31.2255713+05:30. B lease REOPENED at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423, expires at fixed correction handoff. No consumer lease. Read current STATUS/LANES; this is a correction cycle, not a new initial launch.
 
 Baseline: c53e13149be79f3b97aea4ef9fd3b7c8e82d2423. Branch codex/tnp-foundation. Worktree D:\TNP-worktrees\TNP-FOUND-01. Responsible human Anjaneya; Laptop 1 DESKTOP-DL9FDM7; original B session 01a0aa5f-c6ee-76e2-93db-6b50e124d174; Sol/high actual selection to confirm. Initial foundation LAUNCH_SHA unchanged. No new source baseline or consumer lease.
 

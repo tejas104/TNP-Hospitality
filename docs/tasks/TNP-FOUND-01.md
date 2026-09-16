@@ -1,3 +1,9 @@
+# Current correction authority — FIX-03
+
+Status: REOPENED for original B only at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423, effective upon published activation commit. User explicitly approved this bounded correction and metadata publication on 2026-09-17T03:03:31.2255713+05:30. Read docs/reviews/TNP-FOUND-01-FIX-03.md; it defines owned paths, acceptance, exact checks, branch-only sharing and pause-at-handoff. Current STATUS/LANES supersede historical paused/reserved fields below. Original launch provenance remains unchanged; do not merge metadata main into the app branch or reset it.
+
+## Historical TASK record
+
 # TNP-FOUND-01 — PAUSED: B shared foundation, S0 then S1
 
 Status: PAUSED at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423 following user-reported pushed correction. Fresh Sol CHANGES REQUESTED: empty worker filter, duplicate references and test coverage; FIX-03 prepared, lease not active. Final Sonnet and human approval pending.

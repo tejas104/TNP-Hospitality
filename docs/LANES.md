@@ -1,3 +1,11 @@
+# Current lanes — original B reopened for FIX-03 only
+
+Updated 2026-09-17T03:03:31.2255713+05:30. User explicitly authorized publishing documentation through dac29ba and reopening original B for FIX-03 in this session. Prior automatic approval block is resolved for those actions. Documentation dac29badeb20e773a4eb0dd4a2d99fbc50537ba5 was fast-forwarded and pushed to main, remote verified before this activation commit. This serialized activation is based on that current main. No application integration or deployment authorized.
+
+Exclusive B writer: original session 01a0aa5f-c6ee-76e2-93db-6b50e124d174, Anjaneya, DESKTOP-DL9FDM7, Sol/high to confirm, existing foundation worktree/branch at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423. REOPENED for FIX-03; expires at final fixed review handoff. No public B work, no A/C/D lease, no new resource reservation. P owns only serialized metadata; no app edits. Builder may non-force push codex/tnp-foundation only, as already contracted. No builder resumption or server start asserted.
+
+## Prior lane history (superseded above)
+
 # Current lanes — B paused; consolidated correction prepared
 
 Updated 2026-09-17T02:53:24.4733803+05:30. P continues serialized documentation-only work in TNP-FOUND-LAUNCH. Current owned metadata additionally includes four Draft milestone TASKs and FRONTEND-MILESTONE-PACKETS.md; no application ownership. B is PAUSED at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423. A/B-public/C/D have NONE leases. Draft branches/paths/ports are proposals, not reservations. R /root/foundation_payout_review: fresh Sol/high, Laptop1 detached D:\TNP-review\foundation-fix-02-sol-local, read-only c53e131; source edits prohibited, isolated external scratch/report and ignored dependencies only. Sol completed read-only review: CHANGES REQUESTED. B FIX-03 prepared, no active correction lease. No other registered review launch is asserted. Review capacity remains foundation-only; no consumer dispatch while it is pending.

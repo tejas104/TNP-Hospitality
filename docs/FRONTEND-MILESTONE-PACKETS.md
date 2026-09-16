@@ -1,3 +1,5 @@
+Current authorization update 2026-09-17T03:03:31.2255713+05:30: documentation publication and original B FIX-03 reopening explicitly approved. The main publication blocker described historically below is resolved for these actions. All four frontend milestone packets remain Draft; no consumer launch or application integration authorized.
+
 # Prepared A/B/C/D prompt packets and consolidated review cadence
 
 These are requested preparation artifacts, not executable launches. They contain two sequential implementation prompts each. Integrated foundation, actual model/reviewer appointments, SOURCE_SHA/LAUNCH_SHA and exclusive leases remain unresolved; P must issue Ready revisions before developers use them. No consumer should be sent to discover this already-known gate.

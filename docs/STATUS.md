@@ -1,3 +1,11 @@
+# Current status — B FIX-03 correction authorized
+
+Updated 2026-09-17T03:03:31.2255713+05:30 by P. User explicitly authorized publishing documentation through dac29ba and reopening original B for FIX-03 in this session. Prior automatic approval block is resolved for those actions. Documentation dac29badeb20e773a4eb0dd4a2d99fbc50537ba5 was fast-forwarded and pushed to main, remote verified before this activation commit. This serialized activation is based on that current main. No application integration or deployment authorized.
+
+B lease REOPENED exclusively for original session 01a0aa5f-c6ee-76e2-93db-6b50e124d174, Anjaneya / Laptop1 DESKTOP-DL9FDM7, Sol/high (confirm selection on resume), D:\TNP-worktrees\TNP-FOUND-01, codex/tnp-foundation, starting exact c53e13149be79f3b97aea4ef9fd3b7c8e82d2423. Local/remote equality and clean worktree verified before activation. Scope docs/reviews/TNP-FOUND-01-FIX-03.md only; expires at fixed correction handoff. Actual resumption not yet observed. A/B-public/C/D remain Draft with NONE leases. Sonnet and independent Sol review the next final fixed SHA in one window; human approval and authorized foundation integration remain required.
+
+## Prior status history (superseded above)
+
 # Current status — original payout leak fixed; query edges require correction
 
 Updated 2026-09-17T02:53:24.4733803+05:30 by P, session 01a0abe3-6edb-7101-94d8-dc9bd66300d5. User reports B completed/pushed payout correction and paused. P fetched origin and verified foundation c53e13149be79f3b97aea4ef9fd3b7c8e82d2423, direct parent 1402026e296caa0389e4c26e2e32b28279d41823, clean builder worktree, exactly three owned changed files and clean diff whitespace. Builder reports 13/13 service tests, typecheck, lint (three inherited warnings), build (unchanged retry after EBUSY), provenance and whitespace PASS. These remain builder-attributed until independently reproduced.
