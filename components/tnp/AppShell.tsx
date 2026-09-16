@@ -1,6 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   BriefcaseBusiness,
   CalendarDays,
@@ -161,10 +162,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <span>{label}</span>
       </div>
       <header className={`site-nav ${scrolled ? 'is-scrolled' : ''}`}>
-        <a className="brand-mark" href="/" data-cursor="OPEN">
+        <Link className="brand-mark" href="/" data-cursor="OPEN">
           <span>TNP</span>
           <small>Hospitality</small>
-        </a>
+        </Link>
         <nav className="desktop-nav" aria-label="Primary navigation">
           {navLinks.map((link) => (
             <a key={link.label} href={link.href}>
@@ -173,16 +174,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <div className="nav-actions">
-          <a className="login-link" href="/planner">
+          <Link className="login-link" href="/planner">
             Login
-          </a>
-          <a
+          </Link>
+          <Link
             className="magnetic-btn small"
             href="/client"
             data-cursor="EXPLORE"
           >
             Let&apos;s Talk
-          </a>
+          </Link>
           <button
             className="menu-toggle"
             type="button"
@@ -194,6 +195,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
       </header>
+      <div className="preview-notice" role="note">
+        Synthetic preview data. Do not enter real personal information. No live verification,
+        tracking or payments.
+      </div>
       <PortalSwitcher key={pathname} pathname={pathname} />
       <MobileMenu open={menuOpen} />
       {children}

@@ -307,6 +307,20 @@ img {
   width: min(1180px, calc(100% - 28px));
 }
 
+.preview-notice {
+  background: rgb(6 43 41 / 94%);
+  border: 1px solid rgb(187 168 121 / 70%);
+  bottom: 18px;
+  color: var(--ivory);
+  font-size: 0.72rem;
+  left: 18px;
+  line-height: 1.45;
+  max-width: 460px;
+  padding: 10px 14px;
+  position: fixed;
+  z-index: 950;
+}
+
 .brand-mark {
   align-items: baseline;
   display: flex;
@@ -2256,6 +2270,14 @@ textarea {
   }
   .site-nav {
     padding: 14px 16px;
+  }
+
+  .preview-notice {
+    bottom: 16px;
+    font-size: 0.66rem;
+    left: 14px;
+    max-width: calc(100% - 82px);
+    padding: 8px 10px;
   }
 
   .brand-mark small {
