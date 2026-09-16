@@ -1,23 +1,23 @@
 # TNP-A-M1 — two-prompt frontend milestone for A
 
-Status: DRAFT, NOT DISPATCHED. Writer lease NONE.
+Status: READY. Exclusive writer lease RESERVED 2026-09-17T03:54:05.3969102+05:30 for existing Dev A session01a0aa5f-a826-7ab1-9cb7-a44736047ebe under Anjaneya; expires at final fixed milestone review handoff or P revocation. One writer, no additional agent. Actual start not yet observed.
 Human: Anjaneya / H1.
 Host: Laptop 1 / DESKTOP-DL9FDM7.
-Tool/model: Codex gpt-5.6-sol / high; confirm actual session at Ready.
-Branch: codex/tnp-a-m1 (proposed; not created).
-Worktree: D:\TNP-worktrees\TNP-A-M1 (proposed; not created).
-Source and integrated foundation SHA: PENDING approved integration.
-Launch SHA: PENDING future Ready commit, supplied externally by P.
+Tool/model: assigned Codex gpt-5.6-sol / high under user-approved implementation policy; select and report actual runtime before editing. Existing Dev A session01a0aa5f-a826-7ab1-9cb7-a44736047ebe verified in local task inventory; old Laptop2/Kartik role in its history is superseded: this is A/Anjaneya/Laptop1.
+Branch: codex/tnp-a-m1; P creates it at the published LAUNCH_SHA.
+Worktree: D:\TNP-worktrees\TNP-A-M1; destination verified unused before reservation. P creates it after Ready publication. All implementation commands must explicitly use this worktree, never the attached main checkout.
+SOURCE_SHA: 370f1cd27af7a6d7f1f68986e0ddc2f15391267d, verified integrated main. Foundation dependency merge e6025cb0d16c433c0d29745d3eea1f9618718a67 is an ancestor; reviewed application d8473f888cc70819ff8a149f3544e81a6b6ea36b integrated and approved. Integrated service tests13/13, lint0 errors/3 inherited warnings, typecheck/build/provenance/diff checks passed.
+LAUNCH_SHA: this committed Ready contract; full SHA supplied externally after publication. It is different from SOURCE_SHA; do not embed or guess its own hash.
 Dependencies: integrated TNP-FOUND-01; TNP-A-01 and TNP-A-02. The second phase's first-phase dependency is an internal checked checkpoint in this grouped milestone, not a separate integration.
 Owned paths: components/tnp/portals/client/** and components/tnp/portals/planner/**, including feature-local styles.
 Mode: local labelled synthetic responsive-web preview.
-Resource proposal: port 3101, http://localhost:3101; check free before binding. Dedicated synthetic profile; no current reservation.
+Resources reserved: port3101/http://localhost:3101 on Laptop1, no listener observed at preflight; recheck before bind. Dedicated A synthetic browser profile. No current server or DB/provider/job claim. Start npm run dev -- --port 3101 --hostname localhost; record actual origin. One heavy build per laptop.
 Risk: Routine frozen-contract UI; changes to financial calculation or shared semantics escalate before editing.
-Review appointment: Fresh independent Sol as requested plus Sonnet opposite-model review in the same review window; human Kartik. Actual reviewer sessions/availability PENDING.
-Sharing: proposed original builder-only non-force push to codex/tnp-a-m1; effective only in the Ready contract. No current push or write lease.
+Review appointment at final fixed milestone: P arranges fresh independent Sol/high on Laptop1; Kartik arranges separate Sonnet on Laptop2, both capabilities evidenced by completed foundation reviews. One consolidated review window. Human reviewer Kartik. No review presently running, no invented calendar slot; changes in availability pause the handoff, not the first checkpoint.
+Sharing authorized: this reserved Dev A builder may commit and non-force push only codex/tnp-a-m1 at checked checkpoints. P may fetch/inspect. No main push/merge, force-push, deployment or moved reviewed tags.
 
 ## Shared execution rules
-This is a prepared draft, not a launch instruction. P will issue the Ready version only after reviewed foundation integration, actual appointments and capacity are recorded. Do not send a developer into a missing prerequisite. SOURCE_SHA, dependency integration SHA, LAUNCH_SHA and exclusive lease are deliberately PENDING; candidate c53e13149be79f3b97aea4ef9fd3b7c8e82d2423 is not an integrated baseline.
+This Ready contract is the exclusive launch authority after publication at the supplied LAUNCH_SHA. Foundation is integrated and reviewed. Verify startup identity/model/HEAD/ancestry/cleanliness before editing and return startup evidence to P for the serialized Building record; no additional permission is required if they match. H1 has only this active complex builder reservation; B-public remains unleased.
 
 At activation read AGENTS.md, TNP-START-HERE.md, docs/PRODUCT.md, docs/DESIGN.md, docs/DOMAIN-RULES.md, docs/ARCHITECTURE.md, docs/LAUNCH-PROTOCOL.md, docs/REVIEW-CADENCE.md, both foundation contracts and the referenced phase specifications. This grouped TASK supersedes their separate per-slice launch branches only when Ready. Verify actual host/model/session, clean initial HEAD=LAUNCH_SHA, SOURCE_SHA ancestry, integrated dependency ancestry and the launch three-file allowlist. Preserve unrelated changes; never reset to make a check pass.
 
