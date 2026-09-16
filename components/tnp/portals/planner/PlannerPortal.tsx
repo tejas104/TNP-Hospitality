@@ -10,6 +10,7 @@ import type {
   PreviewVariant,
 } from '@/lib/contracts/preview';
 import { getBrowserPreviewService } from '@/lib/services/preview';
+import { PlannerRequirements } from './PlannerRequirements';
 import styles from './PlannerPortal.module.css';
 
 const DRAFT_KEY = 'tnp-preview-a-planner-entry-draft-v1';
@@ -234,6 +235,11 @@ export function PlannerPortal() {
       return;
     }
     setRequirementId(result.value.id);
+    window.dispatchEvent(
+      new CustomEvent('tnp-a-requirement-saved', {
+        detail: { id: result.value.id },
+      }),
+    );
     setRequirementNotice(
       `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}, linked to ${result.value.bookingId} / ${result.value.eventId}.`,
     );
@@ -494,6 +500,7 @@ export function PlannerPortal() {
           </form>
         </div>
       </section>
+      <PlannerRequirements />
       <section
         className="status-timeline ops-card"
         aria-label="Sample requirement stages"

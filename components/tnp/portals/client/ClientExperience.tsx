@@ -18,6 +18,7 @@ import type {
 } from '@/lib/contracts/preview';
 import { getBrowserPreviewService } from '@/lib/services/preview';
 import { byId } from '@/data/media';
+import { ClientStatusHub } from './ClientStatusHub';
 import styles from './ClientExperience.module.css';
 
 const DRAFT_KEY = 'tnp-preview-a-client-booking-draft-v1';
@@ -242,6 +243,11 @@ export function ClientExperience() {
       return;
     }
     setBookingId(result.value.id);
+    window.dispatchEvent(
+      new CustomEvent('tnp-a-booking-saved', {
+        detail: { id: result.value.id },
+      }),
+    );
     setNotice(
       `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}. This is sample preview data, not a live booking.`,
     );
@@ -672,6 +678,7 @@ export function ClientExperience() {
           </footer>
         </div>
       </section>
+      <ClientStatusHub />
     </main>
   );
 }
