@@ -1,3 +1,5 @@
+Current handoff: completed/reported pushed at d8473f888cc70819ff8a149f3544e81a6b6ea36b on 2026-09-17T03:16:30.5970256+05:30. Original B lease is PAUSED. The authorized correction instructions below are retained as acceptance provenance, not permission to keep editing. See current STATUS/LANES.
+
 # TNP-FOUND-01-FIX-03 — consolidated payout query edge corrections
 
 Status: AUTHORIZED correction for original B only, effective when this activation commit is published on main. User approved publication and reopening on 2026-09-17T03:03:31.2255713+05:30. B lease REOPENED at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423, expires at fixed correction handoff. No consumer lease. Read current STATUS/LANES; this is a correction cycle, not a new initial launch.

@@ -1,0 +1,93 @@
+import assert from 'node:assert/strict';
+import { MemoryPreviewStorage, PreviewStore } from '../foundation-fix-03-sol-local/lib/demo/store.ts';
+import { DemoPreviewService } from '../foundation-fix-03-sol-local/lib/demo/service.ts';
+
+const request = (key) => ({ operation: 'probe.arrange', payload: {}, requestKey: key, expectedGeneration: 0, actorId: 'sol-review' });
+
+async function setup(storage = new MemoryPreviewStorage()) {
+  const store = await PreviewStore.create(storage);
+  return { storage, store, service: new DemoPreviewService(store) };
+}
+
+async function items(resultPromise) {
+  const result = await resultPromise;
+  assert.equal(result.ok, true, result.ok ? undefined : result.error.code);
+  return result.value.items;
+}
+
+async function arrange(context, key, update) {
+  const result = await context.store.commit(request(key), (records) => {
+    update(records);
+    return { ok: true, value: true };
+  });
+  assert.equal(result.ok, true, result.ok ? undefined : result.error.code);
+}
+
+const baseline = await setup();
+const omitted = await items(baseline.service.listPayouts());
+const empty = await items(baseline.service.listPayouts(''));
+const whitespace = await items(baseline.service.listPayouts('   '));
+const unknown = await items(baseline.service.listPayouts('tnp-unknown-worker'));
+const explicitEmptyBatch = (await items(baseline.service.listPayouts('tnp-demo-worker-001'))).find((item) => item.id === 'tnp-demo-payout-005');
+assert.deepEqual([omitted.length, empty.length, whitespace.length, unknown.length], [5, 0, 0, 0]);
+assert.deepEqual([explicitEmptyBatch.earningIds, explicitEmptyBatch.totalPaise], [[], 180000]);
+
+const mixed = await setup();
+await arrange(mixed, 'mixed-duplicate-dangling', (records) => {
+  const earningTwo = records.earnings.find((item) => item.id === 'tnp-demo-earning-002');
+  earningTwo.grossPaise = 90000;
+  earningTwo.netPaise = 90000;
+  records.earnings.push({
+    ...records.earnings.find((item) => item.id === 'tnp-demo-earning-001'),
+    id: 'tnp-probe-earning-005',
+    assignmentId: 'tnp-probe-assignment-005',
+    grossPaise: 25000,
+    deductionsPaise: 0,
+    netPaise: 25000,
+  });
+  const payout = records.payouts.find((item) => item.id === 'tnp-demo-payout-001');
+  payout.earningIds = [
+    'tnp-demo-earning-001',
+    'tnp-demo-earning-001',
+    'tnp-probe-earning-005',
+    'tnp-missing-earning',
+    'tnp-demo-earning-002',
+  ];
+  payout.totalPaise = 340000;
+});
+
+const storedBefore = (await mixed.store.snapshot()).records.payouts;
+const operationsBefore = await items(mixed.service.listPayouts());
+const operationsBatch = operationsBefore.find((item) => item.id === 'tnp-demo-payout-001');
+const workerOne = (await items(mixed.service.listPayouts('tnp-demo-worker-001'))).find((item) => item.id === operationsBatch.id);
+const workerThree = (await items(mixed.service.listPayouts('tnp-demo-worker-003'))).find((item) => item.id === operationsBatch.id);
+
+assert.deepEqual(workerOne.earningIds, ['tnp-demo-earning-001', 'tnp-probe-earning-005']);
+assert.equal(workerOne.totalPaise, 250000);
+assert.deepEqual(workerThree.earningIds, ['tnp-demo-earning-002']);
+assert.equal(workerThree.totalPaise, 90000);
+assert.deepEqual((await mixed.store.snapshot()).records.payouts, storedBefore);
+assert.deepEqual(await items(mixed.service.listPayouts()), operationsBefore);
+assert.deepEqual(operationsBatch.earningIds, [
+  'tnp-demo-earning-001',
+  'tnp-demo-earning-001',
+  'tnp-probe-earning-005',
+  'tnp-missing-earning',
+  'tnp-demo-earning-002',
+]);
+assert.equal(operationsBatch.totalPaise, 340000);
+
+const reloaded = await setup(mixed.storage);
+const reloadedWorkerOne = (await items(reloaded.service.listPayouts('tnp-demo-worker-001'))).find((item) => item.id === operationsBatch.id);
+assert.deepEqual(reloadedWorkerOne, workerOne);
+assert.deepEqual(await items(reloaded.service.listPayouts()), operationsBefore);
+
+console.log(JSON.stringify({
+  counts: { omitted: omitted.length, empty: empty.length, whitespace: whitespace.length, unknown: unknown.length },
+  explicitEmptyBatch,
+  workerOne,
+  workerThree,
+  operationsBatch,
+  immutable: true,
+  reloadMatches: true,
+}, null, 2));

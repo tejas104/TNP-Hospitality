@@ -1,9 +1,7 @@
 # TNP — current next action
 
-Original B is authorized to resume only TNP-FOUND-01-FIX-03 at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423 in D:\TNP-worktrees\TNP-FOUND-01, branch codex/tnp-foundation. Read docs/reviews/TNP-FOUND-01-FIX-03.md and current STATUS/LANES. Fetch and read metadata with git show; do not merge main into the application branch. Fix empty-filter scope and duplicate-reference totals, complete the regression matrix, run checks, push only foundation and pause at a fixed SHA.
+FIX-03 is pushed at d8473f888cc70819ff8a149f3544e81a6b6ea36b; B is PAUSED. P fetched the exact ref; focused independent Sol re-review PASS in a clean detached Laptop1 worktree, with13/13 tests and independent payout probes. Typecheck/full build/UI were not independently repeated. Sonnet final delta review is prepared in docs/reviews/TNP-FOUND-01-FIX-03-SONNET.md for Kartik Laptop2; launch/result and human/domain dispositions remain pending. Read current STATUS/LANES for results.
 
-User explicitly authorized documentation publication and this bounded B reopening. Earlier approval-block wording is historical. No application integration, consumer activation or deployment is authorized. Actual builder resumption is not yet observed.
+Do not launch the A/B/C/D frontend packets yet. They are Draft preparation artifacts, not leases; foundation has not been reviewed/approved/integrated at this final SHA. Once gates close, P issues Ready contracts from the actual integrated baseline. Initially A/D, B-public/C later as capacity permits. Two sequential prompts per milestone, checked/pushed checkpoints and one consolidated review window remain the cadence.
 
-A/B/C/D frontend packets under docs/tasks/TNP-*-M1.md are DRAFT. Do not paste them as active implementation prompts yet. After corrected foundation review, human approval and integration, P will issue Ready contracts with actual SOURCE_SHA/LAUNCH_SHA, reviewer appointments and exclusive leases. Initially A/D as capacity permits; B-public/C later.
-
-Two-prompt cadence: checkpoint checks/push, continue second prompt without formal review, final push and pause, P fetches, independent fixed-SHA review in one consolidated window. Sol and required Sonnet/human gates remain. See docs/FRONTEND-MILESTONE-PACKETS.md. No repeated bootstrap or unchanged mobile audit.
+User-authorized unrelated quotation cleanup is complete; see docs/CLEANUP.md. Documentation publication authority is recorded. No foundation application merge, production action or deployment has been authorized by this update.

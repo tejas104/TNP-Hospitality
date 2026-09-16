@@ -51,5 +51,20 @@
     "sha256": "87e0c18acd21480e65432fa81602a8666adf25996372e82260a2fc0523797e12",
     "reviewed_sha": "c53e13149be79f3b97aea4ef9fd3b7c8e82d2423",
     "provenance": "Exact scratch probe bytes archived as text, not a dispatched test script; source imports refer to the isolated review worktree."
+  },
+  {
+    "file": "docs/reviews/received/foundation-fix-03-sol.md",
+    "source": "D:\\TNP-review\\foundation-fix-03-sol-local-report.md",
+    "sha256": "1b1d281ca990b5e58c29f6df833d9b2d66688547545917599fdf1ee5abbe8235",
+    "reviewed_sha": "d8473f888cc70819ff8a149f3544e81a6b6ea36b",
+    "disposition": "PASS within focused FIX-03 scope",
+    "reviewer": "gpt-5.6-sol/high; /root/foundation_payout_review; independent continuation; runtime session unavailable"
+  },
+  {
+    "file": "docs/reviews/received/foundation-fix-03-sol-probe.txt",
+    "source": "D:\\TNP-review\\foundation-fix-03-sol-local-scratch-01\\payout-probe.mjs",
+    "sha256": "7db422b84b0bf9ff00e655b3bca442b986c915e0e8512caa459dd0a49e2e29ba",
+    "reviewed_sha": "d8473f888cc70819ff8a149f3544e81a6b6ea36b",
+    "provenance": "Exact external probe bytes archived as text; imports target isolated fixed review worktree."
   }
 ]

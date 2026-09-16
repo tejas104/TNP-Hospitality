@@ -1,3 +1,9 @@
+# Current foundation — PAUSED at FIX-03 handoff
+
+User reports completion at d8473f888cc70819ff8a149f3544e81a6b6ea36b; P fetched and verified exact ref, clean worktree and two-file boundary. Original B lease PAUSED at handoff; the historical reopened authority below has expired. Independent Sol focused re-review PASS, with report and exact limitations preserved; Sonnet and human/domain dispositions pending. No source edits or consumer launches follow from this status update.
+
+## Historical task authority
+
 # Current correction authority — FIX-03
 
 Status: REOPENED for original B only at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423, effective upon published activation commit. User explicitly approved this bounded correction and metadata publication on 2026-09-17T03:03:31.2255713+05:30. Read docs/reviews/TNP-FOUND-01-FIX-03.md; it defines owned paths, acceptance, exact checks, branch-only sharing and pause-at-handoff. Current STATUS/LANES supersede historical paused/reserved fields below. Original launch provenance remains unchanged; do not merge metadata main into the app branch or reset it.

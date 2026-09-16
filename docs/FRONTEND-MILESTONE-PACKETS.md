@@ -1,3 +1,5 @@
+Latest foundation status: d8473f888cc70819ff8a149f3544e81a6b6ea36b fetched and independently re-reviewed by Sol: PASS within FIX-03 scope. Sonnet final delta review and human/domain approvals remain pending. All four frontend packets remain Draft and unleased until reviewed integration. Historical failing-SHA and correction-lease statements below are superseded by current STATUS/LANES.
+
 Current authorization update 2026-09-17T03:03:31.2255713+05:30: documentation publication and original B FIX-03 reopening explicitly approved. The main publication blocker described historically below is resolved for these actions. All four frontend milestone packets remain Draft; no consumer launch or application integration authorized.
 
 # Prepared A/B/C/D prompt packets and consolidated review cadence

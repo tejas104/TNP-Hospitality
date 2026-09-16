@@ -1,3 +1,9 @@
+# Current lanes — B paused at d8473f8, focused re-review
+
+Updated 2026-09-17T03:16:30.5970256+05:30. B original lease expired at user-reported final handoff d8473f888cc70819ff8a149f3544e81a6b6ea36b; PAUSED, no further writing authorized. Independent Sol /root/foundation_payout_review owns read-only source review at detached D:\TNP-review\foundation-fix-03-sol-local, same exact SHA, with external scratch/report only. Sol focused review completed PASS; source remains clean and read-only. Sonnet Laptop2 prompt prepared, launch unknown. A/B-public/C/D leases NONE and packets Draft; no proposed ports reserved. P continues serialized factual documentation records on codex/tnp-foundation-launch, including cleanup disposition and reviewer receipt; no app ownership.
+
+## Prior lane record (superseded above)
+
 # Current lanes — original B reopened for FIX-03 only
 
 Updated 2026-09-17T03:03:31.2255713+05:30. User explicitly authorized publishing documentation through dac29ba and reopening original B for FIX-03 in this session. Prior automatic approval block is resolved for those actions. Documentation dac29badeb20e773a4eb0dd4a2d99fbc50537ba5 was fast-forwarded and pushed to main, remote verified before this activation commit. This serialized activation is based on that current main. No application integration or deployment authorized.
