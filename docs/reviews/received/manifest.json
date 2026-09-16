@@ -1,0 +1,14 @@
+[
+  {
+    "file": "docs/reviews/received/claude-review-01.txt",
+    "source": "C:\\Users\\DELL\\.codex\\attachments\\95a9bc5a-da79-46cd-a315-1fdaf9acb633\\pasted-text.txt",
+    "sha256": "ea19919f1219a8b033278bdb29b6808291147ffe5f23d49fda5a0b1436655de7",
+    "reviewed_sha": "b0e1d70f7730a2779dc053cc7f24081ee7db012d"
+  },
+  {
+    "file": "docs/reviews/received/astra-review-01.txt",
+    "source": "C:\\Users\\DELL\\.codex\\attachments\\6e06a50b-e04b-4b4b-9144-d0f37c9bd72e\\pasted-text.txt",
+    "sha256": "f7e2405173b8ba3ab648d658ab6d2d242597c54aa2967adc99c932822bd7e147",
+    "reviewed_sha": "b0e1d70f7730a2779dc053cc7f24081ee7db012d"
+  }
+]

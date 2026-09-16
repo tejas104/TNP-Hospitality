@@ -1,0 +1,78 @@
+[16-09-2026 20:02] Kartik Deshmukh: **To architect P: changes requested. The Astra gate is not passed for TNP-BOOT-01 at the reviewed commit.** The bootstrap preserves the application baseline, but its prerequisite and launch contracts contain conflicts that should be resolved before dispatch.
+
+| Review identity | Verified evidence |
+|---|---|
+| Machine | DESKTOP-VO8G3GR — Kartik’s designated Laptop 2 |
+| Remote | https://github.com/tejas104/TNP-Hospitality.git |
+| Review worktree | D:\TNP-review\bootstrap-astra |
+| Git common directory | D:\TNP-Hospitality\.git |
+| Checkout | Detached HEAD; clean before and after review |
+| BASE_SHA | 9d58061f2d36514ebc932fa94bb3dc90f4b97a97 |
+| Reviewed HEAD_SHA | b0e1d70f7730a2779dc053cc7f24081ee7db012d |
+| Selected model / effort | **gpt-6-astra / low**, recorded in this session’s current turn_context |
+
+The worktree already existed when this review began; I verified and reused it. Model evidence came from the session record for 01a0aa6d-9b9a-75c3-839a-c0ac7b5f18a5, not the architect’s configuration or model availability list.
+
+Findings
+
+1. [P1] S1 requires an integrated browser journey that its ownership and dependency order prevent it from implementing.  
+   Location: [S1 contract, line 36](/D:/TNP-review/bootstrap-astra/docs/contracts/S1-PREVIEW-INTERFACES.md:36), with ownership at lines 6–14.
+
+   S1 must demonstrate planner → Operations → worker → roster → attendance → earnings. Its permitted changes cover services, fixtures, tests and preview controls; they exclude the portal components. The existing portals use disconnected local React state—for example, planner submission only changes requestSent, and worker claiming only changes accepted. S0 preserves that behavior. The consumer tasks that would connect these screens are blocked until S1 is reviewed and integrated.
+
+   Impact: S1 cannot satisfy this acceptance requirement within its declared scope, creating a circular delivery gate or encouraging unauthorized portal edits. P should either authorize a narrowly defined integration slice within S1 or move the full browser journey to an explicitly scheduled post-consumer integration gate.
+
+2. [P2] S1’s Node test strategy lacks a compatible, authorized TypeScript import configuration.  
+   Location: [S1 contract, lines 31–33](/D:/TNP-review/bootstrap-astra/docs/contracts/S1-PREVIEW-INTERFACES.md:31), [S1 task ownership, lines 21–27](/D:/TNP-review/bootstrap-astra/docs/tasks/TNP-S1.md:21).
+
+   The prescribed Node type-stripping test runner requires resolvable runtime imports throughout the imported service graph. Specifying .ts only in the .mjs test entry does not resolve imports between service.ts, store.ts and scenario.ts. The current [TypeScript configuration](/D:/TNP-review/bootstrap-astra/tsconfig.json:8) lacks allowImportingTsExtensions or an equivalent agreed strategy, while S1’s exact ownership excludes that configuration.
+
+   Evidence: An in-memory probe using the lockfile’s TypeScript 5.9.3, with its downloaded archive verified against the lockfile integrity hash, reproduced TS5097 for a runtime .ts → .ts import under the repository options. Adding allowImportingTsExtensions removed that diagnostic. Node’s documentation confirms mandatory extensions and that type stripping does not apply tsconfig path mappings. Node documentation (https://nodejs.org/docs/latest-v22.x/api/typescript.html), TypeScript documentation (https://www.typescriptlang.org/tsconfig/allowImportingTsExtensions.html).
+
+   Impact: A normal implementation of the proposed module split can pass either bundler-oriented type checking or direct Node execution while failing the other. P should specify and authorize one compatible approach before S1 starts. This is a contract defect; no S1 implementation exists yet.
+
+3. [P2] The shared preview contract omits operations required by frozen consumers.  
+   Location: [S1 service-operation list, line 21](/D:/TNP-review/bootstrap-astra/docs/contracts/S1-PREVIEW-INTERFACES.md:21).
+
+   D-02 requires a functioning replacement workflow, rejection of a full replacement target, nonresponse replacement and a human-decision audit preview. S1 specifies worker claim and Coming/Not Coming responses, but no replacement/admin-assignment operation
+[16-09-2026 20:02] Kartik Deshmukh: , nonresponse transition or corresponding audit result. See [D-02 acceptance and checks, lines 30–40](/D:/TNP-review/bootstrap-astra/docs/tasks/TNP-D-02.md:30).
+
+   A-01 also requires location/budget venue suggestions and a recommended planner picker, but S1 does not explicitly require venue/planner catalogue queries or records sufficient for that workflow. See [A-01 acceptance, line 30](/D:/TNP-review/bootstrap-astra/docs/tasks/TNP-A-01.md:30).
+
+   Impact: S1 could meet its written operation list and then freeze an interface insufficient for its consumers. Feature developers would have to stop for amendments or introduce divergent local data and mutations. Add a consumer-to-operation acceptance matrix before freezing S1, especially for replacement behavior affecting capacity and worker state.
+
+4. [P2] The launch procedure does not distinguish the application baseline from the commit containing the Ready contract.  
+   Location: [Starter guide, lines 238–262](/D:/TNP-review/bootstrap-astra/TNP-START-HERE.md:238).
+
+   P must first record a Ready task, exact baseline and lease. The recipe then creates the worktree at that baseline and requires HEAD to equal it, while stating that Git has populated the required task instructions. If P records Ready information in a later documentation commit, checking out the earlier implementation baseline leaves the builder with the Draft task. Checking out the later contract commit fails the stated HEAD-equals-baseline check.
+
+   Impact: A legitimate dispatch can fail its own startup gate or depend on an unversioned chat override. Define separate source/dependency baseline and launch-contract revision fields, or an explicit, versioned launch-packet mechanism with verification rules. This is currently a procedure ambiguity, not an observed unauthorized launch.
+
+5. [P2] S0’s acceptance criteria contradict its extraction-only scope.  
+   Location: [S0 task, line 31](/D:/TNP-review/bootstrap-astra/docs/tasks/TNP-S0.md:31).
+
+   The task requires all primary actions to become real preview interactions with error/recovery behavior. Its referenced [S0 contract, line 28](/D:/TNP-review/bootstrap-astra/docs/contracts/S0-SHARED-UI.md:28) explicitly says S0 does not fix dead buttons or share fixtures. The baseline contains primary controls without handlers, including verification and replacement actions.
+
+   Impact: Preserving the permitted baseline fails the task’s generic acceptance sentence; implementing that sentence expands S0 into later feature work. Limit S0 acceptance to extraction, existing-behavior preservation, navigation repairs and preview labelling, with inherited interaction gaps retained explicitly.
+
+Validation and broader assessment
+
+- python docs/checks/verify_bootstrap.py — PASS: 21 provenance entries, 20 screen sets, 12 tasks and the permitted bootstrap diff.
+- git diff --check BASE HEAD — PASS.
+- BASE is an ancestor of HEAD — PASS.
+- Application source, package/lockfile and configuration diff against BASE — empty.
+- All 61 changed paths were accounted for. I reviewed the canonical guidance, implementation contracts, historical references, selected skills, evidence logs and relevant application source. The 13-page scope PDF was inspected through text extraction; its document-level instructions were treated as reference text. Source: :codex-file-citation{path="D:/TNP-review/bootstrap-astra/docs/references/TNP_Platform_Engineering_Scope.pdf" purpose="source"}.
+- The validator is a bootstrap snapshot check, not a Ready-task validator. An in-memory Ready/lease probe was rejected unconditionally at [lines 39–40](/D:/TNP-review/bootstrap-astra/docs/checks/verify_bootstrap.py:39). Its field checks verify labels rather than launch values or dependency ancestry. Its current PASS must not be presented as dispatch validation.
+
+The canonical domain rules appropriately preserve server authorization, consistent allocation/capacity/overlap, attendance evidence and reasoned corrections, integer-paise money, separate collections/payout ledgers, sequential approvals and uncertain payout handling.
+[16-09-2026 20:02] Kartik Deshmukh: These are documented requirements, not implemented or tested production guarantees.
+
+The two-human operating policy is coherent: normally one builder per human, pause dispatch at two waiting reviews, opposite-model review plus independent human approval, and additional Astra gates for sensitive work. Reviewer host flexibility does not change the human approval assignment. The guide also correctly requires actual authorized branch sharing before another laptop can fetch a review commit.
+
+Limitations and disposition
+
+I did not install application dependencies or rerun application lint, type checking, builds, browser journeys, concurrency or provider tests. The recorded 8 lint errors and 3 warnings remain inherited author evidence, not independently rerun results. PDF layout and deployed UI behavior were not certified.
+
+This session did not author the bootstrap, but it previously performed Dev D orientation; it is not a newly created fresh-context review session. That procedural limitation is disclosed separately from the verified Astra model identity.
+
+**Disposition: CHANGES REQUESTED; Astra gate NOT PASSED at b0e1d70f7730a2779dc053cc7f24081ee7db012d.** P should resolve the contract findings and publish a new immutable review target for re-review. No files were edited, no fixes applied, and no developers, merges, pushes or deployments were launched.

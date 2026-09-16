@@ -1,34 +1,10 @@
-# Independent review packet — TNP-BOOT-01
+# Independent review packet — TNP-BOOT-01 corrected candidate
 
-Author P; responsible human Anjaneya; lane B; Codex (local configured gpt-6-astra/high).
+Author: architect P under Anjaneya, reserved lane B, worktree D:\TNP-worktrees\TNP-BOOT-01.
 BASE_SHA: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
-Candidate branch: codex/tnp-bootstrap. Fixed HEAD_SHA is supplied in the final human handoff; verify it before review. Never review a moving branch without resolving/pinning its commit.
-Source worktree D:\TNP-worktrees\TNP-BOOT-01.
-Dedicated detached review worktree will be recorded in the handoff if created; source review remains read-only.
-Mode: documentation/preview planning. Required human reviewer Kartik.
-Routine AI reviewer: Claude (actual version/session pending).
-Astra gate: required, separate fresh review at the same fixed SHA; no author self-certification.
-No independent review performed yet. No human approval or merge claimed.
-
-## Review checklist
-- Verify exact diff is allowlisted docs/guidance/selected references/skills and scoped .gitattributes provenance rules; app and package/config trees unchanged.
-- Check two-human mapping, capacity claims, queue limits and actual versus proposed worktree/model/lease fields.
-- Verify original requirement contradictions remain pending; no fake RSVP/document deferral approval.
-- Trace all F01–F20 evidence to baseline source; do not count cosmetic UI or dead buttons.
-- Inspect S0/S1 shared ownership and consumer disjointness, dependency and review gates.
-- Validate manifest hashes and absence of copied credentials/unrelated client documents.
-- Re-run docs/checks/verify_bootstrap.py and git diff --check; inspect baseline logs and distinguish inherited errors from regressions.
-- Verify skill instructions cannot auto-launch unregistered writers.
-- Confirm production/API/hosting choices remain proposals and Day 3 demo preservation is explicit.
-
-## Findings (reviewer returns these to human/builder, does not edit here)
-ID | severity | file/line | trigger | impact | evidence | disposition owner
-No findings supplied yet; this means not reviewed, not passed.
-
-## Disposition and completion
-Kartik records confirmed/rejected/reproduce with reasons. P fixes accepted findings under the bounded lease. New commit -> relevant independent re-review.
-Record reviewer/model, fixed reviewed SHA, checks actually run, limitations, unresolved blockers, Astra result and human approval.
-Only then may a human integrate. Publication and production remain outside authorization.
-
-## Updated review target and cross-host setup
-The initial local 5cece04 checkpoint is superseded by the single-guide/tool-mapping revision. Review immutable tag tnp-bootstrap-review-01 after P publishes it; verify the full SHA from P's handoff. Kartik creates two separate detached worktrees from that tag using TNP-START-HERE.md. The older local detached checkout, if present, is not the current target. Review the entire original BASE_SHA..new HEAD_SHA diff. Include the corrected C Claude/D Codex mapping, GitHub authorization boundaries and clone-before-review order.
+Previous candidate: b0e1d70f7730a2779dc053cc7f24081ee7db012d; changes requested by both supplied reports. Neither is a gate pass. See BOOT-01-CORRECTIONS.md and received/ for exact reports and limitations.
+New candidate tag: tnp-bootstrap-review-02; P supplies the full fixed SHA after commit/push. Never move review-01 or review-02. Verify local tag/HEAD against the handoff, not merely each other.
+Required: fresh Claude source review and separate fresh Astra architecture review, then Kartik human approval. Prefer Kartik Laptop 2; use separate fresh contexts, not an existing Dev D task. Record actual model evidence. No reviewer edits; corrections return to P.
+Read AGENTS, root guide, LAUNCH-PROTOCOL, domain/architecture, S0/S1/I01, every task, supplied reports/dispositions and relevant baseline source. Review full BASE..HEAD and changes since review-01. Verify docs-only scope, pending client policies, no self-dependent tasks, correct D: paths, no circular launch or browser gate, complete consumer matrix and narrow S1 config exception.
+Run python docs/checks/verify_bootstrap.py --strict-untracked and --provenance-only; git diff --check BASE HEAD; verify manifest hashes and no app/package/config changes. Documentation checks are not independent architecture approval. Baseline app lint remains 8 inherited errors/3 warnings; no app fix in this candidate.
+Return fixed SHA, model/context evidence, findings with severity/file/line/impact, actual checks/limitations, explicit gate result and human disposition separately. Re-review fixes at new SHAs. No main merge, developer launch or deployment without required gates and authorization.

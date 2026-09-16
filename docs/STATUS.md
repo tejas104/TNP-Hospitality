@@ -1,40 +1,10 @@
-# Current project status
+# Project status
 
-Updated 2026-09-16 by P / TNP-BOOT-01.
-Humans: Anjaneya H1; Kartik H2. No H3.
-Current milestone: isolated bootstrap prepared for independent review.
-Original main and remote main verified with git ls-remote on 2026-09-16: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
-Bootstrap: codex/tnp-bootstrap, D:\TNP-worktrees\TNP-BOOT-01.
-No main merge or new deployment. User now authorized publishing the bootstrap branch and fixed review tag for Kartik to clone; verify the remote target as instructed in TNP-START-HERE.md. No Laptop 2 clone or review completion is claimed.
-Reference demo: https://tnp-hospitality-demo.vercel.app/; deployed commit unknown.
-Kickoff date, client Day 3 slot/timezone and named client decision-maker pending.
-Integration captain: Anjaneya proposed; confirm human availability.
-
-## Coverage and checks
-F01–F20: 14 partial, 6 missing, 0 certified frontend-ready. Production integration missing in inspected frontend source. See F01-F20-AUDIT.md.
-Actual baseline results and artifact paths: BASELINE.md.
-Canonical files and nine selected local skills are present in this branch only. Discovery in fresh Codex/Claude sessions and Laptop 2 verification are pending. No Claude skills changed.
-Architecture proposal is authored, not independently approved.
-
-## Queue
-| Task | State | Human/lane | Next step |
-|---|---|---|---|
-| TNP-BOOT-01 | Prepared for review; B paused at handoff | Anjaneya / P occupying B | Kartik: Claude + separate Astra review at fixed SHA |
-| TNP-S0 | Draft, dependency unmerged | Anjaneya / B | After approved bootstrap integration and complete launch record |
-| TNP-S1 | Draft, dependency unmerged | Anjaneya / B | After S0 review/integration |
-| TNP-A-01 -> A-02 | Draft | Anjaneya / A | After S1; model/path/lease/review confirmation |
-| TNP-B-01 | Draft | Anjaneya / B | After S1; supplied content evidence |
-| TNP-C-01 -> C-02 -> C-03 | Draft | Kartik / C | After S1; verify Kartik's Claude workspace/model |
-| TNP-D-01 -> D-02 -> D-03 | Draft | Kartik / D | After S1; verify Kartik's Codex workspace/model |
-| F17–F20 | Backlog, no implementation contract yet | H1/H2 | Days 4–6; split after frontend feedback/contracts |
-
-One task prepared for review; no reviewer session launched by this architect. At two waiting tasks stop new dispatch.
-External writers cannot be observed from this host; no active foreign paths or leases are invented.
-No currently eligible dependent builder prompt should be launched. The immediately eligible action is independent bootstrap review.
-
-## Open decisions and external dependencies
-DOMAIN-RULES.md DEC-01..DEC-13 all pending. Basic RSVP retained. Full automation/documents and other proposed reductions not approved.
-Providers/credentials, CI protections, production hosting, backup/restore and UAT evidence unverified.
-H1 next: client appointment/content and scope decisions, supervise integration schedule.
-H2 next: independent bootstrap review, provider readiness inventory, workforce/finance decisions.
-P next: address review findings in reserved B task, then populate merged SHAs and ready launch records; do not dispatch prerequisites early.
+Architect P: current Anjaneya session 01a0aa12-b112-7052-b7de-49e070c4fa09. P occupies B for bootstrap corrections only; not another builder. Prepared correction work pauses at the fixed review-02 handoff.
+Baseline/remote main verified before correction: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97. Bootstrap branch codex/tnp-bootstrap; previous candidate b0e1d70f7730a2779dc053cc7f24081ee7db012d. New candidate fixed by tnp-bootstrap-review-02 and P's full-SHA handoff. No merge/deployment claimed.
+Supplied Claude and Astra reports both request changes. Actual Astra model evidence was reported, but prior Dev D context means fresh review still required. Raw reports/dispositions in docs/reviews. Corrections are author work, not gate approval.
+Humans: H1 Anjaneya A/B Codex on Laptop1; H2 Kartik C Claude/D Codex on Laptop2. Both repositories/worktrees use D: as in LAUNCH-PROTOCOL.md. No H3/E.
+All application tasks remain Draft and have no writer lease. No Ready packet has been issued. B/S0 is first after approved bootstrap integration; then B/S1; then A/D initially, B/C as review capacity allows. S1 service tests precede consumer wiring; full integrated browser gate is I01.
+Coverage remains 14 partial, 6 missing, 0 certified. Baseline npm install/typecheck/build passed; lint has 8 inherited errors/3 warnings. Correction is docs-only; see BASELINE.md for actual app checks. No new application pass inferred.
+Next: fresh Claude and Astra review of corrected candidate, Kartik human disposition, authorized integration. P then commits a populated Ready contract and supplies its LAUNCH_SHA. Do not repeatedly ask Draft developers to launch.
+Kickoff, Day3 slot/timezone, client decisions DEC-01..16, exact builder model/effort, reviewer slots and production providers remain pending. No silent scope reductions. Reference demo deployed SHA unknown.

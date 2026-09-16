@@ -7,8 +7,12 @@ Tool/model/effort: Codex; exact model/effort pending selection on assigned host.
 Isolated branch: codex/tnp-s0 (planned, not created).
 Absolute worktree: D:\TNP-worktrees\TNP-S0 (proposed, not created or verified).
 Audited source baseline: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
-Implementation baseline SHA: PENDING current integrated main after prerequisites; do not start from the old audit SHA.
-Dependencies: TNP-BOOT-01 and transitive bootstrap/S0/S1 as applicable.
+Implementation baseline SHA: PENDING integrated source/dependency baseline (SOURCE_SHA); do not start from the old audit SHA.
+Launch-contract revision: PENDING; P supplies the full LAUNCH_SHA after committing the Ready TASK. This file does not embed its own commit hash.
+Review sharing: PENDING authorized pusher, branch/ref and fixed SHA handoff; no force-push or moving reviewed tags.
+Reviewer host/availability: PENDING appointment; preferred Claude and Astra hosts are Kartik Laptop 2, Codex review of C on Anjaneya Laptop 1.
+Launch protocol: docs/LAUNCH-PROTOCOL.md; initial HEAD must equal LAUNCH_SHA, not SOURCE_SHA.
+Dependencies: TNP-BOOT-01. Verify all transitive prerequisite commits through that dependency; never depend on this task itself.
 Merged dependency evidence: NONE yet; record each merge SHA and verify ancestry with git merge-base --is-ancestor before marking Ready.
 Mode: labelled synthetic frontend preview only.
 Risk: Architecture/shared UI; independent Astra REQUIRED.
@@ -28,7 +32,7 @@ Do not extend ownership beyond the referenced prerequisite contract.
 
 ## Acceptance
 All five URLs and existing interactions retain behavior; approved compositions preserved; named exports and compatibility barrel valid; desktop/mobile/reduced-motion/focus evidence; visible sample-data label; zero lint errors, with unchanged inherited warnings separately recorded.
-All primary actions must be real preview interactions, with relevant errors/recovery. Unimplemented screens do not earn readiness credit. Proposed business rules remain labelled.
+Preserve existing interaction behavior except the specified navigation fixes and truthful copy-only changes. Dead actions remain recorded gaps for later consumers; S0 does not implement all primary actions or claim frontend completion.
 
 ## Required checks
 Read AGENTS.md, PRODUCT.md, DESIGN.md, DOMAIN-RULES.md, ARCHITECTURE.md, the referenced contract and task.
@@ -40,5 +44,5 @@ No merge, push, publication, production operations or spawned implementation age
 Task-specific: The S1 scenario test is not applicable yet. Do not add or run an invented test suite. Capture before/after for each route.
 
 ## Launch and handoff
-Human records actual host/path/model, complete dependency evidence, own/reviewer availability, exact baseline and lease timestamp/session. Only then change Draft -> Ready -> Building after observed launch.
+P records actual host/path/model, dependency evidence, reviewer availability, SOURCE_SHA, sharing authority and a reserved exclusive lease in the Ready contract. P commits it and supplies LAUNCH_SHA externally. Create the task worktree at LAUNCH_SHA and verify docs/LAUNCH-PROTOCOL.md. Mark Building only after observed launch. Initial implementation needs no prior task review findings or reopened lease; those apply only to a correction cycle.
 At completion: changed files, fixed HEAD_SHA, commands/results, browser evidence, unresolved gaps and review target. Stop writing at review handoff. Builder fixes findings under the same bounded task; new HEAD requires relevant re-review.

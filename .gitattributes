@@ -3,3 +3,4 @@
 /deliverables/TNP-*.md -text
 /docs/evidence/*.log -text
 /docs/references/*.pdf -text
+/docs/reviews/received/*.txt -text -whitespace

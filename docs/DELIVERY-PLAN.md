@@ -41,3 +41,5 @@ D19–23: QA/security/race/finance tests, UAT, recovery/rehearsal/training and g
 ## Stop/adjust triggers
 Two waiting reviews -> stop new launches. Unresolved critical findings -> block affected merges/dependents. H2 complex financial/security work -> one H2 builder. Missing provider/client decisions -> block affected work only.
 Anjaneya is proposed integration captain for frontend milestones; confirm availability before integration. Humans resolve conflicts and authorize exact commits. This bootstrap grants no merge/publication authority.
+
+I01 scheduling: docs/contracts/I01-INTEGRATED-PREVIEW.md is the Day3 post-consumer browser gate; S1 has service-level journey tests and no full-portal browser gate. One waiting review per human also pauses their new dispatch. If throughput cannot deliver 16/20 by the client slot, P/H1 report actual coverage and seek client prioritization; no preapproved screen cuts exist.

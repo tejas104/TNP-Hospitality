@@ -34,3 +34,15 @@ No entry below is approved merely because a source proposed a default. H1 collec
 | DEC-13 | Production hosting/build route, auth, API tooling, jobs, private storage/restore | Kartik + Anjaneya | Architecture task before backend build |
 
 Record actual decisions with evidence in decisions/CLIENT-DECISIONS.md. Pending policy may be represented as labelled scenario assumptions in preview fixtures, never silently used as production authority.
+
+
+## Explicit integrity requirements retained from scope evidence
+- Uniqueness must be enforced for one earning per assignment and one payable per worker/month; deduplicate provider events for collections as well as payouts.
+- Serialize competing allocation writes on a worker reservation (or an equivalently proven conflict mechanism). A transactional read of "no overlap" alone is not enough. One allocation path enforces capacity, overlap and replacement; the preview simulates these outcomes but does not prove server concurrency safety.
+- Pay calculation uses one effective attendance result while retaining all original evidence and corrections. Reject wrong-event, expired and duplicate scan effects; a replay must not create another attendance/earning.
+- Once payout batch processing begins, the batch cannot be edited. Resolve uncertain outcomes by reconciliation before another money effect.
+
+## Additional pending policy questions
+DEC-14 (Kartik + client, before identity/authorization): may one person hold multiple roles; which combinations/scopes are allowed?
+DEC-15 (Anjaneya + Kartik + client, before quotes/earnings/payables): GST/TDS applicability, invoice entity, gross/deductions/net presentation, withholding responsibility and rounding. No tax rates or legal treatment are approved here.
+DEC-16 (Kartik + client, before approval/ledger design): require distinct human approvers and compensating entries for post-approval/post-payment corrections? These are reviewer-proposed protections, not silently confirmed client policy. Preview uses explicitly labelled distinct sample actors and append-only correction examples while the production decision remains pending.

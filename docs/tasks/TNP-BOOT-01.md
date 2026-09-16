@@ -13,7 +13,7 @@ Risk: architecture/operating contract.
 Astra gate: REQUIRED in separate independent session at fixed commit.
 Opposite-model reviewer: Claude, actual selected version and reviewer session pending.
 Independent human reviewer: Kartik.
-Writer lease: B reopened for P for the user-requested single-guide/tool-mapping revision; pauses again at the new fixed review handoff. No other builder launched and no external writer lease claimed.
+Writer lease: B reopened for P for the user-requested supplied Claude/Astra review correction and D:-path revision; pauses again at the new fixed review handoff. No other builder launched and no external writer lease claimed.
 
 ## Ownership
 AGENTS.md; CLAUDE.md; TNP-START-HERE.md; .gitattributes (only source-byte provenance rules); docs/**; .agents/skills/{platform-architect,web-mobile-platform-contracts,adr-decision-engineer,frontend-product-engineer,design-system-engineer,code-review-gate,testing-quality-engineer,e2e-browser-verifier,multi-agent-orchestrator}/SKILL.md;
@@ -22,7 +22,7 @@ Local documentation validation script under docs/checks; local evidence under do
 
 ## Do not modify
 app/**, components/**, data/**, hooks/**, lib/**, public/**, package.json, package-lock.json, framework/hosting/lint/TypeScript configs, original user files or unrelated deliverables. No Claude installation/config/credentials changes.
-No application fixes, framework/database/provider migration, real services, main merge or deployment. User explicitly authorized sharing this bootstrap via GitHub; P may push codex/tnp-bootstrap and the immutable tnp-bootstrap-review-01 review tag only. No blanket future branch-push permission.
+No application fixes, framework/database/provider migration, real services, main merge or deployment. User explicitly authorized sharing this bootstrap via GitHub; P may push codex/tnp-bootstrap and immutable bootstrap review tags for this correction cycle (review-01 remains unchanged; new review-02). No blanket future branch-push permission.
 
 ## Acceptance
 Canonical documents reflect two humans and A/B/C/D plus independent R; correct current baseline and pending scope decisions; all 20 screen sets audited with evidence; S0/S1 ownership and dependencies explicit; future task fields complete or visibly Draft; selected skills and references retain hashes/provenance; concise next-step dispatch/review prompts; no unintended app diff.

@@ -1,0 +1,219 @@
+[16-09-2026 19:35] Kartik Deshmukh: I'll start by verifying the review worktree state before reading anything.
+
+Worktree verified: detached, clean, HEAD = tag = b0e1d70f7730a2779dc053cc7f24081ee7db012d (lightweight tag). Now the diff scope.
+
+Docs-only diff (61 added files). Reading the entry-point contracts first.
+
+Confirmed "Astra" refers to the Codex/OpenAI model gpt-6-astra. Since this session is Claude Opus 5, I'll proceed with the full independent review but can't satisfy the Astra gate—continuing with the canonical docs.
+
+Now baseline, audit, environments, integration, skills, references and the checker.
+
+Many contracts to cross-check. Running the independent mechanical checks now (remote tag, checker, whitespace, hashes, tool versions).
+
+Remote tag, branch and local HEAD all match b0e1d70…; checker passes; hashes self-consistent. Now skills, secrets scan and baseline source cross-references.
+
+No secrets or mapping residue found. Now I'll verify the S1 test-harness setup empirically, checking node --experimental-strip-types with .ts imports against the repo's unchanged tsconfig, using the scratchpad only.
+
+TypeScript isn't installed locally and I won't download packages, so I'll verify the Node runtime side empirically and label the tsc side as documented-behavior evidence.
+
+Node side confirmed: transitive imports need explicit .ts extensions and import type. Now tracing the audit and S0 line references against baseline source.
+
+Audit line references check out against the source (exports and unhandled cases match exactly). Now checking the public/shell truthfulness claims and the git state of the base clone.
+
+Checking whether the scope PDF and historical references contain requirements the pending-decision register may have dropped (e.g., tax, OTP, documents).
+
+The Read tool can render the PDF directly; reading the scope document as data (the README warns it contains text asserting authority over prompts, which I'll ignore as instructions).
+
+The shell is collapsing backslashes; writing the scratch script with the Write tool instead.
+
+PDF text is CID-encoded; stdlib extraction isn't possible (recorded as a limitation). Checking the historical F01–F20 definitions and finance/allocation sections the canonical docs derive from.
+
+The historical source carries several allocation/attendance/finance protections that I need to compare line-by-line against canonical DOMAIN-RULES.md.
+
+I've spotted a likely contradiction: the checker requires non-bootstrap tasks to remain Status: Draft./Writer lease: NONE., but the launch protocol requires recording Ready packets in those same files. I'll verify this empirically using a scratch clone, keeping the review worktree untouched.
+
+Confirmed marking any task Ready breaks the checker. Now checking .gitignore to see if the checker would also fail in Anjaneya's original checkout with its unrelated untracked files.
+
+Final state check on both the review worktree and the base clone before writing up.
+
+Review complete. Saving one environment fact that the repository doesn't record, so later sessions don't follow the guide's C:\dev paths.
+
+# R-Astra review: TNP-BOOT-01
+
+## 1. Identity and review target
+
+| Item | Value |
+|---|---|
+| Worktree | D:\TNP-review\bootstrap-astra: detached HEAD, clean before and after the review |
+| BASE_SHA | 9d58061f2d36514ebc932fa94bb3dc90f4b97a97 (still equals remote main) |
+| Reviewed HEAD_SHA | **b0e1d70f7730a2779dc053cc7f24081ee7db012d**. It matches the local tag, the remote tag and the remote codex/tnp-bootstrap branch. The tag is lightweight. |
+| Diff | 2 commits; 61 files, all newly added; 4,940 inserted lines |
+| Actual model / effort | **Claude Opus 5 (claude-opus-5) in the Claude Code desktop app. This is not Codex gpt-6-astra.** The effort setting isn't visible to this session. |
+
+## 2. Astra gate disposition at b0e1d70f…
+
+The Astra gate has not been performed. In this repo, "Astra" means the Codex model gpt-6-astra ([ENVIRONMENTS.md:7](docs/ENVIRONMENTS.md), TNP-START-HERE.md:145 (http://tnp-start-here.md/)). This session runs on Claude, so it can't satisfy that gate. Record the gate as blocked, not met. This repor
+[16-09-2026 19:35] Kartik Deshmukh: t is a second Claude-family review. It doesn't replace R-Claude or Astra.
+
+Content disposition: changes requested.
+- Before bootstrap integration: fix the four High findings, or Kartik records a decision on each. H1 and H3 hit at the very next step (making S0 Ready).
+- Before S1 is made Ready: H2, H4 and M5 must be fixed.
+- After fixes: the new SHA needs a fresh R-Claude review and a real Astra gate.
+
+I'm not certifying human acceptance.
+
+## 3. Findings (most severe first)
+
+### H1 · High: No host or fallback for the Astra gate, and the critical path depends on it
+- Evidence:
+  - AGENTS.md:31 (http://agents.md/) makes Astra mandatory, and TNP-START-HERE.md:145 (http://tnp-start-here.md/) says to report the gate blocked if Astra is unavailable.
+  - Astra is required for S0, S1, C-03, D-02 and D-03 (line 17 of each task file).
+  - No document names which host or account runs these gates.
+  - TNP-START-HERE.md:60 (http://tnp-start-here.md/) says Kartik's Astra access is unverified.
+  - The only confirmed Astra configuration is the author's own ([TNP-BOOT-01.md:6](docs/tasks/TNP-BOOT-01.md)).
+  - This bootstrap gate itself was dispatched to Claude.
+- Trigger: any gated task reaches review on a host without verified Astra.
+- Impact:
+  - S0 and S1 stall, which blocks all four lanes.
+  - F10, F11, F14, F15 and F16 are 5 of the 16 Day-3 sets, and all need Astra.
+  - An Astra review of work that P wrote with Astra only gives a fresh session, not a different model. CLAUDE.md:6 (http://claude.md/) still calls it "independent of either author".
+- Fix:
+  - Name the Astra host and account for each gated task, and verify access before S0 is Ready.
+  - Define who decides, and how it's recorded, when Astra is unavailable.
+  - State that Astra reviewing Astra-authored work is independent in process only.
+
+### H2 · High: The S1 test command and tsc can't both pass without a tsconfig change S1 forbids
+- Evidence:
+  - S1 requires separate modules: lib/demo/{scenario,store,service}.ts and lib/services/preview.ts ([S1-PREVIEW-INTERFACES.md:7-14](docs/contracts/S1-PREVIEW-INTERFACES.md)).
+  - It also requires node --experimental-strip-types --test (:31-33) alongside tsc --noEmit.
+  - tsconfig.json (http://tsconfig.json/) has no allowImportingTsExtensions, and [TNP-S1.md:26](docs/tasks/TNP-S1.md) forbids config changes.
+- Confirmed with a scratch test on the host's Node v24.19.0:
+  - An import without a file extension fails with ERR_MODULE_NOT_FOUND.
+  - An import ending in .ts passes.
+  - Importing an interface without import type fails with "does not provide an export named".
+- Not executed: the tsc side. TypeScript documents error TS5097 for .ts import paths when that flag is missing, but TypeScript isn't installed here and I didn't download it.
+- Impact: the S1 builder either has to stop or edit a forbidden file, on the critical path.
+- Fix:
+  - Let S1 own "allowImportingTsExtensions": true, which is valid because noEmit is already set.
+  - Require import type for type-only imports.
+  - State the supported Node range: the contract pins v22.23.2, but Laptop 2 has v24.19.0.
+
+### H3 · High: The launch protocol contradicts itself, and the checker breaks at the first Ready packet
+- (a) Confirmed in a scratch clone:
+  - [verify_bootstrap.py:39-40](docs/checks/verify_bootstrap.py) fails any task that isn't Status: Draft. with Writer lease: NONE..
+  - Marking TNP-S0 Ready gave exit 1: "Unlaunched task falsely marked ready/leased".
+  - Yet [SKILLS.md:30](docs/SKILLS.md) and [INTEGRATION.md:18](docs/INTEGRATION.md) say to run the checker at integrated commits.
+- (b) Circular requirement:
+  - AGENTS.md:15-16 (http://agents.md/) and [LANES.md:20-21](docs/LANES.md) require the Ready record inside the task file.
+  - TNP-START-HERE.md:260 (http://tnp-start-here.md/) requires HEAD to equal the Ready baseline.
+  - The builder prompts (:276-277) say to stop if the task is Draft or anything mismatches.
+  - A task file can't contain the SHA of the commit that contains it. Starting at the baseline means the task still reads Draft, so the builder stops. Starting at the Ready commit means HEAD ≠ baseline, so the builder stops.
+- (c) Also confirmed by simulation: the checker fails in Anjaneya's original checkout.
+  - That checkout
+[16-09-2026 19:35] Kartik Deshmukh: 's tmp/ and non-TNP deliverables/ files are untracked and not in .gitignore.
+  - The checker pins BASE (py:9, 56-61), so it will also fail once S0 changes any app files.
+- Impact: all 11 launches stall, or builders get used to ignoring the mismatch gate.
+- Fix:
+  - Verify with merge-base --is-ancestor <baseline> HEAD, and limit the diff from the baseline to the task file and registers. Alternatively, keep leases in a handoff record outside the task file.
+  - Mark the checker bootstrap-only, and scope its check for untracked files.
+
+### H4 · High: The canonical invariant register silently dropped protections from its source
+- Evidence: [DOMAIN-RULES.md:5-15](docs/DOMAIN-RULES.md) vs [TNP-25-Day-Delivery-Plan.md:194-200, 313-317, 336-337](deliverables/TNP-25-Day-Delivery-Plan.md). AGENTS.md:3 (http://agents.md/) demotes that source to non-binding evidence.
+- Absent from all canonical docs:
+  - One earning per assignment, a unique monthly payable key, and de-duplication of provider events (including collections).
+  - Serialized writes on the worker's reservation. Without them, two transactions that each read "no overlap" can double-book a worker (write skew). MongoDB transactions are snapshot-isolated, so this is a real risk.
+  - One effective attendance result used for pay calculation.
+  - Rejecting scans for the wrong event, expired scans and duplicate scans.
+  - A payout batch can't be edited once processing starts.
+  - Taxes/withholding (GST/TDS) in DEC-04, DEC-06 or DEC-09.
+  - The question of one user holding several roles (for example worker and planner).
+- My addition (in neither document): corrections made after approval or payout should create compensating entries, and the two approvals must come from different people.
+- Impact: production contracts and the S1 data-shape freeze would be reviewed against a weaker register. Withholding also changes the gross/deductions/net payout shape that S1 is about to freeze.
+
+### M5 · Medium: S1 doesn't cover states that consumer tasks must show, and consumers can't add them
+- Evidence: S1's operations and scenario lists (S1:21, 25) and its freeze rule (:39) are missing:
+  - Client collection/payment status ([A-02:30](docs/tasks/TNP-A-02.md)).
+  - An enquiry operation ([B-01:30](docs/tasks/TNP-B-01.md)).
+  - Outside-radius attendance and under-review standing ([C-03:30,40](docs/tasks/TNP-C-03.md), [D-02:30,40](docs/tasks/TNP-D-02.md)).
+  - Failed/uncertain payouts, quote line and entity edits, and zero earnings ([D-03:30,40](docs/tasks/TNP-D-03.md)).
+- Also missing: operations aren't required to be async or to carry idempotency keys ([ARCHITECTURE.md:23](docs/ARCHITECTURE.md)). "Repeated action behavior" (S1:34) has no defined expected outcome.
+- Impact: S1 amendments needing Astra land serially on Days 2–3 while 4–6 consumer tasks wait.
+- Fix: before S1 is Ready, add a table mapping each consumer acceptance state to its S1 data, and require Promise-based operations with a request key.
+
+### M6 · Medium: Review capacity and AI-review hosts are unassigned
+- Workload to Day 3: 11 tasks, which means:
+  - 11 human reviews (Kartik 5, including both critical-path gates S0 and S1; Anjaneya 6).
+  - 11 opposite-model reviews, 5 Astra gates, and 11 integrations by Anjaneya.
+- Kartik's other load: he supervises C and D and owns or co-owns 10 of the 13 pending decisions ([DOMAIN-RULES.md:22-34](docs/DOMAIN-RULES.md)).
+- Unassigned hosts: no host is named for Claude reviews of Codex work. The Claude CLI exists on Laptop 1 ([ENVIRONMENTS.md:8](docs/ENVIRONMENTS.md)) but isn't designated.
+- Weak limit: the only cap is a global "two waiting reviews" (AGENTS.md:13 (http://agents.md/)).
+- Fix: allow one waiting review per human, name the AI-review host in each Ready packet, and agree in advance which Day-3 sets get cut if throughput falls short.
+
+### M7 · Medium: Cross-laptop reviews need pushes that nobody is authorized to make
+- Evidence:
+  - Every human review is cross-laptop by design ([LANES.md:23](docs/LANES.md)).
+  - Builder prompts forbid pushing (e.g. TNP-START-HERE.md:351, 370 (http://tnp-start-here.md/)).
+  - :376-378 defers push authorization to each
+[16-09-2026 19:35] Kartik Deshmukh: task, but the Ready fields ([LANES.md:21](docs/LANES.md)) have no sharing entry.
+- Impact: handoffs stall, or ad-hoc pushes happen. There's also no rule against force-pushing after a reviewed SHA.
+- Fix: add a sharing field to Ready packets: who pushes, the reference to review, and no force-push after handoff.
+
+### M8 · Medium: The Day-3 demo still shows false tracking claims
+- False claims in the current source: "Live event command" ([PortalPages.tsx:389](components/tnp/PortalPages.tsx)), LIVE :436, "Simulate Geofence Incident" :450, "1.2 km from venue" :467, "1.7 km away" :484, "Verified" :238/244, and "Inside Event Zone" :320.
+- Why they survive:
+  - They only get removed in D-02, C-01 and C-03. D-02 waits for D-01.
+  - S0 only adds a label.
+  - The walkthrough starts with Operations ([DELIVERY-PLAN.md:36](docs/DELIVERY-PLAN.md)), even though background geofencing is excluded (AGENTS.md:9 (http://agents.md/)).
+- Real personal data: the persisted preview store (S1:27) doesn't stop clients typing real personal data on their devices.
+- Fix: S0 neutralizes these strings with copy-only changes. The label should also say "do not enter real personal information".
+
+### M9 · Medium (plausible, not reproduced): PowerShell blocks are unsafe when pasted line by line
+- Blocks affected: TNP-START-HERE.md:238-258 (http://tnp-start-here.md/), and also :63-74 and :80-92.
+- Trigger: right-click paste in the classic console, or pasting in Windows Terminal, under Windows PowerShell 5.1. Pressing Ctrl+V inside the classic console pastes the whole block as one unit and is safe.
+- What goes wrong when lines run one at a time:
+  - Read-Host on :240 takes the text of :241 as its answer.
+  - throw only stops its own line.
+  - After a failed worktree add, Set-Location fails, and npm ci (:256) runs in whatever folder the terminal was already in, possibly the base clone.
+- Fix: wrap each block in & { $ErrorActionPreference='Stop'; … } or ship it as a .ps1 script, and check the current folder before running npm ci.
+
+### Low
+- L10: S0's acceptance criteria ([TNP-S0.md:31](docs/tasks/TNP-S0.md): "All primary actions must be real") contradict [S0-SHARED-UI.md:28](docs/contracts/S0-SHARED-UI.md) ("does not claim dead buttons are fixed"). :11 lists S0 as a dependency of itself.
+- L11: AGENTS.md:12 (http://agents.md/) says "P is this on-demand architect/dispatcher" in a file every Codex session loads. Combined with :16, a builder could decide it is P. Say instead: "P is the session recorded in STATUS.md."
+- L12: S1 defines workforce and finance semantics, which H2 owns, but it's written in H1's lane. Kartik is both a read-only co-designer (S1:3) and the only independent human reviewer, while [DOMAIN-RULES.md:6](docs/DOMAIN-RULES.md) says both humans approve contracts.
+- L13: Path and tool drift.
+  - The guide hard-codes C:\dev (:64-91, 226-227, 338, 357), but Laptop 2 uses D:\TNP-Hospitality and D:\TNP-review.
+  - The :240 hint D:\TNP Hospitality (Laptop 1) is easy to confuse with Kartik's D:\TNP-Hospitality.
+  - Laptop 2 runs Node v24.19.0 against v22.23.2 tested.
+  - Claude-authored C tasks use codex/ branch names ([TNP-C-01.md:7](docs/tasks/TNP-C-01.md)), which invites routing the wrong reviewer.
+
+Checked and holding:
+- The A/B Codex and C Claude/D Codex mapping is correct in every canonical document.
+- Pending decisions aren't presented as approved, basic RSVP stays in scope, and the production direction is framed as a proposal.
+- The line references in the F01–F20 audit and the S0 contract match the source.
+- Skill folders contain only SKILL.md, with no scripts, and are subordinate to AGENTS.md:35 (http://agents.md/).
+
+## 4. Checks performed
+1. Worktree state: directory, status, and symbolic-ref (detached); HEAD equals tnp-bootstrap-review-01^{commit}.
+2. Remote and ancestry: git ls-remote origin matches the tag, branch and main; merge-base --is-ancestor BASE HEAD exited 0.
+3. Diff scope: git diff --name-only BASE HEAD over app, components, data, hooks, lib, public, package files and every config file was empty. git diff --check exited 0.
+4. Checker: python docs/checks/verify_bootstrap.py (Python 3.11.9) PASSED, and the worktree staye
+[16-09-2026 19:35] Kartik Deshmukh: d clean.
+5. Hashes: I recomputed SHA-256 for all 21 manifest entries (0 mismatches); all 9 skill hashes appear in the manifest.
+6. Secrets and mapping: grep over added lines found no credentials; no leftover wrong tool mapping.
+7. Source cross-check: export locations, click handlers and preview claims in PortalPages.tsx; lint.log matches BASELINE.md.
+8. Scratch tests (outside the repo): Node type-stripping imports; a scratch clone simulating Ready tasks and untracked files for the checker.
+9. Reading: all canonical docs, contracts, the ADR, all 12 tasks, the checker, the manifest and all 9 skills in full. For the historical deliverables, only targeted sections.
+
+## 5. Not run and limitations
+- App checks not re-run: npm ci, lint, tsc and build:vercel. The diff is docs-only and the app tree is identical to BASE. The baseline results quoted in BASELINE.md are the author's.
+- TS5097 not executed: TypeScript isn't installed and I didn't download it.
+- PDF not read: the text is CID-encoded and no extraction tool is available. I compared scope against the Markdown references instead.
+- Provenance: the original source files are on Laptop 1, so the manifest check only proves the copies match the manifest.
+- Not done:
+  - Browser or deployed-demo checks.
+  - An interactive PowerShell paste test.
+  - A line-by-line read of the roughly 2,600 historical lines.
+- Not inputs: I didn't read the R-Claude report, and P's handoff SHA wasn't given to me, so I verified against the tag instead.
+- Session location: this session started in D:\TNP-Hospitality, the base clone at the same b0e1d70. Every check targeted the astra worktree by absolute path, and both folders are clean.
+
+I also saved a Claude memory note, outside the repository, with the D: paths and the fact that Astra means gpt-6-astra. I can publish this report as a private page if that's easier to hand to P.

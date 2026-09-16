@@ -26,3 +26,8 @@ No broad HomeExperience refactor. hooks/use-mobile.ts warnings are outside scope
 After S0 integration, feature lanes own only their specified portal directories. Shared shell/helpers/global CSS, all route wiring and compatibility barrel are frozen until another serialized task.
 Before separate builders start, verify exported names/imports, every route, desktop/mobile screenshots, focus/reduced-motion and existing local preview actions. Record exact integrated SHA.
 S0 does not claim dead buttons are fixed, fixtures shared or production APIs implemented. S1 remains necessary.
+
+
+## Truthful copy within this extraction task
+In the four extracted portals and AppShell only, replace misleading live/verified/location copy with explicit sample-state wording. Required examples: "Live event command" -> "Sample event overview"; "LIVE" status -> "DEMO"; "Simulate Geofence Incident" -> "Show sample location exception"; invented kilometre distances -> "Location unavailable in preview"; verification status -> "Sample verification status"; "Inside Event Zone" -> "Sample attendance state - location not verified". Preserve layout and visual hierarchy. Inspect for equivalent misleading claims, not just these exact strings.
+Global preview text: "Synthetic preview data. Do not enter real personal information. No live verification, tracking or payments." This does not implement or certify KYC, GPS or dead buttons.

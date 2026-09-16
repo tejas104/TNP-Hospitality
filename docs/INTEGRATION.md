@@ -15,7 +15,7 @@ Before an authorized human integration:
 3. Make a verified backup of ONLY those eight matching TNP files to a named path outside the checkout. Move only those exact files out of the way after validating absolute source/backup paths. Leave every unrelated deliverable and tmp file untouched. Do not use git clean or broad directory deletion.
 4. With a reserved integration window and the exact reviewed SHA, the human can run git merge --ff-only REVIEWED_SHA from original main. This is a future human action, not permission granted by this file.
 5. If merge fails, restore the exact backed-up files to their original missing paths; never force/reset through the failure. Record outcome.
-6. After success, confirm branch/HEAD, run the bootstrap provenance check, verify original files/application unchanged, and record human review and merge evidence in a serialized documentation update.
+6. After success, confirm branch/HEAD, run python docs/checks/verify_bootstrap.py --provenance-only (not the bootstrap-only snapshot check), verify original files/application unchanged, and record human review and merge evidence in a serialized documentation update.
 7. Only then make TNP-S0 Ready with the new baseline, actual model/host/reviewer and writer lease.
 
 ## Laptop 2

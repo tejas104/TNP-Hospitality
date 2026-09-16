@@ -5,10 +5,14 @@ Responsible human: Kartik (H2).
 Lane/host: C / Laptop 2 / Kartik (confirmed; verify actual path/model at launch).
 Tool/model/effort: Claude on Kartik's Laptop 2 (user confirmed); exact version/effort pending launch verification.
 Isolated branch: codex/tnp-c-02 (planned, not created).
-Absolute worktree: C:\dev\tnp-work\TNP-C-02 (proposed, not created or verified).
+Absolute worktree: D:\TNP-worktrees\TNP-C-02 (proposed, not created or verified).
 Audited source baseline: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
-Implementation baseline SHA: PENDING current integrated main after prerequisites; do not start from the old audit SHA.
-Dependencies: TNP-C-01 and transitive bootstrap/S0/S1 as applicable.
+Implementation baseline SHA: PENDING integrated source/dependency baseline (SOURCE_SHA); do not start from the old audit SHA.
+Launch-contract revision: PENDING; P supplies the full LAUNCH_SHA after committing the Ready TASK. This file does not embed its own commit hash.
+Review sharing: PENDING authorized pusher, branch/ref and fixed SHA handoff; no force-push or moving reviewed tags.
+Reviewer host/availability: PENDING appointment; preferred Claude and Astra hosts are Kartik Laptop 2, Codex review of C on Anjaneya Laptop 1.
+Launch protocol: docs/LAUNCH-PROTOCOL.md; initial HEAD must equal LAUNCH_SHA, not SOURCE_SHA.
+Dependencies: TNP-C-01. Verify all transitive prerequisite commits through that dependency; never depend on this task itself.
 Merged dependency evidence: NONE yet; record each merge SHA and verify ancestry with git merge-base --is-ancestor before marking Ready.
 Mode: labelled synthetic frontend preview only.
 Risk: Routine frozen-service preview; Astra not required unless allocation/concurrency contract changes.
@@ -40,5 +44,5 @@ No merge, push, publication, production operations or spawned implementation age
 Task-specific: Valid/full/ineligible opportunities; duplicate claim UI; correct event IDs; Coming/decline/no-response; same-browser Operations roster consistency.
 
 ## Launch and handoff
-Human records actual host/path/model, complete dependency evidence, own/reviewer availability, exact baseline and lease timestamp/session. Only then change Draft -> Ready -> Building after observed launch.
+P records actual host/path/model, dependency evidence, reviewer availability, SOURCE_SHA, sharing authority and a reserved exclusive lease in the Ready contract. P commits it and supplies LAUNCH_SHA externally. Create the task worktree at LAUNCH_SHA and verify docs/LAUNCH-PROTOCOL.md. Mark Building only after observed launch. Initial implementation needs no prior task review findings or reopened lease; those apply only to a correction cycle.
 At completion: changed files, fixed HEAD_SHA, commands/results, browser evidence, unresolved gaps and review target. Stop writing at review handoff. Builder fixes findings under the same bounded task; new HEAD requires relevant re-review.

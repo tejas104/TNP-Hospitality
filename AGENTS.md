@@ -9,10 +9,10 @@ Read TNP-START-HERE.md (ordered setup and all prompts), docs/PRODUCT.md, docs/DE
 - Responsive web only. No native app, background geofencing or unused mobile scaffolding. Future mobile reuses the shared API/domain services.
 - 25 calendar days; Day 3 target 16/20 frontend screen sets; remaining frontend Day 6; freeze Day 18; QA/UAT/rehearsal Days 19–23; planned release Day 24; buffer/handover Day 25.
 - H1 Anjaneya owns product/demand/shared visuals and supervises A/B. H2 Kartik owns workforce/operations/finance/platform and supervises C/D. There is no H3 or E assignment. Confirmed tools/hosts: A/B Codex on Anjaneya's Laptop 1; C Claude and D Codex on Kartik's Laptop 2.
-- P is this on-demand architect/dispatcher. Repository-writing P occupies an available lane; bootstrap uses B. R is read-only independent review.
-- Normally two simultaneous builders, at most four in the present roster. The original absolute ceiling of five is not an extra staffed lane. Use one complex task per human. Pause dispatch at two waiting reviews.
+- P is the architect session identified in docs/STATUS.md; loading this file does not make a builder P. Repository-writing P occupies an available lane; bootstrap uses B. R is read-only independent review.
+- Normally two simultaneous builders, at most four in the present roster. The original absolute ceiling of five is not an extra staffed lane. Use one complex task per human. Pause dispatch at two waiting reviews; also pause new work assigned to a human who already has one waiting review.
 - One writer per worktree; no concurrent ownership of shared files, contracts, fixtures, ports or jobs across worktrees.
-- A task remains Draft until actual model/host/path, baseline, merged dependencies, reviewers, checks and lease are recorded. A lane label is not a launch.
+- A task remains Draft until actual model/host/path, baseline, merged dependencies, reviewers, checks and lease are recorded. A lane label is not a launch. Follow docs/LAUNCH-PROTOCOL.md: source baseline and the later launch-contract commit are distinct. Initial HEAD equals the supplied launch commit, whose source baseline is an ancestor.
 - Only the dispatcher updates shared status/leases in a serialized documentation task. Builders hand off evidence; they do not race on STATUS.md/LANES.md.
 
 ## Boundaries

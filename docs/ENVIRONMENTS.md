@@ -1,11 +1,11 @@
 # Environments, models and commands
 
 ## Observed local setup
-Original checkout D:\TNP Hospitality, main at 9d58061f2d36514ebc932fa94bb3dc90f4b97a97; origin https://github.com/tejas104/TNP-Hospitality.git. origin/main is a local tracking ref at the same SHA; no fetch/push was performed.
+Original checkout D:\TNP Hospitality, main at 9d58061f2d36514ebc932fa94bb3dc90f4b97a97; origin https://github.com/tejas104/TNP-Hospitality.git. Remote main was verified at that SHA; bootstrap review-01 was pushed and this correction is prepared as review-02. Verify new remote evidence at handoff.
 Bootstrap checkout D:\TNP-worktrees\TNP-BOOT-01 on codex/tnp-bootstrap. Keeping it outside the source tree avoids tsconfig's recursive **/*.ts include pulling in nested worktrees.
 Node v22.23.2, npm 11.8.0, Git 2.47.1.windows.2. package engine >=22.13.0. Record/align Laptop 2 versions before launch.
 Codex local tool catalog exposes gpt-6-astra, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna and gpt-5.5. Local config reports gpt-6-astra/high. Config is not proof of a per-session override or other-host entitlement.
-Claude command exists at C:\Users\DELL\AppData\Roaming\npm\claude.ps1; installed skills were not changed. User confirms C uses Claude and D uses Codex on Kartik's Laptop 2; selected versions/models, account identity and actual clone/access remain unverified. No Business purchase required.
+Claude command exists at C:\Users\DELL\AppData\Roaming\npm\claude.ps1; installed skills were not changed. User confirms C uses Claude and D uses Codex on Kartik's Laptop 2; Kartik supplied machine-identified evidence for D:\TNP-Hospitality on DESKTOP-VO8G3GR, Node24.19.0/npm11.17.0/Python3.11.9, Claude Code2.1.273 and a Codex gpt-6-astra/low review. Exact builder models and new reviewer appointments remain unverified; this is supplied evidence, not local observation. No Business purchase required.
 
 ## Commands actually defined
 | Command | Purpose |
@@ -29,3 +29,5 @@ Use only synthetic preview data and local build checks. Never read/copy .env, .v
 H2 collects provider test/live readiness evidence, with H1/client decisions for any restricted launch. No production operation or publication is authorized.
 
 Verified CLI help: npm run dev -- --port 3102 --hostname localhost is supported (use each task's reserved port). Help default is 3000; the old README's fixed 3001 is not authoritative. No dev server was launched here.
+
+Current D: path/launch authority: LAUNCH-PROTOCOL.md. Laptop 2 Node24 is provisional until app checks pass there; Node22.23.2 remains the tested baseline. No account entitlement is inferred from another session.

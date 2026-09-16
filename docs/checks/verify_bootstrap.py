@@ -4,6 +4,12 @@ import hashlib
 import json
 import re
 import subprocess
+import argparse
+
+parser = argparse.ArgumentParser(description="Bootstrap snapshot checks, or source provenance only; neither validates a writer launch.")
+parser.add_argument("--provenance-only", action="store_true", help="Check the 21 reference/skill/evidence hashes only; safe after app changes and Ready transitions.")
+parser.add_argument("--strict-untracked", action="store_true", help="Reject out-of-scope untracked files in a dedicated bootstrap checkout only.")
+args = parser.parse_args()
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE = "9d58061f2d36514ebc932fa94bb3dc90f4b97a97"
@@ -20,6 +26,16 @@ for item in manifest["files"]:
     target = ROOT / item["destination"]
     if not target.is_file() or hashlib.sha256(target.read_bytes()).hexdigest() != item["sha256"]:
         errors.append("Provenance mismatch: " + item["destination"])
+for item in json.loads((ROOT / "docs/reviews/received/manifest.json").read_text(encoding="utf-8")):
+    target = ROOT / item["file"]
+    if not target.is_file() or hashlib.sha256(target.read_bytes()).hexdigest() != item["sha256"]:
+        errors.append("Received review provenance mismatch: " + item["file"])
+if args.provenance_only:
+    if errors:
+        raise SystemExit("\n".join(errors))
+    print("PASS: canonical file presence and %d provenance entries only; launch/application checks NOT performed." % len(manifest["files"]))
+    raise SystemExit(0)
+
 audit = (ROOT / "docs/F01-F20-AUDIT.md").read_text(encoding="utf-8")
 rows = re.findall(r"^\| (F\d{2}) \|", audit, flags=re.M)
 if sorted(rows) != ["F%02d" % n for n in range(1, 21)]:
@@ -37,7 +53,7 @@ for path in tasks:
                   "Opposite-model reviewer:", "Independent human reviewer:",
                   "Astra gate:", "Writer lease:"]
         if "Status: Draft." not in body or "Writer lease: NONE." not in body:
-            errors.append("Unlaunched task falsely marked ready/leased: " + path.name)
+            errors.append("Bootstrap snapshot expects Draft consumers (use --provenance-only after launch changes): " + path.name)
         for dep in re.findall(r"TNP-(?:BOOT-01|S[01]|[ABCD]-\d{2})",
                               next((l for l in body.splitlines() if l.startswith("Dependencies:")), "")):
             if not (ROOT / "docs/tasks" / (dep + ".md")).is_file():
@@ -61,7 +77,7 @@ for rel in changed:
         errors.append("Out-of-scope tracked diff: " + rel)
 untracked = subprocess.check_output(["git", "ls-files", "--others", "--exclude-standard"], cwd=ROOT, text=True).splitlines()
 for rel in untracked:
-    if not allowed(rel):
+    if args.strict_untracked and not allowed(rel):
         errors.append("Out-of-scope untracked file: " + rel)
 # Reference copies intentionally carry historical text. Current canonical policy must name only H1/H2 as humans.
 agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
@@ -75,5 +91,5 @@ for lane, author, reviewer in [("C", "Claude", "fresh Codex"), ("D", "Codex", "f
             errors.append("Incorrect confirmed tool/reviewer mapping: " + path.name)
 if errors:
     raise SystemExit("\n".join(errors))
-print("PASS: canonical files; %d provenance entries; 20 screen sets; %d TASKs; allowed docs-only diff." %
+print("PASS: canonical files; %d provenance entries; 20 screen sets; %d TASKs; bootstrap snapshot docs-only diff. NOT launch validation." %
       (len(manifest["files"]), len(tasks)))

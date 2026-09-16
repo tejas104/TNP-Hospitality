@@ -23,8 +23,8 @@ api-engineer, database-architect, auth-security-engineer, realtime-background-en
 Other local skills (dependency/performance/state-sync/mobile/monorepo/debugging) are not needed in this bounded bootstrap. Built-in system skills are not reinstalled.
 
 ## Installation versus discovery
-Repository copies exist only in codex/tnp-bootstrap until human review/integration. Fresh Codex session discovery and Claude entry-point compliance must be verified after integration. Laptop 2 has not been observed receiving or verifying these files. It can clone the published candidate for review before main integration; see TNP-START-HERE.md.
+Repository copies exist only in codex/tnp-bootstrap until human review/integration. Fresh Codex session discovery and Claude entry-point compliance must be verified after integration. Kartik supplied a Laptop 2 report confirming nine files and a passing manifest check at b0e1d70; automatic skill discovery remains unverified. It can clone the published candidate for review before main integration; see TNP-START-HERE.md.
 Claude's existing skill installation is untouched. CLAUDE.md explicitly directs it to the shared repository rules. No Business purchase, personal config copy or invented marketplace URL.
 
 ## Verification on each host
-At the exact integrated SHA, run python docs/checks/verify_bootstrap.py, then in a fresh session ask the tool to identify the applicable AGENTS.md, TASK, canonical scope and visible project skill names/paths. Record actual output/host/SHA in a serialized docs handoff. A successful copy is not proof of runtime discovery.
+At the exact integrated SHA, run python docs/checks/verify_bootstrap.py --provenance-only, then in a fresh session ask the tool to identify the applicable AGENTS.md, TASK, canonical scope and visible project skill names/paths. Record actual output/host/SHA in a serialized docs handoff. A successful copy is not proof of runtime discovery.
