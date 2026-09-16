@@ -1,3 +1,9 @@
+# Current lanes — B correction reserved, consumers held
+
+Updated 2026-09-17T02:37:38.2645965+05:30. P continues the same serialized metadata-only task in TNP-FOUND-LAUNCH. Scope additionally includes FIX-02 and received report files/manifest. B foundation lease RESERVED for original B at 1402026e296caa0389e4c26e2e32b28279d41823, not active until publication. Other application leases NONE. Both re-review results received: Sonnet PASS, Sol CHANGES REQUESTED. Reviewers remain read-only; new fixed SHA will require focused re-review. Main metadata publication remains blocked pending explicit authorization; no app writer dispatched.
+
+## Previous lane record (superseded above)
+
 # Current lanes — foundation paused, consumers unleased
 
 Updated 2026-09-17T01:57:25.6987451+05:30. Replacement P session 01a0abe3-6edb-7101-94d8-dc9bd66300d5 owns the serialized documentation reconciliation in D:\TNP-worktrees\TNP-FOUND-LAUNCH, branch codex/tnp-foundation-launch, from main ffc53e4487f21f0fbbd42792e5f1f4e7d22b4d16. Metadata-only B capacity; no application writer is activated. Owned paths: TNP-START-HERE.md, docs/STATUS.md, docs/LANES.md, docs/tasks/TNP-FOUND-01.md, docs/reviews/TNP-FOUND-01-REREVIEW.md. Lease ends at metadata handoff. Existing factual register sharing authority remains governed by LAUNCH-PROTOCOL.md.

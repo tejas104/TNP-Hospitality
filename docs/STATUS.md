@@ -1,3 +1,11 @@
+# Current disposition — foundation changes requested
+
+Updated 2026-09-17T02:37:38.2645965+05:30 by P. Both supplied re-reviews target 1402026e296caa0389e4c26e2e32b28279d41823. Sonnet PASS in its stated scope; independent Sol CHANGES REQUESTED on P1 mixed-worker payout leakage. P source inspection confirms top-level workerId filtering returns whole batches; P has not rerun the external probe. Original report provenance and limitations are preserved in received/manifest.json and TNP-FOUND-01-FIX-02.md.
+
+B-only correction packet prepared: docs/reviews/TNP-FOUND-01-FIX-02.md. Lease RESERVED, not active until serialized publication. A/C/D and B-public remain unleased. Earlier metadata ebdf693 remains unintegrated: automatic approval review rejected main fast-forward/push for lack of explicit replacement-P authorization. User supplied reviews and requested lane prompts, but has not explicitly approved that main action. No retry or workaround. No foundation integration or human acceptance is claimed.
+
+## Previous dispatcher audit (review-pending statements superseded)
+
 # Current status — fixed foundation awaiting focused review
 
 Updated 2026-09-17T01:57:25.6987451+05:30 by replacement architect/dispatcher P, session 01a0abe3-6edb-7101-94d8-dc9bd66300d5, Anjaneya Laptop 1 / DESKTOP-DL9FDM7. User assigned this session P in the replacement handoff. This section supersedes historical status below.

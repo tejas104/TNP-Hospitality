@@ -1,0 +1,21 @@
+User-relayed independent Sol re-review summary, received 2026-09-17.
+This is a dispatcher transcription of the supplied findings, not the original full report byte stream.
+
+Architecture gate: CHANGES REQUESTED.
+Reviewed SHA: 1402026e296caa0389e4c26e2e32b28279d41823.
+Direct parent: 502422c038c9292f4946b65c00ea0b2618515a9f.
+Metadata ffc53e4487f21f0fbbd42792e5f1f4e7d22b4d16 read with git show only.
+
+P1: Mixed-worker payout batches remain unsafe. Payout has a top-level workerId and listPayouts(workerId) filters only that field before returning the complete batch. Independent scratch probe added worker 003 earning tnp-demo-earning-002, 90,000 paise, to worker 001's batch. Worker 001 received the foreign earning ID and full 315,000 total. Worker 003 omitted the batch. Existing tests cover ordinary single-worker and unknown-worker cases but not mixed batches. Derive ownership from earnings or provide worker-specific identifiers/amounts; preserve complete unfiltered Operations view.
+
+Verified: closed mutation typing/compile-time assertions; reactivation capacity/eligibility/overlap/inactive/replaced guards and rejection immutability; attendance eligibility/non-payable exceptions/rate snapshots/correction audit/downstream guards; ordinary payout filtering; distinct sequential synthetic approval evidence; pending production separation-of-duties policy; preserved or explicitly rejected correction evidence. Reset receipt/generation/stale-write/persistence ordering/idempotency retained. Mobile source fix present; browser hit testing outside architecture rerun.
+
+Reported checks: tsc PASS; 13/13 service tests PASS after initial sandbox spawn EPERM and exact escalated rerun; diff whitespace PASS. External scratch probe covered the above behaviors including mixed batches. Reviewer states no shared writer/build lease consumed.
+
+Model gpt-5.6-sol, high. Agent /root/sol_arch_review.
+Session 01a0abe2-6960-7ac1-b6b3-d66010acfd6a.
+Reviewer thread 01a0abe3-0640-7631-b383-d0c704bf72dc.
+No reviewer subagents reported.
+Original report path on Laptop 2: D:\TNP-review\foundation-fix-01-sol-report.md.
+User-supplied original report SHA256: 5d3c4ad422a02adb9c77ea17f500eb43ddc3ce54fe0f9ce3dc1813601c768b59. Not recomputed locally; do not equate this with the hash of this transcription.
+Reviewer reports clean detached final source, no fixes, metadata merges, commits, pushes or deployments.

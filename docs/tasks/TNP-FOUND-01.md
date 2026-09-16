@@ -1,6 +1,6 @@
 # TNP-FOUND-01 — PAUSED: B shared foundation, S0 then S1
 
-Status: PAUSED for focused re-review at 1402026e296caa0389e4c26e2e32b28279d41823. Correction handoff reported; independent gates pending.
+Status: CHANGES REQUESTED at 1402026e296caa0389e4c26e2e32b28279d41823. Sonnet PASS; Sol P1 mixed-worker payout finding. FIX-02 correction reserved, activation pending metadata publication.
 Dispatchable: NO while paused. Historical initial launch fields below are retained as provenance, not a new writer lease.
 Responsible human: Anjaneya (H1), integration captain.
 Lane/host: B / Anjaneya Laptop 1 / DESKTOP-DL9FDM7.

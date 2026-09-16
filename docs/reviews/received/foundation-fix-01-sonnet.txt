@@ -1,0 +1,111 @@
+# TNP-FOUND-01-FIX-01 — Independent Sonnet re-review
+
+**Role:** Read-only independent re-review of the correction cycle. No source edits, no merge, no push, no deploy were performed at any point in this review.
+**Reviewer/model:** Claude Sonnet 5 (model id `claude-sonnet-5`), this Claude Code session, Kartik Laptop 2.
+**Review worktree:** `D:\TNP-review\foundation-fix-01-sonnet` — freshly created this session as a detached `git worktree`, verified clean at the exact reviewed SHA before and after all checks.
+**Base clone:** `D:\TNP-Hospitality` (branch `codex/tnp-bootstrap` at session start; `origin` fetched during this review).
+
+## Exact reviewed range
+
+| Ref | SHA | Role |
+|---|---|---|
+| BASE (previously reviewed) | `502422c038c9292f4946b65c00ea0b2618515a9f` | "feat: add typed preview service foundation" — the S1 HEAD that Sonnet/Sol originally reviewed |
+| Fixed HEAD (reviewed here) | `1402026e296caa0389e4c26e2e32b28279d41823` | "fix: close foundation review findings" |
+| Metadata commit (read-only, correction packet + archived original reports) | `ffc53e4487f21f0fbbd42792e5f1f4e7d22b4d16` | Read via `git show <sha>:<path>`; never merged into the reviewed worktree |
+
+`git merge-base --is-ancestor 502422c0 1402026e` **confirmed**: the fixed commit descends cleanly from the previously reviewed HEAD. `origin/codex/tnp-foundation` resolves to the fixed commit exactly. The review worktree was created with `git worktree add --detach` at `1402026e296caa0389e4c26e2e32b28279d41823` and remained a clean detached HEAD (`## HEAD (no branch)`, no modified/untracked tracked files) through and after all checks below (verified via `git status --short --branch` and `git clean -ndx`).
+
+Correction-packet documents (`docs/reviews/TNP-FOUND-01-FIX-01.md`, `docs/reviews/received/foundation-01-sonnet.txt`, `docs/reviews/received/foundation-01-sol.txt`) and applicable contracts (`AGENTS.md`, `docs/tasks/TNP-FOUND-01.md`, `docs/contracts/S0-SHARED-UI.md`, `docs/contracts/S1-PREVIEW-INTERFACES.md`) were read from the metadata commit and the fixed worktree respectively; none were merged into the reviewed source.
+
+## Scope verification
+
+`git diff --stat` between BASE and the fixed HEAD touches exactly 8 files, all within TNP-FOUND-01-FIX-01's owned paths — no package/lockfile, no `app/globals.css`, no `AppShell.tsx`, no shared-doc/register file touched:
+
+```
+components/tnp/portals/operations/AdminOperations.tsx |   2 +-
+components/tnp/shared/PreviewControls.tsx             |   3 +
+lib/contracts/preview.ts                              |  72 +++++++-
+lib/demo/scenario.ts                                  |  28 +--
+lib/demo/service.ts                                   | 203 ++++++++++++++++-----
+lib/demo/store.ts                                      |   8 +-
+tests/preview-contract.test.mjs                        | 140 +++++++++++++-
+tests/preview-contract.types.ts                        |  45 +++++ (new)
+```
+
+## Commands run (this session, in the review worktree)
+
+| Command | Result |
+|---|---|
+| `git fetch origin --tags --prune` | PASS |
+| `git cat-file -e <BASE/FIXED/metadata SHA>^{commit}` | PASS — all three resolve |
+| `git merge-base --is-ancestor 502422c0 1402026e` | PASS |
+| `git worktree add --detach D:\TNP-review\foundation-fix-01-sonnet 1402026e` | PASS — clean detached HEAD at exact SHA |
+| `npm ci --no-audit --no-fund` | PASS — 629 packages, clean (same allow-scripts warnings as prior reviews: esbuild/sharp/workerd postinstall not allowlisted; install still exits 0) |
+| `npm run lint` (oxlint) | PASS — **0 errors**, 3 warnings, identical and unchanged from the original review: 2× `react-compiler EffectSetState` in `AppShell.tsx:60,94` (untouched scroll-trigger effect, outside this diff) + 1× `hooks/use-mobile.ts` (explicitly out-of-scope per S0-SHARED-UI.md) |
+| `npx --no-install tsc --noEmit` | PASS — clean, no errors, including the new `tests/preview-contract.types.ts` compile-time assertions (picked up via tsconfig's `**/*.ts` include) |
+| `node --experimental-strip-types --test tests/preview-contract.test.mjs` | PASS — **13/13** tests (up from 9/9 at the original HEAD; 4 new suites target the exact reproduced regressions) |
+| `git diff --check 502422c0 1402026e` | PASS — no whitespace errors |
+| `python docs/checks/verify_bootstrap.py --provenance-only` | PASS — canonical file presence + 21 provenance entries only (launch/application checks correctly not claimed) |
+| `npm run build:vercel` | PASS — built in 1m 8s, `.vercel/output` generated |
+| Browser verification | See below |
+
+Node v24.19.0 / npm 11.17.0 (same provisional-vs-v22.23.2-baseline caveat as both original reports; all commands above passed on v24.19.0).
+
+## Per-finding disposition
+
+Findings are labelled as in the correction packet (`docs/reviews/TNP-FOUND-01-FIX-01.md`).
+
+| # | Finding (origin) | Disposition | Evidence |
+|---|---|---|---|
+| SONNET1 | Fixed `PreviewControls` overlay blocks primary CTAs at 390×844 on `/client` and `/freelancer`; `/planner` final timeline steps obscured | **FIXED** | `PreviewControls.tsx` adds one mobile-scoped rule: `body { padding-bottom: calc(12rem + env(safe-area-inset-bottom)); }` inside the existing `@media (max-width: 700px)` block — entirely within the owned file, no `globals.css`/`AppShell.tsx` edit. Verified live (detail below): true-max-scroll hit-testing + a real click on `/client`'s "Submit Requirement" now resolves to the button itself and delivers a real state change; `/freelancer`'s "Show Sample Scan Result" is reachable and clickable once scrolled into view (see note below on transient occlusion); `/planner`'s "Team Confirmed"/"Completed" steps are now clearly clear of the overlay with visible margin. Automated obstruction scan (every `button`/`a[href]`/`[role=button]`/`input`/`select`/`textarea` on the page, hit-tested at its own center point) found **zero** elements resolving into `.preview-notice` or `.preview-control-panel` at true max-scroll on all five routes at 390×844. |
+| SOL1 | Untyped `mutate<Operation extends string, Payload>` boundary accepts unknown operations/payloads, returns `unknown` | **FIXED** | `lib/contracts/preview.ts` adds a closed `PreviewMutationMap` (one entry per operation, typed `payload`+`result`), `MutationRequest<Operation extends PreviewOperation>` and `MutationResult<Operation>`; `PreviewService.mutate` is now `mutate<Operation extends PreviewOperation>(...): Promise<PreviewOutcome<MutationResult<Operation>>>`. `lib/demo/service.ts`'s `mutate` dispatches through a typed `MutationHandlers` map (`{ [Operation in PreviewOperation]: MutationHandler<Operation> }`) instead of the old string-keyed `switch`. New `tests/preview-contract.types.ts` asserts, via `@ts-expect-error`, that an unknown operation, an incomplete payload, and a wrong-typed field (`grossPaise: '100'`) all fail `tsc`, and that a successful `submitBooking`/`approveEarning` result infers concrete fields with no cast. `tsc --noEmit` passes clean with this file included. |
+| SOL2 | A declined (`not-coming`) assignment could be reactivated to `coming` past capacity/overlap/eligibility | **FIXED** | `respond()` in `service.ts` now rejects reactivation when `allocationState !== 'active'` (`ASSIGNMENT_INACTIVE`), and when transitioning back to `coming` re-validates eligibility, capacity (`activeAssignments(..., excludeAssignmentId)`), and overlap, excluding the assignment's own prior slot from the count. New test `reservation reactivation reuses capacity, eligibility, overlap and active-state guards` reproduces the exact quantity-2/decline/refill/reactivate scenario from the correction packet plus ineligible-, overlap-, and replaced-worker reactivation attempts — all now rejected with the correct error codes (`POSITION_FULL`, `INELIGIBLE`, `OVERLAP`, `ASSIGNMENT_INACTIVE`). |
+| SOL3 | Attendance created full-rate earnings from exception/unverified evidence and from non-confirmed assignments; corrections didn't invalidate dependent earnings; no rate snapshot | **FIXED** | `recordAttendance` now requires an active, `coming`, eligible assignment (`ASSIGNMENT_NOT_CONFIRMED`/`ASSIGNMENT_INACTIVE`/`INELIGIBLE` guards) before accepting a scan. Exception evidence (`gps-denied`/`gps-missing`/`outside-radius`) still records attendance (the client-required missing-GPS path is preserved) but now creates the earning as `amountState: 'estimated'` / `status: 'pending-verification'` with `grossPaise: 0`, distinct from `estimatedGrossPaise`; only `evidenceState: 'recorded'` yields `amountState: 'earned'`. `Assignment` now carries `payRatePaiseSnapshot`/`payUnitSnapshot` captured at allocation time, and a later position rate change (verified in test) does not affect an already-booked earning. `correctAttendance` no longer coerces caller evidence — it validates state/evidenceState consistency and preserves the caller-supplied state; when a correction invalidates an earning that is still `pending-verification`/`draft`/`invalidated`, it zeroes it out (`amountState: 'invalidated'`); when the earning is already `supervisor-approved`/`finance-approved`/`processing`/`paid`, the correction is **rejected** (`EARNING_ADJUSTMENT_REVIEW_REQUIRED`) rather than silently rewritten, with the rejection message pointing at the still-pending DEC-16 policy. `approveEarning` independently re-verifies (at approval time) that the earning is `earned`, its attendance is `present`/`recorded`, and its assignment is still active/eligible/`coming` — closing the gap where state could drift between recording and approval. Four new/expanded test blocks cover every named scenario (gps-missing/denied/outside-radius → pending-verification with `estimatedGrossPaise` preserved and `grossPaise: 0`; declined/replaced-pass rejection; rate-snapshot immutability; invalidation of a draft earning + rejection of a correction against an already-approved one). One residual observation below. |
+| SOL4 / SONNET2 | `listPayouts(workerId)` ignored its filter, always returning every payout | **FIXED** | `listPayouts` now filters `r.payouts` by `workerId` when supplied; `Payout` gained a `workerId` field, populated consistently in the seed scenario. New test asserts a worker's payouts are scoped, a no-earning worker (`tnp-demo-worker-006`) gets `[]`, and the unfiltered Operations query (`listPayouts()` with no argument) still returns all 5 — satisfying the packet's explicit requirement to preserve the unfiltered Operations view alongside the fix. |
+| SOL5 | No enforced/tested distinct sample approvers for sequential earning approval | **FIXED** | `approveEarning` now rejects a finance-stage approval by the same `actorId` who did the supervisor stage (`SAMPLE_APPROVER_CONFLICT`) — an enforced guard, not just a test convention — and records `supervisorApproval`/`financeApproval` evidence (`actorId`, `stage`, `approvedAt`, an explicit `assumptionLabel` naming the pending production separation-of-duties policy). Test now uses two distinct sample actor IDs and asserts the same-actor case is rejected. |
+| SONNET3 | Operations sidebar still labelled "Live Workforce" | **FIXED** | `AdminOperations.tsx:24` now reads "Sample Workforce Preview"; confirmed live in the browser at both viewports. The section body copy ("SAMPLE EVENT OPERATIONS") and dark-sidebar/cream-heading/metrics/light-card composition are unchanged. |
+| SONNET-observation | `correctAttendance` silently coerced caller evidence to only `outside-radius`/`gps-missing` | **FIXED** | Caller-supplied `evidenceState` is now validated against the supported set and against state/evidence consistency, then used as-is (no coercion). Confirmed in a new test: a correction with `evidenceState: 'gps-denied'` is stored verbatim, not rewritten. |
+
+### One residual observation (not blocking)
+
+`Earning.amountState`/`status` both declare an `'adjustment-review'` member (`lib/contracts/preview.ts`), presumably intended for the "surface a pending adjustment/review case" language in SOL3's correction text. In this implementation, a correction attempt against an already-approved/processing/paid earning is instead **rejected outright** (`EARNING_ADJUSTMENT_REVIEW_REQUIRED`) — the original ledger is left untouched and the caller is told to route the disagreement through the still-pending DEC-16 policy, but no record is ever actually created in the `'adjustment-review'` state; that enum member is currently unreachable dead code. This is a defensible reading of the packet (it does satisfy "do not silently rewrite... reject and surface... under unresolved production DEC-16"), and it is strictly safer than the original defect, so it is not a blocking finding — but it's worth a one-line contract note or removing the unused member before a consumer lane builds UI around an `'adjustment-review'` state that the service never actually produces.
+
+## Browser verification
+
+`npm run dev -- --port 3102 --hostname localhost` (port confirmed free before bind; server stopped after testing). Built-in browser tool, fresh tab, no prior localStorage state at session start.
+
+**390×844, all five routes (`/`, `/client`, `/planner`, `/freelancer`, `/admin`), scrolled to true max-scroll (`scrollTop + clientHeight >= scrollHeight - 1`, confirmed via `document.documentElement` metrics, not assumed):** an automated scan hit-tested the center point of every `button`/`a[href]`/`[role=button]`/`input`/`select`/`textarea` currently on-screen against `document.elementFromPoint`. **Zero** elements on any of the five routes resolved into `.preview-notice` or `.preview-control-panel`.
+
+Specific reproductions of the original defects:
+- **`/client`**: at true max-scroll (`scrollTop` 2427.2 of 3271 `scrollHeight`), "Submit Requirement"'s center point hit-tests to the button itself (previously hit `.preview-notice`). A real mouse click was delivered and produced "Sample requirement saved for preview." — confirming actual click delivery, not just geometric non-overlap.
+- **`/freelancer`**: at true max-scroll the "Show Sample Scan Result" button is now positioned *above* the reserved-padding zone entirely (scrolled past, not resting behind the overlay). Scrolling to the position where the button is naturally centered in view (`scrollTop` ≈3241 of 5690), its center point hit-tests to the button itself; a real click delivered "Sample attendance recorded | 7:52 AM". Note: while transiting through the final ~150–190px band nearest the fixed overlay's screen position, the button (like any content passing under a fixed footer) is transiently covered — this is inherent to any fixed-position overlay and is not the defect that was reported; the defect was that the *resting* max-scroll position left the button permanently unreachable, which is now false.
+- **`/planner`**: at true max-scroll, "Team Confirmed" and "Completed" (the final timeline steps named in the original finding) render with clear visible margin above the control panel; hit-testing both resolves to the timeline element itself.
+- **`/admin`**: sidebar label confirmed "Sample Workforce Preview"; dark-sidebar/cream-heading/metrics/light-card composition visually unchanged from the original review's description.
+
+**Reset / focus / reload**: `Reset preview` is a native `<button>`, reachable via `.focus()` and shows a visible focus ring. A real mouse click on it advanced generation 1→2, updated the status text to "Preview reset to generation 2", and left keyboard focus on the Reset button itself (matching `resetButton.current?.focus()` in the code). Navigating away and back to `/client` (a full document reload of the route) still reported "Preview generation 2" — reload persistence confirmed. The required synthetic warning ("Synthetic preview data. Do not enter real personal information...") is present, unmodified, and not hidden behind or by the mobile fix on any of the five routes at either viewport.
+
+**1440×900**: spot-checked `/client` (automated obstruction scan: 0 obstructed) and `/admin` (visual composition + label). The mobile fix is scoped entirely inside `@media (max-width: 700px)`, so it is inert at 1440px by construction; this was also true in the original review ("At 1440×900 the same buttons are not blocked... mobile-viewport-specific"), and nothing in this diff touches desktop-width styling.
+
+## Limitations
+
+- Real keyboard-*activation* (Enter/Space on a focused native `<button>`) could not be exercised conclusively through this session's synthetic key-dispatch — the button is confirmed reachable and focusable via keyboard (visible focus ring, correct tab target), but simulated Enter/Space key presses in this tool did not register as a click on the Reset button, while an identical real mouse click at the same focused state worked immediately. This reads as a tooling limitation of the browser automation's synthetic keyboard events against a plain `<button type="button">`, not an application defect (native buttons activate on Enter/Space by default browser behavior with no custom handling required, and none is present here) — but I did not independently prove it on a real device, so I report it as an unrun check rather than claim full keyboard-activation coverage.
+- A full manual Tab-order walk of every route, and `prefers-reduced-motion` behavior, were not re-verified in this pass (out of this correction's stated scope, and not implicated by any of the fixed findings).
+- The home route (`/`) is a large marketing page (~18.7k px tall at 390×844) outside TNP-FOUND-01's five-route acceptance list in spirit (S0/S1 own only the four portal routes plus the shared shell); it was included here for completeness since `PreviewControls` mounts globally, and it passed the same automated obstruction scan at true max-scroll.
+- I did not confirm with certainty that no other heavy build was running concurrently on this laptop beyond checking for other `node.exe` processes (many were present from unrelated tooling; none were stopped). Coordinate with Kartik if `foundation-fix-01-sol`'s independent review is running its own build at the same time.
+- Per the correction packet's scope, this review targeted the correction delta and the specific named regressions; it is not a repeat of the full historical bootstrap/document audit, and defers to the parallel independent Sol review for the deeper type/state/finance architectural re-assessment (this report does independently re-verify the finance/attendance/payout behavior via the browser-and-test evidence above, but the architectural gate disposition is Sol's to give).
+
+## Disposition
+
+**PASS** (Sonnet-focus scope: mobile preview-controls obstruction, five-route smoke at both viewports, reset/reload/focus/keyboard reachability, truthful-copy wording, worker payout scoping, and attendance-correction evidence handling).
+
+All findings assigned to this correction cycle that fall within this review's stated focus are fixed, reproduced-and-verified via live browser evidence (not just passing automated tests), and covered by new regression tests that specifically target the previously-reproduced failure scenarios. The one residual observation (unreachable `'adjustment-review'` enum member) is non-blocking and cosmetic to the type surface, not a behavioral gap. `git diff --stat` confirms no boundary/scope violation. Lint (0 errors), `tsc --noEmit` (including new compile-time contract assertions), the full behavioral suite (13/13), whitespace check, provenance check, and `build:vercel` all pass at the exact fixed SHA.
+
+This disposition covers the Sonnet-assigned focus only; final foundation integration additionally requires the independent Sol review's own disposition and Kartik's human sign-off per docs/tasks/TNP-FOUND-01.md and TNP-START-HERE.md.
+
+## Final source-worktree cleanliness
+
+`D:\TNP-review\foundation-fix-01-sonnet` remained a clean detached HEAD at `1402026e296caa0389e4c26e2e32b28279d41823` throughout (`git status --short --branch` → `## HEAD (no branch)`, no output; `git clean -ndx` lists only gitignored build/dependency artifacts: `.next/`, `.vercel/`, `.vinext/`, `.wrangler/`, `dist/`, `docs/checks/__pycache__/`, `next-env.d.ts`, `node_modules/`, `tsconfig.tsbuildinfo`). No tracked file was edited. No commit, merge, push, reset, or deploy was performed. The dev server started for browser verification was stopped after testing (port 3102 confirmed released).
+
+## Report integrity
+
+SHA-256 of this report file, computed immediately before this line was appended (i.e. over every line above this section header's closing, up to and including the previous line): `4c3e1dee3e04a405255aabc9c74ffe21898d6f38dbc289d222db2e235cb00efb`

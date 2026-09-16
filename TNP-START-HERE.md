@@ -1,3 +1,9 @@
+# Immediate next action — B payout correction
+
+Both reviews received for 1402026e296caa0389e4c26e2e32b28279d41823: Sonnet PASS within stated scope, Sol architecture CHANGES REQUESTED. Read docs/reviews/TNP-FOUND-01-FIX-02.md for the exact B correction and A/C/D hold dispositions. No frontend launch prompts are issued while foundation is failing. The correction is prepared but its lease awaits serialized main publication, which requires explicit authorization after automatic approval review rejected the prior main update.
+
+## Previous orientation (next-action text superseded above)
+
 # TNP — current next action
 
 Bootstrap is integrated and accepted. Foundation application work is not integrated.

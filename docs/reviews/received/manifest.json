@@ -22,5 +22,19 @@
     "source": "C:\\Users\\DELL\\.codex\\attachments\\ee7877ee-fd40-4cdd-b6cd-fef04f8788a5\\pasted-text.txt",
     "sha256": "f866336fa123504d80446a6c97199f709d6f45b97cb28645c69d81d1afb1ecb5",
     "reviewed_sha": "502422c038c9292f4946b65c00ea0b2618515a9f"
+  },
+  {
+    "file": "docs/reviews/received/foundation-fix-01-sonnet.txt",
+    "source": "C:\\Users\\DELL\\.codex\\attachments\\56a5b440-0e62-4357-b151-5f73bc59832a\\pasted-text.txt",
+    "sha256": "431c1460b4f4dfd051cf62de0b7cf3de8a7a591fa1d49799715a0d7ed5a042c8",
+    "reviewed_sha": "1402026e296caa0389e4c26e2e32b28279d41823",
+    "provenance": "Exact attachment bytes; embedded report digest covers a different prefix and is not this receipt hash."
+  },
+  {
+    "file": "docs/reviews/received/foundation-fix-01-sol-summary.txt",
+    "source": "User message, dispatcher transcription; original full report unavailable locally",
+    "sha256": "1f9f5a09a7e57fe0a97ac3f5f4645d0240d7319b690e8cd9b7a1f997f8e4c25f",
+    "reviewed_sha": "1402026e296caa0389e4c26e2e32b28279d41823",
+    "claimed_original_sha256": "5d3c4ad422a02adb9c77ea17f500eb43ddc3ce54fe0f9ce3dc1813601c768b59"
   }
 ]
