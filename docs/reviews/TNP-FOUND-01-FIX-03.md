@@ -1,0 +1,24 @@
+# TNP-FOUND-01-FIX-03 — consolidated payout query edge corrections
+
+Status: prepared, NOT DISPATCHED. Original B only; lease remains PAUSED pending recorded activation/publication. Metadata main merge/push authorization remains unresolved. This packet does not retroactively claim earlier metadata was published.
+
+Baseline: c53e13149be79f3b97aea4ef9fd3b7c8e82d2423. Branch codex/tnp-foundation. Worktree D:\TNP-worktrees\TNP-FOUND-01. Responsible human Anjaneya; Laptop 1 DESKTOP-DL9FDM7; original B session 01a0aa5f-c6ee-76e2-93db-6b50e124d174; Sol/high actual selection to confirm. Initial foundation LAUNCH_SHA unchanged. No new source baseline or consumer lease.
+
+Fresh independent Sol review /root/foundation_payout_review confirms the original mixed-worker finding FIXED, but architecture gate remains CHANGES REQUESTED on two explicit FIX-02 edge cases. Final report is archived separately. P does not independently certify the architecture. No repeat bootstrap or unchanged mobile audit is requested.
+
+## B correction prompt — one consolidated batch after activation
+
+Continue at exact clean c53e13149be79f3b97aea4ef9fd3b7c8e82d2423 in the existing B branch/worktree; fetch and read the published packet without merging metadata main into your feature branch. Verify your actual model/host/session and active exclusive lease. Do not reset unexpected work. Own only lib/demo/service.ts and tests/preview-contract.test.mjs; lib/contracts/preview.ts comment/typing changes only if necessary to document invalid-filter behavior. No portal, fixture/store schema, package/provider or shared-register edits.
+
+1. Fix the worker-filter distinction. Only an omitted/undefined workerId invokes the complete Operations query. An explicit empty worker ID must not fall through to that query: return an empty worker result or a structured invalid-input outcome consistently with the contract. Add a regression asserting no foreign IDs, batch totals or records leak for the empty filter. Preserve unknown/no-earning worker empty results and legitimate explicitly associated empty synthetic batches.
+2. Fix duplicate earning references. A payout referencing [E1,E1,E2] must give worker001 only [E1] and 225000 paise, worker003 only [E2] and 90000 paise. Deduplicate referenced earning IDs before forming the worker projection and summing netPaise; do not mutate or silently repair the stored Operations batch. Its original content and total remain the unfiltered view's responsibility. Add exact array/amount assertions, not only a workerId comparison.
+3. Complete the small payout regression matrix before handoff: ordinary single-worker batch; mixed membership; multiple distinct earnings for one worker; duplicate references; known plus dangling references; unknown/no-earning worker; omitted versus empty worker filter; preserved explicit empty batch; before/after stored-record and Operations equality; reload persistence. Dangling references must not expose another worker's IDs/amounts or fabricate ownership. Retain existing generation/idempotency and attendance/approval tests. Reproduce the two failing cases on the baseline before correction and show corrected results.
+4. Preserve the verified mixed-worker result, integer netPaise semantics and the reserved adjustment-review comment. No new production ledger, financial policy, authorization claim or alternate fixture model.
+
+Run npm run lint; npx --no-install tsc --noEmit; node --experimental-strip-types --test tests/preview-contract.test.mjs; npm run build:vercel; python docs/checks/verify_bootstrap.py --provenance-only; git diff --check. Use the existing worktree's dependencies; npm ci only for repair. Coordinate heavy builds. No UI change is assigned, so do not repeat the unchanged five-route mobile audit. Report unrun checks and inherited warnings honestly.
+
+After activation, commit and non-force push only codex/tnp-foundation under the original branch sharing authority; return baseline/final SHAs, changed paths, failing-before/passing-after probe evidence, full checks, limitations and PAUSED lease. No main merge/push, deployment, public B milestone or implementation subagents.
+
+## Single focused review window
+
+P fetches final fixed SHA and consolidates the two findings above with the whole payout regression matrix. Independent Sol rechecks that delta and retained payout/state regressions; Sonnet opposite-model review covers the final corrected service delta in the same review window. Do not request Sonnet review of this known-failing intermediate SHA merely to create another report. Preserve earlier mobile findings as unchanged-UI evidence only. Human/domain approval then precedes authorized integration. A/B-public/C/D prepared milestones stay Draft until the actual integrated baseline exists.

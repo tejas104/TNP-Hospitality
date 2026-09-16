@@ -1,19 +1,9 @@
-# Immediate next action — B payout correction
-
-Both reviews received for 1402026e296caa0389e4c26e2e32b28279d41823: Sonnet PASS within stated scope, Sol architecture CHANGES REQUESTED. Read docs/reviews/TNP-FOUND-01-FIX-02.md for the exact B correction and A/C/D hold dispositions. No frontend launch prompts are issued while foundation is failing. The correction is prepared but its lease awaits serialized main publication, which requires explicit authorization after automatic approval review rejected the prior main update.
-
-## Previous orientation (next-action text superseded above)
-
 # TNP — current next action
 
-Bootstrap is integrated and accepted. Foundation application work is not integrated.
+B payout correction is pushed at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423; branch and clean worktree verified. B is paused. Fresh independent Sol review on Laptop 1 fallback confirms the original mixed-worker fix but requests empty-filter and duplicate-reference corrections plus regression coverage. See docs/reviews/TNP-FOUND-01-FIX-03.md. Sonnet final focused review and human/domain dispositions remain pending; avoid a redundant review of this known-failing intermediate. No prior PASS applies automatically to it.
 
-Current fixed foundation candidate: 1402026e296caa0389e4c26e2e32b28279d41823 on codex/tnp-foundation. B is PAUSED. Read docs/STATUS.md, docs/LANES.md, docs/LAUNCH-PROTOCOL.md, docs/REVIEW-CADENCE.md, docs/tasks/TNP-FOUND-01.md and docs/reviews/TNP-FOUND-01-REREVIEW.md.
+Read docs/STATUS.md and docs/LANES.md for current authority. Four requested two-prompt frontend milestone drafts are in docs/tasks/TNP-A-M1.md, TNP-B-M1.md, TNP-C-M1.md and TNP-D-M1.md; guide docs/FRONTEND-MILESTONE-PACKETS.md. They are preparation only, not launches. P must close foundation gates and integration, then populate each Ready contract with actual source/launch SHAs, appointments and exclusive lease. Initially A/D as human capacity permits; B/C later.
 
-Next: obtain or conduct focused Sonnet and fresh independent Sol reviews at that exact SHA, then record Kartik disposition and H1/H2 shared-semantics approval. No review result or launch is currently confirmed. Do not repeat the completed bootstrap audit. Return remaining findings to original B under a bounded reopened lease; P does not implement or independently certify its own architecture.
+Batch cadence: check/push first checkpoint, continue second prompt without a formal review stop, then push final fixed SHA; P fetches and arranges one consolidated review window. Sol is the selected independent GPT reviewer; required Sonnet opposite-model and human gates remain. Corrections return as one bounded packet with delta/regression re-review. Do not repeat completed bootstrap audits or promise defect-free completion in one round.
 
-After both gates and human approval, perform authorized foundation integration while retaining current main registers; verify integrated local and remote main. Only then issue executable per-lane contracts with real SOURCE_SHA and LAUNCH_SHA. Proposed groups: A-01+A-02, B-01 alone, C-01+C-02, D-01+D-02. Initially A/D subject to capacity; no consumer is launched by this guide.
-
-Anjaneya: Laptop 1, D:\TNP Hospitality, A/B Codex. Kartik: Laptop 2, D:\TNP-Hospitality, C Claude and D Codex. No H3/E. Preferred builders Sol for A/B/D, Sonnet for C; actual selection and independent reviewer appointments must be recorded at launch. Sol plus Sonnet replaces the old Astra gate.
-
-Preserve responsive web, approved public/Operations composition and React/Vinext/Vite/Nitro. Basic RSVP remains included; pending client decisions stay pending. Synthetic preview does not prove production authorization, KYC, GPS, payments or synchronization. No deployment is authorized.
+Metadata branch has not been merged/pushed to main: automatic approval review required explicit replacement-P authorization. No application integration, consumer launch or deployment is performed. Preserve all unrelated work and the responsive-web React/Vinext/Vite/Nitro boundary.

@@ -1,0 +1,88 @@
+import { MemoryPreviewStorage, PreviewStore } from '../foundation-fix-02-sol-local/lib/demo/store.ts';
+import { DemoPreviewService } from '../foundation-fix-02-sol-local/lib/demo/service.ts';
+
+const request = (key) => ({ operation: 'probe.arrange', payload: {}, requestKey: key, expectedGeneration: 0, actorId: 'sol-review' });
+
+async function setup(storage = new MemoryPreviewStorage()) {
+  const store = await PreviewStore.create(storage);
+  return { storage, store, service: new DemoPreviewService(store) };
+}
+
+async function arrange(context, key, update) {
+  const result = await context.store.commit(request(key), (records) => {
+    update(records);
+    return { ok: true, value: true };
+  });
+  if (!result.ok) throw new Error(result.error.code);
+}
+
+async function items(resultPromise) {
+  const result = await resultPromise;
+  if (!result.ok) throw new Error(result.error.code);
+  return result.value.items;
+}
+
+const mixed = await setup();
+await arrange(mixed, 'mixed-multi', (records) => {
+  const earningTwo = records.earnings.find((item) => item.id === 'tnp-demo-earning-002');
+  earningTwo.grossPaise = 90000;
+  earningTwo.netPaise = 90000;
+  records.earnings.push({
+    ...records.earnings.find((item) => item.id === 'tnp-demo-earning-001'),
+    id: 'tnp-probe-earning-005',
+    assignmentId: 'tnp-probe-assignment-005',
+    grossPaise: 10000,
+    deductionsPaise: 0,
+    netPaise: 10000,
+  });
+  const payout = records.payouts.find((item) => item.id === 'tnp-demo-payout-001');
+  payout.earningIds = ['tnp-demo-earning-001', 'tnp-probe-earning-005', 'tnp-demo-earning-002'];
+  payout.totalPaise = 325000;
+});
+const mixedBefore = JSON.stringify((await mixed.store.snapshot()).records.payouts);
+const mixedW1 = (await items(mixed.service.listPayouts('tnp-demo-worker-001'))).find((item) => item.id === 'tnp-demo-payout-001');
+const mixedW3 = (await items(mixed.service.listPayouts('tnp-demo-worker-003'))).find((item) => item.id === 'tnp-demo-payout-001');
+const mixedOperations = (await items(mixed.service.listPayouts())).find((item) => item.id === 'tnp-demo-payout-001');
+const reloadedStore = await PreviewStore.create(mixed.storage);
+const reloadedW1 = (await items(new DemoPreviewService(reloadedStore).listPayouts('tnp-demo-worker-001'))).find((item) => item.id === 'tnp-demo-payout-001');
+const immutable = mixedBefore === JSON.stringify((await mixed.store.snapshot()).records.payouts);
+
+const duplicate = await setup();
+await arrange(duplicate, 'duplicate', (records) => {
+  const earningTwo = records.earnings.find((item) => item.id === 'tnp-demo-earning-002');
+  earningTwo.grossPaise = 90000;
+  earningTwo.netPaise = 90000;
+  const payout = records.payouts.find((item) => item.id === 'tnp-demo-payout-001');
+  payout.earningIds = ['tnp-demo-earning-001', 'tnp-demo-earning-001', 'tnp-demo-earning-002'];
+  payout.totalPaise = 315000;
+});
+const duplicateW1 = (await items(duplicate.service.listPayouts('tnp-demo-worker-001'))).find((item) => item.id === 'tnp-demo-payout-001');
+
+const dangling = await setup();
+await arrange(dangling, 'dangling', (records) => {
+  const earningTwo = records.earnings.find((item) => item.id === 'tnp-demo-earning-002');
+  earningTwo.grossPaise = 90000;
+  earningTwo.netPaise = 90000;
+  const payout = records.payouts.find((item) => item.id === 'tnp-demo-payout-001');
+  payout.earningIds = ['tnp-demo-earning-001', 'tnp-missing-earning', 'tnp-demo-earning-002'];
+  payout.totalPaise = 315000;
+});
+const danglingW1 = (await items(dangling.service.listPayouts('tnp-demo-worker-001'))).find((item) => item.id === 'tnp-demo-payout-001');
+const danglingW3 = (await items(dangling.service.listPayouts('tnp-demo-worker-003'))).find((item) => item.id === 'tnp-demo-payout-001');
+
+const baseline = await setup();
+const omitted = await items(baseline.service.listPayouts());
+const empty = await items(baseline.service.listPayouts(''));
+const unknown = await items(baseline.service.listPayouts('tnp-unknown-worker'));
+
+console.log(JSON.stringify({
+  mixedW1,
+  mixedW3,
+  mixedOperations,
+  reloadedW1,
+  immutable,
+  duplicateW1,
+  danglingW1,
+  danglingW3,
+  counts: { omitted: omitted.length, empty: empty.length, unknown: unknown.length },
+}, null, 2));

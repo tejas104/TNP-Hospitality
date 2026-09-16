@@ -1,3 +1,8 @@
+# Current lanes — B paused; consolidated correction prepared
+
+Updated 2026-09-17T02:53:24.4733803+05:30. P continues serialized documentation-only work in TNP-FOUND-LAUNCH. Current owned metadata additionally includes four Draft milestone TASKs and FRONTEND-MILESTONE-PACKETS.md; no application ownership. B is PAUSED at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423. A/B-public/C/D have NONE leases. Draft branches/paths/ports are proposals, not reservations. R /root/foundation_payout_review: fresh Sol/high, Laptop1 detached D:\TNP-review\foundation-fix-02-sol-local, read-only c53e131; source edits prohibited, isolated external scratch/report and ignored dependencies only. Sol completed read-only review: CHANGES REQUESTED. B FIX-03 prepared, no active correction lease. No other registered review launch is asserted. Review capacity remains foundation-only; no consumer dispatch while it is pending.
+
+## Prior lane records (superseded above)
 # Current lanes — B correction reserved, consumers held
 
 Updated 2026-09-17T02:37:38.2645965+05:30. P continues the same serialized metadata-only task in TNP-FOUND-LAUNCH. Scope additionally includes FIX-02 and received report files/manifest. B foundation lease RESERVED for original B at 1402026e296caa0389e4c26e2e32b28279d41823, not active until publication. Other application leases NONE. Both re-review results received: Sonnet PASS, Sol CHANGES REQUESTED. Reviewers remain read-only; new fixed SHA will require focused re-review. Main metadata publication remains blocked pending explicit authorization; no app writer dispatched.

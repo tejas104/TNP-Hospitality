@@ -1,6 +1,6 @@
 # TNP-FOUND-01 — PAUSED: B shared foundation, S0 then S1
 
-Status: CHANGES REQUESTED at 1402026e296caa0389e4c26e2e32b28279d41823. Sonnet PASS; Sol P1 mixed-worker payout finding. FIX-02 correction reserved, activation pending metadata publication.
+Status: PAUSED at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423 following user-reported pushed correction. Fresh Sol CHANGES REQUESTED: empty worker filter, duplicate references and test coverage; FIX-03 prepared, lease not active. Final Sonnet and human approval pending.
 Dispatchable: NO while paused. Historical initial launch fields below are retained as provenance, not a new writer lease.
 Responsible human: Anjaneya (H1), integration captain.
 Lane/host: B / Anjaneya Laptop 1 / DESKTOP-DL9FDM7.
@@ -51,3 +51,7 @@ Both supplied reviews request changes at 502422c038c9292f4946b65c00ea0b2618515a9
 ## Current fixed correction handoff
 
 Fixed SHA 1402026e296caa0389e4c26e2e32b28279d41823 supersedes the first reviewed candidate. The historical permission to fix above has expired at handoff. See current STATUS/LANES and TNP-FOUND-01-REREVIEW.md. No independent PASS or human approval is recorded yet.
+
+## Latest correction handoff
+
+User reports payout correction complete at c53e13149be79f3b97aea4ef9fd3b7c8e82d2423. P fetched and verified exact remote SHA, direct parent1402026, three owned paths, clean worktree and whitespace. Lease PAUSED; no resumption or consumer launch. See current STATUS/LANES for independent review and publication state.

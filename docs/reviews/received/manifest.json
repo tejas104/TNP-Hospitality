@@ -36,5 +36,20 @@
     "sha256": "1f9f5a09a7e57fe0a97ac3f5f4645d0240d7319b690e8cd9b7a1f997f8e4c25f",
     "reviewed_sha": "1402026e296caa0389e4c26e2e32b28279d41823",
     "claimed_original_sha256": "5d3c4ad422a02adb9c77ea17f500eb43ddc3ce54fe0f9ce3dc1813601c768b59"
+  },
+  {
+    "file": "docs/reviews/received/foundation-fix-02-sol.md",
+    "source": "D:\\TNP-review\\foundation-fix-02-sol-local-report.md",
+    "sha256": "7ffd47ed91c586b72f1cf99553effedcaf5f44fc161b064cbcb2b87782988dfc",
+    "reviewed_sha": "c53e13149be79f3b97aea4ef9fd3b7c8e82d2423",
+    "reviewer": "gpt-5.6-sol/high; /root/foundation_payout_review; runtime session ID unavailable",
+    "disposition": "CHANGES REQUESTED"
+  },
+  {
+    "file": "docs/reviews/received/foundation-fix-02-sol-probe.txt",
+    "source": "D:\\TNP-review\\foundation-fix-02-sol-local-scratch-01\\payout-probe.mjs",
+    "sha256": "87e0c18acd21480e65432fa81602a8666adf25996372e82260a2fc0523797e12",
+    "reviewed_sha": "c53e13149be79f3b97aea4ef9fd3b7c8e82d2423",
+    "provenance": "Exact scratch probe bytes archived as text, not a dispatched test script; source imports refer to the isolated review worktree."
   }
 ]
