@@ -1,17 +1,17 @@
-# Lane and shared-resource register
+# Current lane and resource register
 
-P current session: 01a0aa12-b112-7052-b7de-49e070c4fa09, Anjaneya Laptop1. User authorized this architect's bootstrap work; no other B builder reported launched. B lease reopened solely for review corrections, paused again at fixed review-02 handoff. Worktree D:\TNP-worktrees\TNP-BOOT-01, branch codex/tnp-bootstrap. Owns canonical guidance/docs, exact selected references/skills and scoped provenance attributes; no app/schema/provider changes.
+Current candidate: tnp-bootstrap-review-04. Review pair: Sonnet + independent Sol. Foundation milestone: TNP-FOUND-01.
 
-| Lane | Human/host | Tool | State/path |
+| Lane | Human/host | Tool | Current reservation |
 |---|---|---|---|
-| A | Anjaneya Laptop1 | Codex, exact launch model pending | Not launched; future D:\TNP-worktrees\TNP-A-01 |
-| B | Anjaneya Laptop1 | Codex; P occupies bootstrap lease | S0/S1/public not launched; future D:\TNP-worktrees\TNP-S0 |
-| C | Kartik Laptop2 | Claude, exact launch model pending | Not launched; future D:\TNP-worktrees\TNP-C-01 |
-| D | Kartik Laptop2 | Codex, exact launch model pending | Not launched; future D:\TNP-worktrees\TNP-D-01 |
-| R | Kartik preferred for bootstrap | Fresh Claude and separate fresh Astra | Review-01 changes requested; review-02 not yet reviewed |
+| P occupying B | Anjaneya Laptop1 | Architect Codex session01a0aa12-b112-7052-b7de-49e070c4fa09 | Bootstrap docs corrections only; pauses at candidate handoff |
+| A | Anjaneya Laptop1 | Sol preferred, exact setting at launch | NONE; client/planner after foundation |
+| B builder | Anjaneya Laptop1 | Sol preferred, exact setting at launch | NONE; first task foundation after approved bootstrap integration |
+| C | Kartik Laptop2 | Sonnet preferred, exact setting at launch | NONE; workforce after foundation |
+| D | Kartik Laptop2 | Sol preferred, exact setting at launch | NONE; Operations after foundation |
+| R | Kartik preferred bootstrap host | Separate Sonnet and independent Sol | Current candidate gate not passed; supplied Sol report used previous DevD context |
 
-User-relayed machine evidence: Kartik's base clone D:\TNP-Hospitality, review directory D:\TNP-review, actual Astra model observed in supplied report. Anjaneya base clone D:\TNP Hospitality. Do not treat conflicting earlier orientation paths as leases. Developer model/effort and review appointments still need actual evidence.
-Normally one builder per human, at most four staffed writers and original absolute ceiling five (no extra staffed lane). Pause dispatch at two waiting reviews; also no additional task for a human with one waiting review. Proposed ports A3101/B3102/C3103/D3104 remain unreserved; namespace/browser profile per task, one heavy build per host by default.
-LAUNCH-PROTOCOL.md defines required Ready fields, source/launch SHAs, actual reviewer host/model/availability, sharing authority and exclusive lease. Only P updates this register in a serialized docs task. Branch prefixes do not decide tool/model. A/B human reviewer Kartik; C/D human reviewer Anjaneya. All application writer leases are NONE.
-
-B next milestone is TNP-FOUND-01 (S0 then S1), not two separately launched tasks. Planned D:\TNP-worktrees\TNP-FOUND-01 and codex/tnp-foundation. All application leases remain NONE.
+Base clones: Anjaneya D:\TNP Hospitality; Kartik D:\TNP-Hospitality. Bootstrap writer D:\TNP-worktrees\TNP-BOOT-01. Future B foundation D:\TNP-worktrees\TNP-FOUND-01, branch codex/tnp-foundation. Future consumer worktrees D:\TNP-worktrees\TASK on their assigned host. Kartik review parent D:\TNP-review. All future paths remain unleased until a Ready packet and actual launch evidence.
+S0/S1 have no separate writer or merged dependency record. One B milestone owns their union, checks S0 before S1, and pauses for one foundation review. Only its reviewed integration SHA unlocks consumers.
+Normally one builder per human; at most four staffed writers. Pause dispatch at two waiting reviews and do not add work to a human with one waiting review. Proposed ports A3101/B3102/C3103/D3104 are not yet reserved. One heavy build per host by default; synthetic profile per task.
+P alone serializes Ready/Building/status commits onto current main through the authorized captain. Builders never race on registers. Ready contracts name SOURCE_SHA/LAUNCH_SHA, actual model/host/reviewer appointments, resource reservation, exclusive lease and exact branch sharing authority. Human review A/B -> Kartik; C/D -> Anjaneya. Checkpoint pushes are inspection evidence, not approval or permission to merge main.

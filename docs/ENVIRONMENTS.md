@@ -1,7 +1,7 @@
 # Environments, models and commands
 
 ## Observed local setup
-Original checkout D:\TNP Hospitality, main at 9d58061f2d36514ebc932fa94bb3dc90f4b97a97; origin https://github.com/tejas104/TNP-Hospitality.git. Remote main was verified at that SHA; bootstrap review-01 was pushed and this correction is prepared as review-02. Verify new remote evidence at handoff.
+Original checkout D:\TNP Hospitality, main at 9d58061f2d36514ebc932fa94bb3dc90f4b97a97; origin https://github.com/tejas104/TNP-Hospitality.git. Remote main was verified at that SHA; the current bootstrap target is recorded in OPERATING-POLICY.json. Earlier review tags are immutable history. Verify current remote evidence at handoff.
 Bootstrap checkout D:\TNP-worktrees\TNP-BOOT-01 on codex/tnp-bootstrap. Keeping it outside the source tree avoids tsconfig's recursive **/*.ts include pulling in nested worktrees.
 Node v22.23.2, npm 11.8.0, Git 2.47.1.windows.2. package engine >=22.13.0. Record/align Laptop 2 versions before launch.
 Codex local tool catalog exposes gpt-6-astra, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna and gpt-5.5. Local config reports gpt-6-astra/high. Config is not proof of a per-session override or other-host entitlement.

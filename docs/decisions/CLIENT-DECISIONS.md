@@ -20,3 +20,6 @@ Both laptop repositories and all planned task/review worktrees use D:. Exact hos
 
 ## Confirmed review/model policy change (2026-09-16)
 User explicitly answered "Yes—use Sol + Sonnet" to whether fresh independent Sol may replace the mandatory Astra gate with separate Sonnet review. This applies to the current bootstrap and subsequent high-risk gates; independent review and human approval remain. It is a model substitution, not retroactive approval of an interrupted/mixed-model report. User also requested milestone batching and branch checkpoint sharing; see REVIEW-CADENCE.md. Exact runtime model availability still must be observed.
+
+## Review-03 human disposition relayed
+User states Kartik approves the requested corrections and wants developer launch. P records authorization to fix the listed findings; corrected-candidate independent review and actual foundation implementation/integration remain outstanding. No client business policy or production operation is approved by that statement.

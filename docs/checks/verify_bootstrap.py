@@ -5,6 +5,7 @@ import json
 import re
 import subprocess
 import argparse
+from bootstrap_policy import validate_policy
 
 parser = argparse.ArgumentParser(description="Bootstrap snapshot checks, or source provenance only; neither validates a writer launch.")
 parser.add_argument("--provenance-only", action="store_true", help="Check the 21 reference/skill/evidence hashes only; safe after app changes and Ready transitions.")
@@ -36,6 +37,8 @@ if args.provenance_only:
     print("PASS: canonical file presence and %d provenance entries only; launch/application checks NOT performed." % len(manifest["files"]))
     raise SystemExit(0)
 
+errors.extend(validate_policy(ROOT))
+
 audit = (ROOT / "docs/F01-F20-AUDIT.md").read_text(encoding="utf-8")
 rows = re.findall(r"^\| (F\d{2}) \|", audit, flags=re.M)
 if sorted(rows) != ["F%02d" % n for n in range(1, 21)]:
@@ -54,7 +57,7 @@ for path in tasks:
                   "Astra gate:", "Writer lease:"]
         if "Status: Draft." not in body or "Writer lease: NONE." not in body:
             errors.append("Bootstrap snapshot expects Draft consumers (use --provenance-only after launch changes): " + path.name)
-        for dep in re.findall(r"TNP-(?:BOOT-01|S[01]|[ABCD]-\d{2})",
+        for dep in re.findall(r"\bTNP-[A-Z][A-Z0-9]*(?:-\d{2})?\b",
                               next((l for l in body.splitlines() if l.startswith("Dependencies:")), "")):
             if not (ROOT / "docs/tasks" / (dep + ".md")).is_file():
                 errors.append("Missing dependency task: " + dep)

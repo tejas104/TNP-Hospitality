@@ -1,6 +1,7 @@
 # TNP-FOUND-01 — shared foundation milestone: S0 then S1
 
 Status: Draft. NOT dispatched. Writer lease: NONE.
+Dispatchable: YES after Ready launch gates; sole S0/S1 implementation milestone.
 Responsible human: Anjaneya (H1).
 Lane/host: B / Anjaneya Laptop 1.
 Tool/model/effort: Codex Sol preferred by user; actual model/effort pending session evidence.

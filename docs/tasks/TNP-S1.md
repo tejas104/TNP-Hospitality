@@ -1,6 +1,7 @@
 # TNP-S1 — Implement the shared typed preview interface, deterministic scenario, persistence/reset and behavioral tests before parallel consumers.
 
 Status: Draft. NOT dispatched. Writer lease: NONE.
+Dispatchable: NO; phase checklist owned by TNP-FOUND-01 only.
 Responsible human: Anjaneya (H1).
 Lane/host: B / Laptop 1 / Anjaneya (confirmed; verify actual path/model at launch).
 Tool/model/effort: Codex; exact model/effort pending selection on assigned host.

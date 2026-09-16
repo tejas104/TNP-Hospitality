@@ -1,6 +1,7 @@
 # TNP-S0 — Extract the four existing portals and shared visual helpers without redesign; resolve the eight inherited navigation lint errors within the named files.
 
 Status: Draft. NOT dispatched. Writer lease: NONE.
+Dispatchable: NO; phase checklist owned by TNP-FOUND-01 only.
 Responsible human: Anjaneya (H1).
 Lane/host: B / Laptop 1 / Anjaneya (confirmed; verify actual path/model at launch).
 Tool/model/effort: Codex; exact model/effort pending selection on assigned host.

@@ -22,7 +22,7 @@ Local documentation validation script under docs/checks; local evidence under do
 
 ## Do not modify
 app/**, components/**, data/**, hooks/**, lib/**, public/**, package.json, package-lock.json, framework/hosting/lint/TypeScript configs, original user files or unrelated deliverables. No Claude installation/config/credentials changes.
-No application fixes, framework/database/provider migration, real services, main merge or deployment. User explicitly authorized sharing this bootstrap via GitHub; P may push codex/tnp-bootstrap and immutable bootstrap review tags for this correction cycle (review-01/review-02 remain unchanged; new review-03). No blanket future branch-push permission.
+No application fixes, framework/database/provider migration, real services, main merge or deployment. User explicitly authorized sharing this bootstrap via GitHub; P may push codex/tnp-bootstrap and immutable bootstrap review tags for this correction cycle (all earlier review tags remain unchanged; current target is in docs/OPERATING-POLICY.json). No blanket future branch-push permission.
 
 ## Acceptance
 Canonical documents reflect two humans and A/B/C/D plus independent R; correct current baseline and pending scope decisions; all 20 screen sets audited with evidence; S0/S1 ownership and dependencies explicit; future task fields complete or visibly Draft; selected skills and references retain hashes/provenance; concise next-step dispatch/review prompts; no unintended app diff.
@@ -40,4 +40,4 @@ Browser reference observation is evidence only; no claim of full F01–F20 accep
 Record fixed local HEAD SHA in the human handoff. Review docs/reviews/TNP-BOOT-01.md and docs/DISPATCH.md.
 Kartik arranges read-only Claude review and separate Sol architecture gate, disposes findings, and approves integration only after fixes/re-review.
 Existing lint defects are assigned to S0. Any exception to an all-green app merge gate must be explicitly acknowledged as a docs-only inherited-baseline exception; never silently waive it.
-No dependent builder is running. Bootstrap must be reviewed/integrated before S0; S0 before S1; S1 before parallel consumers.
+No dependent builder is running. Bootstrap must be reviewed/integrated before TNP-FOUND-01; S0 then S1 are internal phases with one foundation review/integration before consumers.

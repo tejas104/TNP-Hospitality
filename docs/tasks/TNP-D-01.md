@@ -12,7 +12,7 @@ Launch-contract revision: PENDING; P supplies the full LAUNCH_SHA after committi
 Review sharing: PENDING authorized pusher, branch/ref and fixed SHA handoff; no force-push or moving reviewed tags.
 Reviewer host/availability: PENDING appointment; preferred Sonnet and Sol reviewer hosts are Kartik Laptop 2, Codex review of C on Anjaneya Laptop 1.
 Launch protocol: docs/LAUNCH-PROTOCOL.md; initial HEAD must equal LAUNCH_SHA, not SOURCE_SHA.
-Dependencies: TNP-S1. Verify all transitive prerequisite commits through that dependency; never depend on this task itself.
+Dependencies: TNP-FOUND-01. Verify all transitive prerequisite commits through that dependency; never depend on this task itself.
 Merged dependency evidence: NONE yet; record each merge SHA and verify ancestry with git merge-base --is-ancestor before marking Ready.
 Mode: labelled synthetic frontend preview only.
 Risk: Routine preview; Astra not required unless shared domain/architecture changes.

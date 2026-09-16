@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "candidate_tag": "tnp-bootstrap-review-04",
+  "baseline_sha": "9d58061f2d36514ebc932fa94bb3dc90f4b97a97",
+  "previous_candidate_sha": "716766870b01caad9bf3484b2c52e63401850d9a",
+  "foundation_task": "TNP-FOUND-01",
+  "phase_checklists": [
+    "TNP-S0",
+    "TNP-S1"
+  ],
+  "initial_consumers": [
+    "TNP-A-01",
+    "TNP-B-01",
+    "TNP-C-01",
+    "TNP-D-01"
+  ],
+  "source_reviewer": "Sonnet",
+  "architecture_reviewer": "Sol",
+  "phase_dispatch": false,
+  "human_reviewer": "Kartik",
+  "active_documents": [
+    "docs/STATUS.md",
+    "docs/LANES.md",
+    "docs/INTEGRATION.md",
+    "docs/DELIVERY-PLAN.md",
+    "docs/architecture/decisions/ADR-0001-web-preview-boundary.md",
+    "docs/reviews/TNP-BOOT-01.md",
+    "TNP-START-HERE.md"
+  ]
+}

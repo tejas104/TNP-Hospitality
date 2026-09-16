@@ -1,23 +1,22 @@
-# Bootstrap review and safe integration
+# Current bootstrap integration procedure
 
-No main integration or production operation was performed. User now authorizes sharing codex/tnp-bootstrap plus a fixed review tag on GitHub so Kartik can clone BEFORE review. Current sequence is the root TNP-START-HERE.md guide: clone candidate, two read-only reviews, return findings, then approved integration.
+Current candidate: tnp-bootstrap-review-04. Review pair: Sonnet + independent Sol. Foundation milestone: TNP-FOUND-01.
 
-## Review
-Kartik obtains Claude review and a separate fresh Astra architecture gate at the exact candidate SHA supplied in the final handoff. Use the detached review checkout supplied there; do not edit it.
-Record actual reviewer/model, reviewed SHA, checks, findings/disposition and human approval. P fixes under B if needed; reviewers re-review the new SHA. Do not accept this author's own documentation checks as independent review.
-Application lint has eight inherited errors. A docs-only integration exception must explicitly acknowledge that baseline or wait for a separately reviewed fix; no silent green-gate waiver.
+No main merge is performed by these instructions. User authorized bootstrap sharing. Integrate only the final fixed candidate after required AI review, Kartik human disposition and explicit integration authority. Anjaneya is the named integration captain; P may execute on his behalf only with recorded authorization.
 
-## Original checkout collision to handle
-D:\TNP Hospitality has the eight intended source Markdown references as untracked files. A fast-forward merge may refuse to overwrite them even though bootstrap copies are identical. Unrelated client deliverables also exist there.
-Before an authorized human integration:
-1. Verify original main/HEAD/status and that the candidate is descended from current main. If main changed, revalidate rather than reset it.
-2. Verify every intended untracked reference's SHA256 against docs/references/MANIFEST.json. If any differs, stop and reconcile; do not overwrite.
-3. Make a verified backup of ONLY those eight matching TNP files to a named path outside the checkout. Move only those exact files out of the way after validating absolute source/backup paths. Leave every unrelated deliverable and tmp file untouched. Do not use git clean or broad directory deletion.
-4. With a reserved integration window and the exact reviewed SHA, the human can run git merge --ff-only REVIEWED_SHA from original main. This is a future human action, not permission granted by this file.
-5. If merge fails, restore the exact backed-up files to their original missing paths; never force/reset through the failure. Record outcome.
-6. After success, confirm branch/HEAD, run python docs/checks/verify_bootstrap.py --provenance-only (not the bootstrap-only snapshot check), verify original files/application unchanged, and record human review and merge evidence in a serialized documentation update.
-7. Only then make TNP-S0 Ready with the new baseline, actual model/host/reviewer and writer lease.
+## Required evidence
+Resolve candidate tag to the exact SHA supplied by P. Sonnet re-review must address accepted findings at that SHA; a genuinely separate Sol task must record actual model and architecture-gate disposition. Old DevD reviewer context and interrupted/mixed-model runs do not count. Record model/session, SHA, checks/limitations and approval separately from author checks. Fixes produce a new immutable target; no moved tags/force-push.
+The inherited application lint has8 errors/3 warnings. Human approval of a docs-only integration must acknowledge that inherited baseline exception; S0 phase owns the8 navigation errors. No silent green claim.
 
-## Laptop 2
-User authorized the current bootstrap branch/tag push; verify its actual remote SHA using TNP-START-HERE.md and P's handoff. Kartik first clones that unmerged branch and creates separate detached Claude/Astra review worktrees at the fixed tag. Do not wait for main integration before bootstrap review. After approved integration and separately authorized sharing of main, fetch the exact integrated commit before developer launch.
-Do not share personal credentials/config folders. A prompt sent to another chat is not proof the repository files, model access or lease exist there.
+## Preserve original local files
+Original main checkout D:\TNP Hospitality contains eight intended untracked source references plus unrelated client files. Before an authorized integration:
+1. Verify main/HEAD/status and candidate ancestry against current main. Stop on unexpected changes, never reset.
+2. Compare only the eight intended references against docs/references/MANIFEST.json hashes. Differences require reconciliation.
+3. Back up those exact matching files to a named external location; verify backup hashes and resolved absolute paths. Move only those exact matching files out of the checkout to avoid Git collisions. Preserve unrelated deliverables and tmp entirely.
+4. On original main, git merge --ff-only EXACT_REVIEWED_SHA after reserving the human integration window. If it fails, restore exact missing source files from the verified backup, never force.
+5. Confirm main/HEAD and python docs/checks/verify_bootstrap.py --provenance-only. Share main only under recorded push authority and verify remote SHA. Record actual outcome.
+6. P prepares the Ready foundation contract from that integrated source baseline. It is the only dispatch for S0/S1. Serialize its Ready commit onto main before builder launch as in LAUNCH-PROTOCOL.md. There is no separate S0 or S1 integration gate inside the milestone.
+
+## Subsequent foundation and consumer integration
+B completes S0 then S1 with checks/checkpoint commits in one worktree. One Sonnet source review plus independent Sol architecture review and human approval covers the completed foundation. Integrate that reviewed milestone before consumers. Consumer dependency evidence names foundation's integrated commit. Later per-lane grouped launch contracts must be issued explicitly; old phase files do not grant leases.
+Ready/Building register changes use current main and reserved captain integration as specified in LAUNCH-PROTOCOL.md; feature branches may need normal reviewed merges as main advances. Never discard authoritative register history. No deployment or production operation is authorized here.
