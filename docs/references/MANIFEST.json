@@ -1,0 +1,138 @@
+{
+  "recorded": "2026-09-16",
+  "source_commit": "9d58061f2d36514ebc932fa94bb3dc90f4b97a97",
+  "files": [
+    {
+      "kind": "reference",
+      "source": "D:\\TNP Hospitality\\deliverables\\TNP-Architect-Kickoff-and-Handover.md",
+      "destination": "deliverables/TNP-Architect-Kickoff-and-Handover.md",
+      "sha256": "c0cf0cbb499cb297d74c935cc68ea9f5be096c4aa23f476729eef49d50ee66e1"
+    },
+    {
+      "kind": "reference",
+      "source": "D:\\TNP Hospitality\\deliverables\\TNP-25-Day-Execution-Plan-v3.md",
+      "destination": "deliverables/TNP-25-Day-Execution-Plan-v3.md",
+      "sha256": "d044508d0ffe3b355a22621036d38c7aae6eff46b0d61eba7e74e9667ecaed5c"
+    },
+    {
+      "kind": "reference",
+      "source": "D:\\TNP Hospitality\\deliverables\\TNP-AI-Operating-Manual-v3.md",
+      "destination": "deliverables/TNP-AI-Operating-Manual-v3.md",
+      "sha256": "eabb5baec3a981ca17bc92eea31d7dc6a9bc07e2a77f169dbc73e72d69e73319"
+    },
+    {
+      "kind": "reference",
+      "source": "D:\\TNP Hospitality\\deliverables\\TNP-Engineering-Starter-Templates.md",
+      "destination": "deliverables/TNP-Engineering-Starter-Templates.md",
+      "sha256": "3b228fe5186df606163b7c274b4f1b01ed0d4ad0012d8b73fa6f494502e8e51c"
+    },
+    {
+      "kind": "reference",
+      "source": "D:\\TNP Hospitality\\deliverables\\TNP-Model-and-Business-Recommendation.md",
+      "destination": "deliverables/TNP-Model-and-Business-Recommendation.md",
+      "sha256": "e362addf701a9c17108302d316a4cc7b8bce9af46644b9989b61cffe31cc55d5"
+    },
+    {
+      "kind": "reference",
+      "source": "D:\\TNP Hospitality\\deliverables\\TNP-Frontend-First-Delivery-Plan-v2.md",
+      "destination": "deliverables/TNP-Frontend-First-Delivery-Plan-v2.md",
+      "sha256": "9ebebc28989c764200e5bca5d1af7e4ba1a46ab02a402e1bac5d10e92042b436"
+    },
+    {
+      "kind": "reference",
+      "source": "D:\\TNP Hospitality\\deliverables\\TNP-25-Day-Delivery-Plan.md",
+      "destination": "deliverables/TNP-25-Day-Delivery-Plan.md",
+      "sha256": "f0ff326ad486120fefe91fb33f4a4e1423dce38194bd8ed7ba0856f98f95cefe"
+    },
+    {
+      "kind": "reference",
+      "source": "D:\\TNP Hospitality\\deliverables\\TNP-AI-Engineering-Master-Manual.md",
+      "destination": "deliverables/TNP-AI-Engineering-Master-Manual.md",
+      "sha256": "7609a69f1bfa4ab9c4cfc2c4c7c9526d6c9d8b94db85e3166f41fb9ac9b83e5e"
+    },
+    {
+      "kind": "reference",
+      "source": "C:\\Users\\DELL\\Downloads\\TNP_Platform_Engineering_Scope.pdf",
+      "destination": "docs/references/TNP_Platform_Engineering_Scope.pdf",
+      "sha256": "cfcc79c3f933351386ec7721b47ec4a163cbfaaa50cf41943cca877ff4159f5f"
+    },
+    {
+      "kind": "skill",
+      "source": "C:\\Users\\DELL\\.codex\\skills\\platform-architect\\SKILL.md",
+      "destination": ".agents/skills/platform-architect/SKILL.md",
+      "sha256": "df50c9102085b8c50a355d53470d8d4b2d6deb3320f1b94ce176b186bb0c9fd2"
+    },
+    {
+      "kind": "skill",
+      "source": "C:\\Users\\DELL\\.codex\\skills\\web-mobile-platform-contracts\\SKILL.md",
+      "destination": ".agents/skills/web-mobile-platform-contracts/SKILL.md",
+      "sha256": "91412d40e3471b9cfff005ce05d24b033022e7ab526a639861d82f8898257b08"
+    },
+    {
+      "kind": "skill",
+      "source": "C:\\Users\\DELL\\.codex\\skills\\adr-decision-engineer\\SKILL.md",
+      "destination": ".agents/skills/adr-decision-engineer/SKILL.md",
+      "sha256": "42dc813e81959d5b0c09022afb6392e07fa4e9327896fb373b84c1d0a506b49c"
+    },
+    {
+      "kind": "skill",
+      "source": "C:\\Users\\DELL\\.codex\\skills\\frontend-product-engineer\\SKILL.md",
+      "destination": ".agents/skills/frontend-product-engineer/SKILL.md",
+      "sha256": "e0886bc453334bb44e9700b07b947966b0c1fe6caeee29104976e3cd1ea4c381"
+    },
+    {
+      "kind": "skill",
+      "source": "C:\\Users\\DELL\\.codex\\skills\\design-system-engineer\\SKILL.md",
+      "destination": ".agents/skills/design-system-engineer/SKILL.md",
+      "sha256": "c343e2fdf4456bfdc037813bc653b5985d6c6e1d5901b42b216eb9880ee9dc74"
+    },
+    {
+      "kind": "skill",
+      "source": "C:\\Users\\DELL\\.codex\\skills\\code-review-gate\\SKILL.md",
+      "destination": ".agents/skills/code-review-gate/SKILL.md",
+      "sha256": "88a2c5a4c458f4c8274c86b530318bdc06ea24c0aefa61d037f6aec378f77bd0"
+    },
+    {
+      "kind": "skill",
+      "source": "C:\\Users\\DELL\\.codex\\skills\\testing-quality-engineer\\SKILL.md",
+      "destination": ".agents/skills/testing-quality-engineer/SKILL.md",
+      "sha256": "c45baf4157e088ee12edc1ed72aa5496f0b64579d7f480dfae69391496d3f5a7"
+    },
+    {
+      "kind": "skill",
+      "source": "C:\\Users\\DELL\\.codex\\skills\\e2e-browser-verifier\\SKILL.md",
+      "destination": ".agents/skills/e2e-browser-verifier/SKILL.md",
+      "sha256": "3bf8bd9c3cbcd0d82bcb2586a15ef3fc335189dd050848cc5f1d7ff050edb696"
+    },
+    {
+      "kind": "skill",
+      "source": "C:\\Users\\DELL\\.codex\\skills\\multi-agent-orchestrator\\SKILL.md",
+      "destination": ".agents/skills/multi-agent-orchestrator/SKILL.md",
+      "sha256": "9c994e62cba22750947eda6aa85adbd7e65747e2efe5c2d7fc363bda198192f9"
+    },
+    {
+      "kind": "evidence",
+      "source": "D:\\TNP Hospitality\\tmp\\tnp-bootstrap-evidence\\lint.log",
+      "destination": "docs/evidence/lint.log",
+      "sha256": "b660da6c27b3efd4b50da480f59e4948e343828dae739ffe2611c3bd45b2bf53",
+      "source_sha256": "148149663b1480018575026f81507236b0af9b9cee1f87ca77ae71ac0e8ad7b7",
+      "transformation": "UTF-8, LF newlines and trailing log whitespace removed; command output text retained"
+    },
+    {
+      "kind": "evidence",
+      "source": "D:\\TNP Hospitality\\tmp\\tnp-bootstrap-evidence\\typecheck.log",
+      "destination": "docs/evidence/typecheck.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "transformation": "UTF-8, LF newlines and trailing log whitespace removed; command output text retained"
+    },
+    {
+      "kind": "evidence",
+      "source": "D:\\TNP Hospitality\\tmp\\tnp-bootstrap-evidence\\build-vercel.log",
+      "destination": "docs/evidence/build-vercel.log",
+      "sha256": "b78acd84860dd5adea73030ffbfd6864e792661cce43a60fd8712a4695fd0c86",
+      "source_sha256": "ba0056975c75b96a54dfcc3a098b37f66d880fa7d1e071104239bee9f55b11a7",
+      "transformation": "UTF-8, LF newlines and trailing log whitespace removed; command output text retained"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+# Preserve exact source bytes for reviewed reference and skill provenance.
+/.agents/skills/** -text
+/deliverables/TNP-*.md -text
+/docs/evidence/*.log -text
+/docs/references/*.pdf -text
