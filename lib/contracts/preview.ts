@@ -178,6 +178,7 @@ export type Earning = {
   deductionsPaise: number;
   netPaise: number;
   proposedTaxLabel: string;
+  /** Both `adjustment-review` states are reserved for a future ledger policy and are not emitted by current preview mutations. */
   amountState: 'estimated' | 'earned' | 'invalidated' | 'adjustment-review';
   status: 'pending-verification' | 'draft' | 'supervisor-approved' | 'finance-approved' | 'processing' | 'paid' | 'invalidated' | 'adjustment-review';
   supervisorApproval: SampleApprovalEvidence | null;

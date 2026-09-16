@@ -191,7 +191,32 @@ export class DemoPreviewService implements PreviewService {
   getAttendanceHistory(workerId: string, options?: QueryOptions) { return this.query('attendance', options, (r) => page(r.attendances.filter((x) => x.workerId === workerId)), page<Attendance>([])); }
   getEarning(id: string, options?: QueryOptions) { return this.one('earnings', options, (r) => r.earnings.find((x) => x.id === id), 'Earning not found.'); }
   listEarnings(workerId?: string, options?: QueryOptions) { return this.query('earnings', options, (r) => page(r.earnings.filter((x) => !workerId || x.workerId === workerId)), page<Earning>([])); }
-  listPayouts(workerId?: string, options?: QueryOptions) { return this.query('payouts', options, (r) => page(r.payouts.filter((x) => !workerId || x.workerId === workerId)), page([])); }
+  listPayouts(workerId?: string, options?: QueryOptions) {
+    return this.query('payouts', options, (records) => {
+      if (!workerId) return page(records.payouts);
+      const workerEarnings = new Map(
+        records.earnings
+          .filter((earning) => earning.workerId === workerId)
+          .map((earning) => [earning.id, earning]),
+      );
+      const payouts = records.payouts.flatMap((payout) => {
+        // Empty synthetic legacy batches have no earning reference to derive; retain their existing worker association.
+        if (!payout.earningIds.length) return payout.workerId === workerId ? [{ ...payout }] : [];
+        const earnings = payout.earningIds.flatMap((earningId) => {
+          const earning = workerEarnings.get(earningId);
+          return earning ? [earning] : [];
+        });
+        if (!earnings.length) return [];
+        return [{
+          ...payout,
+          workerId,
+          earningIds: earnings.map((earning) => earning.id),
+          totalPaise: earnings.reduce((total, earning) => total + earning.netPaise, 0),
+        }];
+      });
+      return page(payouts);
+    }, page([]));
+  }
   listRatings(workerId: string, options?: QueryOptions) { return this.query('ratings', options, (r) => page(r.ratings.filter((x) => x.workerId === workerId)), page<Rating>([])); }
   getStanding(workerId: string, options?: QueryOptions) { return this.one('workers', options, (r) => r.workers.find((x) => x.id === workerId), 'Worker not found.'); }
   listAudit(options?: QueryOptions) { return this.query('audit', options, (r) => page(r.audit), page<AuditEntry>([])); }

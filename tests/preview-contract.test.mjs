@@ -353,8 +353,8 @@ test('attendance corrections preserve caller evidence and invalidate or escalate
   assert.equal(value(await approvedCase.service.getAttendanceHistory('tnp-demo-worker-006')).items[0].state, 'present');
 });
 
-test('worker payout queries are scoped and operations retains the explicit unfiltered view', async () => {
-  const { service } = await setup();
+test('worker payout queries project mixed batches without mutating the operations ledger', async () => {
+  const { service, store } = await setup();
   const workerOne = value(await service.listPayouts('tnp-demo-worker-001')).items;
   assert.equal(workerOne.length, 2);
   assert.equal(workerOne.every((item) => item.workerId === 'tnp-demo-worker-001'), true);
@@ -363,6 +363,34 @@ test('worker payout queries are scoped and operations retains the explicit unfil
   assert.deepEqual(workerThree.map((item) => item.id), ['tnp-demo-payout-002']);
   assert.deepEqual(value(await service.listPayouts('tnp-demo-worker-006')).items, []);
   assert.equal(value(await service.listPayouts()).items.length, 5);
+
+  await arrange(store, 'mixed-worker-payout', (records) => {
+    const workerThreeEarning = records.earnings.find((item) => item.id === 'tnp-demo-earning-002');
+    workerThreeEarning.grossPaise = 90000;
+    workerThreeEarning.netPaise = 90000;
+    const mixedBatch = records.payouts.find((item) => item.id === 'tnp-demo-payout-001');
+    mixedBatch.earningIds = ['tnp-demo-earning-001', 'tnp-demo-earning-002'];
+    mixedBatch.totalPaise = 315000;
+  });
+
+  const storedBeforeQueries = (await store.snapshot()).records.payouts;
+  const operationsBatch = value(await service.listPayouts()).items.find((item) => item.id === 'tnp-demo-payout-001');
+  assert.deepEqual(operationsBatch.earningIds, ['tnp-demo-earning-001', 'tnp-demo-earning-002']);
+  assert.equal(operationsBatch.totalPaise, 315000);
+
+  const workerOneMixed = value(await service.listPayouts('tnp-demo-worker-001')).items.find((item) => item.id === operationsBatch.id);
+  assert.deepEqual(workerOneMixed.earningIds, ['tnp-demo-earning-001']);
+  assert.equal(workerOneMixed.totalPaise, 225000);
+  assert.equal(workerOneMixed.earningIds.includes('tnp-demo-earning-002'), false);
+  assert.notEqual(workerOneMixed.totalPaise, 315000);
+
+  const workerThreeMixed = value(await service.listPayouts('tnp-demo-worker-003')).items.find((item) => item.id === operationsBatch.id);
+  assert.deepEqual(workerThreeMixed.earningIds, ['tnp-demo-earning-002']);
+  assert.equal(workerThreeMixed.totalPaise, 90000);
+  assert.equal(workerThreeMixed.earningIds.includes('tnp-demo-earning-001'), false);
+  assert.notEqual(workerThreeMixed.totalPaise, 315000);
+
+  assert.deepEqual((await store.snapshot()).records.payouts, storedBeforeQueries);
 });
 
 test('ordinary and reset ledgers survive reload and enforce the normative generation protocol', async () => {
