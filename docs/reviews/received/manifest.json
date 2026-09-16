@@ -66,5 +66,13 @@
     "sha256": "7db422b84b0bf9ff00e655b3bca442b986c915e0e8512caa459dd0a49e2e29ba",
     "reviewed_sha": "d8473f888cc70819ff8a149f3544e81a6b6ea36b",
     "provenance": "Exact external probe bytes archived as text; imports target isolated fixed review worktree."
+  },
+  {
+    "file": "docs/reviews/received/foundation-fix-03-sonnet-summary.txt",
+    "source": "Current user message, dispatcher transcription; original Laptop2 report unavailable",
+    "sha256": "3021ad05df9a4424d164c275a20967de8188d5dcd2c96841c439b06cffceb47d",
+    "reviewed_sha": "d8473f888cc70819ff8a149f3544e81a6b6ea36b",
+    "disposition": "PASS, user-relayed Sonnet focused full payout delta",
+    "claimed_original_sha256": "2D6D507C5C7B2ECE331C5F7FFC7022929D938675FE0CB533E261EE0634538C7E"
   }
 ]

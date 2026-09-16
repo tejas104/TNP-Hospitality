@@ -1,0 +1,13 @@
+User-supplied final Sonnet review summary, received 2026-09-17.
+Dispatcher transcription of the supplied result; not the original Laptop 2 report byte stream.
+
+Disposition PASS. Reviewed d8473f888cc70819ff8a149f3544e81a6b6ea36b. Full payout delta1402026e..d8473f8; last correctionc53e131..d8473f8. Fresh detached D:\TNP-review\foundation-fix-03-sonnet, clean before/after, no source edits. Main metadata read via git show without merging into reviewed source.
+
+Reported checks: node --experimental-strip-types --test tests/preview-contract.test.mjs PASS13/13; git diff --check1402026e..d8473f8 PASS. npx --no-install tsc --noEmit unavailable because no node_modules in clean review worktree; dependencies not installed. Touched type surface manually inspected, nothing suspect found.
+
+Independent probe D:\TNP-review\foundation-fix-03-sonnet-scratch\payout-probe.mjs covered omitted versus empty/whitespace/unknown worker, ordinary worker, explicit empty legacy batch, mixed E1/E2, duplicate[E1,E1,E2] -> worker001[E1]/225000 and worker003[E2]/90000, multiple earnings plus dangling reference, no leaks or fabricated ownership, unchanged Operations and stored records before/after, reload. All matched. Both prior Sol payout findings independently confirmed fixed. Existing generation/idempotency/attendance/approval coverage remains passing, no new adjustment/ledger workflow. No actionable findings.
+
+Original report path supplied: D:\TNP-review\foundation-fix-03-sonnet-report.md on Laptop2, not available locally.
+User-supplied original final-byte SHA256: 2D6D507C5C7B2ECE331C5F7FFC7022929D938675FE0CB533E261EE0634538C7E. Not independently recomputed; do not equate it with this summary's receipt hash.
+Reviewer identified as the continuing Sonnet reviewer by supplied context; exact runtime version/session not included in this pasted summary. Prior Sonnet review identified Claude Sonnet5 on Kartik Laptop2; that history is not fresh runtime verification.
+The report explicitly excludes foundation integration authority, human/H1-H2 approval and deployment. No such approval is inferred from PASS.

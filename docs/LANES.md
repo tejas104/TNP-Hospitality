@@ -1,3 +1,9 @@
+# Current lanes — foundation AI review complete, integration not authorized
+
+Updated 2026-09-17T03:46:17.1152429+05:30. B PAUSED at d8473f888cc70819ff8a149f3544e81a6b6ea36b. Independent Sol PASS and Sonnet user-relayed PASS at that SHA recorded. No active application writer. A/B-public/C/D leases NONE; no Draft packet becomes a launch through a review PASS. P owns only serialized metadata receipt/status/integration preparation. Human/domain approval and exact integration/main-sharing authority remain pending.
+
+## Prior lane records
+
 # Current lanes — B paused at d8473f8, focused re-review
 
 Updated 2026-09-17T03:16:30.5970256+05:30. B original lease expired at user-reported final handoff d8473f888cc70819ff8a149f3544e81a6b6ea36b; PAUSED, no further writing authorized. Independent Sol /root/foundation_payout_review owns read-only source review at detached D:\TNP-review\foundation-fix-03-sol-local, same exact SHA, with external scratch/report only. Sol focused review completed PASS; source remains clean and read-only. Sonnet Laptop2 prompt prepared, launch unknown. A/B-public/C/D leases NONE and packets Draft; no proposed ports reserved. P continues serialized factual documentation records on codex/tnp-foundation-launch, including cleanup disposition and reviewer receipt; no app ownership.

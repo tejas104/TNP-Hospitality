@@ -1,3 +1,9 @@
+# Current foundation — both AI reviews PASS at d8473f8
+
+Sol and user-relayed Sonnet PASS at d8473f888cc70819ff8a149f3544e81a6b6ea36b; no further AI review for unchanged code. P independently repeated typecheck successfully with the existing local compiler and no output generation. B lease PAUSED. Human/domain approvals, foundation integration authorization and completed integration are not yet recorded. See STATUS and received manifest for exact evidence/limitations.
+
+## Historical TASK record
+
 # Current foundation — PAUSED at FIX-03 handoff
 
 User reports completion at d8473f888cc70819ff8a149f3544e81a6b6ea36b; P fetched and verified exact ref, clean worktree and two-file boundary. Original B lease PAUSED at handoff; the historical reopened authority below has expired. Independent Sol focused re-review PASS, with report and exact limitations preserved; Sonnet and human/domain dispositions pending. No source edits or consumer launches follow from this status update.
