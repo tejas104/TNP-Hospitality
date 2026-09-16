@@ -1,0 +1,198 @@
+.plannerRoot {
+  overflow-x: clip;
+}
+
+.plannerRoot :global(.portal-hero),
+.plannerRoot :global(.portal-hero > div) {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.entrySection {
+  background: #f5f1e7;
+  padding: clamp(64px, 9vw, 120px) clamp(20px, 5vw, 76px) 42px;
+}
+
+.sectionHeader {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(220px, 0.72fr) minmax(0, 1.28fr);
+  margin-bottom: 30px;
+}
+
+.sectionHeader > p:first-child {
+  grid-row: 1 / span 2;
+}
+.sectionHeader h2 {
+  color: #173321;
+  font-family: Georgia, serif;
+  font-size: clamp(2.8rem, 5.5vw, 5.8rem);
+  font-weight: 400;
+  letter-spacing: -0.055em;
+  line-height: 0.92;
+  margin: 0;
+}
+.sectionHeader > p:last-child {
+  color: #66716d;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 680px;
+}
+
+.referenceState {
+  align-items: center;
+  background: #e8eadf;
+  color: #4e5b57;
+  display: flex;
+  gap: 10px;
+  margin: 0 0 22px auto;
+  max-width: 760px;
+  min-height: 46px;
+  padding: 10px 14px;
+}
+.referenceState i {
+  background: #0f6b68;
+  border-radius: 50%;
+  height: 9px;
+  width: 9px;
+}
+.referenceState i[data-state='loading'] {
+  animation: pulse 1s infinite alternate;
+  background: #bba879;
+}
+.referenceState i[data-state='error'] {
+  background: #9a3d35;
+}
+.referenceState i[data-state='empty'] {
+  background: #7d755e;
+}
+.referenceState span {
+  flex: 1;
+  font-size: 0.82rem;
+}
+.referenceState button,
+.retry {
+  background: transparent;
+  border: 0;
+  color: #084c49;
+  font-weight: 900;
+  text-decoration: underline;
+}
+
+.forms {
+  align-items: start;
+  display: grid;
+  gap: 22px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.forms form {
+  min-width: 0;
+}
+.formCopy {
+  color: #66716d;
+  line-height: 1.6;
+  margin: 0 0 8px;
+}
+.inlineFields {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1.4fr 0.6fr;
+}
+.fieldError {
+  color: #9a3d35;
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.forms [aria-invalid='true'] {
+  border-color: #9a3d35;
+}
+
+.success,
+.failure {
+  align-items: flex-start;
+  display: flex;
+  gap: 10px;
+  padding: 13px;
+}
+.success {
+  background: rgb(15 107 104 / 11%);
+  color: #173321;
+}
+.failure {
+  background: rgb(154 61 53 / 10%);
+  color: #762d27;
+}
+.success svg,
+.failure svg {
+  flex: 0 0 auto;
+  width: 19px;
+}
+.success p,
+.failure p {
+  line-height: 1.45;
+  margin: 3px 0 0;
+}
+.retry {
+  align-items: center;
+  display: inline-flex;
+  gap: 7px;
+  justify-self: start;
+  min-height: 38px;
+}
+
+@keyframes pulse {
+  to {
+    opacity: 0.35;
+    transform: scale(0.78);
+  }
+}
+
+@media (max-width: 900px) {
+  .sectionHeader,
+  .forms {
+    grid-template-columns: 1fr;
+  }
+  .sectionHeader > p:first-child {
+    grid-row: auto;
+  }
+  .referenceState {
+    max-width: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .plannerRoot {
+    padding-bottom: 132px;
+  }
+
+  .plannerRoot :global(.portal-hero h1) {
+    font-size: clamp(2.1rem, 10vw, 2.5rem);
+    max-width: calc(100vw - 32px);
+    overflow-wrap: anywhere;
+  }
+
+  .plannerRoot :global(.portal-hero > div) {
+    box-sizing: border-box;
+    overflow: hidden;
+    padding-inline: 16px;
+    width: 100%;
+  }
+
+  .plannerRoot :global(.portal-hero p) {
+    max-width: calc(100vw - 32px);
+  }
+
+  .entrySection {
+    padding-inline: 16px;
+  }
+  .inlineFields {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .referenceState i[data-state='loading'] {
+    animation: none;
+  }
+}
