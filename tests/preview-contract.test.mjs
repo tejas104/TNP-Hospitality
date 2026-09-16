@@ -354,43 +354,94 @@ test('attendance corrections preserve caller evidence and invalidate or escalate
 });
 
 test('worker payout queries project mixed batches without mutating the operations ledger', async () => {
-  const { service, store } = await setup();
+  const { service } = await setup();
   const workerOne = value(await service.listPayouts('tnp-demo-worker-001')).items;
   assert.equal(workerOne.length, 2);
   assert.equal(workerOne.every((item) => item.workerId === 'tnp-demo-worker-001'), true);
   assert.equal(workerOne.some((item) => item.workerId === 'tnp-demo-worker-003'), false);
+  assert.deepEqual(workerOne.find((item) => item.id === 'tnp-demo-payout-001').earningIds, ['tnp-demo-earning-001']);
+  assert.equal(workerOne.find((item) => item.id === 'tnp-demo-payout-001').totalPaise, 225000);
+  const explicitEmptyBatch = workerOne.find((item) => item.id === 'tnp-demo-payout-005');
+  assert.deepEqual(explicitEmptyBatch.earningIds, []);
+  assert.equal(explicitEmptyBatch.totalPaise, 180000);
   const workerThree = value(await service.listPayouts('tnp-demo-worker-003')).items;
   assert.deepEqual(workerThree.map((item) => item.id), ['tnp-demo-payout-002']);
   assert.deepEqual(value(await service.listPayouts('tnp-demo-worker-006')).items, []);
-  assert.equal(value(await service.listPayouts()).items.length, 5);
+  assert.deepEqual(value(await service.listPayouts('')).items, []);
+  assert.deepEqual(value(await service.listPayouts('   ')).items, []);
+  const ordinaryOperations = value(await service.listPayouts()).items;
+  assert.equal(ordinaryOperations.length, 5);
+  assert.equal(ordinaryOperations.some((item) => item.totalPaise === 225000), true);
 
-  await arrange(store, 'mixed-worker-payout', (records) => {
+  const storage = new MemoryPreviewStorage();
+  const mixed = await setup(storage);
+  await arrange(mixed.store, 'mixed-worker-payout', (records) => {
     const workerThreeEarning = records.earnings.find((item) => item.id === 'tnp-demo-earning-002');
     workerThreeEarning.grossPaise = 90000;
     workerThreeEarning.netPaise = 90000;
-    const mixedBatch = records.payouts.find((item) => item.id === 'tnp-demo-payout-001');
-    mixedBatch.earningIds = ['tnp-demo-earning-001', 'tnp-demo-earning-002'];
-    mixedBatch.totalPaise = 315000;
+    const batch = records.payouts.find((item) => item.id === 'tnp-demo-payout-001');
+    batch.earningIds = ['tnp-demo-earning-001', 'tnp-demo-earning-002'];
+    batch.totalPaise = 315000;
   });
 
-  const storedBeforeQueries = (await store.snapshot()).records.payouts;
-  const operationsBatch = value(await service.listPayouts()).items.find((item) => item.id === 'tnp-demo-payout-001');
-  assert.deepEqual(operationsBatch.earningIds, ['tnp-demo-earning-001', 'tnp-demo-earning-002']);
-  assert.equal(operationsBatch.totalPaise, 315000);
+  const mixedWorkerOne = value(await mixed.service.listPayouts('tnp-demo-worker-001')).items.find((item) => item.id === 'tnp-demo-payout-001');
+  assert.deepEqual(mixedWorkerOne.earningIds, ['tnp-demo-earning-001']);
+  assert.equal(mixedWorkerOne.totalPaise, 225000);
+  const mixedWorkerThree = value(await mixed.service.listPayouts('tnp-demo-worker-003')).items.find((item) => item.id === 'tnp-demo-payout-001');
+  assert.deepEqual(mixedWorkerThree.earningIds, ['tnp-demo-earning-002']);
+  assert.equal(mixedWorkerThree.totalPaise, 90000);
 
-  const workerOneMixed = value(await service.listPayouts('tnp-demo-worker-001')).items.find((item) => item.id === operationsBatch.id);
-  assert.deepEqual(workerOneMixed.earningIds, ['tnp-demo-earning-001']);
-  assert.equal(workerOneMixed.totalPaise, 225000);
+  await arrange(mixed.store, 'duplicate-worker-payout', (records) => {
+    const batch = records.payouts.find((item) => item.id === 'tnp-demo-payout-001');
+    batch.earningIds = ['tnp-demo-earning-001', 'tnp-demo-earning-001', 'tnp-demo-earning-002'];
+  });
+  const duplicateWorkerOne = value(await mixed.service.listPayouts('tnp-demo-worker-001')).items.find((item) => item.id === 'tnp-demo-payout-001');
+  assert.deepEqual(duplicateWorkerOne.earningIds, ['tnp-demo-earning-001']);
+  assert.equal(duplicateWorkerOne.totalPaise, 225000);
+  const duplicateWorkerThree = value(await mixed.service.listPayouts('tnp-demo-worker-003')).items.find((item) => item.id === 'tnp-demo-payout-001');
+  assert.deepEqual(duplicateWorkerThree.earningIds, ['tnp-demo-earning-002']);
+  assert.equal(duplicateWorkerThree.totalPaise, 90000);
+
+  await arrange(mixed.store, 'multiple-and-dangling-payout', (records) => {
+    records.earnings.push({
+      ...records.earnings.find((item) => item.id === 'tnp-demo-earning-001'),
+      id: 'tnp-demo-earning-005',
+      netPaise: 25000,
+      grossPaise: 25000,
+      deductionsPaise: 0,
+    });
+    const batch = records.payouts.find((item) => item.id === 'tnp-demo-payout-001');
+    batch.earningIds = ['tnp-demo-earning-001', 'tnp-demo-earning-005', 'tnp-demo-earning-missing', 'tnp-demo-earning-002'];
+    batch.totalPaise = 340000;
+  });
+
+  const storedBeforeQueries = (await mixed.store.snapshot()).records.payouts;
+  const operationsBeforeQueries = value(await mixed.service.listPayouts()).items;
+  const operationsBatch = operationsBeforeQueries.find((item) => item.id === 'tnp-demo-payout-001');
+  assert.deepEqual(operationsBatch.earningIds, ['tnp-demo-earning-001', 'tnp-demo-earning-005', 'tnp-demo-earning-missing', 'tnp-demo-earning-002']);
+  assert.equal(operationsBatch.totalPaise, 340000);
+
+  const workerOneMixed = value(await mixed.service.listPayouts('tnp-demo-worker-001')).items.find((item) => item.id === operationsBatch.id);
+  assert.deepEqual(workerOneMixed.earningIds, ['tnp-demo-earning-001', 'tnp-demo-earning-005']);
+  assert.equal(workerOneMixed.totalPaise, 250000);
   assert.equal(workerOneMixed.earningIds.includes('tnp-demo-earning-002'), false);
-  assert.notEqual(workerOneMixed.totalPaise, 315000);
+  assert.equal(workerOneMixed.earningIds.includes('tnp-demo-earning-missing'), false);
 
-  const workerThreeMixed = value(await service.listPayouts('tnp-demo-worker-003')).items.find((item) => item.id === operationsBatch.id);
+  const workerThreeMixed = value(await mixed.service.listPayouts('tnp-demo-worker-003')).items.find((item) => item.id === operationsBatch.id);
   assert.deepEqual(workerThreeMixed.earningIds, ['tnp-demo-earning-002']);
   assert.equal(workerThreeMixed.totalPaise, 90000);
   assert.equal(workerThreeMixed.earningIds.includes('tnp-demo-earning-001'), false);
-  assert.notEqual(workerThreeMixed.totalPaise, 315000);
+  assert.equal(workerThreeMixed.earningIds.includes('tnp-demo-earning-missing'), false);
 
-  assert.deepEqual((await store.snapshot()).records.payouts, storedBeforeQueries);
+  assert.deepEqual((await mixed.store.snapshot()).records.payouts, storedBeforeQueries);
+  assert.deepEqual(value(await mixed.service.listPayouts()).items, operationsBeforeQueries);
+
+  const reloaded = await setup(storage);
+  assert.deepEqual(value(await reloaded.service.listPayouts()).items, operationsBeforeQueries);
+  const reloadedWorkerOne = value(await reloaded.service.listPayouts('tnp-demo-worker-001')).items.find((item) => item.id === operationsBatch.id);
+  assert.deepEqual(reloadedWorkerOne.earningIds, ['tnp-demo-earning-001', 'tnp-demo-earning-005']);
+  assert.equal(reloadedWorkerOne.totalPaise, 250000);
+  assert.deepEqual(value(await reloaded.service.listPayouts('')).items, []);
 });
 
 test('ordinary and reset ledgers survive reload and enforce the normative generation protocol', async () => {

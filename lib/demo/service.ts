@@ -193,7 +193,8 @@ export class DemoPreviewService implements PreviewService {
   listEarnings(workerId?: string, options?: QueryOptions) { return this.query('earnings', options, (r) => page(r.earnings.filter((x) => !workerId || x.workerId === workerId)), page<Earning>([])); }
   listPayouts(workerId?: string, options?: QueryOptions) {
     return this.query('payouts', options, (records) => {
-      if (!workerId) return page(records.payouts);
+      if (workerId === undefined) return page(records.payouts);
+      if (!workerId.trim()) return page([]);
       const workerEarnings = new Map(
         records.earnings
           .filter((earning) => earning.workerId === workerId)
@@ -202,7 +203,7 @@ export class DemoPreviewService implements PreviewService {
       const payouts = records.payouts.flatMap((payout) => {
         // Empty synthetic legacy batches have no earning reference to derive; retain their existing worker association.
         if (!payout.earningIds.length) return payout.workerId === workerId ? [{ ...payout }] : [];
-        const earnings = payout.earningIds.flatMap((earningId) => {
+        const earnings = [...new Set(payout.earningIds)].flatMap((earningId) => {
           const earning = workerEarnings.get(earningId);
           return earning ? [earning] : [];
         });
