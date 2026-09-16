@@ -16,6 +16,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { navLinks, portalLinks } from '@/data/tnp';
+import { PreviewControls } from '@/components/tnp/shared/PreviewControls';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -195,10 +196,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
       </header>
-      <div className="preview-notice" role="note">
-        Synthetic preview data. Do not enter real personal information. No live verification,
-        tracking or payments.
-      </div>
+      <PreviewControls />
       <PortalSwitcher key={pathname} pathname={pathname} />
       <MobileMenu open={menuOpen} />
       {children}
