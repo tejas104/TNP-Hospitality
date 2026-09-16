@@ -1,3 +1,5 @@
+Current execution update: foundation integrated and approved at e6025cb0d16c433c0d29745d3eea1f9618718a67, published main9d3483d4bfa1f4ebfc8f3fc7c519290a4ad8796d. A/D individual Ready records supersede the historical draft/pending text below when issued. B-public/C remain Draft. Current STATUS/LANES and exact TASK govern.
+
 Current update: both Sol and Sonnet AI gates PASS at d8473f888cc70819ff8a149f3544e81a6b6ea36b. Awaiting human/domain decision and integration authority only; no repeat AI review of unchanged code. All frontend packets stay Draft until actual integrated baseline and Ready leases exist.
 
 Latest foundation status: d8473f888cc70819ff8a149f3544e81a6b6ea36b fetched and independently re-reviewed by Sol: PASS within FIX-03 scope. Sonnet final delta review and human/domain approvals remain pending. All four frontend packets remain Draft and unleased until reviewed integration. Historical failing-SHA and correction-lease statements below are superseded by current STATUS/LANES.

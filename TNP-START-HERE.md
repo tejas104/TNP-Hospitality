@@ -1,9 +1,7 @@
-# TNP — current next action
+# TNP — frontend milestones after integrated foundation
 
-Both AI gates now PASS at d8473f888cc70819ff8a149f3544e81a6b6ea36b: independent Sol and user-relayed Sonnet final payout review. P independently repeated project typecheck successfully using the existing local compiler. No further AI review is needed for unchanged reviewed code.
+Foundation is approved, integrated and pushed. Read current STATUS/LANES and the issued Ready task, not old foundation correction prompts. Initial lanes are A on Anjaneya Laptop1 and D on Kartik Laptop2. P supplies each full LAUNCH_SHA after its Ready commit is published; initial worktree HEAD must equal that SHA. Do not use a moving main as a substitute.
 
-Obtain one combined human decision: Kartik disposition, H1/H2 shared-semantics approval and explicit authority for P to integrate/push the reviewed foundation plus pending metadata and publish necessary Ready/Building registers. The pasted Sonnet report explicitly did not grant those approvals. Main remains4842d2e; foundation is not integrated. Merge preview was conflict-free and preserved metadata, but no branch was changed.
+Use docs/tasks/TNP-A-M1.md or docs/tasks/TNP-D-M1.md only when that file is Ready and matches the receiving session/lease. Each contains Prompt1 and Prompt2. Complete/check/push checkpoint1, continue Prompt2 without formal review, then check/push final fixed SHA and pause. P fetches for one consolidated review window. Shared contract/ownership blockers escalate early. B-public and C remain Draft until human capacity frees.
 
-After approval: preserve authoritative registers, integrate exact reviewed foundation, run appropriate integrated checks, verify remote integrated SHA, then issue actual Ready A/D launch records. B-public/C follow as human capacity permits. All four existing two-prompt packets remain Draft until their recorded source/launch SHAs and leases exist. Do not start builders from an unintegrated feature tip.
-
-No deployment or production operation authorized. Review and cleanup evidence remains in docs/reviews/received and docs/CLEANUP.md.
+No deployment. Preserve responsive web, approved visual composition and React/Vinext/Vite/Nitro. Synthetic preview is not production finance, KYC, GPS or authorization. Read evidence/limitations in STATUS; no repeated bootstrap or unchanged foundation AI audit.

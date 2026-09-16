@@ -1,3 +1,9 @@
+# Foundation COMPLETE — integrated and approved
+
+Final reviewed SHA d8473f888cc70819ff8a149f3544e81a6b6ea36b; integrated merge e6025cb0d16c433c0d29745d3eea1f9618718a67; published main9d3483d4bfa1f4ebfc8f3fc7c519290a4ad8796d. Both AI gates and user-relayed human approval recorded; integrated checks PASS with3 inherited lint warnings. B writer lease CLOSED. Historical pending/reopened/paused fields below are provenance, not active authority. No more foundation implementation or review is dispatched by this task.
+
+## Historical task record
+
 # Current foundation — both AI reviews PASS at d8473f8
 
 Sol and user-relayed Sonnet PASS at d8473f888cc70819ff8a149f3544e81a6b6ea36b; no further AI review for unchanged code. P independently repeated typecheck successfully with the existing local compiler and no output generation. B lease PAUSED. Human/domain approvals, foundation integration authorization and completed integration are not yet recorded. See STATUS and received manifest for exact evidence/limitations.
