@@ -10,7 +10,7 @@ Baseline SHA: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
 Dependencies: none; root tracked tree clean before task; user authorized direct bootstrap in this session.
 Mode: documentation/governance and frontend-preview planning; no production operation.
 Risk: architecture/operating contract.
-Astra gate: REQUIRED in separate independent session at fixed commit.
+Astra gate: REPLACED by fresh independent Sol review at fixed commit, per explicit user approval on 2026-09-16. Do not label this an Astra review.
 Opposite-model reviewer: Claude, actual selected version and reviewer session pending.
 Independent human reviewer: Kartik.
 Writer lease: B reopened for P for the user-requested supplied Claude/Astra review correction and D:-path revision; pauses again at the new fixed review handoff. No other builder launched and no external writer lease claimed.
@@ -22,7 +22,7 @@ Local documentation validation script under docs/checks; local evidence under do
 
 ## Do not modify
 app/**, components/**, data/**, hooks/**, lib/**, public/**, package.json, package-lock.json, framework/hosting/lint/TypeScript configs, original user files or unrelated deliverables. No Claude installation/config/credentials changes.
-No application fixes, framework/database/provider migration, real services, main merge or deployment. User explicitly authorized sharing this bootstrap via GitHub; P may push codex/tnp-bootstrap and immutable bootstrap review tags for this correction cycle (review-01 remains unchanged; new review-02). No blanket future branch-push permission.
+No application fixes, framework/database/provider migration, real services, main merge or deployment. User explicitly authorized sharing this bootstrap via GitHub; P may push codex/tnp-bootstrap and immutable bootstrap review tags for this correction cycle (review-01/review-02 remain unchanged; new review-03). No blanket future branch-push permission.
 
 ## Acceptance
 Canonical documents reflect two humans and A/B/C/D plus independent R; correct current baseline and pending scope decisions; all 20 screen sets audited with evidence; S0/S1 ownership and dependencies explicit; future task fields complete or visibly Draft; selected skills and references retain hashes/provenance; concise next-step dispatch/review prompts; no unintended app diff.
@@ -38,6 +38,6 @@ Browser reference observation is evidence only; no claim of full F01–F20 accep
 
 ## Review/integration
 Record fixed local HEAD SHA in the human handoff. Review docs/reviews/TNP-BOOT-01.md and docs/DISPATCH.md.
-Kartik arranges read-only Claude review and separate Astra architecture gate, disposes findings, and approves integration only after fixes/re-review.
+Kartik arranges read-only Claude review and separate Sol architecture gate, disposes findings, and approves integration only after fixes/re-review.
 Existing lint defects are assigned to S0. Any exception to an all-green app merge gate must be explicitly acknowledged as a docs-only inherited-baseline exception; never silently waive it.
 No dependent builder is running. Bootstrap must be reviewed/integrated before S0; S0 before S1; S1 before parallel consumers.

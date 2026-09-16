@@ -16,8 +16,8 @@ Feature CSS is local to each extracted portal directory; do not race on globals.
 S0 uses current styling; it does not implement all incomplete business workflows or redesign Operations.
 
 ## Truthful preview
-Use a visible “Client review preview — sample data” label and explicit reset behavior.
-Replace misleading geofence demonstration language with venue context/attendance exceptions in its assigned feature task. GPS missing and outside-radius are distinct. Decorative QR is a preview pass until a real attendance task is approved.
+S0 adds this visible label: “Synthetic preview data. Do not enter real personal information. No live verification, tracking or payments.” S1 later supplies explicit reset controls as defined in its contract.
+S0 performs the copy-only replacement of misleading live/geofence/verification/distance claims specified in S0-SHARED-UI.md; later feature tasks implement the actual preview workflows. GPS missing and outside-radius are distinct. Decorative QR is a preview pass until a real attendance task is approved.
 Ratings trigger review, not automatic permanent deactivation. Document counters and stock media must not imply approved launch behavior or supplied TNP assets.
 No dead primary actions, unexplained placeholders or links to nonexistent destinations earn readiness credit.
 

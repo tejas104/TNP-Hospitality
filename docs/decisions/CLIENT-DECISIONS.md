@@ -17,3 +17,6 @@ Anjaneya's current laptop runs P plus A/B Codex; Kartik's laptop runs C Claude a
 
 ## Review correction and current user clarification
 Both laptop repositories and all planned task/review worktrees use D:. Exact host mapping is in LAUNCH-PROTOCOL.md. Initial development never needs a reopened correction lease or earlier findings. Received bootstrap findings are stored, and only P corrects the bootstrap. DEC-14..16 extend pending questions; no client policy approval is inferred. Review candidate sharing continues under the user's instruction to push the prepared bootstrap; no main merge or production deployment is inferred.
+
+## Confirmed review/model policy change (2026-09-16)
+User explicitly answered "Yes—use Sol + Sonnet" to whether fresh independent Sol may replace the mandatory Astra gate with separate Sonnet review. This applies to the current bootstrap and subsequent high-risk gates; independent review and human approval remain. It is a model substitution, not retroactive approval of an interrupted/mixed-model report. User also requested milestone batching and branch checkpoint sharing; see REVIEW-CADENCE.md. Exact runtime model availability still must be observed.

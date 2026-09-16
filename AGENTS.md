@@ -28,8 +28,11 @@ Use labelled synthetic preview data; no mock KYC/payment/location result proves 
 Server authorization, atomic allocation/overlap, attendance evidence, audit and idempotent finance are production gates; UI mocks do not satisfy them.
 
 ## Review and completion
-Codex-authored work normally gets Claude review; Claude-authored work gets Codex review. Architecture/security/concurrency/payments/financial-integrity/difficult cross-module changes require a fresh independent Astra review at a fixed commit.
+Codex-authored work normally gets Claude review; Claude-authored work gets Codex review. Architecture/security/concurrency/payments/financial-integrity/difficult cross-module changes require a fresh independent Sol review at a fixed commit.
 Humans retain review, testing, conflict resolution and integration responsibility. Kartik reviews Anjaneya's changes; Anjaneya reviews Kartik's. Domain owners also participate for sensitive changes.
 Review starts read-only. Builder fixes findings. Reviewer edits become an implementation task with a fresh independent review; no self-certification.
 Report exact changed files, commit, commands/results, preview evidence, limitations and lease handoff. Do not merge, push, publish, change production or move funds unless explicitly authorized for that action.
 Relevant custom project skills are under .agents/skills; their scope is subordinate to the TASK. No automatic subagents or extra writers. Do not reinstall Claude skills.
+
+## Current milestone cadence
+Read docs/REVIEW-CADENCE.md. S0/S1 are sequential phases of TNP-FOUND-01 with one foundation review before consumers. Later per-lane milestones must be issued explicitly. This supersedes old per-slice review timing only; no Draft task is launched and no mandatory model gate is silently waived. Routine factual Ready/Building registers are serialized onto main as in LAUNCH-PROTOCOL.md.

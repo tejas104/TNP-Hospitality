@@ -10,15 +10,15 @@ Audited source baseline: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
 Implementation baseline SHA: PENDING integrated source/dependency baseline (SOURCE_SHA); do not start from the old audit SHA.
 Launch-contract revision: PENDING; P supplies the full LAUNCH_SHA after committing the Ready TASK. This file does not embed its own commit hash.
 Review sharing: PENDING authorized pusher, branch/ref and fixed SHA handoff; no force-push or moving reviewed tags.
-Reviewer host/availability: PENDING appointment; preferred Claude and Astra hosts are Kartik Laptop 2, Codex review of C on Anjaneya Laptop 1.
+Reviewer host/availability: PENDING appointment; preferred Sonnet and Sol reviewer hosts are Kartik Laptop 2, Codex review of C on Anjaneya Laptop 1.
 Launch protocol: docs/LAUNCH-PROTOCOL.md; initial HEAD must equal LAUNCH_SHA, not SOURCE_SHA.
 Dependencies: TNP-BOOT-01. Verify all transitive prerequisite commits through that dependency; never depend on this task itself.
 Merged dependency evidence: NONE yet; record each merge SHA and verify ancestry with git merge-base --is-ancestor before marking Ready.
 Mode: labelled synthetic frontend preview only.
-Risk: Architecture/shared UI; independent Astra REQUIRED.
+Risk: Architecture/shared UI; independent Sol REQUIRED.
 Opposite-model reviewer: Claude; actual reviewer session/model and availability pending.
 Independent human reviewer: Kartik; schedule/acceptance pending.
-Astra gate: REQUIRED at a fixed commit in a fresh session, independent of author.
+Astra gate: REPLACED by fresh independent Sol review at fixed commit, per explicit user approval on 2026-09-16. Do not label this an Astra review.
 Canonical contract: ../contracts/S0-SHARED-UI.md.
 
 ## Owned paths/contracts/resources
@@ -46,3 +46,6 @@ Task-specific: The S1 scenario test is not applicable yet. Do not add or run an 
 ## Launch and handoff
 P records actual host/path/model, dependency evidence, reviewer availability, SOURCE_SHA, sharing authority and a reserved exclusive lease in the Ready contract. P commits it and supplies LAUNCH_SHA externally. Create the task worktree at LAUNCH_SHA and verify docs/LAUNCH-PROTOCOL.md. Mark Building only after observed launch. Initial implementation needs no prior task review findings or reopened lease; those apply only to a correction cycle.
 At completion: changed files, fixed HEAD_SHA, commands/results, browser evidence, unresolved gaps and review target. Stop writing at review handoff. Builder fixes findings under the same bounded task; new HEAD requires relevant re-review.
+
+## Milestone dispatch override
+The user selected batched milestone review. This file is now a phase specification inside TNP-FOUND-01, not a separately dispatched task. Its standalone branch/lease/dependency-merge instructions are inactive while that milestone is used. S0 checks precede S1 in the same worktree; one formal foundation review/integration follows S1. Read REVIEW-CADENCE.md and TNP-FOUND-01.md.

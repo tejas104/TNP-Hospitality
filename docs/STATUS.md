@@ -8,3 +8,5 @@ All application tasks remain Draft and have no writer lease. No Ready packet has
 Coverage remains 14 partial, 6 missing, 0 certified. Baseline npm install/typecheck/build passed; lint has 8 inherited errors/3 warnings. Correction is docs-only; see BASELINE.md for actual app checks. No new application pass inferred.
 Next: fresh Claude and Astra review of corrected candidate, Kartik human disposition, authorized integration. P then commits a populated Ready contract and supplies its LAUNCH_SHA. Do not repeatedly ask Draft developers to launch.
 Kickoff, Day3 slot/timezone, client decisions DEC-01..16, exact builder model/effort, reviewer slots and production providers remain pending. No silent scope reductions. Reference demo deployed SHA unknown.
+
+Review-02 reports received: Claude requests M1 plus L1-L4 corrections; mixed-model Codex report identifies no content defect but cannot satisfy the fresh Astra gate. P corrected these in review-03. Models Sol/Sonnet preferred; user approved fresh independent Sol + Sonnet as the required review pair. TNP-FOUND-01 replaces separate S0/S1 dispatch, remains Draft/no lease. No application branch exists or launch claimed.

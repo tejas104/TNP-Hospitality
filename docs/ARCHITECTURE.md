@@ -22,4 +22,4 @@ H1 owns demand and presentation; H2 owns platform/workforce/finance. This is a c
 ## Future mobile
 Reuse domain rules, server authorization and API DTOs. Use stable IDs, ISO timestamps/timezones, integer paise, structured errors/pagination and idempotent mutations. Keep provider secrets/server models off clients.
 No native UI, mobile endpoints without a current use, background geofence promise or premature framework migration.
-See architecture/decisions/ADR-0001-web-preview-boundary.md. Independent Astra review is pending; this architect cannot approve its own boundary proposal.
+See architecture/decisions/ADR-0001-web-preview-boundary.md. Independent Sol review is pending; this architect cannot approve its own boundary proposal.

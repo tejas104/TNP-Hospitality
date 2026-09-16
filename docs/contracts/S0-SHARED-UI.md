@@ -1,7 +1,7 @@
 # S0 — Shared portal extraction and theme ownership
 
 Status: Draft; exact intended paths below, implementation baseline is the future integrated bootstrap SHA.
-Owner: B / Anjaneya. Review: Claude, Kartik and independent Astra. No parallel owner.
+Owner: B / Anjaneya. Review: Sonnet, Kartik and independent Sol. No parallel owner.
 
 ## Existing source and destinations
 | Existing export | S0 destination |

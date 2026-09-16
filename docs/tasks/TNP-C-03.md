@@ -10,15 +10,15 @@ Audited source baseline: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
 Implementation baseline SHA: PENDING integrated source/dependency baseline (SOURCE_SHA); do not start from the old audit SHA.
 Launch-contract revision: PENDING; P supplies the full LAUNCH_SHA after committing the Ready TASK. This file does not embed its own commit hash.
 Review sharing: PENDING authorized pusher, branch/ref and fixed SHA handoff; no force-push or moving reviewed tags.
-Reviewer host/availability: PENDING appointment; preferred Claude and Astra hosts are Kartik Laptop 2, Codex review of C on Anjaneya Laptop 1.
+Reviewer host/availability: PENDING appointment; preferred Sonnet and Sol reviewer hosts are Kartik Laptop 2, Codex review of C on Anjaneya Laptop 1.
 Launch protocol: docs/LAUNCH-PROTOCOL.md; initial HEAD must equal LAUNCH_SHA, not SOURCE_SHA.
 Dependencies: TNP-C-02. Verify all transitive prerequisite commits through that dependency; never depend on this task itself.
 Merged dependency evidence: NONE yet; record each merge SHA and verify ancestry with git merge-base --is-ancestor before marking Ready.
 Mode: labelled synthetic frontend preview only.
-Risk: Sensitive attendance/financial presentation; independent Astra REQUIRED for semantic integrity.
+Risk: Sensitive attendance/financial presentation; independent Sol REQUIRED for semantic integrity.
 Opposite-model reviewer: fresh Codex session; actual model and availability pending.
 Independent human reviewer: Anjaneya; schedule/acceptance pending.
-Astra gate: REQUIRED at a fixed commit in a fresh session, independent of author.
+Astra gate: REPLACED by fresh independent Sol review at fixed commit, per explicit user approval on 2026-09-16. Do not label this an Astra review.
 Canonical contract: ../contracts/S0-SHARED-UI.md and ../contracts/S1-PREVIEW-INTERFACES.md.
 
 ## Owned paths/contracts/resources
