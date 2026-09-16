@@ -21,7 +21,7 @@ export function AdminOperations() {
           'Freelancers',
           'Requirements',
           'Attendance',
-          'Live Workforce',
+          'Sample Workforce Preview',
           'Ratings',
           'Payouts',
           'RSVP',

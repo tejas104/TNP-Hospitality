@@ -21,12 +21,12 @@ export type PreviewOutcome<T> =
 
 export type QueryOptions = { cursor?: string; variant?: PreviewVariant };
 
-export type MutationRequest<Operation extends string, Payload> = {
+export type StoreMutationRequest = {
   requestKey: string;
   expectedGeneration: number;
   actorId: string;
-  operation: Operation;
-  payload: Payload;
+  operation: string;
+  payload: unknown;
 };
 
 export type ResetPreviewRequest = {
@@ -138,6 +138,8 @@ export type Assignment = {
   workerId: string;
   response: AssignmentResponse;
   allocationState: 'active' | 'replaced' | 'cancelled';
+  payRatePaiseSnapshot: number;
+  payUnitSnapshot: PayUnit;
   createdAt: IsoTimestamp;
 };
 
@@ -169,16 +171,22 @@ export type Attendance = {
 export type Earning = {
   id: string;
   assignmentId: string;
+  attendanceId: string | null;
   workerId: string;
+  estimatedGrossPaise: number;
   grossPaise: number;
   deductionsPaise: number;
   netPaise: number;
   proposedTaxLabel: string;
-  status: 'draft' | 'supervisor-approved' | 'finance-approved' | 'processing' | 'paid';
+  amountState: 'estimated' | 'earned' | 'invalidated' | 'adjustment-review';
+  status: 'pending-verification' | 'draft' | 'supervisor-approved' | 'finance-approved' | 'processing' | 'paid' | 'invalidated' | 'adjustment-review';
+  supervisorApproval: SampleApprovalEvidence | null;
+  financeApproval: SampleApprovalEvidence | null;
 };
 
 export type Payout = {
   id: string;
+  workerId: string;
   month: string;
   earningIds: string[];
   totalPaise: number;
@@ -219,6 +227,60 @@ export type Rating = { id: string; workerId: string; eventId: string; score: num
 export type GuestSummary = { id: string; bookingId: string; eventId: string; expectedGuests: number; rsvpYes: number; rsvpNo: number; rsvpPending: number };
 export type EventPass = { id: string; eventId: string; assignmentId: string; token: string; expiresAt: IsoTimestamp };
 export type AuditEntry = { id: string; actorId: string; action: string; reason: string; createdAt: IsoTimestamp; entityId: string };
+export type SampleApprovalEvidence = {
+  actorId: string;
+  stage: 'supervisor' | 'finance';
+  approvedAt: IsoTimestamp;
+  assumptionLabel: 'Synthetic sample approver; production separation-of-duties policy pending';
+};
+
+export type ReplacementResult = { original: Assignment; replacement: Assignment };
+export type PreviewMutationMap = {
+  submitBooking: {
+    payload: { clientId?: string; venueId: string; eventName: string; city: string; budgetPaise: number; status?: 'draft' | 'submitted' };
+    result: Booking;
+  };
+  registerPlanner: { payload: { displayName: string; city: string }; result: Planner };
+  submitRequirement: {
+    payload: { bookingId: string; eventId: string; role: string; quantity: number; notes?: string; status?: 'draft' | 'submitted' };
+    result: Requirement;
+  };
+  submitEnquiry: { payload: { name: string; email: string; message: string }; result: Enquiry };
+  registerApplicant: { payload: { applicantId: string; displayName?: string; role: string }; result: Application };
+  submitAssessment: { payload: { applicantId: string; score: number }; result: Assessment };
+  claimOpportunity: { payload: { positionId: string; workerId: string }; result: Assignment };
+  respondToAssignment: { payload: { assignmentId: string; response: Exclude<AssignmentResponse, 'pending'> }; result: Assignment };
+  reviewApplication: { payload: { applicationId: string; decision: 'approved-sample' | 'rejected'; reason: string }; result: Application };
+  changeRole: { payload: { workerId: string; role: string; reason: string }; result: Worker };
+  recordAttendance: {
+    payload: { token: string; eventId: string; evidenceState: EvidenceState; distanceMetres?: number; note?: string };
+    result: Attendance;
+  };
+  correctAttendance: {
+    payload: { attendanceId: string; state: Attendance['state']; evidenceState: EvidenceState; reason: string; distanceMetres?: number; note?: string };
+    result: Attendance;
+  };
+  markNonresponse: { payload: { assignmentId: string; reason: string }; result: Assignment };
+  adminAssign: { payload: { positionId: string; workerId: string; reason: string }; result: Assignment };
+  replaceAssignment: { payload: { assignmentId: string; replacementWorkerId: string; reason: string }; result: ReplacementResult };
+  clientApproveQuote: { payload: { quoteId: string; expectedVersion: number }; result: Quote };
+  clientRequestQuoteRevision: { payload: { quoteId: string; expectedVersion: number; reason: string }; result: Quote };
+  reviseQuote: {
+    payload: { quoteId: string; expectedVersion: number; issuingEntity: string; reason: string; lines: Array<Omit<QuoteLine, 'id' | 'totalPaise'> & { id?: string }> };
+    result: Quote;
+  };
+  adjustEarning: { payload: { earningId: string; grossPaise: number; deductionsPaise: number; reason: string }; result: Earning };
+  approveEarning: { payload: { earningId: string; stage: 'supervisor' | 'finance' }; result: Earning };
+  setPreviewVariant: { payload: { key: string; variant: PreviewVariant }; result: { key: string; variant: PreviewVariant } };
+};
+
+export type PreviewOperation = keyof PreviewMutationMap;
+export type MutationRequest<Operation extends PreviewOperation> = Omit<StoreMutationRequest, 'operation' | 'payload'> & {
+  operation: Operation;
+  payload: PreviewMutationMap[Operation]['payload'];
+};
+export type MutationResult<Operation extends PreviewOperation> = PreviewMutationMap[Operation]['result'];
+export type AnyMutationRequest = { [Operation in PreviewOperation]: MutationRequest<Operation> }[PreviewOperation];
 
 export type ScenarioMetadata = {
   label: string;
@@ -304,6 +366,6 @@ export type PreviewService = {
   getStanding(workerId: string, options?: QueryOptions): Promise<PreviewOutcome<Worker>>;
   getMetrics(options?: QueryOptions): Promise<PreviewOutcome<Record<string, number>>>;
   listAudit(options?: QueryOptions): Promise<PreviewOutcome<Paginated<AuditEntry>>>;
-  mutate<Operation extends string, Payload>(request: MutationRequest<Operation, Payload>): Promise<PreviewOutcome<unknown>>;
+  mutate<Operation extends PreviewOperation>(request: MutationRequest<Operation>): Promise<PreviewOutcome<MutationResult<Operation>>>;
   resetPreview(request: ResetPreviewRequest): Promise<PreviewOutcome<ResetReceipt>>;
 };

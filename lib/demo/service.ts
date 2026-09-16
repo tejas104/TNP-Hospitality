@@ -6,14 +6,17 @@ import type {
   Booking,
   Collection,
   Earning,
+  EvidenceState,
   GuestSummary,
   MutationRequest,
+  MutationResult,
   Opportunity,
   Paginated,
   Planner,
   Position,
   PreviewEvent,
   PreviewOutcome,
+  PreviewOperation,
   PreviewService,
   PreviewVariant,
   QueryOptions,
@@ -50,9 +53,9 @@ export const PREVIEW_OPERATIONS = {
   adjustEarning: 'adjustEarning',
   approveEarning: 'approveEarning',
   setPreviewVariant: 'setPreviewVariant',
-} as const;
+} as const satisfies { [Operation in PreviewOperation]: Operation };
 
-export type PreviewOperation = (typeof PREVIEW_OPERATIONS)[keyof typeof PREVIEW_OPERATIONS];
+export type { PreviewOperation } from '../contracts/preview.ts';
 
 function page<T>(items: T[]): Paginated<T> {
   return { items, nextCursor: null };
@@ -88,19 +91,29 @@ function queryFailure(code: string, generation: number): PreviewOutcome<never> {
   };
 }
 
-function activeAssignments(records: ScenarioRecords, positionId: string) {
-  return records.assignments.filter((item) => item.positionId === positionId && item.allocationState === 'active' && item.response !== 'not-coming');
+function activeAssignments(records: ScenarioRecords, positionId: string, excludeAssignmentId?: string) {
+  return records.assignments.filter((item) => item.id !== excludeAssignmentId && item.positionId === positionId && item.allocationState === 'active' && item.response !== 'not-coming');
 }
 
-function overlaps(records: ScenarioRecords, workerId: string, eventId: string) {
+function overlaps(records: ScenarioRecords, workerId: string, eventId: string, excludeAssignmentId?: string) {
   const event = records.events.find((item) => item.id === eventId);
   if (!event) return false;
   return records.assignments.some((assignment) => {
-    if (assignment.workerId !== workerId || assignment.allocationState !== 'active' || assignment.response === 'not-coming') return false;
+    if (assignment.id === excludeAssignmentId || assignment.workerId !== workerId || assignment.allocationState !== 'active' || assignment.response === 'not-coming') return false;
     const assignedEvent = records.events.find((item) => item.id === assignment.eventId);
     return assignedEvent ? assignedEvent.startsAt < event.endsAt && assignedEvent.endsAt > event.startsAt : false;
   });
 }
+
+const supportedEvidenceStates: EvidenceState[] = ['recorded', 'gps-denied', 'gps-missing', 'outside-radius'];
+
+type MutationDecision<T> = ReturnType<typeof ok<T>> | ReturnType<typeof fail>;
+type MutationHandler<Operation extends PreviewOperation> = (
+  records: ScenarioRecords,
+  payload: MutationRequest<Operation>['payload'],
+  actorId: string,
+) => MutationDecision<MutationResult<Operation>>;
+type MutationHandlers = { [Operation in PreviewOperation]: MutationHandler<Operation> };
 
 function workerEligibility(worker: Worker | undefined, position: Position | undefined) {
   if (!worker || !position) return 'Worker or position was not found.';
@@ -178,7 +191,7 @@ export class DemoPreviewService implements PreviewService {
   getAttendanceHistory(workerId: string, options?: QueryOptions) { return this.query('attendance', options, (r) => page(r.attendances.filter((x) => x.workerId === workerId)), page<Attendance>([])); }
   getEarning(id: string, options?: QueryOptions) { return this.one('earnings', options, (r) => r.earnings.find((x) => x.id === id), 'Earning not found.'); }
   listEarnings(workerId?: string, options?: QueryOptions) { return this.query('earnings', options, (r) => page(r.earnings.filter((x) => !workerId || x.workerId === workerId)), page<Earning>([])); }
-  listPayouts(_workerId?: string, options?: QueryOptions) { return this.query('payouts', options, (r) => page(r.payouts), page([])); }
+  listPayouts(workerId?: string, options?: QueryOptions) { return this.query('payouts', options, (r) => page(r.payouts.filter((x) => !workerId || x.workerId === workerId)), page([])); }
   listRatings(workerId: string, options?: QueryOptions) { return this.query('ratings', options, (r) => page(r.ratings.filter((x) => x.workerId === workerId)), page<Rating>([])); }
   getStanding(workerId: string, options?: QueryOptions) { return this.one('workers', options, (r) => r.workers.find((x) => x.id === workerId), 'Worker not found.'); }
   listAudit(options?: QueryOptions) { return this.query('audit', options, (r) => page(r.audit), page<AuditEntry>([])); }
@@ -193,8 +206,32 @@ export class DemoPreviewService implements PreviewService {
     }), { events: 0, positions: 0, activeAssignments: 0, coming: 0, attendanceExceptions: 0 });
   }
 
-  mutate<Operation extends string, Payload>(request: MutationRequest<Operation, Payload>): Promise<PreviewOutcome<unknown>> {
-    return this.store.commit<unknown>(request as MutationRequest<string, unknown>, (records) => this.reduce(records, request.operation, record(request.payload), request.actorId));
+  mutate<Operation extends PreviewOperation>(request: MutationRequest<Operation>): Promise<PreviewOutcome<MutationResult<Operation>>> {
+    const handlers: MutationHandlers = {
+      submitBooking: (records, payload) => this.submitBooking(records, record(payload)),
+      registerPlanner: (records, payload) => this.registerPlanner(records, record(payload)),
+      submitRequirement: (records, payload) => this.submitRequirement(records, record(payload)),
+      submitEnquiry: (records, payload) => this.submitEnquiry(records, record(payload)),
+      registerApplicant: (records, payload) => this.registerApplicant(records, record(payload)),
+      submitAssessment: (records, payload) => this.submitAssessment(records, record(payload)),
+      claimOpportunity: (records, payload, actorId) => this.allocate(records, record(payload), actorId, false),
+      respondToAssignment: (records, payload) => this.respond(records, record(payload)),
+      reviewApplication: (records, payload, actorId) => this.reviewApplication(records, record(payload), actorId),
+      changeRole: (records, payload, actorId) => this.changeRole(records, record(payload), actorId),
+      recordAttendance: (records, payload, actorId) => this.recordAttendance(records, record(payload), actorId),
+      correctAttendance: (records, payload, actorId) => this.correctAttendance(records, record(payload), actorId),
+      markNonresponse: (records, payload, actorId) => this.markNonresponse(records, record(payload), actorId),
+      adminAssign: (records, payload, actorId) => this.allocate(records, record(payload), actorId, true),
+      replaceAssignment: (records, payload, actorId) => this.replaceAssignment(records, record(payload), actorId),
+      clientApproveQuote: (records, payload) => this.clientApproveQuote(records, record(payload)),
+      clientRequestQuoteRevision: (records, payload) => this.clientRequestQuoteRevision(records, record(payload)),
+      reviseQuote: (records, payload, actorId) => this.reviseQuote(records, record(payload), actorId),
+      adjustEarning: (records, payload, actorId) => this.adjustEarning(records, record(payload), actorId),
+      approveEarning: (records, payload, actorId) => this.approveEarning(records, record(payload), actorId),
+      setPreviewVariant: (records, payload) => this.setVariant(records, record(payload)),
+    };
+    const handler = handlers[request.operation];
+    return this.store.commit(request, (records) => handler(records, request.payload, request.actorId));
   }
 
   resetPreview(request: ResetPreviewRequest) {
@@ -224,33 +261,6 @@ export class DemoPreviewService implements PreviewService {
       availability,
       eligibilityReason: workerEligibility(records.workers.find((x) => x.id === workerId), position),
     };
-  }
-
-  private reduce(records: ScenarioRecords, operation: string, payload: Record<string, unknown>, actorId: string) {
-    switch (operation) {
-      case PREVIEW_OPERATIONS.submitBooking: return this.submitBooking(records, payload);
-      case PREVIEW_OPERATIONS.registerPlanner: return this.registerPlanner(records, payload);
-      case PREVIEW_OPERATIONS.submitRequirement: return this.submitRequirement(records, payload);
-      case PREVIEW_OPERATIONS.submitEnquiry: return this.submitEnquiry(records, payload);
-      case PREVIEW_OPERATIONS.registerApplicant: return this.registerApplicant(records, payload);
-      case PREVIEW_OPERATIONS.submitAssessment: return this.submitAssessment(records, payload);
-      case PREVIEW_OPERATIONS.claimOpportunity: return this.allocate(records, payload, actorId, false);
-      case PREVIEW_OPERATIONS.adminAssign: return this.allocate(records, payload, actorId, true);
-      case PREVIEW_OPERATIONS.respondToAssignment: return this.respond(records, payload);
-      case PREVIEW_OPERATIONS.reviewApplication: return this.reviewApplication(records, payload, actorId);
-      case PREVIEW_OPERATIONS.changeRole: return this.changeRole(records, payload, actorId);
-      case PREVIEW_OPERATIONS.recordAttendance: return this.recordAttendance(records, payload, actorId);
-      case PREVIEW_OPERATIONS.correctAttendance: return this.correctAttendance(records, payload, actorId);
-      case PREVIEW_OPERATIONS.markNonresponse: return this.markNonresponse(records, payload, actorId);
-      case PREVIEW_OPERATIONS.replaceAssignment: return this.replaceAssignment(records, payload, actorId);
-      case PREVIEW_OPERATIONS.clientApproveQuote: return this.clientApproveQuote(records, payload);
-      case PREVIEW_OPERATIONS.clientRequestQuoteRevision: return this.clientRequestQuoteRevision(records, payload);
-      case PREVIEW_OPERATIONS.reviseQuote: return this.reviseQuote(records, payload, actorId);
-      case PREVIEW_OPERATIONS.adjustEarning: return this.adjustEarning(records, payload, actorId);
-      case PREVIEW_OPERATIONS.approveEarning: return this.approveEarning(records, payload, actorId);
-      case PREVIEW_OPERATIONS.setPreviewVariant: return this.setVariant(records, payload);
-      default: return fail('UNSUPPORTED_OPERATION', `Unsupported preview operation: ${operation}`);
-    }
   }
 
   private submitBooking(records: ScenarioRecords, payload: Record<string, unknown>) {
@@ -331,7 +341,17 @@ export class DemoPreviewService implements PreviewService {
     if (!reason.startsWith('Eligible')) return fail('INELIGIBLE', reason);
     if (position.status === 'unavailable' || activeAssignments(records, position.id).length >= position.quantity || position.status === 'full') return fail('POSITION_FULL', 'The opportunity is full or unavailable.');
     if (overlaps(records, workerId, position.eventId)) return fail('OVERLAP', 'The worker already has an overlapping active assignment.');
-    const assignment: Assignment = { id: `tnp-demo-assignment-${String(records.assignments.length + 1).padStart(3, '0')}`, eventId: position.eventId, positionId, workerId, response: admin ? 'coming' : 'pending', allocationState: 'active', createdAt: records.metadata.clock };
+    const assignment: Assignment = {
+      id: `tnp-demo-assignment-${String(records.assignments.length + 1).padStart(3, '0')}`,
+      eventId: position.eventId,
+      positionId,
+      workerId,
+      response: admin ? 'coming' : 'pending',
+      allocationState: 'active',
+      payRatePaiseSnapshot: position.payRatePaise,
+      payUnitSnapshot: position.payUnit,
+      createdAt: records.metadata.clock,
+    };
     records.assignments.push(assignment);
     if (admin) this.ensureEventPass(records, assignment);
     records.audit.push({ id: `tnp-demo-audit-${records.audit.length + 1}`, actorId, action: admin ? 'assignment.admin-created' : 'opportunity.claimed', reason: admin ? stringField(payload, 'reason') || 'Sample administrator allocation' : 'Worker claimed sample opportunity', createdAt: records.metadata.clock, entityId: assignment.id });
@@ -343,6 +363,18 @@ export class DemoPreviewService implements PreviewService {
     const response = payload.response;
     if (!assignment) return fail('NOT_FOUND', 'Assignment not found.');
     if (response !== 'coming' && response !== 'not-coming') return fail('VALIDATION_ERROR', 'Response must be coming or not-coming.');
+    if (assignment.allocationState !== 'active') return fail('ASSIGNMENT_INACTIVE', 'Replaced or cancelled assignments cannot be reactivated.');
+    if (assignment.response === response) return ok(assignment);
+    if (response === 'coming') {
+      const position = records.positions.find((item) => item.id === assignment.positionId);
+      const worker = records.workers.find((item) => item.id === assignment.workerId);
+      const eligibility = workerEligibility(worker, position);
+      if (!eligibility.startsWith('Eligible')) return fail('INELIGIBLE', eligibility);
+      if (!position || position.status === 'unavailable' || position.status === 'full' || activeAssignments(records, assignment.positionId, assignment.id).length >= position.quantity) {
+        return fail('POSITION_FULL', 'The opportunity is full or unavailable; the prior reservation cannot be resumed.');
+      }
+      if (overlaps(records, assignment.workerId, assignment.eventId, assignment.id)) return fail('OVERLAP', 'The worker has an overlapping active assignment.');
+    }
     assignment.response = response;
     if (response === 'coming') this.ensureEventPass(records, assignment);
     return ok(assignment);
@@ -379,22 +411,33 @@ export class DemoPreviewService implements PreviewService {
     if (!pass || pass.eventId !== eventId) return fail('WRONG_EVENT', 'This sample pass does not belong to the event.');
     if (pass.expiresAt < records.metadata.clock) return fail('EXPIRED_PASS', 'This sample pass is expired.');
     if (records.attendances.some((x) => x.assignmentId === pass.assignmentId)) return fail('DUPLICATE_SCAN', 'Attendance has already been recorded for this assignment.');
-    const assignment = records.assignments.find((x) => x.id === pass.assignmentId)!;
+    const assignment = records.assignments.find((x) => x.id === pass.assignmentId);
+    if (!assignment) return fail('NOT_FOUND', 'The assignment for this sample pass was not found.');
+    if (assignment.allocationState !== 'active') return fail('ASSIGNMENT_INACTIVE', 'Attendance cannot be recorded for a replaced or cancelled assignment.');
+    if (assignment.response !== 'coming') return fail('ASSIGNMENT_NOT_CONFIRMED', 'Attendance requires a confirmed coming response.');
+    const position = records.positions.find((item) => item.id === assignment.positionId);
+    const eligibility = workerEligibility(records.workers.find((item) => item.id === assignment.workerId), position);
+    if (!eligibility.startsWith('Eligible')) return fail('INELIGIBLE', eligibility);
     const evidenceState = payload.evidenceState;
-    if (!['recorded', 'gps-denied', 'gps-missing', 'outside-radius'].includes(String(evidenceState))) return fail('VALIDATION_ERROR', 'A supported evidence state is required.');
+    if (!supportedEvidenceStates.includes(evidenceState as EvidenceState)) return fail('VALIDATION_ERROR', 'A supported evidence state is required.');
     const attendance: Attendance = { id: `tnp-demo-attendance-${String(records.attendances.length + 1).padStart(3, '0')}`, eventId, assignmentId: assignment.id, workerId: assignment.workerId, state: evidenceState === 'recorded' ? 'present' : 'exception', evidence: { state: evidenceState as Attendance['evidence']['state'], capturedAt: records.metadata.clock, distanceMetres: Number.isInteger(payload.distanceMetres) ? Number(payload.distanceMetres) : null, note: stringField(payload, 'note') || 'Synthetic attendance evidence' }, history: [] };
     records.attendances.push(attendance);
     if (!records.earnings.some((item) => item.assignmentId === assignment.id)) {
-      const position = records.positions.find((item) => item.id === assignment.positionId)!;
+      const verified = evidenceState === 'recorded';
       records.earnings.push({
         id: `tnp-demo-earning-${String(records.earnings.length + 1).padStart(3, '0')}`,
         assignmentId: assignment.id,
+        attendanceId: attendance.id,
         workerId: assignment.workerId,
-        grossPaise: position.payRatePaise,
+        estimatedGrossPaise: assignment.payRatePaiseSnapshot,
+        grossPaise: verified ? assignment.payRatePaiseSnapshot : 0,
         deductionsPaise: 0,
-        netPaise: position.payRatePaise,
+        netPaise: verified ? assignment.payRatePaiseSnapshot : 0,
         proposedTaxLabel: 'No proposed preview deduction',
-        status: 'draft',
+        amountState: verified ? 'earned' : 'estimated',
+        status: verified ? 'draft' : 'pending-verification',
+        supervisorApproval: null,
+        financeApproval: null,
       });
     }
     records.audit.push({ id: `tnp-demo-audit-${records.audit.length + 1}`, actorId, action: 'attendance.recorded', reason: attendance.evidence.note, createdAt: records.metadata.clock, entityId: attendance.id });
@@ -405,11 +448,41 @@ export class DemoPreviewService implements PreviewService {
     const attendance = records.attendances.find((x) => x.id === stringField(payload, 'attendanceId'));
     const reason = stringField(payload, 'reason');
     const state = payload.state;
+    const evidenceState = payload.evidenceState;
     if (!attendance) return fail('NOT_FOUND', 'Attendance not found.');
-    if (!reason || (state !== 'present' && state !== 'absent' && state !== 'exception')) return fail('VALIDATION_ERROR', 'A correction state and reason are required.');
+    if (!reason || (state !== 'present' && state !== 'absent' && state !== 'exception') || !supportedEvidenceStates.includes(evidenceState as EvidenceState)) return fail('VALIDATION_ERROR', 'A correction state, supported evidence state and reason are required.');
+    if ((state === 'present') !== (evidenceState === 'recorded')) return fail('VALIDATION_ERROR', 'Present corrections require recorded evidence; exception or absent corrections require an exception evidence state.');
+    const earning = records.earnings.find((item) => item.assignmentId === attendance.assignmentId);
+    const invalidatesEarning = state !== 'present' || evidenceState !== 'recorded';
+    if (earning && invalidatesEarning && !['pending-verification', 'draft', 'invalidated'].includes(earning.status)) {
+      return fail('EARNING_ADJUSTMENT_REVIEW_REQUIRED', 'Approved, processing or paid sample ledgers are not rewritten. A pending adjustment review is required under unresolved production policy DEC-16.');
+    }
     attendance.history.push({ id: `tnp-demo-attendance-history-${attendance.history.length + 1}`, actorId, reason, evidence: structuredClone(attendance.evidence), recordedAt: records.metadata.clock });
     attendance.state = state;
-    attendance.evidence = { state: payload.evidenceState === 'outside-radius' ? 'outside-radius' : 'gps-missing', capturedAt: records.metadata.clock, distanceMetres: null, note: `Reasoned preview correction: ${reason}` };
+    attendance.evidence = {
+      state: evidenceState as EvidenceState,
+      capturedAt: records.metadata.clock,
+      distanceMetres: Number.isInteger(payload.distanceMetres) ? Number(payload.distanceMetres) : null,
+      note: stringField(payload, 'note') || `Reasoned preview correction: ${reason}`,
+    };
+    if (earning) {
+      earning.attendanceId = attendance.id;
+      earning.supervisorApproval = null;
+      earning.financeApproval = null;
+      if (invalidatesEarning) {
+        earning.amountState = 'invalidated';
+        earning.status = 'invalidated';
+        earning.grossPaise = 0;
+        earning.deductionsPaise = 0;
+        earning.netPaise = 0;
+      } else {
+        earning.amountState = 'earned';
+        earning.status = 'draft';
+        earning.grossPaise = earning.estimatedGrossPaise;
+        earning.deductionsPaise = 0;
+        earning.netPaise = earning.estimatedGrossPaise;
+      }
+    }
     records.audit.push({ id: `tnp-demo-audit-${records.audit.length + 1}`, actorId, action: 'attendance.corrected', reason, createdAt: records.metadata.clock, entityId: attendance.id });
     return ok(attendance);
   }
@@ -437,10 +510,21 @@ export class DemoPreviewService implements PreviewService {
     if (overlaps(records, workerId, original.eventId)) return fail('OVERLAP', 'Replacement worker has an overlapping assignment.');
     if (records.assignments.some((x) => x.workerId === workerId && x.positionId === original.positionId && x.allocationState === 'active')) return fail('DUPLICATE_CLAIM', 'Replacement worker is already allocated.');
     const activeExcludingOriginal = activeAssignments(records, position.id).filter((x) => x.id !== original.id).length;
-    if (activeExcludingOriginal >= position.quantity || position.status === 'unavailable') return fail('POSITION_FULL', 'Replacement would exceed position capacity.');
+    if (activeExcludingOriginal >= position.quantity || position.status === 'unavailable' || position.status === 'full') return fail('POSITION_FULL', 'Replacement would exceed position capacity or use an unavailable position.');
     original.allocationState = 'replaced';
-    const replacement: Assignment = { id: `tnp-demo-assignment-${String(records.assignments.length + 1).padStart(3, '0')}`, eventId: original.eventId, positionId: original.positionId, workerId, response: 'coming', allocationState: 'active', createdAt: records.metadata.clock };
+    const replacement: Assignment = {
+      id: `tnp-demo-assignment-${String(records.assignments.length + 1).padStart(3, '0')}`,
+      eventId: original.eventId,
+      positionId: original.positionId,
+      workerId,
+      response: 'coming',
+      allocationState: 'active',
+      payRatePaiseSnapshot: position.payRatePaise,
+      payUnitSnapshot: position.payUnit,
+      createdAt: records.metadata.clock,
+    };
     records.assignments.push(replacement);
+    this.ensureEventPass(records, replacement);
     records.audit.push({ id: `tnp-demo-audit-${records.audit.length + 1}`, actorId, action: 'assignment.replaced', reason: reasonText, createdAt: records.metadata.clock, entityId: replacement.id });
     return ok({ original, replacement });
   }
@@ -497,11 +581,14 @@ export class DemoPreviewService implements PreviewService {
     const reason = stringField(payload, 'reason');
     if (!earning) return fail('NOT_FOUND', 'Earning not found.');
     if (records.payouts.some((x) => x.earningIds.includes(earning.id) && x.status === 'processing')) return fail('IMMUTABLE_PROCESSING_BATCH', 'Earning is in a processing payout batch.');
+    if (earning.amountState !== 'earned' || earning.status !== 'draft') return fail('EARNING_NOT_ADJUSTABLE', 'Only verified, earned draft amounts can be adjusted in the synthetic preview.');
     if (grossPaise < 0 || deductionsPaise < 0 || deductionsPaise > grossPaise || !reason) return fail('VALIDATION_ERROR', 'Integer gross/deductions and a reason are required.');
     earning.grossPaise = grossPaise;
     earning.deductionsPaise = deductionsPaise;
     earning.netPaise = grossPaise - deductionsPaise;
     earning.status = 'draft';
+    earning.supervisorApproval = null;
+    earning.financeApproval = null;
     records.audit.push({ id: `tnp-demo-audit-${records.audit.length + 1}`, actorId, action: 'earning.adjusted', reason, createdAt: records.metadata.clock, entityId: earning.id });
     return ok(earning);
   }
@@ -510,14 +597,32 @@ export class DemoPreviewService implements PreviewService {
     const earning = records.earnings.find((x) => x.id === stringField(payload, 'earningId'));
     const stage = payload.stage;
     if (!earning) return fail('NOT_FOUND', 'Earning not found.');
+    const attendance = earning.attendanceId ? records.attendances.find((item) => item.id === earning.attendanceId) : undefined;
+    const assignment = records.assignments.find((item) => item.id === earning.assignmentId);
+    const position = assignment ? records.positions.find((item) => item.id === assignment.positionId) : undefined;
+    const eligibility = workerEligibility(assignment ? records.workers.find((item) => item.id === assignment.workerId) : undefined, position);
+    if (
+      earning.amountState !== 'earned' ||
+      !attendance ||
+      attendance.state !== 'present' ||
+      attendance.evidence.state !== 'recorded' ||
+      !assignment ||
+      assignment.allocationState !== 'active' ||
+      assignment.response !== 'coming' ||
+      !eligibility.startsWith('Eligible')
+    ) return fail('EARNING_NOT_APPROVABLE', 'Approval requires verified attendance and an active, eligible, confirmed assignment.');
+    const assumptionLabel = 'Synthetic sample approver; production separation-of-duties policy pending' as const;
     if (stage === 'supervisor') {
       if (earning.status !== 'draft') return fail('APPROVAL_ORDER', 'Supervisor approval requires draft state.');
       earning.status = 'supervisor-approved';
+      earning.supervisorApproval = { actorId, stage, approvedAt: records.metadata.clock, assumptionLabel };
     } else if (stage === 'finance') {
       if (earning.status !== 'supervisor-approved') return fail('APPROVAL_ORDER', 'Finance approval requires supervisor approval first.');
+      if (earning.supervisorApproval?.actorId === actorId) return fail('SAMPLE_APPROVER_CONFLICT', 'Use two distinct sample actors to demonstrate sequential evidence. Production separation-of-duties policy remains pending.');
       earning.status = 'finance-approved';
+      earning.financeApproval = { actorId, stage, approvedAt: records.metadata.clock, assumptionLabel };
     } else return fail('VALIDATION_ERROR', 'Approval stage must be supervisor or finance.');
-    records.audit.push({ id: `tnp-demo-audit-${records.audit.length + 1}`, actorId, action: `earning.${stage}-approved`, reason: 'Sample sequential approval', createdAt: records.metadata.clock, entityId: earning.id });
+    records.audit.push({ id: `tnp-demo-audit-${records.audit.length + 1}`, actorId, action: `earning.${stage}-approved`, reason: assumptionLabel, createdAt: records.metadata.clock, entityId: earning.id });
     return ok(earning);
   }
 
@@ -526,7 +631,7 @@ export class DemoPreviewService implements PreviewService {
     const variant = payload.variant;
     if (!['ready', 'loading', 'empty', 'error'].includes(String(variant))) return fail('VALIDATION_ERROR', 'Variant must be ready, loading, empty or error.');
     records.variants[key] = variant as PreviewVariant;
-    return ok({ key, variant });
+    return ok({ key, variant: variant as PreviewVariant });
   }
 
   private ensureEventPass(records: ScenarioRecords, assignment: Assignment) {

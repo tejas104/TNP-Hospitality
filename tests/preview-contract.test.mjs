@@ -24,6 +24,13 @@ function errorCode(result, code) {
   assert.equal(result.error.code, code);
 }
 
+async function arrange(store, key, update) {
+  return value(await store.commit(request(`testArrange.${key}`, {}, `arrange-${key}`), (records) => {
+    update(records);
+    return { ok: true, value: true };
+  }));
+}
+
 test('canonical scenario joins every consumer view and exposes explicit variants', async () => {
   const { service } = await setup();
   const metadata = await service.getScenarioMetadata();
@@ -143,8 +150,11 @@ test('planner requirement to Operations allocation to worker attendance and earn
   assert.equal(attendance.evidence.state, 'gps-missing');
   const earning = value(await service.listEarnings('tnp-demo-worker-006')).items[0];
   assert.equal(earning.assignmentId, assignment.id);
-  assert.equal(earning.grossPaise, 250000);
-  assert.equal(earning.status, 'draft');
+  assert.equal(earning.estimatedGrossPaise, 250000);
+  assert.equal(earning.grossPaise, 0);
+  assert.equal(earning.netPaise, 0);
+  assert.equal(earning.amountState, 'estimated');
+  assert.equal(earning.status, 'pending-verification');
 });
 
 test('claim, response, roster and Operations allocation are capacity-safe and atomic in the simulation', async () => {
@@ -155,7 +165,7 @@ test('claim, response, roster and Operations allocation are capacity-safe and at
   assert.equal(claimed.response, 'pending');
   assert.equal(value(await service.listRoster('tnp-demo-event-001')).items.length, beforeRoster + 1);
   assert.equal((await service.mutate(claimRequest)).replayed, true);
-  assert.equal(value(await service.getMetrics()).activeAssignments, 5);
+  assert.equal(value(await service.getMetrics()).activeAssignments, 6);
 
   const coming = value(await service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: claimed.id, response: 'coming' }, 'response-coming')));
   assert.equal(coming.response, 'coming');
@@ -185,8 +195,9 @@ test('attendance, human review and audit preserve evidence and distinguish scan 
   errorCode(await service.mutate(request(PREVIEW_OPERATIONS.recordAttendance, { token: 'TNP-SAMPLE-EXPIRED', eventId: 'tnp-demo-event-002', evidenceState: 'recorded' }, 'expired-pass')), 'EXPIRED_PASS');
   errorCode(await service.mutate(request(PREVIEW_OPERATIONS.recordAttendance, { token: 'TNP-SAMPLE-EVENT-001', eventId: 'tnp-demo-event-001', evidenceState: 'recorded' }, 'duplicate-scan')), 'DUPLICATE_SCAN');
 
-  const corrected = value(await service.mutate(request(PREVIEW_OPERATIONS.correctAttendance, { attendanceId: 'tnp-demo-attendance-001', state: 'present', evidenceState: 'gps-missing', reason: 'Sample supervisor roll call confirmed presence' }, 'attendance-correction', 0, 'tnp-demo-ops-001')));
+  const corrected = value(await service.mutate(request(PREVIEW_OPERATIONS.correctAttendance, { attendanceId: 'tnp-demo-attendance-001', state: 'present', evidenceState: 'recorded', reason: 'Sample supervisor roll call confirmed presence' }, 'attendance-correction', 0, 'tnp-demo-ops-001')));
   assert.equal(corrected.state, 'present');
+  assert.equal(corrected.evidence.state, 'recorded');
   assert.equal(corrected.history.at(-1).evidence.state, 'gps-denied');
   assert.equal(corrected.history.at(-1).reason, 'Sample supervisor roll call confirmed presence');
 
@@ -231,16 +242,127 @@ test('quotes, earnings, approvals and payout states use integer paise and determ
   assert.equal(approved.status, 'approved');
 
   errorCode(await service.mutate(request(PREVIEW_OPERATIONS.adjustEarning, { earningId: 'tnp-demo-earning-001', grossPaise: 260000, deductionsPaise: 20000, reason: 'Sample adjustment' }, 'adjust-processing')), 'IMMUTABLE_PROCESSING_BATCH');
-  const adjusted = value(await service.mutate(request(PREVIEW_OPERATIONS.adjustEarning, { earningId: 'tnp-demo-earning-002', grossPaise: 90000, deductionsPaise: 5000, reason: 'Sample approved shift' }, 'adjust-earning')));
+  const assignment = value(await service.mutate(request(PREVIEW_OPERATIONS.adminAssign, { positionId: 'tnp-demo-position-001', workerId: 'tnp-demo-worker-006', reason: 'Create verified sample earning' }, 'finance-assignment', 0, 'tnp-demo-ops-001')));
+  const pass = value(await service.getEventPass(assignment.id));
+  value(await service.mutate(request(PREVIEW_OPERATIONS.recordAttendance, { token: pass.token, eventId: pass.eventId, evidenceState: 'recorded', note: 'Synthetic verified attendance' }, 'finance-attendance', 0, 'tnp-demo-ops-001')));
+  const draft = value(await service.listEarnings('tnp-demo-worker-006')).items[0];
+  const adjusted = value(await service.mutate(request(PREVIEW_OPERATIONS.adjustEarning, { earningId: draft.id, grossPaise: 90000, deductionsPaise: 5000, reason: 'Sample approved shift' }, 'adjust-earning')));
   assert.deepEqual([adjusted.grossPaise, adjusted.deductionsPaise, adjusted.netPaise], [90000, 5000, 85000]);
   errorCode(await service.mutate(request(PREVIEW_OPERATIONS.approveEarning, { earningId: adjusted.id, stage: 'finance' }, 'finance-too-early')), 'APPROVAL_ORDER');
-  const supervisorRequest = request(PREVIEW_OPERATIONS.approveEarning, { earningId: adjusted.id, stage: 'supervisor' }, 'approve-supervisor');
-  assert.equal(value(await service.mutate(supervisorRequest)).status, 'supervisor-approved');
+  const supervisorRequest = request(PREVIEW_OPERATIONS.approveEarning, { earningId: adjusted.id, stage: 'supervisor' }, 'approve-supervisor', 0, 'tnp-demo-supervisor-001');
+  const supervisorApproved = value(await service.mutate(supervisorRequest));
+  assert.equal(supervisorApproved.status, 'supervisor-approved');
+  assert.equal(supervisorApproved.supervisorApproval.actorId, 'tnp-demo-supervisor-001');
   assert.equal((await service.mutate(supervisorRequest)).replayed, true);
-  assert.equal(value(await service.mutate(request(PREVIEW_OPERATIONS.approveEarning, { earningId: adjusted.id, stage: 'finance' }, 'approve-finance'))).status, 'finance-approved');
+  errorCode(await service.mutate(request(PREVIEW_OPERATIONS.approveEarning, { earningId: adjusted.id, stage: 'finance' }, 'same-approver', 0, 'tnp-demo-supervisor-001')), 'SAMPLE_APPROVER_CONFLICT');
+  const financeApproved = value(await service.mutate(request(PREVIEW_OPERATIONS.approveEarning, { earningId: adjusted.id, stage: 'finance' }, 'approve-finance', 0, 'tnp-demo-finance-001')));
+  assert.equal(financeApproved.status, 'finance-approved');
+  assert.equal(financeApproved.financeApproval.actorId, 'tnp-demo-finance-001');
+  assert.notEqual(financeApproved.supervisorApproval.actorId, financeApproved.financeApproval.actorId);
+  assert.match(financeApproved.financeApproval.assumptionLabel, /production separation-of-duties policy pending/i);
   const payouts = value(await service.listPayouts()).items;
   assert.deepEqual(new Set(payouts.map((item) => item.status)), new Set(['processing', 'failed', 'uncertain', 'reversed', 'paid']));
-  assert.equal(value(await service.listEarnings()).items.some((item) => item.netPaise === 0), false);
+  errorCode(await service.mutate(request(PREVIEW_OPERATIONS.approveEarning, { earningId: 'tnp-demo-earning-003', stage: 'supervisor' }, 'approve-pending')), 'EARNING_NOT_APPROVABLE');
+});
+
+test('reservation reactivation reuses capacity, eligibility, overlap and active-state guards', async () => {
+  const capacity = await setup();
+  await arrange(capacity.store, 'quantity-two', (records) => {
+    records.positions.find((item) => item.id === 'tnp-demo-position-001').quantity = 2;
+    records.assignments.find((item) => item.id === 'tnp-demo-assignment-002').response = 'not-coming';
+  });
+  value(await capacity.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: 'tnp-demo-assignment-005', response: 'not-coming' }, 'release-original')));
+  const filler = value(await capacity.service.mutate(request(PREVIEW_OPERATIONS.claimOpportunity, { positionId: 'tnp-demo-position-001', workerId: 'tnp-demo-worker-006' }, 'fill-released-capacity')));
+  value(await capacity.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: filler.id, response: 'coming' }, 'filler-coming')));
+  const repeated = value(await capacity.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: filler.id, response: 'coming' }, 'filler-coming-repeat')));
+  assert.equal(repeated.id, filler.id);
+  errorCode(await capacity.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: 'tnp-demo-assignment-005', response: 'coming' }, 'reactivate-over-capacity')), 'POSITION_FULL');
+  assert.equal(value(await capacity.service.listAssignments('tnp-demo-worker-007')).items[0].response, 'not-coming');
+
+  const ineligible = await setup();
+  value(await ineligible.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: 'tnp-demo-assignment-005', response: 'not-coming' }, 'ineligible-release')));
+  value(await ineligible.service.mutate(request(PREVIEW_OPERATIONS.changeRole, { workerId: 'tnp-demo-worker-007', role: 'Volunteer', reason: 'Synthetic eligibility regression' }, 'make-ineligible')));
+  errorCode(await ineligible.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: 'tnp-demo-assignment-005', response: 'coming' }, 'reactivate-ineligible')), 'INELIGIBLE');
+
+  const overlap = await setup();
+  value(await overlap.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: 'tnp-demo-assignment-005', response: 'not-coming' }, 'overlap-release')));
+  await arrange(overlap.store, 'overlap', (records) => {
+    records.events.push({ id: 'tnp-test-event-overlap', bookingId: 'tnp-demo-booking-001', name: 'Synthetic overlap', startsAt: '2026-09-14T10:00:00.000+05:30', endsAt: '2026-09-14T12:00:00.000+05:30', timezone: 'Asia/Kolkata', venueId: 'tnp-demo-venue-001', reportingDetails: 'Synthetic overlap', status: 'staffing' });
+    records.assignments.push({ id: 'tnp-test-assignment-overlap', eventId: 'tnp-test-event-overlap', positionId: 'tnp-test-position-overlap', workerId: 'tnp-demo-worker-007', response: 'coming', allocationState: 'active', payRatePaiseSnapshot: 1, payUnitSnapshot: 'event', createdAt: records.metadata.clock });
+  });
+  errorCode(await overlap.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: 'tnp-demo-assignment-005', response: 'coming' }, 'reactivate-overlap')), 'OVERLAP');
+
+  const replaced = await setup();
+  value(await replaced.service.mutate(request(PREVIEW_OPERATIONS.replaceAssignment, { assignmentId: 'tnp-demo-assignment-005', replacementWorkerId: 'tnp-demo-worker-006', reason: 'Synthetic replacement' }, 'replace-pending')));
+  errorCode(await replaced.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: 'tnp-demo-assignment-005', response: 'coming' }, 'reactivate-replaced')), 'ASSIGNMENT_INACTIVE');
+});
+
+test('attendance requires active eligible confirmed work and snapshots assignment pay', async () => {
+  for (const evidenceState of ['gps-missing', 'gps-denied', 'outside-radius']) {
+    const current = await setup();
+    const assignment = value(await current.service.mutate(request(PREVIEW_OPERATIONS.adminAssign, { positionId: 'tnp-demo-position-001', workerId: 'tnp-demo-worker-006', reason: `Synthetic ${evidenceState} attendance` }, `assign-${evidenceState}`)));
+    const pass = value(await current.service.getEventPass(assignment.id));
+    value(await current.service.mutate(request(PREVIEW_OPERATIONS.recordAttendance, { token: pass.token, eventId: pass.eventId, evidenceState, distanceMetres: evidenceState === 'outside-radius' ? 500 : undefined }, `attendance-${evidenceState}`)));
+    const earning = value(await current.service.listEarnings('tnp-demo-worker-006')).items[0];
+    assert.deepEqual([earning.amountState, earning.status, earning.estimatedGrossPaise, earning.grossPaise, earning.netPaise], ['estimated', 'pending-verification', 250000, 0, 0]);
+  }
+
+  const declined = await setup();
+  const declinedAssignment = value(await declined.service.mutate(request(PREVIEW_OPERATIONS.adminAssign, { positionId: 'tnp-demo-position-001', workerId: 'tnp-demo-worker-006', reason: 'Synthetic declined pass' }, 'declined-assignment')));
+  const declinedPass = value(await declined.service.getEventPass(declinedAssignment.id));
+  value(await declined.service.mutate(request(PREVIEW_OPERATIONS.respondToAssignment, { assignmentId: declinedAssignment.id, response: 'not-coming' }, 'decline-before-scan')));
+  errorCode(await declined.service.mutate(request(PREVIEW_OPERATIONS.recordAttendance, { token: declinedPass.token, eventId: declinedPass.eventId, evidenceState: 'recorded' }, 'scan-declined')), 'ASSIGNMENT_NOT_CONFIRMED');
+
+  const replaced = await setup();
+  const replacedAssignment = value(await replaced.service.mutate(request(PREVIEW_OPERATIONS.adminAssign, { positionId: 'tnp-demo-position-001', workerId: 'tnp-demo-worker-006', reason: 'Synthetic replaced pass' }, 'replaced-assignment')));
+  const replacedPass = value(await replaced.service.getEventPass(replacedAssignment.id));
+  await arrange(replaced.store, 'replacement-worker', (records) => records.workers.push({ id: 'tnp-test-worker-008', displayName: 'Synthetic Replacement Eight', role: 'Event Coordinator', assessmentScore: 90, standing: 'good', approved: true }));
+  value(await replaced.service.mutate(request(PREVIEW_OPERATIONS.replaceAssignment, { assignmentId: replacedAssignment.id, replacementWorkerId: 'tnp-test-worker-008', reason: 'Synthetic replacement before scan' }, 'replace-before-scan')));
+  errorCode(await replaced.service.mutate(request(PREVIEW_OPERATIONS.recordAttendance, { token: replacedPass.token, eventId: replacedPass.eventId, evidenceState: 'recorded' }, 'scan-replaced')), 'ASSIGNMENT_INACTIVE');
+
+  const snapshot = await setup();
+  const snapAssignment = value(await snapshot.service.mutate(request(PREVIEW_OPERATIONS.adminAssign, { positionId: 'tnp-demo-position-001', workerId: 'tnp-demo-worker-006', reason: 'Snapshot rate' }, 'snapshot-assignment')));
+  assert.deepEqual([snapAssignment.payRatePaiseSnapshot, snapAssignment.payUnitSnapshot], [250000, 'day']);
+  await arrange(snapshot.store, 'rate-change', (records) => { records.positions.find((item) => item.id === 'tnp-demo-position-001').payRatePaise = 999999; });
+  const snapPass = value(await snapshot.service.getEventPass(snapAssignment.id));
+  value(await snapshot.service.mutate(request(PREVIEW_OPERATIONS.recordAttendance, { token: snapPass.token, eventId: snapPass.eventId, evidenceState: 'recorded' }, 'snapshot-attendance')));
+  const snapEarning = value(await snapshot.service.listEarnings('tnp-demo-worker-006')).items[0];
+  assert.deepEqual([snapEarning.estimatedGrossPaise, snapEarning.grossPaise], [250000, 250000]);
+});
+
+test('attendance corrections preserve caller evidence and invalidate or escalate dependent earnings', async () => {
+  const draftCase = await setup();
+  const assignment = value(await draftCase.service.mutate(request(PREVIEW_OPERATIONS.adminAssign, { positionId: 'tnp-demo-position-001', workerId: 'tnp-demo-worker-006', reason: 'Correction setup' }, 'correction-assignment')));
+  const pass = value(await draftCase.service.getEventPass(assignment.id));
+  const attendance = value(await draftCase.service.mutate(request(PREVIEW_OPERATIONS.recordAttendance, { token: pass.token, eventId: pass.eventId, evidenceState: 'recorded', note: 'Original recorded evidence' }, 'correction-attendance')));
+  const corrected = value(await draftCase.service.mutate(request(PREVIEW_OPERATIONS.correctAttendance, { attendanceId: attendance.id, state: 'absent', evidenceState: 'gps-denied', reason: 'Supervisor confirmed absence', note: 'Caller-supplied denial evidence' }, 'correct-to-absent', 0, 'tnp-demo-supervisor-001')));
+  assert.equal(corrected.evidence.state, 'gps-denied');
+  assert.equal(corrected.evidence.note, 'Caller-supplied denial evidence');
+  assert.equal(corrected.history.at(-1).evidence.state, 'recorded');
+  const invalidated = value(await draftCase.service.listEarnings('tnp-demo-worker-006')).items[0];
+  assert.deepEqual([invalidated.amountState, invalidated.status, invalidated.grossPaise, invalidated.netPaise], ['invalidated', 'invalidated', 0, 0]);
+  errorCode(await draftCase.service.mutate(request(PREVIEW_OPERATIONS.approveEarning, { earningId: invalidated.id, stage: 'supervisor' }, 'approve-invalidated')), 'EARNING_NOT_APPROVABLE');
+
+  const approvedCase = await setup();
+  const approvedAssignment = value(await approvedCase.service.mutate(request(PREVIEW_OPERATIONS.adminAssign, { positionId: 'tnp-demo-position-001', workerId: 'tnp-demo-worker-006', reason: 'Approved correction setup' }, 'approved-correction-assignment')));
+  const approvedPass = value(await approvedCase.service.getEventPass(approvedAssignment.id));
+  const approvedAttendance = value(await approvedCase.service.mutate(request(PREVIEW_OPERATIONS.recordAttendance, { token: approvedPass.token, eventId: approvedPass.eventId, evidenceState: 'recorded' }, 'approved-correction-attendance')));
+  const approvedEarning = value(await approvedCase.service.listEarnings('tnp-demo-worker-006')).items[0];
+  value(await approvedCase.service.mutate(request(PREVIEW_OPERATIONS.approveEarning, { earningId: approvedEarning.id, stage: 'supervisor' }, 'approved-before-correction', 0, 'tnp-demo-supervisor-001')));
+  errorCode(await approvedCase.service.mutate(request(PREVIEW_OPERATIONS.correctAttendance, { attendanceId: approvedAttendance.id, state: 'exception', evidenceState: 'outside-radius', reason: 'Late evidence conflict', distanceMetres: 700 }, 'approved-correction-attempt')), 'EARNING_ADJUSTMENT_REVIEW_REQUIRED');
+  assert.equal(value(await approvedCase.service.getAttendanceHistory('tnp-demo-worker-006')).items[0].state, 'present');
+});
+
+test('worker payout queries are scoped and operations retains the explicit unfiltered view', async () => {
+  const { service } = await setup();
+  const workerOne = value(await service.listPayouts('tnp-demo-worker-001')).items;
+  assert.equal(workerOne.length, 2);
+  assert.equal(workerOne.every((item) => item.workerId === 'tnp-demo-worker-001'), true);
+  assert.equal(workerOne.some((item) => item.workerId === 'tnp-demo-worker-003'), false);
+  const workerThree = value(await service.listPayouts('tnp-demo-worker-003')).items;
+  assert.deepEqual(workerThree.map((item) => item.id), ['tnp-demo-payout-002']);
+  assert.deepEqual(value(await service.listPayouts('tnp-demo-worker-006')).items, []);
+  assert.equal(value(await service.listPayouts()).items.length, 5);
 });
 
 test('ordinary and reset ledgers survive reload and enforce the normative generation protocol', async () => {

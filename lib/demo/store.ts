@@ -1,12 +1,12 @@
 import { PREVIEW_STORAGE_KEY } from '../contracts/preview.ts';
 import type {
-  MutationRequest,
   PreviewEnvelope,
   PreviewError,
   PreviewOutcome,
   ResetPreviewRequest,
   ResetReceipt,
   ScenarioRecords,
+  StoreMutationRequest,
   StoredMutationResult,
 } from '../contracts/preview.ts';
 import { createPreviewEnvelope } from './scenario.ts';
@@ -43,7 +43,7 @@ type MutationDecision<T> =
   | { ok: false; error: PreviewError };
 
 type PreparedMutation<T> = {
-  request: MutationRequest<string, unknown>;
+  request: StoreMutationRequest;
   prepared: T;
 };
 
@@ -117,14 +117,14 @@ export class PreviewStore {
   }
 
   async prepare<T>(
-    request: MutationRequest<string, unknown>,
+    request: StoreMutationRequest,
     work: () => Promise<T>,
   ): Promise<PreparedMutation<T>> {
     return { request, prepared: await work() };
   }
 
   async commit<T, Prepared = undefined>(
-    request: MutationRequest<string, unknown>,
+    request: StoreMutationRequest,
     reducer: (records: ScenarioRecords, prepared: Prepared) => MutationDecision<T>,
     prepared?: Prepared,
   ): Promise<PreviewOutcome<T>> {

@@ -132,6 +132,9 @@ export function PreviewControls() {
           line-height: 1.25;
         }
         @media (max-width: 700px) {
+          body {
+            padding-bottom: calc(12rem + env(safe-area-inset-bottom));
+          }
           .preview-control-panel {
             right: max(1rem, env(safe-area-inset-right));
             bottom: max(5.25rem, calc(env(safe-area-inset-bottom) + 5.25rem));
