@@ -1,23 +1,23 @@
 # TNP-D-M1 — two-prompt frontend milestone for D
 
-Status: DRAFT, NOT DISPATCHED. Writer lease NONE.
+Status: READY. Exclusive writer lease RESERVED 2026-09-17T03:55:41.9066584+05:30 for Kartik's existing Dev D session01a0aa6d-9b9a-75c3-839a-c0ac7b5f18a5 (identity from prior supplied task evidence; confirm on startup). No alternate session or second writer may claim it. Expires at final fixed review handoff or P revocation. Actual start not observed.
 Human: Kartik / H2.
-Host: Laptop 2 / actual machine identity PENDING.
-Tool/model: Codex gpt-5.6-sol / high; actual selection PENDING; confirm actual session at Ready.
-Branch: codex/tnp-d-m1 (proposed; not created).
-Worktree: D:\TNP-worktrees\TNP-D-M1 (proposed; not created).
-Source and integrated foundation SHA: PENDING approved integration.
-Launch SHA: PENDING future Ready commit, supplied externally by P.
+Host: Kartik Laptop2, base D:\TNP-Hospitality, DESKTOP-VO8G3GR per prior reviewed host evidence. Report actual COMPUTERNAME/session at startup; mismatch pauses editing for factual reassignment. P cannot inspect/control Laptop2 directly.
+Tool/model: assigned Codex gpt-5.6-sol / high, explicitly selected before resume; report actual runtime model/session on startup. Historical review role in Dev D does not make it an independent reviewer of its own implementation.
+Branch: codex/tnp-d-m1. Create on Laptop2 at the published LAUNCH_SHA after preflight; do not use moving main or the old foundation branch.
+Worktree: D:\TNP-worktrees\TNP-D-M1 on Laptop2, exclusively reserved. Host-side preflight must verify this destination/branch is unused before creation; P does not assert remote filesystem observations. If occupied, inspect/report rather than resetting/deleting it. Use this absolute worktree for every implementation command, never the base clone.
+SOURCE_SHA: f2bfd882d738125e31f5de70896cf6a65d385990, published/verified main before this Ready commit. Integrated foundation dependency e6025cb0d16c433c0d29745d3eea1f9618718a67 is an ancestor; approved reviewed application d8473f888cc70819ff8a149f3544e81a6b6ea36b. Integrated13/13 tests, lint0 errors/3 inherited warnings, typecheck/build/provenance/whitespace passed.
+LAUNCH_SHA: this committed Ready contract; P supplies its full SHA externally after main publication. This is not SOURCE_SHA; never guess or embed its own hash.
 Dependencies: integrated TNP-FOUND-01; TNP-D-01 and TNP-D-02. The second phase's first-phase dependency is an internal checked checkpoint in this grouped milestone, not a separate integration.
 Owned paths: components/tnp/portals/operations/**, including feature-local styles.
 Mode: local labelled synthetic responsive-web preview.
-Resource proposal: port 3104, http://localhost:3104; check free before binding. Dedicated synthetic profile; no current reservation.
+Resources reserved: Laptop2 port3104/http://localhost:3104 and dedicated D synthetic profile; verify free on that host before bind. No observed listener/server claim. Start npm run dev -- --port 3104 --hostname localhost and record actual origin. One heavy build per laptop. No DB/provider/job reservation.
 Risk: Sensitive eligibility/attendance/replacement presentation. Mandatory independent Sol architecture/integrity review plus opposite-model Sonnet.
-Review appointment: Fresh independent Sol/high and separate Sonnet in the same review window; human Anjaneya, domain input Kartik. D author cannot review itself; actual appointments PENDING.
-Sharing: proposed original builder-only non-force push to codex/tnp-d-m1; effective only in the Ready contract. No current push or write lease.
+Review appointment at final fixed milestone: P arranges a fresh independent Sol/high task on Laptop1, separate from P and this D author; Kartik arranges separate Sonnet on Laptop2, both capabilities evidenced by completed foundation reviews. One consolidated review window. Human reviewer Anjaneya; domain input Kartik. D may not certify itself. No fabricated calendar slot or running-review claim; availability changes pause final review rather than waive it.
+Sharing authorized: this reserved Dev D builder may commit and non-force push only codex/tnp-d-m1 at checked checkpoints. P may fetch/inspect. No force-push, main merge/push, deployment or moved reviewed tags.
 
 ## Shared execution rules
-This is a prepared draft, not a launch instruction. P will issue the Ready version only after reviewed foundation integration, actual appointments and capacity are recorded. Do not send a developer into a missing prerequisite. SOURCE_SHA, dependency integration SHA, LAUNCH_SHA and exclusive lease are deliberately PENDING; candidate c53e13149be79f3b97aea4ef9fd3b7c8e82d2423 is not an integrated baseline.
+This Ready contract is the exclusive launch authority after publication at the supplied LAUNCH_SHA. Foundation is integrated and reviewed. Fetch origin from D:\TNP-Hospitality, verify the exact commit and host-side path availability, create the isolated branch/worktree at LAUNCH_SHA, then verify actual identity/model/HEAD/ancestry/cleanliness before editing. Return startup evidence to P for the serialized Building record; no additional permission is required when it matches. H2 has only this complex builder reservation; C remains unleased.
 
 At activation read AGENTS.md, TNP-START-HERE.md, docs/PRODUCT.md, docs/DESIGN.md, docs/DOMAIN-RULES.md, docs/ARCHITECTURE.md, docs/LAUNCH-PROTOCOL.md, docs/REVIEW-CADENCE.md, both foundation contracts and the referenced phase specifications. This grouped TASK supersedes their separate per-slice launch branches only when Ready. Verify actual host/model/session, clean initial HEAD=LAUNCH_SHA, SOURCE_SHA ancestry, integrated dependency ancestry and the launch three-file allowlist. Preserve unrelated changes; never reset to make a check pass.
 
