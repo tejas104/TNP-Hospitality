@@ -10,5 +10,17 @@
     "source": "C:\\Users\\DELL\\.codex\\attachments\\6e06a50b-e04b-4b4b-9144-d0f37c9bd72e\\pasted-text.txt",
     "sha256": "f7e2405173b8ba3ab648d658ab6d2d242597c54aa2967adc99c932822bd7e147",
     "reviewed_sha": "b0e1d70f7730a2779dc053cc7f24081ee7db012d"
+  },
+  {
+    "file": "docs/reviews/received/foundation-01-sol.txt",
+    "source": "C:\\Users\\DELL\\.codex\\attachments\\2e2978b9-a456-408a-a1b2-590e69868428\\pasted-text.txt",
+    "sha256": "0c59900fbe2613f79b17a34ff2584af53ecec3137b5557a609cb62d6618cc14f",
+    "reviewed_sha": "502422c038c9292f4946b65c00ea0b2618515a9f"
+  },
+  {
+    "file": "docs/reviews/received/foundation-01-sonnet.txt",
+    "source": "C:\\Users\\DELL\\.codex\\attachments\\ee7877ee-fd40-4cdd-b6cd-fef04f8788a5\\pasted-text.txt",
+    "sha256": "f866336fa123504d80446a6c97199f709d6f45b97cb28645c69d81d1afb1ecb5",
+    "reviewed_sha": "502422c038c9292f4946b65c00ea0b2618515a9f"
   }
 ]

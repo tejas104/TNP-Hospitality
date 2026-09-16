@@ -1,4 +1,4 @@
-# Lane register — foundation paused for review
+# Lane register — B foundation correction reopened
 
 Current candidate: tnp-bootstrap-review-04. Review pair: Sonnet + independent Sol. Foundation milestone: TNP-FOUND-01.
 
@@ -6,7 +6,7 @@ Updated by P at 2026-09-16T23:25:27+05:30. Bootstrap P/B writing lease CLOSED af
 
 | Lane | Human/host | Model assignment | Lease/state |
 |---|---|---|---|
-| B | Anjaneya / DESKTOP-DL9FDM7 / Laptop1 | Codex gpt-5.6-sol/high reported by assigned builder | PAUSED FOR REVIEW TNP-FOUND-01 at 502422c038c9292f4946b65c00ea0b2618515a9f; no further writes under initial lease |
+| B | Anjaneya / DESKTOP-DL9FDM7 / Laptop1 | Codex gpt-5.6-sol/high reported by assigned builder | REOPENED bounded correction at 502422c038c9292f4946b65c00ea0b2618515a9f; original B session only, actual resumption not yet observed |
 | A | Anjaneya / Laptop1 | Sol at later launch | NONE; waiting for foundation integration |
 | C | Kartik / Laptop2 | Sonnet at later launch | NONE; waiting for foundation integration |
 | D | Kartik / Laptop2 | Sol at later launch | NONE; waiting for foundation integration |
@@ -17,4 +17,6 @@ Builder reports localhost3102 server stopped at final handoff; runtime port rese
 Human reviewer B=Kartik; both H1/H2 approve shared semantics; independent AI appointments run at milestone completion. Verified model availability on Kartik host comes from supplied bootstrap PASS reports, not an invented calendar slot. Changed availability pauses final review/integration, not a false gate pass.
 P prepares/integrates/shares factual Ready/Building metadata serially on main per approved protocol. Builders push only their named authorized branch checkpoints, never edit registers, force-push, merge main or deploy. Current implementation/check results are attributed in STATUS.md; this register records a review pause, not an independent acceptance pass.
 
-Current update 2026-09-17T00:40:38+05:30: fixed review BASE 77780970a8b0fdb52e1de70d3b35469fa78cb114; HEAD 502422c038c9292f4946b65c00ea0b2618515a9f. B initial lease closed for implementation at handoff and remains paused for any findings. A/C/D and B-public stay unleased until integrated foundation.
+Current update 2026-09-17T00:40:38+05:30: fixed review BASE 77780970a8b0fdb52e1de70d3b35469fa78cb114; HEAD 502422c038c9292f4946b65c00ea0b2618515a9f. Original pause superseded by correction lease 2026-09-17T01:15:41+05:30 in TNP-FOUND-01-FIX-01; pause again at new fixed handoff. A/C/D and B-public stay unleased until integrated foundation.
+
+Correction metadata update 2026-09-17T01:15:41+05:30: no A/C/D or B-public lease; no review gate bypass for two-prompt batching. Received review findings are assigned only to B within shared foundation ownership.

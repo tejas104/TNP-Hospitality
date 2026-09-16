@@ -1,0 +1,57 @@
+TNP-FOUND-01 (S0 + S1) — Independent Review Report
+Reviewer: Claude Sonnet 5 (model id claude-sonnet-5), this session, Kartik Laptop 2. Role: reviewer only (not developer C); no source edits made. Review worktree: D:\TNP-review\foundation-01-sonnet — created fresh this session as a detached worktree, verified clean at exact HEAD before and after all checks. Reviewed range: BASE 77780970a8b0fdb52e1de70d3b35469fa78cb114 .. HEAD 502422c038c9292f4946b65c00ea0b2618515a9f (branch codex/tnp-foundation). Verified BASE is an ancestor of HEAD via git merge-base.
+
+Verdict: CHANGES REQUESTED
+One confirmed, reproducible mobile-viewport regression in shared S1 code (PreviewControls.tsx + its AppShell mount) blocks primary-action buttons behind a fixed overlay on at least two of the five routes. This is new code introduced by this diff (not inherited), is trivial to fix without leaving S1's owned files, but should be fixed and re-verified before this foundation is integrated and consumed by four other lanes.
+
+Scope verification
+git diff --stat BASE HEAD: 23 files changed, all exactly within the S0/S1 owned-paths list in docs/tasks/TNP-FOUND-01.md and the two contracts. No package.json/package-lock.json, STATUS.md, LANES.md, or out-of-scope file touched.
+components/tnp/PortalPages.tsx reduced to a 4-line compatibility re-export barrel, exactly as S0-SHARED-UI.md specifies.
+The four portals (ClientExperience, PlannerPortal, FreelancerPortal, AdminOperations) and three shared helpers (PortalHero, Metric, StatusPill) are faithful extractions — no redesign, same markup/structure/classNames, only the required anchor→Link conversions and truthful-copy substitutions.
+Anchor lint-fix count matches the contract exactly: 4 in HomeExperience.tsx (bounded, no broader refactor) + 3 in AppShell.tsx + 1 in PortalHero.tsx = 8 named navigation errors.
+tsconfig.json diff is exactly allowImportingTsExtensions: true added; noEmit and all other options untouched.
+Truthful-copy replacements verified in the rendered app and source: "Live event command" → "Sample event overview"; LIVE pill → DEMO; "Simulate Geofence Incident" → "Show Sample Location Exception"; invented km distances → "Location unavailable in preview"; plus additional equivalent fixes beyond the named examples (e.g. ratings copy now correctly states "trigger human review, not automatic permanent blocking", matching DESIGN.md).
+S1's lib/contracts/preview.ts, lib/demo/scenario.ts, lib/demo/store.ts, lib/demo/service.ts, lib/services/preview.ts implement the full DTO/service/generation/reset protocol described in S1-PREVIEW-INTERFACES.md, including the exact ordering rules (generation check → ledger check → validate/persist for ordinary mutations; receipt-first → generation check for resets) and the canonical scenario data (bookings/events/positions with qty 6 & 40, eligible/ineligible workers, GPS-denied + outside-radius + reasoned-correction attendance, revised quote, processing payout, etc.).
+Checks executed (in the review worktree, all passed)
+Check Result
+npm ci --no-audit --no-fund ✅ 629 packages installed clean
+npm run lint ✅ 0 errors. 3 warnings, all pre-existing/out-of-scope: 2× react-compiler EffectSetState in AppShell.tsx (lines 60, 94 — in the untouched scroll-trigger effect, not part of this diff's edits), 1× hooks/use-mobile.ts (explicitly out of scope per S0-SHARED-UI.md)
+npx --no-install tsc --noEmit ✅ clean, no errors
+npm run build:vercel ✅ succeeded (.vercel/output generated, 56.94s)
+node --experimental-strip-types --test tests/preview-contract.test.mjs ✅ 9/9 tests passed, including the delayed-write-cannot-overwrite-reset race test and the same-generation concurrent-reset test
+git diff --check BASE HEAD ✅ no whitespace errors
+Node on this host is v24.19.0 (provisional per the contract vs. the v22.23.2 baseline) — all checks above passed on that version.
+
+Browser verification (built-in browser tool, npm run dev -- --port 3102 --hostname localhost, port confirmed free before bind, server stopped after testing)
+All 5 routes (/, /client, /planner, /freelancer, /admin) load correctly at 1440×900 and 390×844, preserving the approved visual composition (public hero, Operations dark sidebar/cream heading/metrics/light cards).
+Truthful preview label (Synthetic preview data. Do not enter real personal information...) and preview controls (variant selector, Reset button, live status) are present and functional on every route.
+Reset control: clicking it advances the generation, updates status text (Preview reset to generation 1), and correctly returns keyboard focus to the Reset button (verified via document.activeElement).
+Reload persistence verified: after reset, a full page reload shows Preview generation 1 (localStorage envelope persisted correctly).
+Not exhaustively verified: prefers-reduced-motion toggling, and a full keyboard-only tab-order walk of every route (one spot-check of Tab from the Reset button was done; it moved focus to the portal-switcher trigger, which is pre-existing/unrelated to this diff). Reporting this honestly as an unrun check rather than claiming full coverage.
+Findings
+1. [Confirmed — blocking] Fixed PreviewControls overlay makes primary-action buttons unclickable at the bottom of pages on mobile (390×844)
+components/tnp/shared/PreviewControls.tsx renders two position: fixed elements globally (mounted in AppShell.tsx): .preview-notice (z-index 950) and .preview-control-panel (z-index 42). On mobile these expand to near full-width and together occupy roughly 150–200px of permanent screen height at the bottom of the viewport, with no reserved padding on the underlying page content.
+
+Reproduced concretely with elementFromPoint hit-testing after a real (mouse-wheel) scroll to the bottom of the page:
+
+/client — the "Submit Requirement" button (the last element on the page) resolves to <div class="preview-notice"> at its center point, not the button. It is not clickable in this state, and since this is the maximum scroll position, there is no way to scroll it clear.
+/freelancer — the "Show Sample Scan Result" button resolves to the preview-controls <output> element at its center point — also unclickable.
+At 1440×900 the same buttons are not blocked (the overlay sits in the corners, clear of centered content) — this is mobile-viewport-specific.
+/planner's "Submit Requirement" is reachable mid-scroll (not blocked), but the final status-timeline steps ("Team Confirmed", "Completed") are visually obscured at the true bottom of that page too.
+This is new code from this diff (both files are new/S1-owned; the mount point in AppShell.tsx is a new S1 edit), not an inherited defect. docs/DESIGN.md states "No dead primary actions... earn readiness credit", and the S1 contract explicitly requires 390×844 browser evidence covering "preview-controls reset/reload/focus" and "five-route smoke" — a full check at that viewport would have caught this.
+
+Suggested fix (stays within S1-owned files): reduce the panel's mobile footprint / reposition it away from primary CTA position, or reserve bottom padding on page content equal to the overlay height, or make pointer-events scoped only to the panel's actual visible controls. This does not require touching S0-frozen globals.css — it can be done entirely inside PreviewControls.tsx's own scoped <style> block.
+
+2. [Confirmed — non-blocking, should be tracked] listPayouts(workerId, …) silently ignores its workerId filter
+lib/contracts/preview.ts declares listPayouts(workerId?: string, options?: QueryOptions), and lib/demo/service.ts implements it as listPayouts(_workerId?: string, options?: QueryOptions) { return this.query('payouts', options, (r) => page(r.payouts), page([])); } — the parameter is accepted but never used to filter; it always returns every payout. This is untested (the test suite calls listPayouts() with no argument). Unlike listEarnings/listAssignments, which do filter correctly by workerId, this is an inconsistency.
+
+Note the Payout type itself doesn't carry a workerId (only earningIds), so a correct fix requires either deriving worker scope via earnings, or an explicit decision that payouts are month-level aggregates not meant to be worker-scoped (in which case the parameter should be removed from the interface, not silently ignored). Flagging this now so a D-03 consumer doesn't build a "my payouts" view on top of a signature that quietly returns everyone's data.
+
+Minor / observational (not blocking, not required to fix now)
+correctAttendance always maps the corrected evidence.state to only 'outside-radius' or 'gps-missing' regardless of the caller-supplied evidenceState (i.e. 'recorded'/'gps-denied' requests are silently coerced). Plausibly intentional (corrections are location-dispute scoped) but worth a one-line contract clarification.
+.preview-notice / .preview-control-panel backgrounds (94–96% opacity) show very faint text bleed-through from content behind them — cosmetic only.
+Explicitly out of scope / correctly deferred (not findings)
+Full connected consumer UI journeys (deferred to TNP-I01), consumer feature wiring, production auth/concurrency/payment certification — all correctly left unimplemented per the S1 contract's "Consumer freeze" and "S1 has no portal wiring ownership" clauses.
+
+Summary
+S0's extraction and truthful-copy work, and S1's contract/store/service/test implementation, are executed with high fidelity to two very detailed, precise contracts — the generation/reset protocol in particular is implemented and tested exactly as specified, including the tricky ordering and race conditions. All required automated checks (lint/typecheck/build/tests/whitespace) pass cleanly. The one blocking finding is a real, confirmed, reproducible mobile UX/accessibility regression in the newly-added shared PreviewControls overlay that makes primary CTAs unclickable at the bottom of at least two of the five routes — this should be fixed and re-verified at 390×844 before foundation integration. The listPayouts gap should be resolved or explicitly acknowledged before I01 consumers build on it.

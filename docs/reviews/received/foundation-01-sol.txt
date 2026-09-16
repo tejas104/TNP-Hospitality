@@ -1,0 +1,133 @@
+# TNP-FOUND-01 independent Sol architecture review
+
+Architecture-gate disposition: FAIL
+
+The reviewed foundation must not be frozen or integrated for A/B/C/D consumers at this SHA. The ordinary-mutation/reset protocol is largely implemented correctly and its required suite passes, but the exported mutation boundary is not type-safe, assignment responses can violate capacity/overlap invariants, attendance can create payable earnings from invalid or unverified states, and the worker payout query ignores its worker scope. These are foundation-contract defects, not deferred I01 browser work and not production-backend requirements.
+
+## Reviewer/session evidence
+
+- Actual model: gpt-5.6-sol, reasoning effort high.
+- Current independent task/session: 01a0aba4-680f-7a30-9448-8c503d30d28f.
+- Session metadata records thread_source=agent_created_thread, model_provider=openai, model provenance gpt-5.6-sol, and high effort in C:\Users\Om\.codex\sessions\2026\09\17\rollout-2026-09-17T00-44-33-01a0aba4-680f-7a30-9448-8c503d30d28f.jsonl (session metadata at line 1; turn context at line 8).
+- Delegating/source task: 01a0aba3-1df7-7832-af5c-620132a87f1c, recorded in the create-thread output at line 9 of the same session log. The current session ID differs from the source task and is titled Review TNP-FOUND-01 architecture gate in the Codex task registry.
+- No subagents were used. This review is separate from Dev B, Dev D, architect P, and the existing foundation-01-sonnet worktree.
+
+## Exact review target
+
+- Clone inspected: D:\TNP-Hospitality
+- Origin: https://github.com/tejas104/TNP-Hospitality.git
+- Fetched ref: origin/codex/tnp-foundation
+- Detached review worktree: D:\TNP-review\foundation-01-sol
+- BASE: 77780970a8b0fdb52e1de70d3b35469fa78cb114
+- HEAD: 502422c038c9292f4946b65c00ea0b2618515a9f
+- Exact range reviewed: 77780970a8b0fdb52e1de70d3b35469fa78cb114..502422c038c9292f4946b65c00ea0b2618515a9f
+- origin/codex/tnp-foundation resolved to the exact HEAD after fetch.
+- BASE is an ancestor of HEAD. The range contains two commits: d5be3bbee463538c17365708ca1415ffe5e4323d (S0 extraction) and 502422c038c9292f4946b65c00ea0b2618515a9f (S1 preview foundation).
+- The requested worktree path was absent, so no alternate path was needed. Existing worktrees were only inspected and were not changed or removed.
+- All 23 changed paths are within TNP-FOUND-01's stated ownership. git diff --check BASE HEAD passed. Final detached-worktree status remained clean (## HEAD (no branch)).
+
+Applicable instructions/specifications read before review: AGENTS.md, TNP-START-HERE.md, docs/PRODUCT.md, docs/DESIGN.md, docs/DOMAIN-RULES.md, docs/ARCHITECTURE.md, docs/REVIEW-CADENCE.md, docs/tasks/TNP-FOUND-01.md, docs/tasks/TNP-S0.md, docs/tasks/TNP-S1.md, docs/contracts/S0-SHARED-UI.md, docs/contracts/S1-PREVIEW-INTERFACES.md, docs/contracts/I01-INTEGRATED-PREVIEW.md, and docs/architecture/decisions/ADR-0001-web-preview-boundary.md.
+
+## Findings
+
+### [P1 / blocking] 1. The exported mutation contract accepts any operation and payload and returns unknown
+
+Evidence:
+
+- lib/contracts/preview.ts:24-30 defines a generic MutationRequest<Operation extends string, Payload> with no operation-to-payload/result mapping.
+- lib/contracts/preview.ts:307 exposes only mutate<Operation extends string, Payload>(...): Promise<PreviewOutcome<unknown>> instead of typed operations/outcomes for the consumer matrix.
+- lib/demo/service.ts:31-55 lists operation-name constants, but those constants are not connected to payload and result types.
+- lib/demo/service.ts:196-198 casts the request back to MutationRequest<string, unknown> and dispatches at runtime.
+- External compile probe: TypeScript accepted operation: 'this-operation-does-not-exist' with an arbitrary payload against PreviewService; tsc exited 0.
+
+Impact: dependent consumers cannot discover or verify required fields, payload shapes, or success values at compile time. Typos and wrong payloads compile, while successful values require unsafe narrowing/casts. This does not satisfy S1's requirement that every consumer operation have a usable Promise-based typed outcome before the contract freeze.
+
+### [P1 / blocking] 2. A declined assignment can be reactivated past capacity and without overlap/eligibility revalidation
+
+Evidence:
+
+- lib/demo/service.ts:91-103 excludes not-coming assignments from capacity and overlap reservations.
+- lib/demo/service.ts:323-338 correctly checks duplicate allocation, eligibility, capacity, and overlap when creating an assignment.
+- lib/demo/service.ts:341-348 later changes any assignment to coming without checking allocation state, capacity, eligibility, or overlap.
+- Targeted probe: with position quantity set to 2, one worker declined, another worker filled the released slot, and the original worker then responded coming. The service returned SUCCESS and left 3 counted active assignments for quantity 2.
+- tests/preview-contract.test.mjs:150-180 is titled capacity-safe/atomic, but toggles coming then not-coming before another fill and never tests a not-coming -> coming response after the slot is reused. The suite contains no assertion for an OVERLAP rejection.
+
+Impact: the preview can show an overfilled or overlapping roster even though its allocation entry point is safe. Because consumer UIs will share this foundation, the defect undermines the exact capacity/overlap/replacement behavior the preview is meant to demonstrate. This is a simulation correctness failure; it does not claim or require production concurrency.
+
+### [P1 / blocking] 3. Attendance accepts an ineligible assignment state and creates/retains payable earnings from unverified or absent attendance
+
+Evidence:
+
+- lib/demo/service.ts:376-385 validates token/event/expiry/duplicate scan and evidence-state syntax, but does not require an active eligible assignment with a coming response. A pass remains usable after markNonresponse or replacement.
+- lib/demo/service.ts:387-399 creates a full-rate earning for every accepted attendance, including gps-denied, gps-missing, and outside-radius exception states.
+- lib/demo/service.ts:404-414 can correct attendance to absent but does not update, reverse, or invalidate the associated earning.
+- lib/contracts/preview.ts:134-142 stores no assignment rate snapshot; lib/demo/service.ts:388-395 derives the earning from the current position rate instead.
+- Targeted probe: an admin assignment was marked not-coming; its pass still recorded gps-missing attendance successfully, created a 250000 paise earning, and correction to absent left the earning at 250000 paise.
+- tests/preview-contract.test.mjs:138-147 explicitly asserts that gps-missing exception attendance creates a full 250000 paise earning, so the passing suite currently certifies the wrong money invariant.
+
+Impact: the preview can present earnings that are not derived from an effective verified attendance result and can retain money after the effective result becomes absent. This conflicts with the domain rules and makes the C-03/D-02/D-03 shared scenario unsafe for consumer implementation.
+
+### [P1 / blocking] 4. Worker payout history is not worker-scoped
+
+Evidence:
+
+- lib/contracts/preview.ts:302 advertises listPayouts(workerId?: string, ...).
+- lib/contracts/preview.ts:180-186 gives Payout no worker ID; it can only be related through earningIds.
+- lib/demo/service.ts:181 names the argument _workerId and always returns every payout.
+- Targeted probe: listPayouts('tnp-demo-worker-004') for a worker with no earnings returned all 5 payouts, the same count as unfiltered listPayouts().
+
+Impact: C-03 cannot consume the contract to show a worker's payout history without receiving unrelated workers' payout states. The operation exists syntactically but is not usable as specified.
+
+### [P2] 5. The required distinct preview approval evidence is absent
+
+Evidence:
+
+- lib/demo/service.ts:509-521 records each approval actor in audit entries but does not retain/compare approval actors on the earning.
+- tests/preview-contract.test.mjs:13-14 defaults every mutation to actor tnp-test-actor.
+- tests/preview-contract.test.mjs:237-240 uses that same default actor for supervisor and Finance approvals.
+
+Impact: the suite does not meet the explicit S1 test requirement for two distinct preview approvals. DEC-16 leaves production separation-of-duties policy pending, so this finding does not demand production authorization enforcement; the preview test and labelled scenario still need two distinct sample actors as specified.
+
+### [P3] 6. One visible Operations navigation label still presents a live-state claim
+
+Evidence:
+
+- components/tnp/portals/operations/AdminOperations.tsx:24 visibly labels the sidebar item Live Workforce.
+- The destination section itself is labelled SAMPLE EVENT OPERATIONS at components/tnp/portals/operations/AdminOperations.tsx:83, and the global warning is correct, so the issue is localized.
+
+Impact: the residual label weakens the otherwise clear preview-only copy by suggesting real-time workforce tracking. It should use sample/demo wording before the truthful-preview gate passes.
+
+## Commands and results
+
+Required commands inside D:\TNP-review\foundation-01-sol:
+
+1. npm ci --no-audit --no-fund — PASS; 629 packages installed. Node v24.19.0, npm 11.17.0. npm warned that install scripts for esbuild, sharp, and workerd were not allowlisted; installation still exited 0.
+2. node --experimental-strip-types --test tests/preview-contract.test.mjs — first sandboxed attempt could not spawn the Node test worker (EPERM). The exact command was rerun with spawn permission and PASSed: 9 tests, 9 passed, 0 failed, duration approximately 973 ms.
+3. python docs/checks/verify_bootstrap.py --provenance-only — PASS: canonical file presence and 21 provenance entries only; launch/application checks were not performed.
+
+Repository/read-only checks:
+
+- git fetch origin — PASS.
+- git rev-parse origin/codex/tnp-foundation — exact HEAD.
+- git merge-base --is-ancestor BASE HEAD — PASS.
+- git diff --check BASE HEAD — PASS.
+- Final git status --short --branch — clean detached worktree.
+
+Targeted probes were stored outside the repository under C:\Users\Om\Documents\Codex\2026-09-17\tnp-foundation-review-sol\work:
+
+- node --experimental-strip-types work\foundation_review_probe.mjs — reproduced 3 active assignments at configured quantity 2; accepted exception attendance after not-coming; retained 250000 paise after correction to absent; returned all 5 payouts for a worker with no earnings.
+- tsc --project work\typing_probe_tsconfig.json using the review worktree's installed compiler — exited 0 while compiling a nonexistent operation and arbitrary payload against PreviewService.
+
+The ordinary/reset protocol itself was reviewed positively: generation is checked before ordinary-ledger replay; ordinary fingerprints include operation/actor/payload; persistence failure does not update the in-memory envelope; reset receipts are checked before stale-generation rejection, survive later resets/reload, and are not evicted; reset clears only the ordinary ledger; delayed prepared work is rejected at commit after a reset. The passing suite meaningfully covers ordinary replay/conflict, reset replay across reload, same-generation reset races, stale delayed writes, and ordinary persistence failure.
+
+## Limitations and deferred scope
+
+- Per the review request, I did not repeat full lint, application typecheck, build, or five-route browser verification. No finding depended on those checks.
+- I did not execute the deferred I01 connected consumer browser journey and do not require it for S1 acceptance.
+- I did not run the bootstrap snapshot checker; it is inapplicable after app implementation. Only --provenance-only was run.
+- The contract names Node v22.23.2 as the verification baseline; this laptop exposed Node v24.19.0, which the contract calls provisional. The required suite passed on v24.19.0, but this review does not add v22 compatibility evidence.
+- This review does not claim production authorization, server concurrency, payment/provider, KYC, GPS, cross-tab/device synchronization, or security correctness. Those guarantees are explicitly deferred. The blocking findings are failures of the promised single-browser preview contract itself.- No tracked file was edited, no source fix was made, and no commit, merge, push, deployment, clean, reset, or production operation was performed. npm ci created only ignored dependency installation content; the worktree remained clean.
+
+## Gate decision
+
+FAIL. S0 extraction and the reset/idempotency mechanics are substantially sound, but S1 cannot be frozen for consumers at 502422c038c9292f4946b65c00ea0b2618515a9f. The builder should correct the typed operation boundary, revalidate response transitions, bind attendance/earnings to eligible effective attendance and a rate snapshot, implement worker-scoped payout history, and add regression tests for the reproduced cases plus distinct sample approvers. A fresh review must target the resulting fixed SHA. I01 remains deferred, and no production guarantee is being requested or inferred.
