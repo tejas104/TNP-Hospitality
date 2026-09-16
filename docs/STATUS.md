@@ -1,3 +1,9 @@
+# Integration authorization recorded
+
+At 2026-09-17T03:47:23.1320480+05:30, the user replied to P's combined human-approval/integration/dispatch request: 'kartik approved and authorized them'. P records Kartik's approval as user-relayed and the user's authorization in Anjaneya's architect session to integrate/push reviewed foundation d8473f888cc70819ff8a149f3544e81a6b6ea36b with pending metadata, prepare/publish A/D Ready launch contracts and routine dispatch/status records. This authorizes no deployment. Both AI gates pass at that exact SHA; the human decision is not inferred from either AI report. Proceed with the recorded shared-semantics approval in that combined request; retain exact user wording as provenance.
+
+## Previous status (approval-pending statements superseded)
+
 # Current status — both AI gates pass; human integration decision pending
 
 Updated 2026-09-17T03:46:17.1152429+05:30 by P. Sol focused PASS and user-relayed Sonnet PASS both target d8473f888cc70819ff8a149f3544e81a6b6ea36b. Sonnet reviewed full payout delta1402026..d8473f8, ran13/13 tests, whitespace and an independent complete payout matrix; no actionable findings. Original Sonnet report is unavailable on Laptop1, so its supplied final-byte hash is attributed, not independently verified; the received summary has a separately computed receipt hash. Actual new Sonnet session/version is not included in the paste. No new AI review round is required for unchanged reviewed code.
