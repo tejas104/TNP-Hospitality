@@ -5,7 +5,7 @@ Original checkout D:\TNP Hospitality, main at 9d58061f2d36514ebc932fa94bb3dc90f4
 Bootstrap checkout D:\TNP-worktrees\TNP-BOOT-01 on codex/tnp-bootstrap. Keeping it outside the source tree avoids tsconfig's recursive **/*.ts include pulling in nested worktrees.
 Node v22.23.2, npm 11.8.0, Git 2.47.1.windows.2. package engine >=22.13.0. Record/align Laptop 2 versions before launch.
 Codex local tool catalog exposes gpt-6-astra, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna and gpt-5.5. Local config reports gpt-6-astra/high. Config is not proof of a per-session override or other-host entitlement.
-Claude command exists at C:\Users\DELL\AppData\Roaming\npm\claude.ps1; installed skills were not changed. Selected Claude model/version, account identity and Laptop 2 entitlement remain unverified. No Business purchase required.
+Claude command exists at C:\Users\DELL\AppData\Roaming\npm\claude.ps1; installed skills were not changed. User confirms C uses Claude and D uses Codex on Kartik's Laptop 2; selected versions/models, account identity and actual clone/access remain unverified. No Business purchase required.
 
 ## Commands actually defined
 | Command | Purpose |

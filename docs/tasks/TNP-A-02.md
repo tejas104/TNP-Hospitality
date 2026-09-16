@@ -2,7 +2,7 @@
 
 Status: Draft. NOT dispatched. Writer lease: NONE.
 Responsible human: Anjaneya (H1).
-Lane/host: A / Laptop 1 (proposed; verify at launch).
+Lane/host: A / Laptop 1 / Anjaneya (confirmed; verify actual path/model at launch).
 Tool/model/effort: Codex; exact model/effort pending selection on assigned host.
 Isolated branch: codex/tnp-a-02 (planned, not created).
 Absolute worktree: D:\TNP-worktrees\TNP-A-02 (proposed, not created or verified).

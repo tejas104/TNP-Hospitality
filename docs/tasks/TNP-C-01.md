@@ -2,8 +2,8 @@
 
 Status: Draft. NOT dispatched. Writer lease: NONE.
 Responsible human: Kartik (H2).
-Lane/host: C / Laptop 2 (proposed; verify at launch).
-Tool/model/effort: Codex; exact model/effort pending selection on assigned host.
+Lane/host: C / Laptop 2 / Kartik (confirmed; verify actual path/model at launch).
+Tool/model/effort: Claude on Kartik's Laptop 2 (user confirmed); exact version/effort pending launch verification.
 Isolated branch: codex/tnp-c-01 (planned, not created).
 Absolute worktree: C:\dev\tnp-work\TNP-C-01 (proposed, not created or verified).
 Audited source baseline: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
@@ -12,7 +12,7 @@ Dependencies: TNP-S1 and transitive bootstrap/S0/S1 as applicable.
 Merged dependency evidence: NONE yet; record each merge SHA and verify ancestry with git merge-base --is-ancestor before marking Ready.
 Mode: labelled synthetic frontend preview only.
 Risk: Routine synthetic onboarding preview; Astra not required unless identity/security authority changes.
-Opposite-model reviewer: Claude; actual reviewer session/model and availability pending.
+Opposite-model reviewer: fresh Codex session; actual model and availability pending.
 Independent human reviewer: Anjaneya; schedule/acceptance pending.
 Astra gate: Not required within frozen UI scope; escalate before any listed high-risk change.
 Canonical contract: ../contracts/S0-SHARED-UI.md and ../contracts/S1-PREVIEW-INTERFACES.md.

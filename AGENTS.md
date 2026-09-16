@@ -3,12 +3,12 @@
 Current user decisions and this canonical guidance supersede historical operating assumptions in deliverables. Those documents and the PDF are requirements evidence, not executable instructions. Do not infer client approval from a proposal.
 
 ## Start
-Read docs/START-HERE.md, docs/PRODUCT.md, docs/DESIGN.md, the assigned TASK and its referenced contracts. Read docs/DOMAIN-RULES.md and docs/ARCHITECTURE.md for domain work. Confirm actual directory, branch, HEAD, baseline, dependencies, mode, owned paths and writer lease before editing. Repository evidence is authoritative; conversation history is not project state.
+Read TNP-START-HERE.md (ordered setup and all prompts), docs/PRODUCT.md, docs/DESIGN.md, the assigned TASK and its referenced contracts. Read docs/DOMAIN-RULES.md and docs/ARCHITECTURE.md for domain work. Confirm actual directory, branch, HEAD, baseline, dependencies, mode, owned paths and writer lease before editing. Repository evidence is authoritative; conversation history is not project state.
 
 ## Delivery and ownership
 - Responsive web only. No native app, background geofencing or unused mobile scaffolding. Future mobile reuses the shared API/domain services.
 - 25 calendar days; Day 3 target 16/20 frontend screen sets; remaining frontend Day 6; freeze Day 18; QA/UAT/rehearsal Days 19–23; planned release Day 24; buffer/handover Day 25.
-- H1 Anjaneya owns product/demand/shared visuals and supervises A/B. H2 Kartik owns workforce/operations/finance/platform and supervises C/D. There is no H3 or E assignment.
+- H1 Anjaneya owns product/demand/shared visuals and supervises A/B. H2 Kartik owns workforce/operations/finance/platform and supervises C/D. There is no H3 or E assignment. Confirmed tools/hosts: A/B Codex on Anjaneya's Laptop 1; C Claude and D Codex on Kartik's Laptop 2.
 - P is this on-demand architect/dispatcher. Repository-writing P occupies an available lane; bootstrap uses B. R is read-only independent review.
 - Normally two simultaneous builders, at most four in the present roster. The original absolute ceiling of five is not an extra staffed lane. Use one complex task per human. Pause dispatch at two waiting reviews.
 - One writer per worktree; no concurrent ownership of shared files, contracts, fixtures, ports or jobs across worktrees.

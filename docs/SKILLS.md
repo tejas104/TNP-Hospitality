@@ -23,7 +23,7 @@ api-engineer, database-architect, auth-security-engineer, realtime-background-en
 Other local skills (dependency/performance/state-sync/mobile/monorepo/debugging) are not needed in this bounded bootstrap. Built-in system skills are not reinstalled.
 
 ## Installation versus discovery
-Repository copies exist only in codex/tnp-bootstrap until human review/integration. Fresh Codex session discovery and Claude entry-point compliance must be verified after integration. Laptop 2 has not received or verified these files.
+Repository copies exist only in codex/tnp-bootstrap until human review/integration. Fresh Codex session discovery and Claude entry-point compliance must be verified after integration. Laptop 2 has not been observed receiving or verifying these files. It can clone the published candidate for review before main integration; see TNP-START-HERE.md.
 Claude's existing skill installation is untouched. CLAUDE.md explicitly directs it to the shared repository rules. No Business purchase, personal config copy or invented marketplace URL.
 
 ## Verification on each host

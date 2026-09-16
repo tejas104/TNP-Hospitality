@@ -11,3 +11,6 @@ These are user decisions, not evidence of client acceptance of every product pro
 Kickoff, Day 3 slot/timezone, client decision owner and active external writer paths remain unconfirmed.
 All DEC-01..DEC-13 items in DOMAIN-RULES.md remain pending.
 For a resolved client decision record: ID, date/time, decision-maker, exact outcome, evidence/channel, affected tasks and scope/schedule consequence.
+
+## Subsequent user clarification: two laptops and repository access
+Anjaneya's current laptop runs P plus A/B Codex; Kartik's laptop runs C Claude and D Codex. Functional domains unchanged. User requests one ordered guide and authorizes pushing bootstrap to GitHub so Kartik can clone and review it. This authorizes only candidate branch/tag sharing, not main integration or production deployment. Reviewers must receive repository access before local review; file names alone do not provide access. Anjaneya needs no new clone, but every writer still needs an isolated task worktree.

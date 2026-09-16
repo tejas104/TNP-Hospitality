@@ -3,9 +3,9 @@
 Updated 2026-09-16 by P / TNP-BOOT-01.
 Humans: Anjaneya H1; Kartik H2. No H3.
 Current milestone: isolated bootstrap prepared for independent review.
-Original main and locally recorded origin/main: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97; remote not fetched.
+Original main and remote main verified with git ls-remote on 2026-09-16: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
 Bootstrap: codex/tnp-bootstrap, D:\TNP-worktrees\TNP-BOOT-01.
-No merge, push, new deployment or Laptop 2 synchronization performed.
+No main merge or new deployment. User now authorized publishing the bootstrap branch and fixed review tag for Kartik to clone; verify the remote target as instructed in TNP-START-HERE.md. No Laptop 2 clone or review completion is claimed.
 Reference demo: https://tnp-hospitality-demo.vercel.app/; deployed commit unknown.
 Kickoff date, client Day 3 slot/timezone and named client decision-maker pending.
 Integration captain: Anjaneya proposed; confirm human availability.
@@ -24,8 +24,8 @@ Architecture proposal is authored, not independently approved.
 | TNP-S1 | Draft, dependency unmerged | Anjaneya / B | After S0 review/integration |
 | TNP-A-01 -> A-02 | Draft | Anjaneya / A | After S1; model/path/lease/review confirmation |
 | TNP-B-01 | Draft | Anjaneya / B | After S1; supplied content evidence |
-| TNP-C-01 -> C-02 -> C-03 | Draft | Kartik / C | After S1; verify actual Laptop 2 setup |
-| TNP-D-01 -> D-02 -> D-03 | Draft | Kartik / D | After S1; verify actual Claude host/model |
+| TNP-C-01 -> C-02 -> C-03 | Draft | Kartik / C | After S1; verify Kartik's Claude workspace/model |
+| TNP-D-01 -> D-02 -> D-03 | Draft | Kartik / D | After S1; verify Kartik's Codex workspace/model |
 | F17–F20 | Backlog, no implementation contract yet | H1/H2 | Days 4–6; split after frontend feedback/contracts |
 
 One task prepared for review; no reviewer session launched by this architect. At two waiting tasks stop new dispatch.

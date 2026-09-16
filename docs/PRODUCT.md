@@ -1,7 +1,7 @@
 # Product and delivery baseline
 
 ## Confirmed user decisions
-H1 is Anjaneya and H2 is Kartik. Two humans, two laptops; no H3. Requested builders are A/B/C/D. P handles architecture here; R reviews independently.
+H1 is Anjaneya and H2 is Kartik. Two humans, two laptops; no H3. Confirmed builders: Anjaneya's Laptop 1 runs A/B Codex; Kartik's Laptop 2 runs C Claude and D Codex. P handles architecture here; R reviews independently.
 This is responsive web only. A native app approximately six months later is separately funded and consumes the same API/domain boundary.
 Preserve the public website and especially the Operations format at https://tnp-hospitality-demo.vercel.app/ and /admin.
 The 25-day schedule remains the target, not a claim that two people can deliver unchanged full PDF scope. See DELIVERY-PLAN.md.

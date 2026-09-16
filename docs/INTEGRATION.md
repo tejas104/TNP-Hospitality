@@ -1,6 +1,6 @@
 # Bootstrap review and safe integration
 
-No integration, publication or production operation was performed. Current next step is read-only independent review, not builder launch.
+No main integration or production operation was performed. User now authorizes sharing codex/tnp-bootstrap plus a fixed review tag on GitHub so Kartik can clone BEFORE review. Current sequence is the root TNP-START-HERE.md guide: clone candidate, two read-only reviews, return findings, then approved integration.
 
 ## Review
 Kartik obtains Claude review and a separate fresh Astra architecture gate at the exact candidate SHA supplied in the final handoff. Use the detached review checkout supplied there; do not edit it.
@@ -19,5 +19,5 @@ Before an authorized human integration:
 7. Only then make TNP-S0 Ready with the new baseline, actual model/host/reviewer and writer lease.
 
 ## Laptop 2
-No push or transfer has been performed. A human must explicitly authorize any remote sharing. Once the integrated commit is actually available, Kartik fetches/pulls that exact commit, verifies provenance and versions, and opens a fresh session to confirm project instructions/skills.
+User authorized the current bootstrap branch/tag push; verify its actual remote SHA using TNP-START-HERE.md and P's handoff. Kartik first clones that unmerged branch and creates separate detached Claude/Astra review worktrees at the fixed tag. Do not wait for main integration before bootstrap review. After approved integration and separately authorized sharing of main, fetch the exact integrated commit before developer launch.
 Do not share personal credentials/config folders. A prompt sent to another chat is not proof the repository files, model access or lease exist there.

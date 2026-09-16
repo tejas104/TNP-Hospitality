@@ -7,7 +7,7 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE = "9d58061f2d36514ebc932fa94bb3dc90f4b97a97"
-required = ["AGENTS.md", "CLAUDE.md"] + ["docs/" + x + ".md" for x in
+required = ["AGENTS.md", "CLAUDE.md", "TNP-START-HERE.md"] + ["docs/" + x + ".md" for x in
     ["PRODUCT", "DESIGN", "DOMAIN-RULES", "ARCHITECTURE", "STATUS",
      "LANES", "ENVIRONMENTS", "SKILLS", "BASELINE", "F01-F20-AUDIT",
      "DELIVERY-PLAN", "START-HERE", "DISPATCH"]]
@@ -55,7 +55,7 @@ for rel in tracked:
     # Git handles CRLF normalization, unlike a raw working-tree byte comparison.
 changed = subprocess.check_output(["git", "diff", "--name-only", BASE, "--"], cwd=ROOT, text=True).splitlines()
 allowed_refs = {item["destination"] for item in manifest["files"] if item["kind"] == "reference"}
-allowed = lambda p: p in ("AGENTS.md", "CLAUDE.md", ".gitattributes") or p.startswith(("docs/", ".agents/skills/")) or p in allowed_refs
+allowed = lambda p: p in ("AGENTS.md", "CLAUDE.md", ".gitattributes", "TNP-START-HERE.md") or p.startswith(("docs/", ".agents/skills/")) or p in allowed_refs
 for rel in changed:
     if rel in tracked or not allowed(rel):
         errors.append("Out-of-scope tracked diff: " + rel)
@@ -68,6 +68,11 @@ agents = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
 for required_text in ["Anjaneya", "Kartik", "There is no H3", "Pause dispatch at two", "No automatic subagents"]:
     if required_text not in agents:
         errors.append("Missing policy: " + required_text)
+for lane, author, reviewer in [("C", "Claude", "fresh Codex"), ("D", "Codex", "fresh Claude")]:
+    for path in (ROOT / "docs/tasks").glob("TNP-" + lane + "-*.md"):
+        body = path.read_text(encoding="utf-8")
+        if "Tool/model/effort: " + author not in body or "Opposite-model reviewer: " + reviewer not in body:
+            errors.append("Incorrect confirmed tool/reviewer mapping: " + path.name)
 if errors:
     raise SystemExit("\n".join(errors))
 print("PASS: canonical files; %d provenance entries; 20 screen sets; %d TASKs; allowed docs-only diff." %

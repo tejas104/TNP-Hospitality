@@ -29,3 +29,6 @@ No findings supplied yet; this means not reviewed, not passed.
 Kartik records confirmed/rejected/reproduce with reasons. P fixes accepted findings under the bounded lease. New commit -> relevant independent re-review.
 Record reviewer/model, fixed reviewed SHA, checks actually run, limitations, unresolved blockers, Astra result and human approval.
 Only then may a human integrate. Publication and production remain outside authorization.
+
+## Updated review target and cross-host setup
+The initial local 5cece04 checkpoint is superseded by the single-guide/tool-mapping revision. Review immutable tag tnp-bootstrap-review-01 after P publishes it; verify the full SHA from P's handoff. Kartik creates two separate detached worktrees from that tag using TNP-START-HERE.md. The older local detached checkout, if present, is not the current target. Review the entire original BASE_SHA..new HEAD_SHA diff. Include the corrected C Claude/D Codex mapping, GitHub authorization boundaries and clone-before-review order.

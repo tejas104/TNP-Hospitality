@@ -2,8 +2,8 @@
 
 Status: Draft. NOT dispatched. Writer lease: NONE.
 Responsible human: Kartik (H2).
-Lane/host: D / Laptop 2 (proposed; verify at launch).
-Tool/model/effort: Claude preferred using existing installation; exact model/version/effort and host pending. Codex substitution must change reviewer family.
+Lane/host: D / Laptop 2 / Kartik (confirmed; verify actual path/model at launch).
+Tool/model/effort: Codex on Kartik's Laptop 2 (user confirmed); exact model/effort pending launch verification.
 Isolated branch: codex/tnp-d-01 (planned, not created).
 Absolute worktree: C:\dev\tnp-work\TNP-D-01 (proposed, not created or verified).
 Audited source baseline: 9d58061f2d36514ebc932fa94bb3dc90f4b97a97.
@@ -12,7 +12,7 @@ Dependencies: TNP-S1 and transitive bootstrap/S0/S1 as applicable.
 Merged dependency evidence: NONE yet; record each merge SHA and verify ancestry with git merge-base --is-ancestor before marking Ready.
 Mode: labelled synthetic frontend preview only.
 Risk: Routine preview; Astra not required unless shared domain/architecture changes.
-Opposite-model reviewer: Codex for Claude author; Claude if switched to Codex; actual reviewer session/model and availability pending.
+Opposite-model reviewer: fresh Claude session; actual version and availability pending.
 Independent human reviewer: Anjaneya; schedule/acceptance pending.
 Astra gate: Not required within frozen UI scope; escalate before any listed high-risk change.
 Canonical contract: ../contracts/S0-SHARED-UI.md and ../contracts/S1-PREVIEW-INTERFACES.md.
