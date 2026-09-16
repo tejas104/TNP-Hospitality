@@ -1,11 +1,13 @@
 # TNP — current next action
 
-Current candidate: tnp-bootstrap-review-04. Review pair: Sonnet + independent Sol. Foundation milestone: TNP-FOUND-01.
+Bootstrap is integrated and accepted. Foundation application work is not integrated.
 
-Anjaneya base clone D:\TNP Hospitality; Kartik base clone D:\TNP-Hospitality. Writer worktrees D:\TNP-worktrees\TASK; Kartik reviews D:\TNP-review. No new clone or file upload needed when the right local checkout is attached.
-Current machine-readable policy is docs/OPERATING-POLICY.json. Current review instructions are docs/reviews/TNP-BOOT-01.md. Prior findings/dispositions live in history reports, not appended alternate live instructions.
-P has corrected the foundation dependency names, live policy documents, reset protocol and policy checker. Kartik's approval to make requested changes was relayed by the user. Required corrected-candidate independent review is not claimed passed. Do not send A/C/D the old blocked implementation prompts again.
-Next: Sonnet focused re-review and a genuinely NEW Sol task at P's exact published SHA, then Kartik final disposition and authorized integration. The previous DevD/Sol task is not new; a new worktree in the same chat does not create a new reviewer context.
-After approved bootstrap integration, P issues one fully populated Ready TNP-FOUND-01 contract and exact LAUNCH_SHA for B. B builds S0 then S1 in D:\TNP-worktrees\TNP-FOUND-01 on codex/tnp-foundation, with checks and authorized checkpoint pushes. ONE completed-foundation review/integration unlocks consumers. Internal S1 commit is not a reviewed foundation integration.
-Only after that does P issue A/B/C/D per-lane grouped milestone launch packets. Their first existing phase specifications now depend on TNP-FOUND-01. Normally A and D start first, B/C as human capacity permits. No current application lease or task worktree is invented.
-Use Sol for Codex implementations and independent architecture review, Sonnet for Claude implementations and routine opposite-model review, subject to actual selection evidence. Review per completed milestone, not per chat prompt. Developers push only their authorized branches, report exact SHAs/checks to P, and do not force-push/main-merge/deploy. P fetches on demand. Shared changes escalate before consumer edits. Client-liked visuals and responsive web-only scope stay unchanged.
+Current fixed foundation candidate: 1402026e296caa0389e4c26e2e32b28279d41823 on codex/tnp-foundation. B is PAUSED. Read docs/STATUS.md, docs/LANES.md, docs/LAUNCH-PROTOCOL.md, docs/REVIEW-CADENCE.md, docs/tasks/TNP-FOUND-01.md and docs/reviews/TNP-FOUND-01-REREVIEW.md.
+
+Next: obtain or conduct focused Sonnet and fresh independent Sol reviews at that exact SHA, then record Kartik disposition and H1/H2 shared-semantics approval. No review result or launch is currently confirmed. Do not repeat the completed bootstrap audit. Return remaining findings to original B under a bounded reopened lease; P does not implement or independently certify its own architecture.
+
+After both gates and human approval, perform authorized foundation integration while retaining current main registers; verify integrated local and remote main. Only then issue executable per-lane contracts with real SOURCE_SHA and LAUNCH_SHA. Proposed groups: A-01+A-02, B-01 alone, C-01+C-02, D-01+D-02. Initially A/D subject to capacity; no consumer is launched by this guide.
+
+Anjaneya: Laptop 1, D:\TNP Hospitality, A/B Codex. Kartik: Laptop 2, D:\TNP-Hospitality, C Claude and D Codex. No H3/E. Preferred builders Sol for A/B/D, Sonnet for C; actual selection and independent reviewer appointments must be recorded at launch. Sol plus Sonnet replaces the old Astra gate.
+
+Preserve responsive web, approved public/Operations composition and React/Vinext/Vite/Nitro. Basic RSVP remains included; pending client decisions stay pending. Synthetic preview does not prove production authorization, KYC, GPS, payments or synchronization. No deployment is authorized.

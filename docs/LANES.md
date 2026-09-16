@@ -1,3 +1,16 @@
+# Current lanes — foundation paused, consumers unleased
+
+Updated 2026-09-17T01:57:25.6987451+05:30. Replacement P session 01a0abe3-6edb-7101-94d8-dc9bd66300d5 owns the serialized documentation reconciliation in D:\TNP-worktrees\TNP-FOUND-LAUNCH, branch codex/tnp-foundation-launch, from main ffc53e4487f21f0fbbd42792e5f1f4e7d22b4d16. Metadata-only B capacity; no application writer is activated. Owned paths: TNP-START-HERE.md, docs/STATUS.md, docs/LANES.md, docs/tasks/TNP-FOUND-01.md, docs/reviews/TNP-FOUND-01-REREVIEW.md. Lease ends at metadata handoff. Existing factual register sharing authority remains governed by LAUNCH-PROTOCOL.md.
+
+| Lane | Current authority |
+|---|---|
+| B foundation | PAUSED at 1402026e296caa0389e4c26e2e32b28279d41823. Original B session only; no resumed writing without a new bounded correction. |
+| A / B public / C / D | NONE; Draft, waiting for integrated foundation and issued milestone contracts. |
+| Review | Sonnet and independent Sol on Kartik Laptop 2 requested for fixed SHA; launches, actual sessions and results unconfirmed. |
+
+No preview server was started by P; no port is newly reserved. Historical port-stop claim remains builder-attributed. This current table supersedes the reopened lease and old review target below.
+
+## Historical register
 # Lane register — B foundation correction reopened
 
 Current candidate: tnp-bootstrap-review-04. Review pair: Sonnet + independent Sol. Foundation milestone: TNP-FOUND-01.

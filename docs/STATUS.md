@@ -1,3 +1,18 @@
+# Current status — fixed foundation awaiting focused review
+
+Updated 2026-09-17T01:57:25.6987451+05:30 by replacement architect/dispatcher P, session 01a0abe3-6edb-7101-94d8-dc9bd66300d5, Anjaneya Laptop 1 / DESKTOP-DL9FDM7. User assigned this session P in the replacement handoff. This section supersedes historical status below.
+
+Audit: origin is https://github.com/tejas104/TNP-Hospitality.git. Live remote and local main match ffc53e4487f21f0fbbd42792e5f1f4e7d22b4d16 before this metadata update; live remote and local foundation match 1402026e296caa0389e4c26e2e32b28279d41823. Builder and dispatcher worktrees are clean. Initial launch 77780970a8b0fdb52e1de70d3b35469fa78cb114 is an ancestor of fixed foundation; correction diff has the expected eight paths and passes whitespace checking. Main and foundation diverge after the launch commit, so application integration must preserve later main registers rather than attempt to discard them for a fast-forward.
+
+B is PAUSED for focused re-review; this supersedes REOPENED wording in the historical correction packet. P confirms the original Dev B task is idle; its final message was unavailable through the task reader. The supplied handoff reports all eight fixes, lint/typecheck/13 service tests/build/provenance/whitespace and desktop/mobile checks passing. These remain attributed builder claims, not independent acceptance or tests rerun by P.
+
+Sonnet and fresh independent Sol re-review launches/results at the fixed SHA are NOT confirmed. Kartik disposition and H1/H2 shared-semantics approval for that SHA remain pending. Requested from the user; Laptop 2 report paths are not locally obtained evidence. Bootstrap is already accepted and will not be re-audited. Review instructions: docs/reviews/TNP-FOUND-01-REREVIEW.md.
+
+No application integration, consumer lease, production action or deployment is authorized by this factual update. A/B-public/C/D remain Draft. Proposed batches after foundation integration: A-01+A-02, B-01 alone, C-01+C-02, D-01+D-02. C-03/D-03 remain later milestones. Initially A/D subject to actual model/reviewer appointments and human capacity; no more than one complex builder per human, pause at two waiting reviews. Executable contracts and source/launch SHAs can only be issued from the approved integrated foundation baseline.
+
+Main has unrelated untracked deliverables and tmp, preserved untouched except this task's temporary preparation script. Existing accessible bootstrap/review worktrees are clean; Git lists four older review entries as prunable and sandbox probes were denied, so absence is not independently certified. No cleanup was performed.
+
+## Historical register (superseded where stated above)
 # Current status — foundation correction authorized
 
 Current candidate: tnp-bootstrap-review-04. Review pair: Sonnet + independent Sol. Foundation milestone: TNP-FOUND-01.

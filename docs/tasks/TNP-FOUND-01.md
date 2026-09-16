@@ -1,7 +1,7 @@
-# TNP-FOUND-01 — READY: B shared foundation, S0 then S1
+# TNP-FOUND-01 — PAUSED: B shared foundation, S0 then S1
 
-Status: Correction authorized; original B lease REOPENED for TNP-FOUND-01-FIX-01. Not yet observed resumed.
-Dispatchable: YES after Ready launch gates; sole S0/S1 implementation milestone.
+Status: PAUSED for focused re-review at 1402026e296caa0389e4c26e2e32b28279d41823. Correction handoff reported; independent gates pending.
+Dispatchable: NO while paused. Historical initial launch fields below are retained as provenance, not a new writer lease.
 Responsible human: Anjaneya (H1), integration captain.
 Lane/host: B / Anjaneya Laptop 1 / DESKTOP-DL9FDM7.
 Tool/model/effort: assigned Codex gpt-5.6-sol / high, per user's approved Sol implementation policy. Select this setting before launching; actual runtime model is recorded by B's first startup response, not claimed observed by P. Do not inherit the old task's Astra setting silently.
@@ -18,7 +18,7 @@ Independent human reviewer: Kartik; Anjaneya and Kartik approve S1 domain semant
 Astra gate: REPLACED by separate independent Sol review on Kartik Laptop 2, high effort, per explicit user approval. Use an independent review task, not this B author or Dev D. Review the final fixed foundation SHA.
 Reviewer host/availability: Kartik Laptop 2 has completed both required model reviews and supplied approval; the same human owns arranging Sonnet and independent Sol foundation review at completion. If availability changes, pause at the finished milestone; do not silently waive a gate. Final review sessions/SHAs are recorded when the work exists.
 Review sharing: B is authorized to commit and non-force push ONLY codex/tnp-foundation to origin at meaningful checked checkpoints, including S0 and final S1. No main push, moved review tags, force-push or deployment. Report branch/full SHA/checks to P after push. P may fetch/inspect; a push is not approval.
-Writer lease: REOPENED 2026-09-17T01:15:41+05:30 exclusively for original B session01a0aa5f-c6ee-76e2-93db-6b50e124d174 at reviewed HEAD 502422c038c9292f4946b65c00ea0b2618515a9f; bounded by docs/reviews/TNP-FOUND-01-FIX-01.md, expires at new fixed review handoff. No second writer.
+Writer lease: PAUSED at fixed correction handoff 1402026e296caa0389e4c26e2e32b28279d41823. Historical correction lease was REOPENED 2026-09-17T01:15:41+05:30 exclusively for original B session01a0aa5f-c6ee-76e2-93db-6b50e124d174 at reviewed HEAD 502422c038c9292f4946b65c00ea0b2618515a9f; bounded by docs/reviews/TNP-FOUND-01-FIX-01.md, expires at new fixed review handoff. No second writer.
 
 ## Correct the old conversation role before starting
 The existing local task is titled Dev B but previously mistook itself for Kartik/Dev D. That old orientation is superseded. This lease is B under Anjaneya on DESKTOP-DL9FDM7. It is NOT D and not Laptop 2. Explicitly Set-Location to the absolute worktree above for EVERY command; scope every tool/file write there. If attached UI workspace still points to D:\TNP Hospitality, do not write that main checkout. Use the existing isolated folder, not an additional automatic worktree. No prior findings/reopened lease are required for this first implementation.
@@ -45,5 +45,9 @@ Commit and push the final branch checkpoint. Return TASK, actual model/effort/ho
 ## Fixed review handoff
 Received 2026-09-17T00:40:38+05:30. Review BASE/initial LAUNCH_SHA 77780970a8b0fdb52e1de70d3b35469fa78cb114; final HEAD 502422c038c9292f4946b65c00ea0b2618515a9f; S0 checkpoint d5be3bbee463538c17365708ca1415ffe5e4323d. P verified remote branch equality, clean builder worktree, launch ancestry and diff whitespace. The builder reports Sol/high, the assigned host/session, required app checks passing (9 service tests; 3 inherited lint warnings), five-route desktop/mobile checks and stopped preview server. These app/browser results remain builder evidence until independent review. Sonnet and independent Sol review the entire LAUNCH_SHA..HEAD once; no main integration or consumer launch yet. Review source worktrees may retain this task as Ready at the fixed app commit; this current main metadata records its subsequent pause. Do not edit/rebase the app commit merely to sync status.
 
-## Current correction authority
+## Historical correction authority (expired at fixed handoff)
 Both supplied reviews request changes at 502422c038c9292f4946b65c00ea0b2618515a9f. Read current main docs/reviews/TNP-FOUND-01-FIX-01.md and the exact received reports. B may fix accepted findings on the existing app branch without merging metadata main. The packet adds tests/preview-contract.types.ts to original ownership for required type-level regression assertions. All other boundaries stay.
+
+## Current fixed correction handoff
+
+Fixed SHA 1402026e296caa0389e4c26e2e32b28279d41823 supersedes the first reviewed candidate. The historical permission to fix above has expired at handoff. See current STATUS/LANES and TNP-FOUND-01-REREVIEW.md. No independent PASS or human approval is recorded yet.
