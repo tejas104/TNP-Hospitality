@@ -1,17 +1,18 @@
-# Current lane and resource register
+# Lane register — foundation launch reservation
 
 Current candidate: tnp-bootstrap-review-04. Review pair: Sonnet + independent Sol. Foundation milestone: TNP-FOUND-01.
 
-| Lane | Human/host | Tool | Current reservation |
-|---|---|---|---|
-| P occupying B | Anjaneya Laptop1 | Architect Codex session01a0aa12-b112-7052-b7de-49e070c4fa09 | Bootstrap docs corrections only; pauses at candidate handoff |
-| A | Anjaneya Laptop1 | Sol preferred, exact setting at launch | NONE; client/planner after foundation |
-| B builder | Anjaneya Laptop1 | Sol preferred, exact setting at launch | NONE; first task foundation after approved bootstrap integration |
-| C | Kartik Laptop2 | Sonnet preferred, exact setting at launch | NONE; workforce after foundation |
-| D | Kartik Laptop2 | Sol preferred, exact setting at launch | NONE; Operations after foundation |
-| R | Kartik preferred bootstrap host | Separate Sonnet and independent Sol | Current candidate gate not passed; supplied Sol report used previous DevD context |
+Updated by P at 2026-09-16T23:25:27+05:30. Bootstrap P/B writing lease CLOSED after approved integration. P now owns only the serialized dispatcher metadata task in D:\TNP-worktrees\TNP-FOUND-LAUNCH, branch codex/tnp-foundation-launch, changing foundation TASK plus STATUS/LANES only. P is not a parallel application writer.
 
-Base clones: Anjaneya D:\TNP Hospitality; Kartik D:\TNP-Hospitality. Bootstrap writer D:\TNP-worktrees\TNP-BOOT-01. Future B foundation D:\TNP-worktrees\TNP-FOUND-01, branch codex/tnp-foundation. Future consumer worktrees D:\TNP-worktrees\TASK on their assigned host. Kartik review parent D:\TNP-review. All future paths remain unleased until a Ready packet and actual launch evidence.
-S0/S1 have no separate writer or merged dependency record. One B milestone owns their union, checks S0 before S1, and pauses for one foundation review. Only its reviewed integration SHA unlocks consumers.
-Normally one builder per human; at most four staffed writers. Pause dispatch at two waiting reviews and do not add work to a human with one waiting review. Proposed ports A3101/B3102/C3103/D3104 are not yet reserved. One heavy build per host by default; synthetic profile per task.
-P alone serializes Ready/Building/status commits onto current main through the authorized captain. Builders never race on registers. Ready contracts name SOURCE_SHA/LAUNCH_SHA, actual model/host/reviewer appointments, resource reservation, exclusive lease and exact branch sharing authority. Human review A/B -> Kartik; C/D -> Anjaneya. Checkpoint pushes are inspection evidence, not approval or permission to merge main.
+| Lane | Human/host | Model assignment | Lease/state |
+|---|---|---|---|
+| B | Anjaneya / DESKTOP-DL9FDM7 / Laptop1 | Codex gpt-5.6-sol/high; actual startup setting checked by builder | RESERVED EXCLUSIVE TNP-FOUND-01 for local Dev B01a0aa5f-c6ee-76e2-93db-6b50e124d174; not yet Building |
+| A | Anjaneya / Laptop1 | Sol at later launch | NONE; waiting for foundation integration |
+| C | Kartik / Laptop2 | Sonnet at later launch | NONE; waiting for foundation integration |
+| D | Kartik / Laptop2 | Sol at later launch | NONE; waiting for foundation integration |
+| Review | Kartik / Laptop2 | Sonnet source + independent Sol/high | Assigned at final foundation checkpoint; bootstrap pair PASS accepted separately |
+
+B owns only the exact S0/S1 application paths in the Ready TASK, branch codex/tnp-foundation, D:\TNP-worktrees\TNP-FOUND-01. S0/S1 have no separate writer or merge gate. Lease issued 2026-09-16T23:25:27+05:30; expires at final fixed-commit review handoff or P revocation. No other chat may write under it. The task formerly misidentified itself as D; correct identity is B/Anjaneya.
+Reserved preview localhost3102 (no listener at preflight; recheck before bind), dedicated synthetic browser profile/namespace, single heavy build on Laptop1 at a time. No provider/DB/jobs. Other proposed ports are unreserved. Never stop an unknown listener or copy another worktree's node_modules.
+Human reviewer B=Kartik; both H1/H2 approve shared semantics; independent AI appointments run at milestone completion. Verified model availability on Kartik host comes from supplied bootstrap PASS reports, not an invented calendar slot. Changed availability pauses final review/integration, not a false gate pass.
+P prepares/integrates/shares factual Ready/Building metadata serially on main per approved protocol. Builders push only their named authorized branch checkpoints, never edit registers, force-push, merge main or deploy. No application implementation or build is claimed by reserving this lease.

@@ -1,32 +1,43 @@
-# TNP-FOUND-01 — shared foundation milestone: S0 then S1
+# TNP-FOUND-01 — READY: B shared foundation, S0 then S1
 
-Status: Draft. NOT dispatched. Writer lease: NONE.
+Status: Ready. Reserved for the assigned B session; not yet observed Building.
 Dispatchable: YES after Ready launch gates; sole S0/S1 implementation milestone.
-Responsible human: Anjaneya (H1).
-Lane/host: B / Anjaneya Laptop 1.
-Tool/model/effort: Codex Sol preferred by user; actual model/effort pending session evidence.
-Isolated branch: codex/tnp-foundation (planned, not created).
-Absolute worktree: D:\TNP-worktrees\TNP-FOUND-01 (planned, not created).
-Implementation baseline SHA: PENDING approved integrated bootstrap SOURCE_SHA.
-Launch-contract revision: PENDING LAUNCH_SHA supplied after serialized Ready commit is integrated as in LAUNCH-PROTOCOL.md.
-Dependencies: TNP-BOOT-01. S0 then S1 are internal ordered phases, not separately merged prerequisites in this milestone.
-Merged dependency evidence: NONE; no bootstrap approval/integration claimed.
-Mode: labelled synthetic local web preview only.
-Risk: shared architecture/interface/financial and attendance simulation semantics.
-Opposite-model reviewer: fresh Claude Sonnet preferred, Kartik Laptop 2; availability pending.
-Independent human reviewer: Kartik; both humans approve S1 domain semantics; availability pending.
-Astra gate: REPLACED by fresh independent Sol review at fixed commit, per explicit user approval on 2026-09-16. Do not label this an Astra review.
-Review sharing: builder may push ONLY codex/tnp-foundation once this contract is Ready; no force-push, main push or deployment. Report fixed checkpoint SHAs to P.
-Reviewer host/availability: pending actual appointments; no gate waiver from model unavailability.
+Responsible human: Anjaneya (H1), integration captain.
+Lane/host: B / Anjaneya Laptop 1 / DESKTOP-DL9FDM7.
+Tool/model/effort: assigned Codex gpt-5.6-sol / high, per user's approved Sol implementation policy. Select this setting before launching; actual runtime model is recorded by B's first startup response, not claimed observed by P. Do not inherit the old task's Astra setting silently.
+Isolated branch: codex/tnp-foundation.
+Absolute worktree: D:\TNP-worktrees\TNP-FOUND-01. P creates and verifies this checkout at LAUNCH_SHA before handing off; no other path is authorized for implementation.
+Implementation baseline SHA: 3ba446f4c95da261ed839bcec3b61d14d5830360 (SOURCE_SHA), approved bootstrap integrated into local and remote main before this Ready commit.
+Launch-contract revision: this Ready metadata commit; P supplies its full LAUNCH_SHA after commit/fast-forward to main. This file intentionally does not embed its own commit hash.
+Dependencies: TNP-BOOT-01. S0 and S1 are internal ordered phases of this milestone, not separate merged prerequisites.
+Merged dependency evidence: bootstrap review-04 3ba446f4c95da261ed839bcec3b61d14d5830360 fast-forwarded from original main9d58061f2d36514ebc932fa94bb3dc90f4b97a97; local and remote main verified at SOURCE_SHA before Ready preparation. Sonnet PASS, independent new-task Sol PASS and Kartik approval are recorded in STATUS.md.
+Mode: local labelled synthetic responsive-web preview. No publication or production operations.
+Risk: shared architecture/interface; attendance/allocation/finance simulation semantics. Preview implementation is not production concurrency or financial certification.
+Opposite-model reviewer: Claude Sonnet on Kartik Laptop 2, assigned at the completed foundation checkpoint; same human routing that supplied bootstrap PASS. No formal review between S0 and S1.
+Independent human reviewer: Kartik; Anjaneya and Kartik approve S1 domain semantics before foundation integration. Appointment is at milestone completion, not a claimed calendar slot.
+Astra gate: REPLACED by separate independent Sol review on Kartik Laptop 2, high effort, per explicit user approval. Use an independent review task, not this B author or Dev D. Review the final fixed foundation SHA.
+Reviewer host/availability: Kartik Laptop 2 has completed both required model reviews and supplied approval; the same human owns arranging Sonnet and independent Sol foundation review at completion. If availability changes, pause at the finished milestone; do not silently waive a gate. Final review sessions/SHAs are recorded when the work exists.
+Review sharing: B is authorized to commit and non-force push ONLY codex/tnp-foundation to origin at meaningful checked checkpoints, including S0 and final S1. No main push, moved review tags, force-push or deployment. Report branch/full SHA/checks to P after push. P may fetch/inspect; a push is not approval.
+Writer lease: RESERVED exclusively for Anjaneya's local Dev B task01a0aa5f-c6ee-76e2-93db-6b50e124d174, issued by P at 2026-09-16T23:25:27+05:30; TASK TNP-FOUND-01, branch/worktree above, expires at final fixed-commit review handoff or explicit P revocation. P's bootstrap writing lease closes before B starts. No other session may consume this lease; transfer requires P record.
+
+## Correct the old conversation role before starting
+The existing local task is titled Dev B but previously mistook itself for Kartik/Dev D. That old orientation is superseded. This lease is B under Anjaneya on DESKTOP-DL9FDM7. It is NOT D and not Laptop 2. Explicitly Set-Location to the absolute worktree above for EVERY command; scope every tool/file write there. If attached UI workspace still points to D:\TNP Hospitality, do not write that main checkout. Use the existing isolated folder, not an additional automatic worktree. No prior findings/reopened lease are required for this first implementation.
 
 ## Owned paths/contracts/resources
-Union of exact S0-SHARED-UI.md and S1-PREVIEW-INTERFACES.md paths; S0 phase restrictions apply before S1. This includes only the specified tsconfig allowImportingTsExtensions option, not arbitrary configuration work. Use TNP-S0.md and TNP-S1.md as phase acceptance/checklists; their standalone dispatch/merge steps are superseded by this milestone. No other owner writes those paths until integration.
-Proposed port3102 and dedicated synthetic browser profile; confirm availability at launch. No database/provider/job resources. One writer in this worktree.
+S0 phase owns: components/tnp/PortalPages.tsx; components/tnp/AppShell.tsx; components/tnp/HomeExperience.tsx ONLY the four specified navigation anchor fixes; components/tnp/shared/** only contract helpers/controls; components/tnp/portals/client/ClientExperience.tsx; components/tnp/portals/planner/PlannerPortal.tsx; components/tnp/portals/freelancer/FreelancerPortal.tsx; components/tnp/portals/operations/AdminOperations.tsx; app/client/page.tsx; app/planner/page.tsx; app/freelancer/page.tsx; app/admin/page.tsx; app/globals.css for existing theme preservation only. Use S0-SHARED-UI.md exact extraction/copy/navigation behavior.
+S1 phase additionally owns lib/contracts/preview.ts, lib/demo/scenario.ts, lib/demo/store.ts, lib/demo/service.ts, lib/services/preview.ts, components/tnp/shared/PreviewControls.tsx, tests/preview-contract.test.mjs and tsconfig.json ONLY compilerOptions.allowImportingTsExtensions=true while preserving noEmit and all other options. AppShell change in S1 only mounts preview controls; no consumer portal workflow wiring.
+Read contracts/S0-SHARED-UI.md and contracts/S1-PREVIEW-INTERFACES.md relative to docs. TNP-S0.md/TNP-S1.md supply phase acceptance/checklists only. Their old standalone branch/dispatch/merge instructions do not apply.
+Resource reservation: local preview port3102, http://localhost:3102, no listener observed during P preflight; recheck before bind, do not stop another process. Dedicated synthetic browser profile/namespace for this milestone; coordinate one heavy build per laptop. No database/provider/webhook/job resources reserved. Ports and profile are owned by B until review handoff, not active server claims.
 
 ## Do not modify
-Any path outside those two contracts, package/lockfiles, providers, production schemas/auth, unrelated user files, project guidance/status/registers or other lanes' future feature scope. Do not implement consumer screen workflows as part of S1. No framework migration.
+Anything outside the exact owned paths, package/lockfiles, production auth/schema/provider configurations, unrelated deliverables/tmp, project instructions/contracts/status/registers, historical references, skills or other lanes' eventual business features. No framework migration, no native app, no real payments/KYC/GPS claims or real personal data. If the contract is insufficient, report a specific amendment to P instead of editing shared governance.
 
-## Acceptance and required checks
-Phase S0: preserve approved visuals, extract portals/helpers, repair eight named navigation lint errors, truthful sample copy, five-route desktop/mobile/keyboard/reduced-motion evidence. Run npm ci, npm run lint, npx --no-install tsc --noEmit, npm run build:vercel. Commit and optionally push the checked checkpoint; no separate formal review or merge required before S1 in this milestone.
-Phase S1: complete consumer service matrix, deterministic persistence/generation/reset/idempotency, tests and preview controls within scope. Run npm run lint, npx --no-install tsc --noEmit, npm run build:vercel, node --experimental-strip-types --test tests/preview-contract.test.mjs. Rerun npm ci only if install/environment requires it; package changes are not authorized. Five-route smoke and controls at1440x900/390x844; integrated consumer browser journey deferred to I01. Record all failures honestly.
-At completion pause at a fixed final commit for ONE foundation review cycle, including both S0 and S1 changes, opposite-model review, required independent architecture gate and human approval. Fix accepted findings then relevant re-review. Integrate before consumers start. No publication or automatic next milestone.
+## Acceptance and exact required checks
+First verify clean initial HEAD=LAUNCH_SHA, SOURCE_SHA ancestor of LAUNCH_SHA, the SOURCE_SHA..LAUNCH_SHA changed paths limited to this TASK plus STATUS/LANES, and integrated bootstrap ancestry. Select/record actual model and identity. The lease is reserved; report actual start to P for serialized Building status, but no extra permission is needed once the recorded startup checks match.
+S0: preserve approved public/Operations composition; extract portals/helpers/named exports and compatibility barrel; repair eight named navigation lint errors; add exact synthetic/no-real-PII warning and truthful copy. Retain dead-action gaps for later features. Capture before/after five-route desktop/mobile, keyboard/focus and reduced-motion evidence. Run npm ci; npm run lint; npx --no-install tsc --noEmit; npm run build:vercel. Lint must have zero errors; unchanged inherited warnings are reported. Commit/push the checkpoint, then continue S1 under this same lease without a formal S0 review.
+S1: implement the full consumer service matrix, async outcomes, deterministic preview scenario, ordinary mutation and reset receipt/generation protocol, persistence/reload/reset and behavioral test suite. Run npm run lint; npx --no-install tsc --noEmit; npm run build:vercel; node --experimental-strip-types --test tests/preview-contract.test.mjs. Repeat npm ci only if install/environment requires it; package changes are forbidden. Browser checks at1440x900 and390x844 cover five-route smoke and preview-control reset/reload/focus. Full connected consumer UI journey is I01, not required or owned here.
+Preview command: npm run dev -- --port 3102 --hostname localhost. Record actual origin and stop your own server when finished. Save bulky screenshots/logs outside tracked source or return tool artifacts; no unowned report paths added to this feature branch.
+The bootstrap-only snapshot checker expects Draft consumers and unchanged app source, so do NOT use it as a gate after Ready or application implementation. python docs/checks/verify_bootstrap.py --provenance-only remains valid for reference provenance; no bootstrap snapshot PASS is a task acceptance result.
+
+## Finish
+Commit and push the final branch checkpoint. Return TASK, actual model/effort/host/session, branch/worktree, SOURCE_SHA/initial LAUNCH_SHA/final HEAD, changed files, tests actually run, preview evidence, gaps and lease paused-for-review. One formal Sonnet + independent Sol + human review covers the entire foundation. Original builder fixes findings under reopened lease and re-review; no self-merge or automatic public/consumer task launch.
