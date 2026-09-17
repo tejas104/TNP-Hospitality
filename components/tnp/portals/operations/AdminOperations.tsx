@@ -306,8 +306,15 @@ export function AdminOperations() {
 
   const openSection = (id: Panel) => {
     setPanel(id);
-    // Focus after the new panel renders; focus() only scrolls when the workspace is out of view.
-    requestAnimationFrame(() => workspaceRef.current?.focus());
+    // Focus after the new panel renders. Default focus scrolling can jump past the top of a tall panel,
+    // so only align the workspace start when it is not already in view.
+    requestAnimationFrame(() => {
+      const workspace = workspaceRef.current;
+      if (!workspace) return;
+      workspace.focus({ preventScroll: true });
+      const { top } = workspace.getBoundingClientRect();
+      if (top < 0 || top > window.innerHeight * 0.75) workspace.scrollIntoView({ block: 'start' });
+    });
   };
 
   return (

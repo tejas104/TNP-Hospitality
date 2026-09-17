@@ -31,7 +31,7 @@
 .compactNav button:hover { border-color: var(--champagne); color: var(--ivory); }
 .compactNav button:focus-visible { outline: 3px solid var(--champagne); outline-offset: 2px; }
 .compactNav .compactNavActive { background: rgb(187 168 121 / 18%); border-color: var(--champagne); box-shadow: inset 3px 0 0 var(--champagne); color: var(--ivory); font-weight: 700; }
-.workspace { outline: none; }
+.workspace { outline: none; scroll-margin-top: 104px; }
 .workspace:focus-visible { box-shadow: 0 0 0 3px var(--champagne); }
 .panelHeading { align-items: end; display: flex; gap: 32px; justify-content: space-between; margin: 40px 0 24px; }
 .panelHeading h2, .statePanel h2 { font-family: var(--font-display); font-size: clamp(2.1rem, 4vw, 3.5rem); font-weight: 400; line-height: 1; margin: 0; }
