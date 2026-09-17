@@ -75,6 +75,7 @@
 .controlForm textarea { min-height: 84px; resize: vertical; }
 .controlForm :focus-visible { outline: 3px solid var(--champagne); outline-offset: 2px; }
 .policyNote { background: rgb(8 76 73 / 8%); border-left: 3px solid var(--teal); font-size: .84rem; line-height: 1.5; margin: 0; padding: 11px 12px; }
+.emptyAction { background: rgb(139 78 19 / 9%); border-left: 3px solid #8b4e13; font-size: .84rem; line-height: 1.5; margin: 0; padding: 11px 12px; }
 .evidenceCard { display: grid; gap: 11px; }
 .evidenceCard p { margin: 0; }
 .evidenceCard > small { color: rgb(23 35 33 / 62%); overflow-wrap: anywhere; }
