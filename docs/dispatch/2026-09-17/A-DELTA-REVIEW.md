@@ -67,3 +67,20 @@ Regression review must also cover two-record selection, submit/list/detail/reloa
 - `docs/tasks/TNP-SHARED-FIX-01.md` separately owns the frozen PreviewControls reload request-key collision and the shared `submitRequirement` booking/event invariant. A's UI guard does not close that service defect.
 
 A is paused with no active source write. Any findings return to the original author only after P publishes a bounded reopened correction lease. No application integration or deployment is authorized.
+
+## Builder-attributed follow-up evidence received
+
+The user supplied a final builder handoff after this dispatcher pre-review. Attribute the following to Dev A; it supplements but does not replace independent reviewer reproduction:
+
+- Combined contract/focused tests: 21/21; exact shared contract suite: 13/13; checkpoint-focused tests: 7/7.
+- Lint, TypeScript noEmit, Vercel build and `git diff --check`: reported PASS, with the same three inherited React-compiler warnings.
+- Client/Planner at 1440x900 and 390x844: reported no horizontal overflow.
+- Booking `002` restored after reload without duplication; explicit new action created booking `003`.
+- Planner `003` and requirement `003` restored after reload without duplication; list/detail retained the correct booking/event pair.
+- Reset reportedly cleared receipts, retries, IDs, notices and prior-generation action state while retaining editable drafts.
+- Empty Review reportedly blocked submission and Enter on recovery moved focus to Venue.
+- Stale quote failure reportedly rendered `data-kind="error"` with same-request retry.
+- Missing-reference paid presentation was covered by a local malformed-data probe.
+- Only reported browser warning was the inherited `THREE.Clock` deprecation.
+
+No complete Sonnet findings were received, so none are claimed resolved. The frozen shared-service booking/event invariant remains owned by `TNP-SHARED-FIX-01`.

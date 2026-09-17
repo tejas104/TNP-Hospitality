@@ -2,6 +2,12 @@
 
 Status: READ-ONLY PREFLIGHT NOW; implementation remains DRAFT until actual Sonnet writer identity, capacity and Ready launch are published. C is the developer, not a reviewer of its own work.
 
+## Received preflight reconciliation
+
+The user supplied read-only Claude evidence for session `local_b65a1f91-19b5-4147-90e2-223373299d64`, model `claude-sonnet-5`, effort xhigh, on Kartik's Laptop2 base checkout. That report read stale fetched main `fab88ed354ed66ab62bf6f6e17d1de72a2174c6a` and therefore incorrectly concluded that bootstrap/foundation were not integrated and that `TNP-C-M1` did not exist.
+
+Verified pre-publication canonical main `3a4eb04c9de53c7555f4e303a77d2f5a0ecd3fac` contains the integrated foundation and `docs/tasks/TNP-C-M1.md`; this grouped packet remains authoritative. The supplied Claude identity is a valid candidate for a future Ready reservation, but no C lease is created. C stays Draft because D still occupies Kartik's one-complex-task lane, the interrupted D lease has not been resolved, and C still lacks an immutable source/launch publication and final reviewer appointments. Future C preflight must fetch current main and use the grouped C-M1 branch/worktree proposed below.
+
 ## Startup preflight
 
 Read current origin/main through fetch/git show, AGENTS, startup/product/design/domain/architecture/launch/cadence docs, TNP-C-M1 and its shared contracts. Return actual Claude task/session identity from the available trusted runtime, host, selected/observable model/effort, current path/branch/HEAD and cleanliness. Do not substitute a Codex ID or browser identifier for an unavailable Claude writer identity. Do not invent metadata or create/reset a worktree. List exact missing contract requirements and prepare the acceptance matrix read-only while D completes its correction batch.

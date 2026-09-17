@@ -2,6 +2,12 @@
 
 Give this whole packet to the existing Dev D task; execute both prompts sequentially, with one final review.
 
+## Interruption hold
+
+PAUSED 2026-09-17 after the user-reported Codex usage interruption. Live remote `origin/codex/tnp-d-m1` remains at correction baseline `9785bd5631a99e5372dbca928f62eda52c004384`; no correction checkpoint is remotely published. This packet does not authorize a second writer while the existing lease remains unresolved.
+
+Preferred path: the same task/session resumes the same worktree when available, first reporting current local HEAD/status and any uncommitted paths. Urgent replacement path: a Claude or replacement Codex task performs `D-TAKEOVER-PREFLIGHT.md` read-only, then waits for P to publish an explicit reassignment that revokes `01a0aded-481f-7121-a788-b8c307f8ab59`. Preserve any local work; do not reset, clean, recreate, rebase or merge main. Reviewer assignment must be recalculated from the actual replacement author.
+
 ## Execution contract
 
 READY upon publication with matching STATUS/LANES. Sole writer `01a0aded-481f-7121-a788-b8c307f8ab59`, Kartik, DESKTOP-VO8G3GR, assigned gpt-5.6-sol / high. Base clone is `D:\TNP-Hospitality` on Kartik's computer; implementation worktree is `D:\TNP-worktrees\TNP-D-M1`, branch `codex/tnp-d-m1`. Correction baseline `9785bd5631a99e5372dbca928f62eda52c004384`; retain original launch `58c324953e0f2da775a77efb172059bb84534ae7` as ancestor. Reuse the existing worktree, not a C-drive copy. Port 3104, one heavy build per laptop.

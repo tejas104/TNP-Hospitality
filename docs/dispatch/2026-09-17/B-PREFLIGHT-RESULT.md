@@ -2,6 +2,12 @@
 
 Status: PREFLIGHT COMPLETE; implementation remains DRAFT and unleased.
 
+## Superseding supplied candidate evidence
+
+The user subsequently supplied another read-only B preflight from task/session `01a0aa5f-c6ee-76e2-93db-6b50e124d174` on DESKTOP-DL9FDM7. Its Draft assignment was gpt-5.6-sol/high, but the runtime did not expose model or reasoning effort. It inspected fetched `origin/main` `fab88ed354ed66ab62bf6f6e17d1de72a2174c6a`, created no worktree/branch/lease/port and preserved the base checkout's untracked `tmp/`.
+
+Use this latest supplied task identity, rather than the earlier candidate below, if B is later considered for a Ready reservation. It is still only identity/preflight evidence: A is waiting review, homepage gates/content approval remain open, current canonical main has advanced, and no B lease exists.
+
 ## Observed candidate identity
 
 - Candidate task/session: `01a0ae9b-bcf5-72c3-832e-aab191268ba6`; trusted `CODEX_THREAD_ID` and `CODEX_SESSION_ID` matched.
