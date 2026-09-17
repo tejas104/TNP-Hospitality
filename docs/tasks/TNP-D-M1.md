@@ -1,3 +1,5 @@
+CURRENT CORRECTION AUTHORITY 2026-09-17: READY upon this publication. See docs/dispatch/2026-09-17/D.md and current STATUS/LANES for the resumed existing sole-writer identity, exact correction baseline, scope, two prompts and checks. This supersedes the original initial-HEAD instruction below for this correction only; do not return to the original launch or recreate the worktree. Original ownership and no-main-merge/deployment boundaries remain.
+
 # TNP-D-M1 — two-prompt frontend milestone for D
 
 Status: READY. Sole writer lease REASSIGNED 2026-09-17T12:17:36.3586648+05:30 to actual Codex task/session `01a0aded-481f-7121-a788-b8c307f8ab59`, Kartik / DESKTOP-VO8G3GR. Trusted identity evidence: `CODEX_THREAD_ID` and corroborating `CODEX_SESSION_ID` both equal this value; `CODEX_TASK_ID` is not exposed. Browser metadata independently reports the same value but is not the writer authority. Previous reservation `01a0ac56-a986-79b2-b643-909e41fc4bae` and older reservation `01a0aa6d-9b9a-75c3-839a-c0ac7b5f18a5` are REVOKED. One writer only; expires at fixed review handoff or P revocation. Effective upon publication; implementation not yet observed.

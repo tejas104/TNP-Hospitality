@@ -1,3 +1,5 @@
+CURRENT CORRECTION AUTHORITY 2026-09-17: READY upon this publication. See docs/dispatch/2026-09-17/A.md and current STATUS/LANES for the resumed existing sole-writer identity, exact correction baseline, scope, two prompts and checks. This supersedes the original initial-HEAD instruction below for this correction only; do not return to the original launch or recreate the worktree. Original ownership and no-main-merge/deployment boundaries remain.
+
 # TNP-A-M1 — two-prompt frontend milestone for A
 
 Status: READY. Exclusive writer lease RESERVED 2026-09-17T03:54:05.3969102+05:30 for existing Dev A session01a0aa5f-a826-7ab1-9cb7-a44736047ebe under Anjaneya; expires at final fixed milestone review handoff or P revocation. One writer, no additional agent. Actual start not yet observed.

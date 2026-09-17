@@ -1,3 +1,5 @@
+CURRENT HANDOFF: writer PAUSED at b1dcac83d29a0c26d490f9ede6dad8bc65f0106d, checked and pushed. Independent focused Sol delta PASS; see docs/reviews/TNP-HOME-REDESIGN-DELTA.md. Counterpart and human review remain; no application integration or deployment. Correction lease below has ended at this handoff.
+
 # TNP-HOME-REDESIGN — Ready
 User authorization: 2026-09-17 "yes" to publishing revised documentation and starting the homepage as priority while A/D remain paused. This expressly appoints P to implement in B and makes the homepage-only queue exception.
 Mode: implementation, responsive public frontend only. Risk: ordinary public UI; no auth, tenancy, finance or shared-domain changes.
