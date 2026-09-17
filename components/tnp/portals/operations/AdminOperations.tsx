@@ -27,6 +27,8 @@ import { AttendancePanel, VerificationPanel, type ActionFeedback } from './Opera
 import {
   canRetryFeedback,
   filterOperationsEvents,
+  isCurrentActionEpoch,
+  isCurrentRosterRequest,
   reconcileSelectedId,
   type EventStatusFilter,
 } from './operationsState';
@@ -137,7 +139,7 @@ export function AdminOperations() {
     setRosterReadyForEventId('');
     const rosterRequestId = ++rosterRequestEpoch.current;
     const roster = nextSelected ? await instance.listRoster(nextSelected) : null;
-    if (refreshId !== refreshEpoch.current || rosterRequestId !== rosterRequestEpoch.current) return;
+    if (refreshId !== refreshEpoch.current || !isCurrentRosterRequest(rosterRequestId, rosterRequestEpoch.current, nextSelected, selectedEventRef.current)) return;
     if (roster && !roster.ok) { setLoadState(errorState(roster.error)); return; }
     const workerIds = [...new Set([
       ...assignments.value.items.map((item) => item.workerId),
@@ -145,7 +147,7 @@ export function AdminOperations() {
       'tnp-demo-worker-006',
     ])];
     const standings = await Promise.all(workerIds.map(async (id) => ({ id, result: await instance.getStanding(id) })));
-    if (refreshId !== refreshEpoch.current || rosterRequestId !== rosterRequestEpoch.current) return;
+    if (refreshId !== refreshEpoch.current || !isCurrentRosterRequest(rosterRequestId, rosterRequestEpoch.current, nextSelected, selectedEventRef.current)) return;
     const standingFailure = standings.find(({ result }) => !result.ok && result.error.code !== 'NOT_FOUND');
     if (standingFailure && !standingFailure.result.ok) { setLoadState(errorState(standingFailure.result.error)); return; }
     const workers = standings.reduce<Record<string, Worker>>((map, item) => {
@@ -153,7 +155,7 @@ export function AdminOperations() {
       return map;
     }, {});
     const attendanceResults = await Promise.all(Object.keys(workers).map((id) => instance.getAttendanceHistory(id)));
-    if (refreshId !== refreshEpoch.current || rosterRequestId !== rosterRequestEpoch.current) return;
+    if (refreshId !== refreshEpoch.current || !isCurrentRosterRequest(rosterRequestId, rosterRequestEpoch.current, nextSelected, selectedEventRef.current)) return;
     const attendanceFailure = attendanceResults.find((result) => !result.ok);
     if (attendanceFailure && !attendanceFailure.ok) { setLoadState(errorState(attendanceFailure.error)); return; }
     const attendances = [...new Map(attendanceResults.flatMap((result) => result.ok ? result.value.items : []).map((item) => [item.id, item])).values()];
@@ -182,7 +184,7 @@ export function AdminOperations() {
   }, [refreshAll]);
 
   const reportActionFailure = useCallback((error: PreviewError, actionId: string, epoch: number) => {
-    if (epoch !== actionEpoch.current) return;
+    if (!isCurrentActionEpoch(epoch, actionEpoch.current)) return;
     const retryable = canRetryFeedback(
       { actionId, retryable: error.retryable, code: error.code },
       retainedAction.current?.actionId,
@@ -201,10 +203,10 @@ export function AdminOperations() {
 
   const executeRequest = useCallback(async (request: AnyMutationRequest, label: string, actionId: string, epoch: number) => {
     const instance = service.current;
-    if (!instance || epoch !== actionEpoch.current) return;
+    if (!instance || !isCurrentActionEpoch(epoch, actionEpoch.current)) return;
     setFeedback({ kind: 'busy', message: `${label}…`, actionId });
     const result = await instance.mutate(request as MutationRequest<PreviewOperation>) as PreviewOutcome<unknown>;
-    if (epoch !== actionEpoch.current) return;
+    if (!isCurrentActionEpoch(epoch, actionEpoch.current)) return;
     if (!result.ok) {
       reportActionFailure(result.error, actionId, epoch);
       return;
@@ -226,7 +228,7 @@ export function AdminOperations() {
       requestKey: `operations-${operation}-${crypto.randomUUID()}`,
       expectedGeneration: await instance.getGeneration(), actorId: 'tnp-demo-ops-001', operation, payload,
     };
-    if (epoch !== actionEpoch.current) return;
+    if (!isCurrentActionEpoch(epoch, actionEpoch.current)) return;
     const actionId = `${operation}:${request.requestKey}`;
     const run = (nextEpoch: number) => executeRequest(request as AnyMutationRequest, label, actionId, nextEpoch);
     retainedAction.current = { actionId, run };
@@ -242,12 +244,12 @@ export function AdminOperations() {
     retainedAction.current = null;
     setFeedback({ kind: 'busy', actionId, message: 'Reading the selected assignment pass…' });
     const expectedGeneration = await instance.getGeneration();
-    if (epoch !== actionEpoch.current) return;
+    if (!isCurrentActionEpoch(epoch, actionEpoch.current)) return;
     const run = async (nextEpoch: number) => {
-      if (nextEpoch !== actionEpoch.current) return;
+      if (!isCurrentActionEpoch(nextEpoch, actionEpoch.current)) return;
       setFeedback({ kind: 'busy', actionId, message: 'Reading the selected assignment pass…' });
       const pass = await instance.getEventPass(assignmentId);
-      if (nextEpoch !== actionEpoch.current) return;
+      if (!isCurrentActionEpoch(nextEpoch, actionEpoch.current)) return;
       if (!pass.ok) { reportActionFailure(pass.error, actionId, nextEpoch); return; }
       const request: MutationRequest<'recordAttendance'> = {
         requestKey, expectedGeneration,
@@ -268,7 +270,7 @@ export function AdminOperations() {
     setRosterReadyForEventId('');
     setData((current) => ({ ...current, roster: [] }));
     const roster = await instance.listRoster(eventId);
-    if (requestId !== rosterRequestEpoch.current || selectedEventRef.current !== eventId) return;
+    if (!isCurrentRosterRequest(requestId, rosterRequestEpoch.current, eventId, selectedEventRef.current)) return;
     if (!roster.ok) { setLoadState(errorState(roster.error)); return; }
     setData((current) => ({ ...current, roster: roster.value.items }));
     setRosterReadyForEventId(eventId);

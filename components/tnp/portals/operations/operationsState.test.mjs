@@ -4,6 +4,8 @@ import {
   actionableAttendanceAssignments,
   canRetryFeedback,
   filterOperationsEvents,
+  isCurrentActionEpoch,
+  isCurrentRosterRequest,
   reconcileSelectedId,
   reviewableApplications,
 } from './operationsState.ts';
@@ -59,4 +61,12 @@ test('retry is offered only for the matching retained transient action', () => {
   assert.equal(canRetryFeedback({ actionId: 'attendance:1', retryable: false }, 'attendance:1'), false);
   assert.equal(canRetryFeedback({ actionId: 'attendance:1', retryable: true }, undefined), false);
   assert.equal(canRetryFeedback({ actionId: 'attendance:1', retryable: true, code: 'STALE_GENERATION' }, 'attendance:1'), false);
+});
+
+test('delayed action and roster responses cannot replace newer state', () => {
+  assert.equal(isCurrentActionEpoch(4, 4), true);
+  assert.equal(isCurrentActionEpoch(4, 5), false, 'a newer action or reset invalidates the pending result');
+  assert.equal(isCurrentRosterRequest(8, 8, 'event-2', 'event-2'), true);
+  assert.equal(isCurrentRosterRequest(7, 8, 'event-1', 'event-2'), false, 'an older request cannot replace the newer roster');
+  assert.equal(isCurrentRosterRequest(8, 8, 'event-1', 'event-2'), false, 'a response for a different event cannot replace the selection');
 });

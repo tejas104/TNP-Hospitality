@@ -49,3 +49,16 @@ export function canRetryFeedback(feedback: RetryIdentity, retainedActionId: stri
     && feedback.actionId === retainedActionId,
   );
 }
+
+export function isCurrentActionEpoch(epoch: number, currentEpoch: number) {
+  return epoch === currentEpoch;
+}
+
+export function isCurrentRosterRequest(
+  requestId: number,
+  currentRequestId: number,
+  eventId: string,
+  selectedEventId: string,
+) {
+  return requestId === currentRequestId && eventId === selectedEventId;
+}
