@@ -86,7 +86,11 @@ export function PlannerRequirements() {
         .variant;
       void load(variant);
     };
-    const onReset = () => void load();
+    const onReset = () => {
+      setSelectedId('');
+      setLookupNotice('');
+      void load();
+    };
     const onSaved = (event: Event) =>
       void load(undefined, (event as CustomEvent<{ id: string }>).detail.id);
     window.addEventListener('tnp-preview-change', onPreview);

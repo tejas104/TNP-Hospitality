@@ -11,9 +11,20 @@ import type {
 } from '@/lib/contracts/preview';
 import { getBrowserPreviewService } from '@/lib/services/preview';
 import { PlannerRequirements } from './PlannerRequirements';
+import {
+  actionFingerprint,
+  clearAction,
+  isValidReferencePair,
+  readAction,
+  reconcileReferencePair,
+  type StoredAction,
+  writeAction,
+} from './localAction';
 import styles from './PlannerPortal.module.css';
 
 const DRAFT_KEY = 'tnp-preview-a-planner-entry-draft-v1';
+const REGISTRATION_ACTION_KEY = 'tnp-preview-a-planner-registration-action-v1';
+const REQUIREMENT_ACTION_KEY = 'tnp-preview-a-planner-requirement-action-v1';
 const roles = [
   'Event Coordinator',
   'Executive',
@@ -30,6 +41,9 @@ type Draft = {
   quantity: string;
   notes: string;
 };
+type RegistrationRequest = MutationRequest<'registerPlanner'>;
+type RequirementRequest = MutationRequest<'submitRequirement'>;
+type ActionReceipt = { id: string; message: string };
 const initialDraft: Draft = {
   displayName: 'Mehta Events & Experiences',
   city: 'Jaipur',
@@ -62,6 +76,20 @@ function readDraft(): Draft {
   }
 }
 
+const registrationPayload = (draft: Draft) => ({
+  displayName: draft.displayName.trim(),
+  city: draft.city.trim(),
+});
+
+const requirementPayload = (draft: Draft) => ({
+  bookingId: draft.bookingId,
+  eventId: draft.eventId,
+  role: draft.role,
+  quantity: Number(draft.quantity),
+  notes: draft.notes.trim(),
+  status: 'submitted' as const,
+});
+
 export function PlannerPortal() {
   const [draft, setDraft] = useState(initialDraft);
   const [draftReady, setDraftReady] = useState(false);
@@ -90,17 +118,103 @@ export function PlannerPortal() {
     useState<MutationRequest<'submitRequirement'> | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     const frame = window.requestAnimationFrame(() => {
-      setDraft(readDraft());
+      const restoredDraft = readDraft();
+      setDraft(restoredDraft);
       setDraftReady(true);
+      void (async () => {
+        try {
+          const [registrationAction, requirementAction, generation] =
+            await Promise.all([
+              Promise.resolve(
+                readAction<RegistrationRequest, ActionReceipt>(
+                  window.localStorage,
+                  REGISTRATION_ACTION_KEY,
+                  'registerPlanner',
+                ),
+              ),
+              Promise.resolve(
+                readAction<RequirementRequest, ActionReceipt>(
+                  window.localStorage,
+                  REQUIREMENT_ACTION_KEY,
+                  'submitRequirement',
+                ),
+              ),
+              getBrowserPreviewService().then((service) =>
+                service.getGeneration(),
+              ),
+            ]);
+          if (cancelled) return;
+          if (
+            registrationAction?.request.expectedGeneration === generation &&
+            registrationAction.fingerprint ===
+              actionFingerprint(
+                'registerPlanner',
+                registrationPayload(restoredDraft),
+              )
+          ) {
+            if (
+              registrationAction.status === 'success' &&
+              registrationAction.receipt
+            ) {
+              setRegistrationId(registrationAction.receipt.id);
+              setRegistrationNotice(
+                `Restored ${registrationAction.receipt.id} from this browser's synthetic receipt. No duplicate planner was created.`,
+              );
+            } else {
+              setPendingRegistration(registrationAction.request);
+              setRegistrationNotice(
+                registrationAction.errorMessage ||
+                  'An unfinished planner registration was restored. Retry keeps the same request identity.',
+              );
+            }
+          }
+          if (
+            requirementAction?.request.expectedGeneration === generation &&
+            requirementAction.fingerprint ===
+              actionFingerprint(
+                'submitRequirement',
+                requirementPayload(restoredDraft),
+              )
+          ) {
+            if (
+              requirementAction.status === 'success' &&
+              requirementAction.receipt
+            ) {
+              setRequirementId(requirementAction.receipt.id);
+              setRequirementNotice(
+                `Restored ${requirementAction.receipt.id} from this browser's synthetic receipt. No duplicate requirement was created.`,
+              );
+            } else {
+              setPendingRequirement(requirementAction.request);
+              setRequirementNotice(
+                requirementAction.errorMessage ||
+                  'An unfinished requirement was restored. Retry keeps the same request identity.',
+              );
+            }
+          }
+        } catch {
+          if (!cancelled) {
+            setRegistrationNotice(
+              'LOCAL_ACTION_UNAVAILABLE: Saved planner actions could not be read. Nothing was reported as successful.',
+            );
+            setRequirementNotice(
+              'LOCAL_ACTION_UNAVAILABLE: Saved requirement actions could not be read. Nothing was reported as successful.',
+            );
+          }
+        }
+      })();
     });
-    return () => window.cancelAnimationFrame(frame);
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+    };
   }, []);
   useEffect(() => {
     if (draftReady)
       window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
   }, [draft, draftReady]);
-
   const loadReferences = useCallback(async (variant?: PreviewVariant) => {
     const service = await getBrowserPreviewService();
     setReferenceState('loading');
@@ -131,8 +245,11 @@ export function PlannerPortal() {
     );
     setDraft((current) => ({
       ...current,
-      bookingId: current.bookingId || bookingResult.value.items[0]?.id || '',
-      eventId: current.eventId || eventResult.value.items[0]?.id || '',
+      ...reconcileReferencePair(
+        bookingResult.value.items,
+        eventResult.value.items,
+        current,
+      ),
     }));
   }, []);
   useEffect(() => {
@@ -145,7 +262,28 @@ export function PlannerPortal() {
         .variant;
       void loadReferences(variant);
     };
-    const onReset = () => void loadReferences();
+    const onReset = () => {
+      try {
+        clearAction(window.localStorage, REGISTRATION_ACTION_KEY);
+        clearAction(window.localStorage, REQUIREMENT_ACTION_KEY);
+      } catch {
+        // The reset still clears in-memory evidence when storage is unavailable.
+      }
+      setRegistrationId('');
+      setRequirementId('');
+      setPendingRegistration(null);
+      setPendingRequirement(null);
+      setRegistrationErrors({});
+      setRequirementErrors({});
+      setBusy('');
+      setRegistrationNotice(
+        'Shared preview reset detected. Prior-generation planner receipts and retries were cleared; your editable draft remains.',
+      );
+      setRequirementNotice(
+        'Shared preview reset detected. Prior-generation requirement receipts and retries were cleared; your editable draft remains.',
+      );
+      void loadReferences();
+    };
     window.addEventListener('tnp-preview-change', onChange);
     window.addEventListener('tnp-preview-reset', onReset);
     return () => {
@@ -170,6 +308,16 @@ export function PlannerPortal() {
       }
       return { ...current, [field]: value };
     });
+    if (field === 'displayName' || field === 'city') {
+      setRegistrationId('');
+      setPendingRegistration(null);
+      setRegistrationNotice('');
+    }
+    if (['bookingId', 'eventId', 'role', 'quantity', 'notes'].includes(field)) {
+      setRequirementId('');
+      setPendingRequirement(null);
+      setRequirementNotice('');
+    }
     setRegistrationErrors((current) => {
       const next = { ...current };
       delete next[field];
@@ -182,21 +330,77 @@ export function PlannerPortal() {
     });
   }
 
-  async function runRegistration(request: MutationRequest<'registerPlanner'>) {
+  function persistRegistration(
+    action: StoredAction<RegistrationRequest, ActionReceipt>,
+  ) {
+    try {
+      writeAction(window.localStorage, REGISTRATION_ACTION_KEY, action);
+      return true;
+    } catch {
+      setRegistrationNotice(
+        'LOCAL_ACTION_UNAVAILABLE: Registration was not submitted because its retry identity could not be saved.',
+      );
+      return false;
+    }
+  }
+
+  function persistRequirement(
+    action: StoredAction<RequirementRequest, ActionReceipt>,
+  ) {
+    try {
+      writeAction(window.localStorage, REQUIREMENT_ACTION_KEY, action);
+      return true;
+    } catch {
+      setRequirementNotice(
+        'LOCAL_ACTION_UNAVAILABLE: Requirement was not submitted because its retry identity could not be saved.',
+      );
+      return false;
+    }
+  }
+
+  async function runRegistration(request: RegistrationRequest) {
+    const fingerprint = actionFingerprint(request.operation, request.payload);
+    if (
+      !persistRegistration({
+        storageVersion: 1,
+        operation: request.operation,
+        fingerprint,
+        request,
+        status: 'pending',
+      })
+    )
+      return;
     setBusy('registration');
     setRegistrationNotice('Saving sample planner profile…');
     const result = await (await getBrowserPreviewService()).mutate(request);
     setBusy('');
     if (!result.ok) {
+      const message = `${result.error.code}: ${result.error.message}`;
+      persistRegistration({
+        storageVersion: 1,
+        operation: request.operation,
+        fingerprint,
+        request,
+        status: 'error',
+        errorMessage: message,
+      });
       setRegistrationId('');
       setRegistrationErrors(result.error.fieldErrors ?? {});
-      setRegistrationNotice(`${result.error.code}: ${result.error.message}`);
+      setRegistrationNotice(message);
       return;
     }
+    const message = `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}. Verification remains a sample pending state.`;
+    persistRegistration({
+      storageVersion: 1,
+      operation: request.operation,
+      fingerprint,
+      request,
+      status: 'success',
+      receipt: { id: result.value.id, message },
+    });
     setRegistrationId(result.value.id);
-    setRegistrationNotice(
-      `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}. Verification remains a sample pending state.`,
-    );
+    setPendingRegistration(null);
+    setRegistrationNotice(message);
   }
   async function registerPlanner() {
     const local: Record<string, string> = {};
@@ -209,45 +413,109 @@ export function PlannerPortal() {
       return;
     }
     const service = await getBrowserPreviewService();
-    const request: MutationRequest<'registerPlanner'> = {
+    const generation = await service.getGeneration();
+    const payload = registrationPayload(draft);
+    const fingerprint = actionFingerprint('registerPlanner', payload);
+    try {
+      const existing = readAction<RegistrationRequest, ActionReceipt>(
+        window.localStorage,
+        REGISTRATION_ACTION_KEY,
+        'registerPlanner',
+      );
+      if (
+        existing?.fingerprint === fingerprint &&
+        existing.request.expectedGeneration === generation
+      ) {
+        if (existing.status === 'success' && existing.receipt) {
+          setRegistrationId(existing.receipt.id);
+          setPendingRegistration(null);
+          setRegistrationNotice(
+            `Existing receipt ${existing.receipt.id} matches this unchanged registration. Start a new registration explicitly to create another record.`,
+          );
+          return;
+        }
+        setPendingRegistration(existing.request);
+        await runRegistration(existing.request);
+        return;
+      }
+    } catch {
+      setRegistrationNotice(
+        'LOCAL_ACTION_UNAVAILABLE: The saved registration is corrupt or unavailable. Clear it explicitly before starting another submission.',
+      );
+      return;
+    }
+    const request: RegistrationRequest = {
       requestKey: key('a-planner'),
-      expectedGeneration: await service.getGeneration(),
+      expectedGeneration: generation,
       actorId: 'tnp-demo-planner-preview',
       operation: 'registerPlanner',
-      payload: {
-        displayName: draft.displayName.trim(),
-        city: draft.city.trim(),
-      },
+      payload,
     };
     setPendingRegistration(request);
     await runRegistration(request);
   }
 
-  async function runRequirement(request: MutationRequest<'submitRequirement'>) {
+  async function runRequirement(request: RequirementRequest) {
+    const fingerprint = actionFingerprint(request.operation, request.payload);
+    if (
+      !persistRequirement({
+        storageVersion: 1,
+        operation: request.operation,
+        fingerprint,
+        request,
+        status: 'pending',
+      })
+    )
+      return;
     setBusy('requirement');
     setRequirementNotice('Saving linked sample requirement…');
     const result = await (await getBrowserPreviewService()).mutate(request);
     setBusy('');
     if (!result.ok) {
+      const message = `${result.error.code}: ${result.error.message}`;
+      persistRequirement({
+        storageVersion: 1,
+        operation: request.operation,
+        fingerprint,
+        request,
+        status: 'error',
+        errorMessage: message,
+      });
       setRequirementId('');
       setRequirementErrors(result.error.fieldErrors ?? {});
-      setRequirementNotice(`${result.error.code}: ${result.error.message}`);
+      setRequirementNotice(message);
       return;
     }
+    const message = `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}, linked to ${result.value.bookingId} / ${result.value.eventId}.`;
+    persistRequirement({
+      storageVersion: 1,
+      operation: request.operation,
+      fingerprint,
+      request,
+      status: 'success',
+      receipt: { id: result.value.id, message },
+    });
     setRequirementId(result.value.id);
+    setPendingRequirement(null);
     window.dispatchEvent(
       new CustomEvent('tnp-a-requirement-saved', {
         detail: { id: result.value.id },
       }),
     );
-    setRequirementNotice(
-      `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}, linked to ${result.value.bookingId} / ${result.value.eventId}.`,
-    );
+    setRequirementNotice(message);
   }
   async function submitRequirement() {
     const local: Record<string, string> = {};
     if (!draft.bookingId) local.bookingId = 'Choose a linked sample booking.';
     if (!draft.eventId) local.eventId = 'Choose a linked sample event.';
+    if (
+      draft.bookingId &&
+      draft.eventId &&
+      !isValidReferencePair(bookings, events, draft.bookingId, draft.eventId)
+    ) {
+      local.eventId =
+        'Choose an event that belongs to the selected sample booking.';
+    }
     if (!draft.role) local.role = 'Choose a role.';
     if (!Number.isInteger(Number(draft.quantity)) || Number(draft.quantity) < 1)
       local.quantity = 'Enter a positive whole quantity.';
@@ -257,22 +525,76 @@ export function PlannerPortal() {
       return;
     }
     const service = await getBrowserPreviewService();
-    const request: MutationRequest<'submitRequirement'> = {
+    const generation = await service.getGeneration();
+    const payload = requirementPayload(draft);
+    const fingerprint = actionFingerprint('submitRequirement', payload);
+    try {
+      const existing = readAction<RequirementRequest, ActionReceipt>(
+        window.localStorage,
+        REQUIREMENT_ACTION_KEY,
+        'submitRequirement',
+      );
+      if (
+        existing?.fingerprint === fingerprint &&
+        existing.request.expectedGeneration === generation
+      ) {
+        if (existing.status === 'success' && existing.receipt) {
+          setRequirementId(existing.receipt.id);
+          setPendingRequirement(null);
+          setRequirementNotice(
+            `Existing receipt ${existing.receipt.id} matches this unchanged requirement. Start a new requirement explicitly to create another record.`,
+          );
+          return;
+        }
+        setPendingRequirement(existing.request);
+        await runRequirement(existing.request);
+        return;
+      }
+    } catch {
+      setRequirementNotice(
+        'LOCAL_ACTION_UNAVAILABLE: The saved requirement is corrupt or unavailable. Clear it explicitly before starting another submission.',
+      );
+      return;
+    }
+    const request: RequirementRequest = {
       requestKey: key('a-requirement'),
-      expectedGeneration: await service.getGeneration(),
+      expectedGeneration: generation,
       actorId: registrationId || 'tnp-demo-planner-preview',
       operation: 'submitRequirement',
-      payload: {
-        bookingId: draft.bookingId,
-        eventId: draft.eventId,
-        role: draft.role,
-        quantity: Number(draft.quantity),
-        notes: draft.notes.trim(),
-        status: 'submitted',
-      },
+      payload,
     };
     setPendingRequirement(request);
     await runRequirement(request);
+  }
+
+  function startNewRegistration() {
+    try {
+      clearAction(window.localStorage, REGISTRATION_ACTION_KEY);
+      setRegistrationId('');
+      setPendingRegistration(null);
+      setRegistrationNotice(
+        'Ready for an explicit new synthetic registration. Your editable draft is unchanged.',
+      );
+    } catch {
+      setRegistrationNotice(
+        'LOCAL_ACTION_UNAVAILABLE: The prior registration could not be cleared.',
+      );
+    }
+  }
+
+  function startNewRequirement() {
+    try {
+      clearAction(window.localStorage, REQUIREMENT_ACTION_KEY);
+      setRequirementId('');
+      setPendingRequirement(null);
+      setRequirementNotice(
+        'Ready for an explicit new synthetic requirement. Your editable draft is unchanged.',
+      );
+    } catch {
+      setRequirementNotice(
+        'LOCAL_ACTION_UNAVAILABLE: The prior requirement could not be cleared.',
+      );
+    }
   }
 
   return (
@@ -378,6 +700,15 @@ export function PlannerPortal() {
                   <RefreshCcw size={15} /> Retry same request
                 </button>
               )}
+            {registrationId && (
+              <button
+                type="button"
+                className={styles.retry}
+                onClick={startNewRegistration}
+              >
+                Start another synthetic registration
+              </button>
+            )}
           </form>
 
           <form
@@ -495,6 +826,15 @@ export function PlannerPortal() {
                 onClick={() => void runRequirement(pendingRequirement)}
               >
                 <RefreshCcw size={15} /> Retry same request
+              </button>
+            )}
+            {requirementId && (
+              <button
+                type="button"
+                className={styles.retry}
+                onClick={startNewRequirement}
+              >
+                Start another synthetic requirement
               </button>
             )}
           </form>

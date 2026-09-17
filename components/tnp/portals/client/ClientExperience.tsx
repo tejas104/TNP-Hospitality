@@ -19,9 +19,17 @@ import type {
 import { getBrowserPreviewService } from '@/lib/services/preview';
 import { byId } from '@/data/media';
 import { ClientStatusHub } from './ClientStatusHub';
+import {
+  actionFingerprint,
+  clearAction,
+  readAction,
+  type StoredAction,
+  writeAction,
+} from './localAction';
 import styles from './ClientExperience.module.css';
 
 const DRAFT_KEY = 'tnp-preview-a-client-booking-draft-v1';
+const ACTION_KEY = 'tnp-preview-a-client-booking-action-v1';
 const categories = [
   'Wedding',
   'Corporate',
@@ -44,6 +52,8 @@ type Draft = {
   ownOnly: boolean;
   step: Step;
 };
+type BookingRequest = MutationRequest<'submitBooking'>;
+type BookingReceipt = { id: string; message: string };
 
 const initialDraft: Draft = {
   category: categories[0],
@@ -87,6 +97,16 @@ function newKey(prefix: string) {
   return `${prefix}-${suffix}`;
 }
 
+function bookingPayload(draft: Draft) {
+  return {
+    venueId: draft.venueId,
+    eventName: draft.eventName.trim(),
+    city: draft.city.trim(),
+    budgetPaise: Number(draft.budgetRupees) * 100,
+    status: 'submitted' as const,
+  };
+}
+
 const money = (paise: number) =>
   new Intl.NumberFormat('en-IN', {
     style: 'currency',
@@ -113,17 +133,64 @@ export function ClientExperience() {
     useState<MutationRequest<'submitBooking'> | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     const frame = window.requestAnimationFrame(() => {
-      setDraft(readDraft());
+      const restoredDraft = readDraft();
+      setDraft(restoredDraft);
       setDraftReady(true);
+      void (async () => {
+        try {
+          const action = readAction<BookingRequest, BookingReceipt>(
+            window.localStorage,
+            ACTION_KEY,
+            'submitBooking',
+          );
+          if (!action) return;
+          const generation = await (
+            await getBrowserPreviewService()
+          ).getGeneration();
+          if (cancelled) return;
+          const currentFingerprint = actionFingerprint(
+            'submitBooking',
+            bookingPayload(restoredDraft),
+          );
+          if (
+            action.request.expectedGeneration !== generation ||
+            action.fingerprint !== currentFingerprint
+          ) {
+            return;
+          }
+          if (action.status === 'success' && action.receipt) {
+            setBookingId(action.receipt.id);
+            setPending(null);
+            setNotice(
+              `Restored ${action.receipt.id} from this browser's synthetic receipt. No duplicate booking was created.`,
+            );
+            return;
+          }
+          setPending(action.request);
+          setNotice(
+            action.errorMessage ||
+              'An unfinished synthetic booking was restored. Retry keeps the same request identity.',
+          );
+        } catch {
+          if (!cancelled) {
+            setNotice(
+              'LOCAL_ACTION_UNAVAILABLE: The saved booking action could not be read. Nothing was submitted or reported as successful.',
+            );
+          }
+        }
+      })();
     });
-    return () => window.cancelAnimationFrame(frame);
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+    };
   }, []);
   useEffect(() => {
     if (draftReady)
       window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
   }, [draft, draftReady]);
-
   const loadCatalogues = useCallback(async (variant?: PreviewVariant) => {
     const service = await getBrowserPreviewService();
     setCatalogueState('loading');
@@ -163,7 +230,21 @@ export function ClientExperience() {
         .variant;
       void loadCatalogues(variant);
     };
-    const onReset = () => void loadCatalogues();
+    const onReset = () => {
+      try {
+        clearAction(window.localStorage, ACTION_KEY);
+      } catch {
+        // The reset still clears in-memory evidence when storage is unavailable.
+      }
+      setBookingId('');
+      setPending(null);
+      setErrors({});
+      setSubmitting(false);
+      setNotice(
+        'Shared preview reset detected. Prior-generation booking receipts and retries were cleared; your editable draft remains.',
+      );
+      void loadCatalogues();
+    };
     window.addEventListener('tnp-preview-change', onChange);
     window.addEventListener('tnp-preview-reset', onReset);
     return () => {
@@ -195,7 +276,13 @@ export function ClientExperience() {
 
   function update<Key extends keyof Draft>(key: Key, value: Draft[Key]) {
     setDraft((current) => ({ ...current, [key]: value }));
-    setNotice('');
+    if (
+      ['venueId', 'eventName', 'city', 'budgetRupees'].includes(String(key))
+    ) {
+      setBookingId('');
+      setPending(null);
+      setNotice('');
+    }
     setErrors((current) => {
       const next = { ...current };
       delete next[key];
@@ -232,47 +319,115 @@ export function ClientExperience() {
       steps[Math.max(0, Math.min(steps.length - 1, stepIndex + direction))],
     );
   }
-  async function perform(request: MutationRequest<'submitBooking'>) {
+  function persistBookingAction(
+    action: StoredAction<BookingRequest, BookingReceipt>,
+  ) {
+    try {
+      writeAction(window.localStorage, ACTION_KEY, action);
+      return true;
+    } catch {
+      setNotice(
+        'LOCAL_ACTION_UNAVAILABLE: This booking was not submitted because its retry identity could not be saved.',
+      );
+      return false;
+    }
+  }
+  async function perform(request: BookingRequest) {
+    const fingerprint = actionFingerprint(request.operation, request.payload);
+    if (
+      !persistBookingAction({
+        storageVersion: 1,
+        operation: request.operation,
+        fingerprint,
+        request,
+        status: 'pending',
+      })
+    ) {
+      return;
+    }
     setSubmitting(true);
     setNotice('Saving this labelled synthetic booking…');
     const result = await (await getBrowserPreviewService()).mutate(request);
     setSubmitting(false);
     if (!result.ok) {
-      setNotice(`${result.error.code}: ${result.error.message}`);
+      const message = `${result.error.code}: ${result.error.message}`;
+      persistBookingAction({
+        storageVersion: 1,
+        operation: request.operation,
+        fingerprint,
+        request,
+        status: 'error',
+        errorMessage: message,
+      });
+      setNotice(message);
       setErrors(result.error.fieldErrors ?? {});
       return;
     }
+    const message = `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}. This is sample preview data, not a live booking.`;
+    persistBookingAction({
+      storageVersion: 1,
+      operation: request.operation,
+      fingerprint,
+      request,
+      status: 'success',
+      receipt: { id: result.value.id, message },
+    });
     setBookingId(result.value.id);
+    setPending(null);
     window.dispatchEvent(
       new CustomEvent('tnp-a-booking-saved', {
         detail: { id: result.value.id },
       }),
     );
-    setNotice(
-      `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}. This is sample preview data, not a live booking.`,
-    );
+    setNotice(message);
   }
   async function submit() {
     if (!validate('Review') || !venue) return;
     const service = await getBrowserPreviewService();
-    const request: MutationRequest<'submitBooking'> = {
+    const generation = await service.getGeneration();
+    const payload = bookingPayload(draft);
+    const fingerprint = actionFingerprint('submitBooking', payload);
+    try {
+      const existing = readAction<BookingRequest, BookingReceipt>(
+        window.localStorage,
+        ACTION_KEY,
+        'submitBooking',
+      );
+      if (
+        existing?.fingerprint === fingerprint &&
+        existing.request.expectedGeneration === generation
+      ) {
+        if (existing.status === 'success' && existing.receipt) {
+          setBookingId(existing.receipt.id);
+          setPending(null);
+          setNotice(
+            `Existing receipt ${existing.receipt.id} matches this unchanged synthetic booking. Start a new booking explicitly to create another record.`,
+          );
+          return;
+        }
+        setPending(existing.request);
+        await perform(existing.request);
+        return;
+      }
+    } catch {
+      setNotice(
+        'LOCAL_ACTION_UNAVAILABLE: The saved action is corrupt or unavailable. Clear it explicitly before starting another submission.',
+      );
+      return;
+    }
+    const request: BookingRequest = {
       requestKey: newKey('a-booking'),
-      expectedGeneration: await service.getGeneration(),
+      expectedGeneration: generation,
       actorId: 'tnp-demo-client-preview',
       operation: 'submitBooking',
-      payload: {
-        venueId: venue.id,
-        eventName: draft.eventName.trim(),
-        city: draft.city.trim(),
-        budgetPaise: Number(draft.budgetRupees) * 100,
-        status: 'submitted',
-      },
+      payload,
     };
     setPending(request);
     await perform(request);
   }
   function clearDraft() {
     window.localStorage.removeItem(DRAFT_KEY);
+    clearAction(window.localStorage, ACTION_KEY);
     setDraft(initialDraft);
     setErrors({});
     setBookingId('');
@@ -280,6 +435,20 @@ export function ClientExperience() {
     setNotice(
       'Local A-lane draft cleared. Shared preview records were not reset.',
     );
+  }
+  function startNewBooking() {
+    try {
+      clearAction(window.localStorage, ACTION_KEY);
+      setBookingId('');
+      setPending(null);
+      setNotice(
+        'Ready for an explicit new synthetic booking. Your editable draft is unchanged.',
+      );
+    } catch {
+      setNotice(
+        'LOCAL_ACTION_UNAVAILABLE: The prior action could not be cleared, so a new submission has not started.',
+      );
+    }
   }
 
   return (
@@ -651,6 +820,15 @@ export function ClientExperience() {
                   onClick={() => void perform(pending)}
                 >
                   Retry the same request safely
+                </button>
+              )}
+              {bookingId && (
+                <button
+                  type="button"
+                  className={styles.textButton}
+                  onClick={startNewBooking}
+                >
+                  Start another synthetic booking
                 </button>
               )}
             </div>

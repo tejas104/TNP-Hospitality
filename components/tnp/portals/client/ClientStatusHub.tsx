@@ -135,7 +135,14 @@ export function ClientStatusHub() {
         .variant;
       void load(variant);
     };
-    const onReset = () => void load();
+    const onReset = () => {
+      setLookupNotice('');
+      setQuoteNotice('');
+      setQuoteBusy(false);
+      setPendingApproval(null);
+      setPendingRevision(null);
+      void load();
+    };
     const onSaved = (event: Event) =>
       void load(undefined, (event as CustomEvent<{ id: string }>).detail.id);
     window.addEventListener('tnp-preview-change', onPreview);
