@@ -1,5 +1,11 @@
 # Client and owner decision log
 
+## Vendor RSVP and homepage expansion (latest 2026-09-17 instruction)
+User expanded the earlier managed-only RSVP choice: TNP sells access to multiple vendors, each vendor creates/manages its own events and RSVP, and TNP admin manages vendor logins/access. Both managed-service and vendor-workspace modes are now required product direction. User also requests a reorganized public homepage with a strong3Danimated design and clarified the image target: "Keep75%; remove roughly25%". This supersedes preservation of the current homepage composition. Commercial entitlement rules, provider onboarding and release estimates remain unresolved. No main publication, production deployment or review-queue exception is inferred from this design instruction.
+
+## RSVP service direction confirmed by user (2026-09-17)
+User supplied the TNP RSVP/guest hospitality/logistics T-30 through post-event brief and explicitly requested a separately sellable service, dedicated customer login, guest categories, forms, Excel/PDF records and WhatsApp document capture/viewing. In the follow-up choice the user selected: "TNP-managed service with client portal". Record this as a user-confirmed product direction; do not infer pricing, client contractual acceptance, identity-document policy, provider choice or release-date approval. DEC-01 is partially resolved accordingly. Proposed scope/architecture/batches are in RSVP-SERVICE-BLUEPRINT.md. Existing A/D implementation contracts remain unchanged; new work requires explicit ownership and schedule reforecast.
+
 ## Confirmed user instructions (2026-09-16)
 - Responsive web only; native app excluded from this release.
 - H1 Anjaneya and H2 Kartik; no third human.

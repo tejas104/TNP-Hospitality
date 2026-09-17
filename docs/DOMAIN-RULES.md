@@ -19,7 +19,7 @@ No entry below is approved merely because a source proposed a default. H1 collec
 
 | ID | Question / source tension | Owner | Needed by / blocked work |
 |---|---|---|---|
-| DEC-01 | Confirm full WhatsApp RSVP and guest-document scope versus proposed deferral; basic RSVP stays | Anjaneya + client | Day 1 scope forecast; automation/uploads |
+| DEC-01 | User confirmed TNP-managed sellable RSVP service with client portal, WhatsApp/documents and hospitality/logistics on 2026-09-17. Detailed documents/access/retention, provider, cadence approval and delivery reforecast remain pending; see RSVP-SERVICE-BLUEPRINT.md | Anjaneya + Kartik + client | Before RSVP implementation contracts and real guest onboarding |
 | DEC-02 | Initial acceptance versus T−2h reconfirmation, T−1h expiry, cancellations and late replacements; configurable windows proposed | Kartik + client | Before allocation/jobs contract |
 | DEC-03 | Setup/travel buffers, midnight intervals and overlap reservations before final confirmation | Kartik + client | Before allocation |
 | DEC-04 | Flat shift/hourly/event pay, missing checkout, overtime, lateness and cancellation adjustments | Kartik + client | Before earnings |
