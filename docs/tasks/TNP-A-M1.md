@@ -1,8 +1,8 @@
-CURRENT CORRECTION AUTHORITY 2026-09-17: READY upon this publication. See docs/dispatch/2026-09-17/A.md and current STATUS/LANES for the resumed existing sole-writer identity, exact correction baseline, scope, two prompts and checks. This supersedes the original initial-HEAD instruction below for this correction only; do not return to the original launch or recreate the worktree. Original ownership and no-main-merge/deployment boundaries remain.
+CURRENT INTEGRATION STATUS 2026-09-18: COMPLETE. Kartik approved exact fixed SHA `481d7c43de4df6be38cb4e01cb25c9a9bc4d17b3` after fresh Sonnet and independent Sol/high PASS reports. P integrated the immutable reviewed SHA through merge `dc00a92037b7667c239e666b210a2e15e55c7665` after combined verification. The writer lease is CLOSED; do not resume this task, rewrite the reviewed branch or treat completion as deployment authority. The inherited shared `PreviewControls` request-key collision remains a separate serialized prerequisite.
 
 # TNP-A-M1 — two-prompt frontend milestone for A
 
-Status: READY. Exclusive writer lease RESERVED 2026-09-17T03:54:05.3969102+05:30 for existing Dev A session01a0aa5f-a826-7ab1-9cb7-a44736047ebe under Anjaneya; expires at final fixed milestone review handoff or P revocation. One writer, no additional agent. Actual start not yet observed.
+Status: COMPLETED AND INTEGRATED 2026-09-18. Historical exclusive writer was Dev A session01a0aa5f-a826-7ab1-9cb7-a44736047ebe under Anjaneya; lease CLOSED after reviewed fixed-SHA integration. No writer or additional agent may resume this task.
 Human: Anjaneya / H1.
 Host: Laptop 1 / DESKTOP-DL9FDM7.
 Tool/model: assigned Codex gpt-5.6-sol / high under user-approved implementation policy; select and report actual runtime before editing. Existing Dev A session01a0aa5f-a826-7ab1-9cb7-a44736047ebe verified in local task inventory; old Laptop2/Kartik role in its history is superseded: this is A/Anjaneya/Laptop1.
