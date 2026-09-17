@@ -2,6 +2,12 @@
 
 Give this whole packet to the existing Dev D task; execute both prompts sequentially, with one final review.
 
+## Same-session resume authority
+
+READY again 2026-09-17 for the original sole writer `01a0aded-481f-7121-a788-b8c307f8ab59` after the user confirmed Codex capacity returned. Resume this OLD SESSION only; do not create or substitute another task. The remote correction baseline is still `9785bd5631a99e5372dbca928f62eda52c004384`.
+
+Fetch and read current canonical metadata without merging it into the feature branch. Before editing, report the actual local HEAD, branch, short status, changed/untracked paths, remote equality/ancestry and port/process state. Preserve any interrupted same-session changes. Stop only for an unexpected branch/divergence, another active writer/process, changes outside owned Operations paths, or another material ownership/safety issue. If the preflight passes, continue both prompts below without waiting for another dispatcher response, push checked checkpoints and pause at the final fixed-SHA handoff.
+
 ## Interruption hold
 
 PAUSED 2026-09-17 after the user-reported Codex usage interruption. Live remote `origin/codex/tnp-d-m1` remains at correction baseline `9785bd5631a99e5372dbca928f62eda52c004384`; no correction checkpoint is remotely published. This packet does not authorize a second writer while the existing lease remains unresolved.
