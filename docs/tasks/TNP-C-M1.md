@@ -2,7 +2,7 @@
 
 Status: DRAFT, NOT DISPATCHED. Writer lease NONE.
 Human: Kartik / H2.
-Host: Laptop 2 / actual machine identity PENDING.
+Host: planned Laptop1 / DESKTOP-DL9FDM7 under a separate Kartik-operated team profile; actual profile/session/path evidence PENDING Ready preflight. Laptop2 remains fallback.
 Tool/model: Claude Sonnet / actual version and effort PENDING; confirm actual session at Ready.
 Branch: codex/tnp-c-m1 (proposed; not created).
 Worktree: D:\TNP-worktrees\TNP-C-M1 (proposed; not created).

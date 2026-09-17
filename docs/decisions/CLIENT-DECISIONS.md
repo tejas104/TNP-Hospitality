@@ -1,5 +1,8 @@
 # Client and owner decision log
 
+## Team-operated centralized tooling plan (2026-09-17)
+The user confirms the Codex and Claude subscriptions are team resources and Kartik approves and will personally operate the team's assigned Claude and Antigravity-hosted Codex sessions from Anjaneya's Laptop1 / DESKTOP-DL9FDM7. Use separate Windows/application profiles and assigned seats; do not share credentials or impersonate another member. Human ownership remains H1 A/B and H2 C/D. Existing A and completed D fixed-SHA work are not moved mid-cycle. Future C/D, corrections and reviews require exact identity/model/effort/host/worktree preflight and a serialized Ready lease. Laptop2 remains a review/backup host. Fresh reviewer sessions must not be author sessions, and review findings do not authorize reviewer edits without a new writer lease. This decision changes the future operating host preference only; it does not authorize B/C implementation, integration, deployment or production access.
+
 ## Vendor RSVP and homepage expansion (latest 2026-09-17 instruction)
 User expanded the earlier managed-only RSVP choice: TNP sells access to multiple vendors, each vendor creates/manages its own events and RSVP, and TNP admin manages vendor logins/access. Both managed-service and vendor-workspace modes are now required product direction. User also requests a reorganized public homepage with a strong3Danimated design and clarified the image target: "Keep75%; remove roughly25%". This supersedes preservation of the current homepage composition. Commercial entitlement rules, provider onboarding and release estimates remain unresolved. No main publication, production deployment or review-queue exception is inferred from this design instruction.
 

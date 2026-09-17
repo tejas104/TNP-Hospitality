@@ -3,9 +3,9 @@
 ## Observed local setup
 Original checkout D:\TNP Hospitality, main at 9d58061f2d36514ebc932fa94bb3dc90f4b97a97; origin https://github.com/tejas104/TNP-Hospitality.git. Remote main was verified at that SHA; the current bootstrap target is recorded in OPERATING-POLICY.json. Earlier review tags are immutable history. Verify current remote evidence at handoff.
 Bootstrap checkout D:\TNP-worktrees\TNP-BOOT-01 on codex/tnp-bootstrap. Keeping it outside the source tree avoids tsconfig's recursive **/*.ts include pulling in nested worktrees.
-Node v22.23.2, npm 11.8.0, Git 2.47.1.windows.2. package engine >=22.13.0. Record/align Laptop 2 versions before launch.
+Node v22.23.2, npm 11.8.0, Git 2.47.1.windows.2. package engine >=22.13.0. Record the actual toolchain inside every new Windows/application profile before launch.
 Codex local tool catalog exposes gpt-6-astra, gpt-5.6-sol, gpt-5.6-terra, gpt-5.6-luna and gpt-5.5. Local config reports gpt-6-astra/high. Config is not proof of a per-session override or other-host entitlement.
-Claude command exists at C:\Users\DELL\AppData\Roaming\npm\claude.ps1; installed skills were not changed. User confirms C uses Claude and D uses Codex on Kartik's Laptop 2; Kartik supplied machine-identified evidence for D:\TNP-Hospitality on DESKTOP-VO8G3GR, Node24.19.0/npm11.17.0/Python3.11.9, Claude Code2.1.273 and a Codex gpt-6-astra/low review. Exact builder models and new reviewer appointments remain unverified; this is supplied evidence, not local observation. No Business purchase required.
+Claude command exists at C:\Users\DELL\AppData\Roaming\npm\claude.ps1; installed skills were not changed. Historical Kartik Laptop2 evidence remains D:\TNP-Hospitality on DESKTOP-VO8G3GR, Node24.19.0/npm11.17.0/Python3.11.9 and Claude Code2.1.273. For future launches the user authorizes Kartik to operate team-assigned Claude and Antigravity-hosted Codex on Laptop1 / DESKTOP-DL9FDM7 under a separate assigned profile/seat. Antigravity does not prove the underlying Codex model, effort, identity or filesystem isolation; every task must report them in preflight. Do not copy personal auth/config folders or infer entitlement from another profile.
 
 ## Commands actually defined
 | Command | Purpose |
@@ -30,4 +30,4 @@ H2 collects provider test/live readiness evidence, with H1/client decisions for 
 
 Verified CLI help: npm run dev -- --port 3102 --hostname localhost is supported (use each task's reserved port). Help default is 3000; the old README's fixed 3001 is not authoritative. No dev server was launched here.
 
-Current D: path/launch authority: LAUNCH-PROTOCOL.md. Laptop 2 Node24 is provisional until app checks pass there; Node22.23.2 remains the tested baseline. No account entitlement is inferred from another session.
+Current A/D fixed-SHA candidates retain their original execution-host evidence. Future centralized-host launches follow LAUNCH-PROTOCOL.md and must verify profile-local Node/npm/Git/Claude/Codex versions, worktree permissions and ports. Node22.23.2 remains the tested Laptop1 baseline; no account entitlement is inferred from another session.
