@@ -36,19 +36,48 @@ export function readAction<Request, Receipt>(
   const parsed = JSON.parse(raw) as Partial<StoredAction<Request, Receipt>>;
   const request = parsed.request as Record<string, unknown> | undefined;
   const receipt = parsed.receipt as Record<string, unknown> | undefined;
+  const hasReceipt = parsed.receipt !== undefined;
+  const hasError = parsed.errorMessage !== undefined;
+  const payloadIsObject =
+    request?.payload !== null &&
+    typeof request?.payload === 'object' &&
+    !Array.isArray(request.payload);
+  const fingerprintMatches =
+    request?.operation === operation &&
+    payloadIsObject &&
+    parsed.fingerprint === actionFingerprint(operation, request.payload);
+  const pendingIsValid =
+    parsed.status === 'pending' && !hasReceipt && !hasError;
+  const errorIsValid =
+    parsed.status === 'error' &&
+    !hasReceipt &&
+    typeof parsed.errorMessage === 'string' &&
+    parsed.errorMessage.trim().length > 0;
+  const successIsValid =
+    parsed.status === 'success' &&
+    !hasError &&
+    !!receipt &&
+    !Array.isArray(receipt) &&
+    typeof receipt.id === 'string' &&
+    receipt.id.trim().length > 0 &&
+    typeof receipt.message === 'string' &&
+    receipt.message.trim().length > 0;
   if (
     parsed.storageVersion !== 1 ||
     parsed.operation !== operation ||
     typeof parsed.fingerprint !== 'string' ||
+    parsed.fingerprint.trim().length === 0 ||
     !request ||
     request.operation !== operation ||
     typeof request.requestKey !== 'string' ||
+    request.requestKey.trim().length === 0 ||
     !Number.isInteger(request.expectedGeneration) ||
+    Number(request.expectedGeneration) < 0 ||
     typeof request.actorId !== 'string' ||
-    typeof request.payload !== 'object' ||
-    !['pending', 'error', 'success'].includes(parsed.status ?? '') ||
-    (parsed.status === 'success' &&
-      (!receipt || typeof receipt.id !== 'string'))
+    request.actorId.trim().length === 0 ||
+    !payloadIsObject ||
+    !fingerprintMatches ||
+    (!pendingIsValid && !errorIsValid && !successIsValid)
   ) {
     throw new Error('The saved action journal has an unsupported shape.');
   }
