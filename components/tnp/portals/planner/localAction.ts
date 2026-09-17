@@ -92,8 +92,72 @@ export function writeAction<Request, Receipt>(
   storage.setItem(key, JSON.stringify(action));
 }
 
+export function tryWriteAction<Request, Receipt>(
+  storage: StorageLike,
+  key: string,
+  action: StoredAction<Request, Receipt>,
+) {
+  try {
+    writeAction(storage, key, action);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function clearAction(storage: StorageLike, key: string) {
   storage.removeItem(key);
+}
+
+export function plannerMatchesRequest(
+  planner: { id: string; displayName: string; city: string } | null,
+  receiptId: string,
+  payload: { displayName: string; city: string },
+) {
+  return Boolean(
+    planner &&
+      planner.id === receiptId &&
+      planner.displayName === payload.displayName &&
+      planner.city === payload.city,
+  );
+}
+
+export function requirementMatchesRequest(
+  requirement: {
+    id: string;
+    bookingId: string;
+    eventId: string;
+    role: string;
+    quantity: number;
+    notes: string;
+    status: string;
+  } | null,
+  receiptId: string,
+  payload: {
+    bookingId: string;
+    eventId: string;
+    role: string;
+    quantity: number;
+    notes?: string;
+    status?: 'draft' | 'submitted';
+  },
+) {
+  if (!requirement || requirement.id !== receiptId) return false;
+  return (
+    requirement.bookingId === payload.bookingId &&
+    requirement.eventId === payload.eventId &&
+    requirement.role === payload.role &&
+    requirement.quantity === payload.quantity &&
+    requirement.notes === (payload.notes?.trim() ?? '') &&
+    requirement.status ===
+      (payload.status === 'draft' ? 'draft' : 'submitted')
+  );
+}
+
+export function serviceSuccessNotice(message: string, persisted: boolean) {
+  return persisted
+    ? message
+    : `${message} LOCAL_ACTION_UNAVAILABLE: The service mutation succeeded, but local restore/retry identity could not be persisted. Do not retry this action; start a new action explicitly if needed.`;
 }
 
 export function reconcileReferencePair<

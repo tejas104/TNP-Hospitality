@@ -21,10 +21,12 @@ import { byId } from '@/data/media';
 import { ClientStatusHub } from './ClientStatusHub';
 import {
   actionFingerprint,
+  bookingMatchesRequest,
   clearAction,
   readAction,
+  serviceSuccessNotice,
   type StoredAction,
-  writeAction,
+  tryWriteAction,
 } from './localAction';
 import styles from './ClientExperience.module.css';
 
@@ -146,9 +148,8 @@ export function ClientExperience() {
             'submitBooking',
           );
           if (!action) return;
-          const generation = await (
-            await getBrowserPreviewService()
-          ).getGeneration();
+          const service = await getBrowserPreviewService();
+          const generation = await service.getGeneration();
           if (cancelled) return;
           const currentFingerprint = actionFingerprint(
             'submitBooking',
@@ -158,9 +159,44 @@ export function ClientExperience() {
             action.request.expectedGeneration !== generation ||
             action.fingerprint !== currentFingerprint
           ) {
+            let cleared = true;
+            try {
+              clearAction(window.localStorage, ACTION_KEY);
+            } catch {
+              cleared = false;
+            }
+            setBookingId('');
+            setPending(null);
+            setNotice(
+              `LOCAL_ACTION_UNAVAILABLE: The saved booking belongs to a different draft or preview generation and was ${cleared ? 'cleared' : 'quarantined for this page'}. Nothing was restored or replayed.`,
+            );
             return;
           }
           if (action.status === 'success' && action.receipt) {
+            const bookingResult = await service.getBooking(action.receipt.id);
+            if (cancelled) return;
+            if (
+              !bookingResult.ok ||
+              bookingResult.generation !== generation ||
+              !bookingMatchesRequest(
+                bookingResult.value,
+                action.receipt.id,
+                action.request.payload,
+              )
+            ) {
+              let cleared = true;
+              try {
+                clearAction(window.localStorage, ACTION_KEY);
+              } catch {
+                cleared = false;
+              }
+              setBookingId('');
+              setPending(null);
+              setNotice(
+                `LOCAL_ACTION_UNAVAILABLE: The saved booking receipt was missing, stale, or did not match its service record and was ${cleared ? 'cleared' : 'quarantined for this page'}. Nothing was restored or replayed.`,
+              );
+              return;
+            }
             setBookingId(action.receipt.id);
             setPending(null);
             setNotice(
@@ -175,8 +211,16 @@ export function ClientExperience() {
           );
         } catch {
           if (!cancelled) {
+            let cleared = true;
+            try {
+              clearAction(window.localStorage, ACTION_KEY);
+            } catch {
+              cleared = false;
+            }
+            setBookingId('');
+            setPending(null);
             setNotice(
-              'LOCAL_ACTION_UNAVAILABLE: The saved booking action could not be read. Nothing was submitted or reported as successful.',
+              `LOCAL_ACTION_UNAVAILABLE: The saved booking action could not be read and was ${cleared ? 'cleared' : 'quarantined for this page'}. Nothing was submitted, restored, or reported as successful.`,
             );
           }
         }
@@ -328,15 +372,7 @@ export function ClientExperience() {
   function persistBookingAction(
     action: StoredAction<BookingRequest, BookingReceipt>,
   ) {
-    try {
-      writeAction(window.localStorage, ACTION_KEY, action);
-      return true;
-    } catch {
-      setNotice(
-        'LOCAL_ACTION_UNAVAILABLE: This booking was not submitted because its retry identity could not be saved.',
-      );
-      return false;
-    }
+    return tryWriteAction(window.localStorage, ACTION_KEY, action);
   }
   async function perform(request: BookingRequest) {
     const fingerprint = actionFingerprint(request.operation, request.payload);
@@ -349,6 +385,9 @@ export function ClientExperience() {
         status: 'pending',
       })
     ) {
+      setNotice(
+        'LOCAL_ACTION_UNAVAILABLE: This booking was not submitted because its retry identity could not be saved.',
+      );
       return;
     }
     setSubmitting(true);
@@ -357,7 +396,7 @@ export function ClientExperience() {
     setSubmitting(false);
     if (!result.ok) {
       const message = `${result.error.code}: ${result.error.message}`;
-      persistBookingAction({
+      const persisted = persistBookingAction({
         storageVersion: 1,
         operation: request.operation,
         fingerprint,
@@ -365,12 +404,16 @@ export function ClientExperience() {
         status: 'error',
         errorMessage: message,
       });
-      setNotice(message);
+      setNotice(
+        persisted
+          ? message
+          : `${message} LOCAL_ACTION_UNAVAILABLE: The failed action identity could not be persisted; retry only on this page with the displayed same-request control.`,
+      );
       setErrors(result.error.fieldErrors ?? {});
       return;
     }
     const message = `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}. This is sample preview data, not a live booking.`;
-    persistBookingAction({
+    const persisted = persistBookingAction({
       storageVersion: 1,
       operation: request.operation,
       fingerprint,
@@ -385,7 +428,7 @@ export function ClientExperience() {
         detail: { id: result.value.id },
       }),
     );
-    setNotice(message);
+    setNotice(serviceSuccessNotice(message, persisted));
   }
   async function submit() {
     if (!validate('Review') || !venue || !planner) {
@@ -407,6 +450,29 @@ export function ClientExperience() {
         existing.request.expectedGeneration === generation
       ) {
         if (existing.status === 'success' && existing.receipt) {
+          const bookingResult = await service.getBooking(existing.receipt.id);
+          if (
+            !bookingResult.ok ||
+            bookingResult.generation !== generation ||
+            !bookingMatchesRequest(
+              bookingResult.value,
+              existing.receipt.id,
+              existing.request.payload,
+            )
+          ) {
+            let cleared = true;
+            try {
+              clearAction(window.localStorage, ACTION_KEY);
+            } catch {
+              cleared = false;
+            }
+            setBookingId('');
+            setPending(null);
+            setNotice(
+              `LOCAL_ACTION_UNAVAILABLE: The saved booking receipt was missing or mismatched and was ${cleared ? 'cleared' : 'quarantined for this page'}. Submit again only as an explicit new action.`,
+            );
+            return;
+          }
           setBookingId(existing.receipt.id);
           setPending(null);
           setNotice(
@@ -418,9 +484,30 @@ export function ClientExperience() {
         await perform(existing.request);
         return;
       }
+      if (existing) {
+        let cleared = true;
+        try {
+          clearAction(window.localStorage, ACTION_KEY);
+        } catch {
+          cleared = false;
+        }
+        setBookingId('');
+        setPending(null);
+        setNotice(
+          `LOCAL_ACTION_UNAVAILABLE: The saved booking does not match this draft or preview generation and was ${cleared ? 'cleared' : 'quarantined for this page'}. Nothing was replayed; submit again to start an explicit new action.`,
+        );
+        return;
+      }
     } catch {
+      try {
+        clearAction(window.localStorage, ACTION_KEY);
+      } catch {
+        // The unreadable journal remains quarantined in memory for this page.
+      }
+      setBookingId('');
+      setPending(null);
       setNotice(
-        'LOCAL_ACTION_UNAVAILABLE: The saved action is corrupt or unavailable. Clear it explicitly before starting another submission.',
+        'LOCAL_ACTION_UNAVAILABLE: The saved action was corrupt or unavailable and has been cleared or quarantined. Nothing was replayed; submit again to start an explicit new action.',
       );
       return;
     }

@@ -3,8 +3,12 @@ import test from 'node:test';
 import {
   actionFingerprint,
   isValidReferencePair,
+  plannerMatchesRequest,
   readAction,
   reconcileReferencePair,
+  requirementMatchesRequest,
+  serviceSuccessNotice,
+  tryWriteAction,
   writeAction,
 } from './localAction.ts';
 
@@ -164,4 +168,81 @@ test('planner journal preserves valid pending, error and success records', () =>
       JSON.parse(JSON.stringify(candidate)),
     );
   }
+});
+
+test('registration restore requires an existing planner with matching material fields', () => {
+  const planner = {
+    id: 'planner-1',
+    displayName: 'Sample Planner',
+    city: 'Jaipur',
+  };
+  const payload = { displayName: 'Sample Planner', city: 'Jaipur' };
+  assert.equal(plannerMatchesRequest(planner, 'planner-1', payload), true);
+  assert.equal(plannerMatchesRequest(null, 'planner-1', payload), false);
+  assert.equal(plannerMatchesRequest(planner, 'forged-planner', payload), false);
+  assert.equal(
+    plannerMatchesRequest(planner, 'planner-1', {
+      ...payload,
+      city: 'Mumbai',
+    }),
+    false,
+  );
+});
+
+test('requirement restore rejects missing receipts and material booking/event mismatch', () => {
+  const payload = {
+    bookingId: 'booking-a',
+    eventId: 'event-a',
+    role: 'Hostess',
+    quantity: 2,
+    notes: 'Sample brief',
+    status: 'submitted',
+  };
+  const requirement = { id: 'requirement-1', ...payload };
+  assert.equal(
+    requirementMatchesRequest(requirement, 'requirement-1', payload),
+    true,
+  );
+  assert.equal(requirementMatchesRequest(null, 'requirement-1', payload), false);
+  assert.equal(
+    requirementMatchesRequest(requirement, 'forged-receipt', payload),
+    false,
+  );
+  assert.equal(
+    requirementMatchesRequest(
+      { ...requirement, eventId: 'event-b' },
+      'requirement-1',
+      payload,
+    ),
+    false,
+  );
+  assert.equal(
+    requirementMatchesRequest(
+      { ...requirement, bookingId: 'booking-b' },
+      'requirement-1',
+      payload,
+    ),
+    false,
+  );
+});
+
+test('planner post-success journal write failure keeps the service result truthful', () => {
+  const action = validAction();
+  const failingStorage = {
+    getItem() {
+      return null;
+    },
+    setItem() {
+      throw new Error('storage disabled');
+    },
+    removeItem() {},
+  };
+  assert.equal(tryWriteAction(failingStorage, 'requirement', action), false);
+  const notice = serviceSuccessNotice('Saved requirement-1.', false);
+  assert.match(notice, /service mutation succeeded/);
+  assert.match(notice, /Do not retry/);
+  assert.equal(
+    serviceSuccessNotice('Saved requirement-1.', true),
+    'Saved requirement-1.',
+  );
 });

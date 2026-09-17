@@ -92,8 +92,58 @@ export function writeAction<Request, Receipt>(
   storage.setItem(key, JSON.stringify(action));
 }
 
+export function tryWriteAction<Request, Receipt>(
+  storage: StorageLike,
+  key: string,
+  action: StoredAction<Request, Receipt>,
+) {
+  try {
+    writeAction(storage, key, action);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export function clearAction(storage: StorageLike, key: string) {
   storage.removeItem(key);
+}
+
+export function bookingMatchesRequest(
+  booking: {
+    id: string;
+    clientId: string;
+    venueId: string;
+    eventName: string;
+    city: string;
+    budgetPaise: number;
+    status: string;
+  } | null,
+  receiptId: string,
+  payload: {
+    clientId?: string;
+    venueId: string;
+    eventName: string;
+    city: string;
+    budgetPaise: number;
+    status?: 'draft' | 'submitted';
+  },
+) {
+  if (!booking || booking.id !== receiptId) return false;
+  return (
+    booking.clientId === (payload.clientId?.trim() || 'tnp-demo-client-preview') &&
+    booking.venueId === payload.venueId &&
+    booking.eventName === payload.eventName &&
+    booking.city === payload.city &&
+    booking.budgetPaise === payload.budgetPaise &&
+    booking.status === (payload.status === 'draft' ? 'draft' : 'submitted')
+  );
+}
+
+export function serviceSuccessNotice(message: string, persisted: boolean) {
+  return persisted
+    ? message
+    : `${message} LOCAL_ACTION_UNAVAILABLE: The service mutation succeeded, but local restore/retry identity could not be persisted. Do not retry this action; start a new action explicitly if needed.`;
 }
 
 export function collectionPresentation(collection: {

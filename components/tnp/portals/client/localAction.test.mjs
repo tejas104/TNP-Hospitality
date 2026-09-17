@@ -2,8 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import {
   actionFingerprint,
+  bookingMatchesRequest,
   collectionPresentation,
   readAction,
+  serviceSuccessNotice,
+  tryWriteAction,
   writeAction,
 } from './localAction.ts';
 
@@ -182,4 +185,60 @@ test('paid collection without a reference is unconfirmed everywhere', () => {
     label: 'unconfirmed',
     description: 'Reference missing - not treated as paid',
   });
+});
+
+test('booking restore requires the exact current service receipt and material payload', () => {
+  const payload = {
+    venueId: 'venue-1',
+    eventName: 'Launch dinner',
+    city: 'Jaipur',
+    budgetPaise: 45000000,
+    status: 'submitted',
+  };
+  const booking = {
+    id: 'booking-1',
+    clientId: 'tnp-demo-client-preview',
+    ...payload,
+  };
+  assert.equal(bookingMatchesRequest(booking, 'booking-1', payload), true);
+  assert.equal(bookingMatchesRequest(null, 'booking-1', payload), false);
+  assert.equal(bookingMatchesRequest(booking, 'forged-receipt', payload), false);
+  assert.equal(
+    bookingMatchesRequest(booking, 'booking-1', {
+      ...payload,
+      budgetPaise: payload.budgetPaise + 1,
+    }),
+    false,
+  );
+  assert.equal(
+    bookingMatchesRequest(
+      { ...booking, venueId: 'venue-2' },
+      'booking-1',
+      payload,
+    ),
+    false,
+  );
+});
+
+test('post-success journal write failure preserves success and forbids retry wording', () => {
+  const action = validAction();
+  const failingStorage = {
+    getItem() {
+      return null;
+    },
+    setItem() {
+      throw new Error('quota exceeded');
+    },
+    removeItem() {},
+  };
+  assert.equal(tryWriteAction(failingStorage, 'booking', action), false);
+  assert.match(
+    serviceSuccessNotice('Saved booking-1.', false),
+    /service mutation succeeded/,
+  );
+  assert.match(serviceSuccessNotice('Saved booking-1.', false), /Do not retry/);
+  assert.equal(
+    serviceSuccessNotice('Saved booking-1.', true),
+    'Saved booking-1.',
+  );
 });

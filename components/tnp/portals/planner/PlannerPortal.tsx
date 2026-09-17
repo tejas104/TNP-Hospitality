@@ -15,10 +15,13 @@ import {
   actionFingerprint,
   clearAction,
   isValidReferencePair,
+  plannerMatchesRequest,
   readAction,
   reconcileReferencePair,
+  requirementMatchesRequest,
+  serviceSuccessNotice,
   type StoredAction,
-  writeAction,
+  tryWriteAction,
 } from './localAction';
 import styles from './PlannerPortal.module.css';
 
@@ -90,6 +93,15 @@ const requirementPayload = (draft: Draft) => ({
   status: 'submitted' as const,
 });
 
+function discardLocalAction(key: string) {
+  try {
+    clearAction(window.localStorage, key);
+    return 'cleared';
+  } catch {
+    return 'quarantined for this page';
+  }
+}
+
 export function PlannerPortal() {
   const [draft, setDraft] = useState(initialDraft);
   const [draftReady, setDraftReady] = useState(false);
@@ -124,83 +136,145 @@ export function PlannerPortal() {
       setDraft(restoredDraft);
       setDraftReady(true);
       void (async () => {
+        const service = await getBrowserPreviewService();
+        const generation = await service.getGeneration();
+        if (cancelled) return;
+        let registrationAction: StoredAction<
+          RegistrationRequest,
+          ActionReceipt
+        > | null = null;
+        let requirementAction: StoredAction<
+          RequirementRequest,
+          ActionReceipt
+        > | null = null;
         try {
-          const [registrationAction, requirementAction, generation] =
-            await Promise.all([
-              Promise.resolve(
-                readAction<RegistrationRequest, ActionReceipt>(
-                  window.localStorage,
-                  REGISTRATION_ACTION_KEY,
-                  'registerPlanner',
-                ),
-              ),
-              Promise.resolve(
-                readAction<RequirementRequest, ActionReceipt>(
-                  window.localStorage,
-                  REQUIREMENT_ACTION_KEY,
-                  'submitRequirement',
-                ),
-              ),
-              getBrowserPreviewService().then((service) =>
-                service.getGeneration(),
-              ),
-            ]);
-          if (cancelled) return;
-          if (
-            registrationAction?.request.expectedGeneration === generation &&
+          registrationAction = readAction<RegistrationRequest, ActionReceipt>(
+            window.localStorage,
+            REGISTRATION_ACTION_KEY,
+            'registerPlanner',
+          );
+        } catch {
+          setRegistrationId('');
+          setPendingRegistration(null);
+          setRegistrationNotice(
+            `LOCAL_ACTION_UNAVAILABLE: The saved planner action could not be read and was ${discardLocalAction(REGISTRATION_ACTION_KEY)}. Nothing was restored or replayed.`,
+          );
+        }
+        try {
+          requirementAction = readAction<RequirementRequest, ActionReceipt>(
+            window.localStorage,
+            REQUIREMENT_ACTION_KEY,
+            'submitRequirement',
+          );
+        } catch {
+          setRequirementId('');
+          setPendingRequirement(null);
+          setRequirementNotice(
+            `LOCAL_ACTION_UNAVAILABLE: The saved requirement action could not be read and was ${discardLocalAction(REQUIREMENT_ACTION_KEY)}. Nothing was restored or replayed.`,
+          );
+        }
+        if (registrationAction) {
+          const matchesDraft =
+            registrationAction.request.expectedGeneration === generation &&
             registrationAction.fingerprint ===
               actionFingerprint(
                 'registerPlanner',
                 registrationPayload(restoredDraft),
-              )
+              );
+          if (!matchesDraft) {
+            setRegistrationId('');
+            setPendingRegistration(null);
+            setRegistrationNotice(
+              `LOCAL_ACTION_UNAVAILABLE: The saved registration belongs to another draft or preview generation and was ${discardLocalAction(REGISTRATION_ACTION_KEY)}. Nothing was restored or replayed.`,
+            );
+          } else if (
+            registrationAction.status === 'success' &&
+            registrationAction.receipt
           ) {
+            const plannersResult = await service.listPlanners();
+            if (cancelled) return;
+            const planner = plannersResult.ok
+              ? (plannersResult.value.items.find(
+                  (item) => item.id === registrationAction.receipt?.id,
+                ) ?? null)
+              : null;
             if (
-              registrationAction.status === 'success' &&
-              registrationAction.receipt
+              !plannersResult.ok ||
+              plannersResult.generation !== generation ||
+              !plannerMatchesRequest(
+                planner,
+                registrationAction.receipt.id,
+                registrationAction.request.payload,
+              )
             ) {
-              setRegistrationId(registrationAction.receipt.id);
+              setRegistrationId('');
+              setPendingRegistration(null);
               setRegistrationNotice(
-                `Restored ${registrationAction.receipt.id} from this browser's synthetic receipt. No duplicate planner was created.`,
+                `LOCAL_ACTION_UNAVAILABLE: The saved planner receipt was missing, stale, or mismatched and was ${discardLocalAction(REGISTRATION_ACTION_KEY)}. Nothing was restored or replayed.`,
               );
             } else {
-              setPendingRegistration(registrationAction.request);
+              setRegistrationId(registrationAction.receipt.id);
+              setPendingRegistration(null);
               setRegistrationNotice(
-                registrationAction.errorMessage ||
-                  'An unfinished planner registration was restored. Retry keeps the same request identity.',
+                `Restored ${registrationAction.receipt.id} after confirming the current synthetic planner record. No duplicate planner was created.`,
               );
             }
+          } else {
+            setPendingRegistration(registrationAction.request);
+            setRegistrationNotice(
+              registrationAction.errorMessage ||
+                'An unfinished planner registration was restored. Retry keeps the same request identity.',
+            );
           }
-          if (
-            requirementAction?.request.expectedGeneration === generation &&
+        }
+        if (requirementAction) {
+          const matchesDraft =
+            requirementAction.request.expectedGeneration === generation &&
             requirementAction.fingerprint ===
               actionFingerprint(
                 'submitRequirement',
                 requirementPayload(restoredDraft),
-              )
+              );
+          if (!matchesDraft) {
+            setRequirementId('');
+            setPendingRequirement(null);
+            setRequirementNotice(
+              `LOCAL_ACTION_UNAVAILABLE: The saved requirement belongs to another draft or preview generation and was ${discardLocalAction(REQUIREMENT_ACTION_KEY)}. Nothing was restored or replayed.`,
+            );
+          } else if (
+            requirementAction.status === 'success' &&
+            requirementAction.receipt
           ) {
+            const requirementResult = await service.getRequirement(
+              requirementAction.receipt.id,
+            );
+            if (cancelled) return;
             if (
-              requirementAction.status === 'success' &&
-              requirementAction.receipt
+              !requirementResult.ok ||
+              requirementResult.generation !== generation ||
+              !requirementMatchesRequest(
+                requirementResult.value,
+                requirementAction.receipt.id,
+                requirementAction.request.payload,
+              )
             ) {
-              setRequirementId(requirementAction.receipt.id);
+              setRequirementId('');
+              setPendingRequirement(null);
               setRequirementNotice(
-                `Restored ${requirementAction.receipt.id} from this browser's synthetic receipt. No duplicate requirement was created.`,
+                `LOCAL_ACTION_UNAVAILABLE: The saved requirement receipt was missing, stale, or mismatched and was ${discardLocalAction(REQUIREMENT_ACTION_KEY)}. Nothing was restored or replayed.`,
               );
             } else {
-              setPendingRequirement(requirementAction.request);
+              setRequirementId(requirementAction.receipt.id);
+              setPendingRequirement(null);
               setRequirementNotice(
-                requirementAction.errorMessage ||
-                  'An unfinished requirement was restored. Retry keeps the same request identity.',
+                `Restored ${requirementAction.receipt.id} after confirming its current booking/event linkage. No duplicate requirement was created.`,
               );
             }
-          }
-        } catch {
-          if (!cancelled) {
-            setRegistrationNotice(
-              'LOCAL_ACTION_UNAVAILABLE: Saved planner actions could not be read. Nothing was reported as successful.',
-            );
+          } else {
+            setPendingRequirement(requirementAction.request);
             setRequirementNotice(
-              'LOCAL_ACTION_UNAVAILABLE: Saved requirement actions could not be read. Nothing was reported as successful.',
+              requirementAction.errorMessage ||
+                'An unfinished requirement was restored. Retry keeps the same request identity.',
             );
           }
         }
@@ -333,29 +407,13 @@ export function PlannerPortal() {
   function persistRegistration(
     action: StoredAction<RegistrationRequest, ActionReceipt>,
   ) {
-    try {
-      writeAction(window.localStorage, REGISTRATION_ACTION_KEY, action);
-      return true;
-    } catch {
-      setRegistrationNotice(
-        'LOCAL_ACTION_UNAVAILABLE: Registration was not submitted because its retry identity could not be saved.',
-      );
-      return false;
-    }
+    return tryWriteAction(window.localStorage, REGISTRATION_ACTION_KEY, action);
   }
 
   function persistRequirement(
     action: StoredAction<RequirementRequest, ActionReceipt>,
   ) {
-    try {
-      writeAction(window.localStorage, REQUIREMENT_ACTION_KEY, action);
-      return true;
-    } catch {
-      setRequirementNotice(
-        'LOCAL_ACTION_UNAVAILABLE: Requirement was not submitted because its retry identity could not be saved.',
-      );
-      return false;
-    }
+    return tryWriteAction(window.localStorage, REQUIREMENT_ACTION_KEY, action);
   }
 
   async function runRegistration(request: RegistrationRequest) {
@@ -368,15 +426,19 @@ export function PlannerPortal() {
         request,
         status: 'pending',
       })
-    )
+    ) {
+      setRegistrationNotice(
+        'LOCAL_ACTION_UNAVAILABLE: Registration was not submitted because its retry identity could not be saved.',
+      );
       return;
+    }
     setBusy('registration');
     setRegistrationNotice('Saving sample planner profile…');
     const result = await (await getBrowserPreviewService()).mutate(request);
     setBusy('');
     if (!result.ok) {
       const message = `${result.error.code}: ${result.error.message}`;
-      persistRegistration({
+      const persisted = persistRegistration({
         storageVersion: 1,
         operation: request.operation,
         fingerprint,
@@ -386,11 +448,15 @@ export function PlannerPortal() {
       });
       setRegistrationId('');
       setRegistrationErrors(result.error.fieldErrors ?? {});
-      setRegistrationNotice(message);
+      setRegistrationNotice(
+        persisted
+          ? message
+          : `${message} LOCAL_ACTION_UNAVAILABLE: The failed action identity could not be persisted; retry only on this page with the displayed same-request control.`,
+      );
       return;
     }
     const message = `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}. Verification remains a sample pending state.`;
-    persistRegistration({
+    const persisted = persistRegistration({
       storageVersion: 1,
       operation: request.operation,
       fingerprint,
@@ -400,7 +466,7 @@ export function PlannerPortal() {
     });
     setRegistrationId(result.value.id);
     setPendingRegistration(null);
-    setRegistrationNotice(message);
+    setRegistrationNotice(serviceSuccessNotice(message, persisted));
   }
   async function registerPlanner() {
     const local: Record<string, string> = {};
@@ -427,6 +493,28 @@ export function PlannerPortal() {
         existing.request.expectedGeneration === generation
       ) {
         if (existing.status === 'success' && existing.receipt) {
+          const plannersResult = await service.listPlanners();
+          const planner = plannersResult.ok
+            ? (plannersResult.value.items.find(
+                (item) => item.id === existing.receipt?.id,
+              ) ?? null)
+            : null;
+          if (
+            !plannersResult.ok ||
+            plannersResult.generation !== generation ||
+            !plannerMatchesRequest(
+              planner,
+              existing.receipt.id,
+              existing.request.payload,
+            )
+          ) {
+            setRegistrationId('');
+            setPendingRegistration(null);
+            setRegistrationNotice(
+              `LOCAL_ACTION_UNAVAILABLE: The saved planner receipt was missing or mismatched and was ${discardLocalAction(REGISTRATION_ACTION_KEY)}. Submit again only as an explicit new action.`,
+            );
+            return;
+          }
           setRegistrationId(existing.receipt.id);
           setPendingRegistration(null);
           setRegistrationNotice(
@@ -438,9 +526,20 @@ export function PlannerPortal() {
         await runRegistration(existing.request);
         return;
       }
+      if (existing) {
+        setRegistrationId('');
+        setPendingRegistration(null);
+        setRegistrationNotice(
+          `LOCAL_ACTION_UNAVAILABLE: The saved registration does not match this draft or preview generation and was ${discardLocalAction(REGISTRATION_ACTION_KEY)}. Nothing was replayed; submit again to start an explicit new action.`,
+        );
+        return;
+      }
     } catch {
+      discardLocalAction(REGISTRATION_ACTION_KEY);
+      setRegistrationId('');
+      setPendingRegistration(null);
       setRegistrationNotice(
-        'LOCAL_ACTION_UNAVAILABLE: The saved registration is corrupt or unavailable. Clear it explicitly before starting another submission.',
+        'LOCAL_ACTION_UNAVAILABLE: The saved registration was corrupt or unavailable and has been cleared or quarantined. Nothing was replayed; submit again to start an explicit new action.',
       );
       return;
     }
@@ -465,15 +564,19 @@ export function PlannerPortal() {
         request,
         status: 'pending',
       })
-    )
+    ) {
+      setRequirementNotice(
+        'LOCAL_ACTION_UNAVAILABLE: Requirement was not submitted because its retry identity could not be saved.',
+      );
       return;
+    }
     setBusy('requirement');
     setRequirementNotice('Saving linked sample requirement…');
     const result = await (await getBrowserPreviewService()).mutate(request);
     setBusy('');
     if (!result.ok) {
       const message = `${result.error.code}: ${result.error.message}`;
-      persistRequirement({
+      const persisted = persistRequirement({
         storageVersion: 1,
         operation: request.operation,
         fingerprint,
@@ -483,11 +586,15 @@ export function PlannerPortal() {
       });
       setRequirementId('');
       setRequirementErrors(result.error.fieldErrors ?? {});
-      setRequirementNotice(message);
+      setRequirementNotice(
+        persisted
+          ? message
+          : `${message} LOCAL_ACTION_UNAVAILABLE: The failed action identity could not be persisted; retry only on this page with the displayed same-request control.`,
+      );
       return;
     }
     const message = `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}, linked to ${result.value.bookingId} / ${result.value.eventId}.`;
-    persistRequirement({
+    const persisted = persistRequirement({
       storageVersion: 1,
       operation: request.operation,
       fingerprint,
@@ -502,7 +609,7 @@ export function PlannerPortal() {
         detail: { id: result.value.id },
       }),
     );
-    setRequirementNotice(message);
+    setRequirementNotice(serviceSuccessNotice(message, persisted));
   }
   async function submitRequirement() {
     const local: Record<string, string> = {};
@@ -539,6 +646,25 @@ export function PlannerPortal() {
         existing.request.expectedGeneration === generation
       ) {
         if (existing.status === 'success' && existing.receipt) {
+          const requirementResult = await service.getRequirement(
+            existing.receipt.id,
+          );
+          if (
+            !requirementResult.ok ||
+            requirementResult.generation !== generation ||
+            !requirementMatchesRequest(
+              requirementResult.value,
+              existing.receipt.id,
+              existing.request.payload,
+            )
+          ) {
+            setRequirementId('');
+            setPendingRequirement(null);
+            setRequirementNotice(
+              `LOCAL_ACTION_UNAVAILABLE: The saved requirement receipt was missing or mismatched and was ${discardLocalAction(REQUIREMENT_ACTION_KEY)}. Submit again only as an explicit new action.`,
+            );
+            return;
+          }
           setRequirementId(existing.receipt.id);
           setPendingRequirement(null);
           setRequirementNotice(
@@ -550,9 +676,20 @@ export function PlannerPortal() {
         await runRequirement(existing.request);
         return;
       }
+      if (existing) {
+        setRequirementId('');
+        setPendingRequirement(null);
+        setRequirementNotice(
+          `LOCAL_ACTION_UNAVAILABLE: The saved requirement does not match this draft or preview generation and was ${discardLocalAction(REQUIREMENT_ACTION_KEY)}. Nothing was replayed; submit again to start an explicit new action.`,
+        );
+        return;
+      }
     } catch {
+      discardLocalAction(REQUIREMENT_ACTION_KEY);
+      setRequirementId('');
+      setPendingRequirement(null);
       setRequirementNotice(
-        'LOCAL_ACTION_UNAVAILABLE: The saved requirement is corrupt or unavailable. Clear it explicitly before starting another submission.',
+        'LOCAL_ACTION_UNAVAILABLE: The saved requirement was corrupt or unavailable and has been cleared or quarantined. Nothing was replayed; submit again to start an explicit new action.',
       );
       return;
     }
