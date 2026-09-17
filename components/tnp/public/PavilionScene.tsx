@@ -1,8 +1,9 @@
 'use client';
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CatmullRomCurve3, Group, MathUtils, Vector3 } from 'three';
+import { probeWebGL2 } from './webgl';
 
 function Pavilion() {
   const pavilion = useRef<Group>(null);
@@ -166,6 +167,16 @@ export default function PavilionScene({
   fallback: ReactNode;
   onFailure: () => void;
 }) {
+  const [supported, setSupported] = useState<boolean | null>(null);
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const available = probeWebGL2();
+      setSupported(available);
+      if (!available) onFailure();
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [onFailure]);
+  if (supported !== true) return fallback;
   return (
     <Canvas
       dpr={[1, 1.5]}

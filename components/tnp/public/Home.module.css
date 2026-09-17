@@ -317,7 +317,7 @@
 }
 .serviceItem button span {
   font-size: 10px;
-  color: #718177;
+  color: #4f6256;
 }
 .serviceItem button svg {
   margin-left: auto;
@@ -469,7 +469,7 @@
 .eventGrid span {
   font-size: 10px;
   letter-spacing: 1px;
-  color: #67786d;
+  color: #4f6256;
 }
 .eventGrid h3 {
   font-size: 25px;
@@ -504,7 +504,7 @@
   align-items: center;
   gap: 18px;
   font-size: 11px;
-  color: #63766a;
+  color: #4f6256;
 }
 .gallery[open] summary svg {
   transform: rotate(45deg);
@@ -543,7 +543,7 @@
   align-items: center;
   gap: 5px;
   font-size: 9px;
-  color: #5e6f63;
+  color: #4f6256;
 }
 .process {
   text-align: center;
