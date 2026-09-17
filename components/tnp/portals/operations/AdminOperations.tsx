@@ -29,12 +29,13 @@ import {
   filterOperationsEvents,
   isCurrentActionEpoch,
   isCurrentRosterRequest,
+  operationsSectionItems,
   reconcileSelectedId,
   type EventStatusFilter,
+  type OperationsSection as Panel,
 } from './operationsState';
 import styles from './AdminOperations.module.css';
 
-type Panel = 'overview' | 'events' | 'requirements' | 'verification' | 'attendance';
 type LoadState =
   | { kind: 'loading'; message: string }
   | { kind: 'ready'; message: string }
@@ -59,13 +60,6 @@ const emptyData: DashboardData = {
   applications: [], assignments: [], attendances: [], audit: [],
 };
 
-const workingNavigation: Array<{ id: Panel; label: string }> = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'events', label: 'Events & roster' },
-  { id: 'requirements', label: 'Requirements' },
-  { id: 'verification', label: 'Verification review' },
-  { id: 'attendance', label: 'Attendance exceptions' },
-];
 const futureNavigation = ['Ratings', 'Finance & payouts', 'RSVP', 'Reports'];
 
 function formatDate(value: string) {
@@ -103,6 +97,7 @@ export function AdminOperations() {
   const refreshEpoch = useRef(0);
   const rosterRequestEpoch = useRef(0);
   const actionEpoch = useRef(0);
+  const workspaceRef = useRef<HTMLElement>(null);
   const retainedAction = useRef<{ actionId: string; run: (epoch: number) => Promise<void> } | null>(null);
   const [panel, setPanel] = useState<Panel>('overview');
   const [loadState, setLoadState] = useState<LoadState>({ kind: 'loading', message: 'Loading Operations preview…' });
@@ -307,13 +302,20 @@ export function AdminOperations() {
   const selectedEvent = filteredEvents.find((event) => event.id === selectedEventId) ?? null;
   const selectedPositions = selectedEvent ? data.positions.filter((position) => position.eventId === selectedEvent.id) : [];
   const feedbackCanRetry = feedback.kind === 'error' && feedback.retryable === true;
+  const sections = operationsSectionItems(panel);
+
+  const openSection = (id: Panel) => {
+    setPanel(id);
+    // Focus after the new panel renders; focus() only scrolls when the workspace is out of view.
+    requestAnimationFrame(() => workspaceRef.current?.focus());
+  };
 
   return (
     <main className="admin-shell">
       <aside className="admin-sidebar" aria-label="Operations sections">
         <strong>TNP OPERATIONS</strong>
-        {workingNavigation.map((item) => (
-          <button className={`${styles.navButton} ${panel === item.id ? styles.navButtonActive : ''}`} key={item.id} type="button" aria-current={panel === item.id ? 'page' : undefined} onClick={() => setPanel(item.id)}>{item.label}</button>
+        {sections.map((item) => (
+          <button className={`${styles.navButton} ${item.current ? styles.navButtonActive : ''}`} key={item.id} type="button" aria-current={item.current ? 'page' : undefined} onClick={() => setPanel(item.id)}>{item.label}</button>
         ))}
         <span className={styles.navLabel}>Later milestones</span>
         {futureNavigation.map((item) => <button className={styles.navButton} key={item} type="button" disabled>{item} <small>Unavailable</small></button>)}
@@ -335,7 +337,14 @@ export function AdminOperations() {
             <button className={styles.metricButton} type="button" onClick={() => setPanel('verification')}><Metric value={String(data.applications.filter((item) => item.status === 'pending').length)} label="Pending reviews" /></button>
             <button className={styles.metricButton} type="button" onClick={() => setPanel('attendance')}><Metric value={String(data.metrics.attendanceExceptions ?? 0)} label="Attendance exceptions" /></button>
           </div>
-          <section className={styles.workspace} id="operations-workspace" tabIndex={-1}>
+          <nav className={styles.compactNav} aria-label="Operations sections">
+            <ul>
+              {sections.map((item) => (
+                <li key={item.id}><button className={item.current ? styles.compactNavActive : ''} type="button" aria-current={item.current ? 'page' : undefined} aria-controls="operations-workspace" onClick={() => openSection(item.id)}>{item.label}</button></li>
+              ))}
+            </ul>
+          </nav>
+          <section className={styles.workspace} id="operations-workspace" ref={workspaceRef} tabIndex={-1} aria-label={`${sections.find((item) => item.current)?.label} workspace`}>
             {panel === 'overview' && <OverviewPanel events={data.events} positions={data.positions} requirements={data.requirements} onSelectEvent={(id) => void selectEvent(id)} />}
             {panel === 'events' && <EventsPanel events={filteredEvents} allEventCount={data.events.length} positions={selectedPositions} roster={data.roster} workers={data.workers} selectedEvent={selectedEvent} selectedEventId={selectedEventId} rosterReady={Boolean(selectedEvent && rosterReadyForEventId === selectedEvent.id)} filter={filter} statusFilter={statusFilter} feedback={feedback} canRetry={feedbackCanRetry} onFilter={(value) => updateFilters(value, statusFilterRef.current)} onStatusFilter={(value) => updateFilters(filterRef.current, value)} onClearFilters={() => updateFilters('', 'all')} onSelectEvent={(id) => void selectEvent(id)} onClaim={(positionId) => void beginOperation('claimOpportunity', { positionId, workerId: 'tnp-demo-worker-006' }, 'Sample worker claim')} onRetry={retryCurrentAction} />}
             {panel === 'requirements' && <RequirementsPanel events={data.events} requirements={data.requirements} positions={data.positions} onSelectEvent={(id) => void selectEvent(id)} />}

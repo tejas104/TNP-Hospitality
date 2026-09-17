@@ -6,6 +6,8 @@ import {
   filterOperationsEvents,
   isCurrentActionEpoch,
   isCurrentRosterRequest,
+  OPERATIONS_SECTIONS,
+  operationsSectionItems,
   reconcileSelectedId,
   reviewableApplications,
 } from './operationsState.ts';
@@ -69,4 +71,15 @@ test('delayed action and roster responses cannot replace newer state', () => {
   assert.equal(isCurrentRosterRequest(8, 8, 'event-2', 'event-2'), true);
   assert.equal(isCurrentRosterRequest(7, 8, 'event-1', 'event-2'), false, 'an older request cannot replace the newer roster');
   assert.equal(isCurrentRosterRequest(8, 8, 'event-1', 'event-2'), false, 'a response for a different event cannot replace the selection');
+});
+
+test('compact navigation lists every working section, marks exactly one current and allows returning to Overview', () => {
+  assert.deepEqual(OPERATIONS_SECTIONS.map((section) => section.id), ['overview', 'events', 'requirements', 'verification', 'attendance']);
+  for (const section of OPERATIONS_SECTIONS) {
+    const items = operationsSectionItems(section.id);
+    assert.deepEqual(items.filter((item) => item.current).map((item) => item.id), [section.id]);
+    assert.equal(items.find((item) => item.id === 'overview')?.current, section.id === 'overview', 'Overview stays a selectable destination from every section');
+  }
+  const labels = OPERATIONS_SECTIONS.map((section) => section.label);
+  for (const future of ['Ratings', 'Finance & payouts', 'RSVP', 'Reports']) assert.equal(labels.includes(future), false);
 });

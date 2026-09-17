@@ -25,6 +25,12 @@
 .metricButton { appearance: none; background: transparent; border: 0; color: inherit; cursor: pointer; font: inherit; padding: 0; text-align: left; }
 .metricButton > span { height: 100%; transition: border-color 180ms ease, transform 180ms ease; }
 .metricButton:hover > span, .metricButton:focus-visible > span { border-color: var(--champagne); transform: translateY(-2px); }
+.compactNav { display: none; }
+.compactNav ul { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); list-style: none; margin: 0 0 8px; padding: 0; }
+.compactNav button { align-items: center; background: rgb(229 225 205 / 7%); border: 1px solid rgb(229 225 205 / 16%); color: rgb(245 241 231 / 78%); cursor: pointer; display: flex; font: inherit; min-height: 48px; padding: 10px 14px; text-align: left; width: 100%; }
+.compactNav button:hover { border-color: var(--champagne); color: var(--ivory); }
+.compactNav button:focus-visible { outline: 3px solid var(--champagne); outline-offset: 2px; }
+.compactNav .compactNavActive { background: rgb(187 168 121 / 18%); border-color: var(--champagne); box-shadow: inset 3px 0 0 var(--champagne); color: var(--ivory); font-weight: 700; }
 .workspace { outline: none; }
 .workspace:focus-visible { box-shadow: 0 0 0 3px var(--champagne); }
 .panelHeading { align-items: end; display: flex; gap: 32px; justify-content: space-between; margin: 40px 0 24px; }
@@ -88,6 +94,8 @@
 .auditList small { color: rgb(23 35 33 / 62%); overflow-wrap: anywhere; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .metricButton > span, .spin { animation: none; transition: none; } }
+/* Mirrors the frozen shared breakpoint where .admin-sidebar is hidden. */
+@media (max-width: 1100px) { .compactNav { display: block; } }
 @media (max-width: 900px) {
   .eventTabs, .filters, .decisionGrid, .formGrid, .evidenceGrid { grid-template-columns: 1fr; }
   .panelHeading { align-items: start; flex-direction: column; gap: 12px; }

@@ -2,6 +2,21 @@ import type { Application, Assignment, Attendance, PreviewEvent, Worker } from '
 
 export type EventStatusFilter = 'all' | PreviewEvent['status'];
 
+export type OperationsSection = 'overview' | 'events' | 'requirements' | 'verification' | 'attendance';
+
+// Working sections only; later-milestone modules are never listed as destinations.
+export const OPERATIONS_SECTIONS: ReadonlyArray<{ id: OperationsSection; label: string }> = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'events', label: 'Events & roster' },
+  { id: 'requirements', label: 'Requirements' },
+  { id: 'verification', label: 'Verification review' },
+  { id: 'attendance', label: 'Attendance exceptions' },
+];
+
+export function operationsSectionItems(current: OperationsSection) {
+  return OPERATIONS_SECTIONS.map((section) => ({ ...section, current: section.id === current }));
+}
+
 export type RetryIdentity = {
   actionId?: string;
   retryable?: boolean;
