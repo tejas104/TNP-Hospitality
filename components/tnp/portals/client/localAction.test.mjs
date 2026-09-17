@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { actionFingerprint, readAction, writeAction } from './localAction.ts';
+import {
+  actionFingerprint,
+  collectionPresentation,
+  readAction,
+  writeAction,
+} from './localAction.ts';
 
 function storage(initial = new Map()) {
   return {
@@ -81,4 +86,12 @@ test('malformed request metadata is rejected before retry', () => {
     () => readAction(target, 'booking', 'submitBooking'),
     /unsupported shape/,
   );
+});
+
+test('paid collection without a reference is unconfirmed everywhere', () => {
+  assert.deepEqual(collectionPresentation({ status: 'paid', reference: '' }), {
+    state: 'unconfirmed',
+    label: 'unconfirmed',
+    description: 'Reference missing - not treated as paid',
+  });
 });

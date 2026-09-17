@@ -291,9 +291,9 @@ export function ClientExperience() {
   }
   function validate(step: Step) {
     const next: Record<string, string> = {};
-    if (step === 'Venue' && !venue)
+    if ((step === 'Venue' || step === 'Review') && !venue)
       next.venueId = 'Choose a sample venue before continuing.';
-    if (step === 'Planner' && !planner)
+    if ((step === 'Planner' || step === 'Review') && !planner)
       next.plannerId = 'Choose a sample planner before continuing.';
     if (step === 'Details' || step === 'Review') {
       if (!draft.eventName.trim()) next.eventName = 'Event name is required.';
@@ -317,6 +317,12 @@ export function ClientExperience() {
     update(
       'step',
       steps[Math.max(0, Math.min(steps.length - 1, stepIndex + direction))],
+    );
+  }
+  function moveAndFocus(step: Step) {
+    update('step', step);
+    window.requestAnimationFrame(() =>
+      document.getElementById(`booking-${step.toLowerCase()}-step`)?.focus(),
     );
   }
   function persistBookingAction(
@@ -382,7 +388,10 @@ export function ClientExperience() {
     setNotice(message);
   }
   async function submit() {
-    if (!validate('Review') || !venue) return;
+    if (!validate('Review') || !venue || !planner) {
+      moveAndFocus(!venue ? 'Venue' : !planner ? 'Planner' : 'Details');
+      return;
+    }
     const service = await getBrowserPreviewService();
     const generation = await service.getGeneration();
     const payload = bookingPayload(draft);
@@ -544,7 +553,11 @@ export function ClientExperience() {
           </output>
 
           {draft.step === 'Venue' && (
-            <div className={styles.content}>
+            <div
+              className={styles.content}
+              id="booking-venue-step"
+              tabIndex={-1}
+            >
               <header>
                 <span>01</span>
                 <div>
@@ -642,7 +655,11 @@ export function ClientExperience() {
           )}
 
           {draft.step === 'Planner' && (
-            <div className={styles.content}>
+            <div
+              className={styles.content}
+              id="booking-planner-step"
+              tabIndex={-1}
+            >
               <header>
                 <span>02</span>
                 <div>
@@ -685,7 +702,11 @@ export function ClientExperience() {
           )}
 
           {draft.step === 'Details' && (
-            <div className={styles.content}>
+            <div
+              className={styles.content}
+              id="booking-details-step"
+              tabIndex={-1}
+            >
               <header>
                 <span>03</span>
                 <div>
@@ -753,7 +774,11 @@ export function ClientExperience() {
           )}
 
           {draft.step === 'Review' && (
-            <div className={styles.content}>
+            <div
+              className={styles.content}
+              id="booking-review-step"
+              tabIndex={-1}
+            >
               <header>
                 <span>04</span>
                 <div>
@@ -793,11 +818,34 @@ export function ClientExperience() {
                   </dd>
                 </div>
               </dl>
+              {(catalogueState !== 'ready' || !venue || !planner) && (
+                <div className={styles.blocked} role="alert">
+                  <CircleAlert size={20} />
+                  <div>
+                    <strong>This review cannot be submitted yet.</strong>
+                    <p>
+                      Restore the sample catalogue and choose both a venue and a
+                      planner. Your editable draft is still available.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (catalogueState === 'error') void loadCatalogues();
+                        moveAndFocus(!venue ? 'Venue' : 'Planner');
+                      }}
+                    >
+                      Return to required selection
+                    </button>
+                  </div>
+                </div>
+              )}
               <button
                 type="button"
                 className="magnetic-btn dark"
                 onClick={() => void submit()}
-                disabled={submitting}
+                disabled={
+                  submitting || catalogueState !== 'ready' || !venue || !planner
+                }
               >
                 {submitting ? 'Saving sample…' : 'Submit synthetic booking'}
               </button>

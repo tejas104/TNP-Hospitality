@@ -362,13 +362,24 @@
   border-radius: 9px;
 }
 
+.quoteNotice[data-kind='error'] {
+  color: #762d27;
+  background: #fae8e1;
+}
+
 .collections {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .collections article[data-state='failed'],
-.collections article[data-state='uncertain'] {
+.collections article[data-state='uncertain'],
+.collections article[data-state='unconfirmed'] {
   border-color: #dbb6a5;
+}
+
+.collections article[data-state='unconfirmed'] .pill {
+  color: #762d27;
+  background: #fae8e1;
 }
 
 @media (max-width: 900px) {

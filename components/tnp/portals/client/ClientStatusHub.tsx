@@ -19,6 +19,7 @@ import type {
   Quote,
 } from '@/lib/contracts/preview';
 import { getBrowserPreviewService } from '@/lib/services/preview';
+import { collectionPresentation } from './localAction';
 import styles from './ClientStatusHub.module.css';
 
 const SELECTED_KEY = 'tnp-preview-a-client-selected-booking-v1';
@@ -45,6 +46,7 @@ function requestKey(prefix: string) {
 }
 
 type ViewState = 'loading' | 'ready' | 'empty' | 'error';
+type QuoteNotice = { kind: 'success' | 'error'; message: string };
 
 export function ClientStatusHub() {
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -62,7 +64,7 @@ export function ClientStatusHub() {
   const [revisionReason, setRevisionReason] = useState(
     'Please clarify the sample service scope.',
   );
-  const [quoteNotice, setQuoteNotice] = useState('');
+  const [quoteNotice, setQuoteNotice] = useState<QuoteNotice | null>(null);
   const [quoteBusy, setQuoteBusy] = useState(false);
   const [pendingApproval, setPendingApproval] =
     useState<MutationRequest<'clientApproveQuote'> | null>(null);
@@ -137,7 +139,7 @@ export function ClientStatusHub() {
     };
     const onReset = () => {
       setLookupNotice('');
-      setQuoteNotice('');
+      setQuoteNotice(null);
       setQuoteBusy(false);
       setPendingApproval(null);
       setPendingRevision(null);
@@ -193,14 +195,18 @@ export function ClientStatusHub() {
 
   async function runApproval(request: MutationRequest<'clientApproveQuote'>) {
     setQuoteBusy(true);
-    setQuoteNotice('Applying the sample approval with version protection...');
+    setQuoteNotice({
+      kind: 'success',
+      message: 'Applying the sample approval with version protection...',
+    });
     const result = await (await getBrowserPreviewService()).mutate(request);
     setQuoteBusy(false);
     if (!result.ok) {
       setPendingApproval(request);
-      setQuoteNotice(
-        `${result.error.code}: ${result.error.message} No approval was applied.`,
-      );
+      setQuoteNotice({
+        kind: 'error',
+        message: `${result.error.code}: ${result.error.message} No approval was applied.`,
+      });
       return;
     }
     setPendingApproval(null);
@@ -209,9 +215,10 @@ export function ClientStatusHub() {
         item.id === result.value.id ? result.value : item,
       ),
     );
-    setQuoteNotice(
-      `${result.replayed ? 'Recovered' : 'Applied'} approval to ${result.value.id} version ${result.value.version}.`,
-    );
+    setQuoteNotice({
+      kind: 'success',
+      message: `${result.replayed ? 'Recovered' : 'Applied'} approval to ${result.value.id} version ${result.value.version}.`,
+    });
   }
 
   async function approve(stale = false) {
@@ -234,12 +241,18 @@ export function ClientStatusHub() {
     request: MutationRequest<'clientRequestQuoteRevision'>,
   ) {
     setQuoteBusy(true);
-    setQuoteNotice('Sending a version-aware sample revision request...');
+    setQuoteNotice({
+      kind: 'success',
+      message: 'Sending a version-aware sample revision request...',
+    });
     const result = await (await getBrowserPreviewService()).mutate(request);
     setQuoteBusy(false);
     if (!result.ok) {
       setPendingRevision(request);
-      setQuoteNotice(`${result.error.code}: ${result.error.message}`);
+      setQuoteNotice({
+        kind: 'error',
+        message: `${result.error.code}: ${result.error.message}`,
+      });
       return;
     }
     setPendingRevision(null);
@@ -248,17 +261,19 @@ export function ClientStatusHub() {
         item.id === result.value.id ? result.value : item,
       ),
     );
-    setQuoteNotice(
-      `${result.replayed ? 'Recovered' : 'Saved'} revision request for ${result.value.id}.`,
-    );
+    setQuoteNotice({
+      kind: 'success',
+      message: `${result.replayed ? 'Recovered' : 'Saved'} revision request for ${result.value.id}.`,
+    });
   }
 
   async function requestRevision() {
     if (!quote) return;
     if (!revisionReason.trim()) {
-      setQuoteNotice(
-        'VALIDATION_ERROR: Add a reason before requesting revision.',
-      );
+      setQuoteNotice({
+        kind: 'error',
+        message: 'VALIDATION_ERROR: Add a reason before requesting revision.',
+      });
       return;
     }
     const service = await getBrowserPreviewService();
@@ -334,7 +349,7 @@ export function ClientStatusHub() {
                 onClick={() => {
                   setSelectedId(item.id);
                   setLookupNotice('');
-                  setQuoteNotice('');
+                  setQuoteNotice(null);
                 }}
                 aria-pressed={item.id === selectedId}
               >
@@ -490,13 +505,17 @@ export function ClientStatusHub() {
                       </button>
                     </div>
                     {quoteNotice && (
-                      <output className={styles.quoteNotice}>
-                        {quoteNotice.includes('STALE_VERSION') ? (
+                      <output
+                        className={styles.quoteNotice}
+                        data-kind={quoteNotice.kind}
+                        aria-live="polite"
+                      >
+                        {quoteNotice.kind === 'error' ? (
                           <CircleAlert size={18} />
                         ) : (
                           <CheckCircle2 size={18} />
                         )}
-                        {quoteNotice}
+                        {quoteNotice.message}
                       </output>
                     )}
                     {pendingApproval && !quoteBusy && (
@@ -539,22 +558,17 @@ export function ClientStatusHub() {
                 {linkedCollections.length ? (
                   <div className={styles.collections}>
                     {linkedCollections.map((item) => {
-                      const confirmedPaid =
-                        item.status === 'paid' && Boolean(item.reference);
+                      const presentation = collectionPresentation(item);
                       return (
-                        <article key={item.id} data-state={item.status}>
+                        <article key={item.id} data-state={presentation.state}>
                           <div>
                             <span className={styles.pill}>
-                              {confirmedPaid ? 'paid' : item.status}
+                              {presentation.label}
                             </span>
                             <strong>{money(item.amountPaise)}</strong>
                           </div>
                           <code>{item.id}</code>
-                          <small>
-                            {item.reference
-                              ? `Reference ${item.reference}`
-                              : 'Reference missing - not treated as paid'}
-                          </small>
+                          <small>{presentation.description}</small>
                         </article>
                       );
                     })}

@@ -66,3 +66,23 @@ export function writeAction<Request, Receipt>(
 export function clearAction(storage: StorageLike, key: string) {
   storage.removeItem(key);
 }
+
+export function collectionPresentation(collection: {
+  status: string;
+  reference?: string | null;
+}) {
+  if (collection.status === 'paid' && !collection.reference?.trim()) {
+    return {
+      state: 'unconfirmed',
+      label: 'unconfirmed',
+      description: 'Reference missing - not treated as paid',
+    } as const;
+  }
+  return {
+    state: collection.status,
+    label: collection.status,
+    description: collection.reference
+      ? `Reference ${collection.reference}`
+      : 'No sample payment reference',
+  };
+}

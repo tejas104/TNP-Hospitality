@@ -328,6 +328,38 @@
   font-weight: 800;
 }
 
+.blocked {
+  align-items: flex-start;
+  background: rgb(154 61 53 / 8%);
+  border: 1px solid rgb(154 61 53 / 28%);
+  color: #762d27;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 14px;
+}
+.blocked svg {
+  flex: 0 0 auto;
+}
+.blocked p {
+  line-height: 1.45;
+  margin: 4px 0 10px;
+}
+.blocked button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font-weight: 800;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.content:focus-visible {
+  outline: 3px solid #bba879;
+  outline-offset: 6px;
+}
+
 .actions {
   align-items: center;
   border-top: 1px solid rgb(23 35 33 / 12%);
