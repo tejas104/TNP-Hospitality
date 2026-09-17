@@ -9,7 +9,7 @@ Public and /admin reference pages were opened on 2026-09-16. Operations desktop 
 
 ## Preserve
 Deep teal #084c49, dark teal #062b29, ivory #f5f1e7, champagne #bba879; existing Georgia display and Manrope/Inter system body stack.
-Preserve public photography composition, editorial gallery and functioning motion. Preserve Operations dark sidebar, large cream heading, metrics, light verification cards and event-control panel composition.
+Preserve public photography composition and editorial hierarchy while refining motion, transitions and the existing 3D language. Preserve the Operations dark sidebar, large cream heading, metrics, light verification cards and event-control composition inside the authenticated Operations workspace. On the public homepage, this visual language may inform a non-interactive "how TNP operates" story; do not surface the synthetic Operations preview or internal controls as public product content. All 3D/motion work needs reduced-motion behavior, mobile fallbacks and a non-WebGL fallback.
 Fix dense detail heading sizes selectively. Worker layouts should be compact and phone-friendly. Client discovery and the four-step wizard should retain a distinct editorial experience.
 Use existing components/ui primitives when useful; do not replace the design system or delete apparently unused primitives speculatively.
 

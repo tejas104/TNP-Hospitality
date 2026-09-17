@@ -3,7 +3,7 @@
 ## Confirmed user decisions
 H1 is Anjaneya and H2 is Kartik; no H3. Human ownership remains A/B for H1 and C/D for H2. The user now authorizes Kartik to operate the team's assigned Claude and Antigravity-hosted Codex sessions on Laptop1 / DESKTOP-DL9FDM7 under a separate Windows/application profile and assigned seat for future launches. Existing A and completed D fixed-SHA work retain their original execution evidence. Laptop2 remains available for review/backup. A shared physical host does not create another human lane, permit shared credentials or waive exact session/worktree leases and independent review. P handles architecture here; R reviews independently.
 This is responsive web only. A native app approximately six months later is separately funded and consumes the same API/domain boundary.
-Preserve the public website and especially the Operations format at https://tnp-hospitality-demo.vercel.app/ and /admin.
+Preserve and refine the public website. The client liked the visual composition of `/admin`; use that direction for the authenticated Operations workspace and, where useful, a public storytelling section. The current `/admin` route is a synthetic development preview, not a public homepage destination and not approval to expose internal controls or sample records publicly.
 The 25-day schedule remains the target, not a claim that two people can deliver unchanged full PDF scope. See DELIVERY-PLAN.md.
 
 ## Confirmed RSVP direction (2026-09-17)

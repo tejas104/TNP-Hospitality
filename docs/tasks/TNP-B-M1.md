@@ -3,7 +3,7 @@
 Status: DRAFT, NOT DISPATCHED. Writer lease NONE.
 Human: Anjaneya / H1.
 Host: Laptop 1 / DESKTOP-DL9FDM7.
-Tool/model: Codex gpt-5.6-sol / high; confirm actual session at Ready.
+Tool/model: Codex gpt-6-astra / high for the homepage motion/3D design milestone, per the user's 2026-09-17 instruction; confirm the actual session/model/effort at Ready.
 Branch: codex/tnp-b-m1 (proposed; not created).
 Worktree: D:\TNP-worktrees\TNP-B-M1 (proposed; not created).
 Source and integrated foundation SHA: PENDING approved integration.
@@ -12,7 +12,7 @@ Dependencies: integrated TNP-FOUND-01; TNP-B-01, split into two implementation c
 Owned paths: components/tnp/HomeExperience.tsx; components/tnp/public/**; app/services/[slug]/page.tsx; app/departments/[slug]/page.tsx; app/contact/page.tsx; data/public-content.ts; data/media.ts only for documented client-supplied replacements.
 Mode: local labelled synthetic responsive-web preview.
 Resource proposal: port 3102, http://localhost:3102; check free before binding. Dedicated synthetic profile; no current reservation.
-Risk: Routine public preview UI; content approval remains a separate readiness requirement.
+Risk: Public-facing motion/3D and navigation. Content approval remains separate; reduced-motion, mobile performance, non-WebGL fallback and truthful separation from the synthetic Operations preview are acceptance gates.
 Review appointment: Fresh independent Sol as requested plus Sonnet opposite-model review in the same review window; human Kartik and H1/client content disposition. Actual appointments PENDING.
 Sharing: proposed original builder-only non-force push to codex/tnp-b-m1; effective only in the Ready contract. No current push or write lease.
 
@@ -25,7 +25,7 @@ Work through Prompt 1 then Prompt 2 within ONE branch/worktree and ONE lease. Af
 
 For every mutation capture expectedGeneration at invocation and retain requestKey for retries of that same action. Handle structured errors and STALE_GENERATION without overwriting newer state. Consume shared services; no local competing shared fixtures, adapter bypass, fabricated success or production authority. Local view/draft state may remain in the owned feature directory, with clearly scoped synthetic-only persistence and reset behavior; raise any missing shared contract to P before inventing a cross-portal representation.
 
-Forbidden: shared AppShell, globals.css, PortalPages barrel, existing route glue, shared components, lib/contracts, lib/demo, lib/services, package/lockfiles, framework/provider/auth/database config, docs/registers, other lane views, unrelated deliverables/tmp. Only explicitly listed new public routes are an exception for B. Responsive web only; preserve the public/Operations composition. No live provider calls, real personal data, native app or deployment.
+Forbidden: shared AppShell, globals.css, PortalPages barrel, existing route glue, shared components, lib/contracts, lib/demo, lib/services, package/lockfiles, framework/provider/auth/database config, docs/registers, other lane views, unrelated deliverables/tmp. Only explicitly listed new public routes are an exception for B. Removing or renaming shared portal-switcher/PortalHero "Operations Demo" exposure requires a separately serialized shared-file handoff; do not cross that boundary from this task. Responsive web only. No live provider calls, real personal data, native app or deployment.
 
 ## Checks and final handoff
 At both checkpoints run npm run lint; npx --no-install tsc --noEmit; node --experimental-strip-types --test tests/preview-contract.test.mjs; npm run build:vercel; git diff --check. Use npm ci for the initial clean install; reuse this worktree's dependencies afterward unless repair is necessary. Never copy another worktree's node_modules. One heavy build per laptop at a time. No npm test/typecheck/E2E script is assumed to exist.
@@ -37,7 +37,7 @@ Before final push, self-check the whole two-prompt milestone against both accept
 Foundation is a prerequisite; TNP-I01 remains the later integrated cross-portal browser gate. A lane's completion does not certify other portals or production behavior.
 
 ## Prompt 1
-This is the future public-site milestone, not permission to resume foundation. Build F01 readiness within B-01: preserve the existing photography, hierarchy, motion and navigation; make homepage anchors, gallery/portfolio, service and destination interactions work using their intended destinations. Check mobile navigation and reduced motion, keyboard operation and truthful preview copy. Keep any not-yet-built Prompt 2 destinations explicitly unavailable until implemented; the intermediate checkpoint is not certified-ready. Inventory missing approved copy/assets as gaps; never replace approved composition wholesale or invent client approval. Commit/push checkpoint 1 after checks and continue Prompt 2.
+This is the future public-site milestone, not permission to resume foundation. Build F01 readiness within B-01 using `gpt-6-astra` for the design/motion implementation: preserve the strong photography and editorial hierarchy, then deliberately refine motion, transitions, depth and the existing 3D language. Keep 3D purposeful and performant; provide reduced-motion, mobile and non-WebGL fallbacks. The current Operations demo is not a public destination. Replace the homepage's `/admin` demo/platform CTA within the owned `HomeExperience.tsx` surface with a truthful public "how TNP operates" narrative or an approved public destination; never expose internal controls or synthetic records. Shared AppShell/PortalHero cleanup remains a serialized prerequisite outside this ownership. Make homepage anchors, gallery/portfolio, service and destination interactions work using intended destinations. Check mobile navigation, keyboard operation and truthful copy. Keep any not-yet-built Prompt 2 destinations explicitly unavailable until implemented; the intermediate checkpoint is not certified-ready. Inventory missing approved copy/assets as gaps; never replace the approved composition wholesale or invent client approval. Commit/push checkpoint 1 after checks and continue Prompt 2.
 
 ## Prompt 2
 Complete F02 within B-01: reusable service/department detail pages with valid/invalid slug handling and enquiry entry/receipt through submitEnquiry. Validate synthetic name/email/message, display pending/error/retry and persisted receipt, and replay a repeated request safely without claiming an email was sent. Recheck every homepage link created in Prompt 1 against the final destinations. Use documented content provenance; missing three-service/twelve-department approved copy or TNP imagery prevents content certification even if the preview UI works. Do not fill empty screens just to count them as ready. Run final desktop/mobile/keyboard and shared checks, push final checkpoint and pause.

@@ -16,7 +16,7 @@ Read TNP-START-HERE.md (ordered setup and all prompts), docs/PRODUCT.md, docs/DE
 - Only the dispatcher updates shared status/leases in a serialized documentation task. Builders hand off evidence; they do not race on STATUS.md/LANES.md.
 
 ## Boundaries
-Preserve the client-liked website and Operations format. Keep the current React/Vinext/Vite/Nitro build during the frontend milestone. No framework, database or provider migration without a separate decision/task.
+Preserve the client-liked public website and use the client-liked Operations composition for the real authenticated Operations workspace. The current `/admin` surface is a labelled synthetic development preview, not a public marketing destination or a requirement to ship an "Operations Demo" link. Public pages may borrow its dark/cream control-room visual language in a narrative section without exposing internal controls or synthetic records. Keep the current React/Vinext/Vite/Nitro build during the frontend milestone. No framework, database or provider migration without a separate decision/task.
 Shared PortalPages extraction S0 and interface/fixture S1 are prerequisites, not already implemented. Respect docs/contracts ownership. Shared changes require a prerequisite or serialized handoff.
 Do not reset, delete or overwrite unrelated changes. Stage exact task paths, never the whole deliverables directory. Keep secrets and real personal data out of fixtures, source and logs.
 Basic RSVP stays in the plan. Full WhatsApp automation, guest identity-document deferral and other proposed reductions remain pending client decisions.
