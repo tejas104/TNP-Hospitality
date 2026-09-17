@@ -119,7 +119,7 @@ Server services own authorization, transitions, counts, capacity and documents. 
 
 Critical invariants: organization isolation on every read/write/export/media request; one provider event applied once; concurrent guest edits use versions; correct party/member/function joins; no overbooked rooms or vehicle seats; uncertain sends reconcile before resending; opt-outs suppress future jobs; approved rooming only communicated; deletion applies to owned media and access links according to policy.
 
-Consequence: this is substantially larger than the previous 'basic RSVP' slice. It needs explicit contracts and separately owned milestones. Reforecast the 25-day delivery against selected scope, existing review queue and provider approval; do not absorb it into A or D silently. Two existing waiting milestones mean new builder dispatch remains paused; planning/onboarding preparation can continue.
+Consequence: this is substantially larger than the previous 'basic RSVP' slice. It needs explicit contracts and separately owned milestones. The current 20-day release target in `docs/DELIVERY-PLAN.md` includes only the gated v1 RSVP/vendor scope described there; it does not promise the entire expanded blueprint without provider approval and release evidence. Do not absorb this work into A or D silently. New builder dispatch still requires an explicit Ready lease; planning/onboarding preparation can continue.
 
 ## 9. Delivery batches and acceptance
 

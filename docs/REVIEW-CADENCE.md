@@ -1,5 +1,7 @@
 # Milestone reviews and checkpoint sharing
 
+Current 20-day release cadence: use consolidated fixed-SHA review windows on Days 5, 9 and 13, with focused correction/re-review inside the same window. Day 14 is code/schema/dependency/content freeze. This compression reduces repeated setup, not review depth for security, tenancy, concurrency, attendance, finance, provider or rollback risk. A blocking finding pauses dependent integration even if it threatens the Day-20 target.
+
 User requested fewer reviews, faster implementation and branch sharing for architect inspection. This replaces per-slice formal reviews where an explicitly issued milestone contract groups the slices. It never makes a Draft task Ready.
 
 Foundation milestone TNP-FOUND-01: B performs S0 then S1 sequentially in ONE isolated branch/worktree. S0's checked commit is an internal checkpoint, not a separately merged dependency. B may continue to S1 after S0 checks pass within the same milestone lease. No external consumers run until the entire foundation is reviewed, approved and integrated. S0/S1 task files remain specification/checklists; only FOUND-01 is dispatched.
