@@ -318,6 +318,15 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
     }
   }
 
+  function invalidateLegPlan(data: EventData, legId: string) {
+    for (const transfer of data.transfers) {
+      if (transfer.legId !== legId || !['requested', 'awaiting-details', 'planned', 'assigned', 'dispatched'].includes(transfer.state)) continue;
+      transfer.vehicleId = null;
+      transfer.planBasedOn = null;
+      if (transfer.state === 'assigned' || transfer.state === 'dispatched') transfer.state = 'planned';
+    }
+  }
+
   function partyFor(data: EventData, partyId: string, baseVersion: number): Result<Party> {
     const party = data.parties.find((p) => p.id === partyId);
     if (!party) return fail('not-found', 'This party is no longer in the event.');
@@ -494,6 +503,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
         const p = partyFor(data, leg.partyId, cmd.baseVersion);
         if (!p.ok) return p;
         const before = leg.at;
+        if (before !== cmd.at || leg.reference !== cmd.reference) invalidateLegPlan(data, leg.id);
         if (before !== cmd.at) {
           // Keep the time the movement plan was built on; the dependency warning compares against it.
           leg.changedFrom = before;
@@ -673,14 +683,23 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
     // regenerate a different preview key, but it is still a changed batch row.
     // Validate every retained identity before applying any row in this request.
     const incoming = new Map<string, string>();
+    const knownKeys = new Map<string, number>();
+    for (const [identity, receipt] of Object.entries(state.rowReceipts)) {
+      // Derive the reverse index from persisted scoped receipts. This also covers
+      // accepted Round-2 receipts without inventing a new batch or losing history.
+      if (receipt.outcome && identity === `v2:${fingerprint({ ...scope, rowNumber: receipt.outcome.rowNumber })}`) {
+        knownKeys.set(receipt.outcome.key, receipt.outcome.rowNumber);
+      }
+    }
     for (const row of rows) {
       const identity = rowIdentity(row);
       const material = materialFingerprint(row);
       const prior = state.rowReceipts[identity];
-      if ((prior && prior.fingerprint !== material) || (incoming.has(identity) && incoming.get(identity) !== material)) {
+      if ((knownKeys.has(row.key) && knownKeys.get(row.key) !== row.rowNumber) || (prior && prior.fingerprint !== material) || (incoming.has(identity) && incoming.get(identity) !== material)) {
         return fail('conflict', `Import row ${row.rowNumber} changed under the same batch identity. Start a new batch; no rows were changed.`);
       }
       incoming.set(identity, material);
+      knownKeys.set(row.key, row.rowNumber);
     }
     let attempt = 0;
     const outcomes = rows.map((row): ImportRowOutcome => {
@@ -692,9 +711,9 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
         return outcome;
       };
       if (row.status === 'invalid' || row.status === 'duplicate') {
-        return { rowNumber: row.rowNumber, key: row.key, result: 'rejected', reason: row.issues.map((i) => i.reason).join('; '), replayed: false };
+        return remember({ rowNumber: row.rowNumber, key: row.key, result: 'rejected', reason: row.issues.map((i) => i.reason).join('; '), replayed: false });
       }
-      if (row.status === 'review') return { rowNumber: row.rowNumber, key: row.key, result: 'unresolved', reason: 'Possible existing guest — needs staff review; not merged.', replayed: false };
+      if (row.status === 'review') return remember({ rowNumber: row.rowNumber, key: row.key, result: 'unresolved', reason: 'Possible existing guest — needs staff review; not merged.', replayed: false });
       const batchParty = state.importParties[partyIdentity(row)];
       const refExists = row.values.guest_ref && data.parties.some((p) => p.ref.toLowerCase() === row.values.guest_ref.toLowerCase());
       if (!batchParty && refExists) {
@@ -874,23 +893,34 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
       const existing = data.legs.find((l) => l.partyId === party.id && l.direction === direction);
       if (!attending || !ans) return;
       const at = ans.at || null;
+      const normalize = (value: string) => value.normalize('NFKC').trim().replace(/\s+/g, ' ');
+      const from = normalize(direction === 'arrival' ? (ans as NonNullable<GuestAnswers['arrival']>).from : existing?.from ?? data.event.city);
+      const to = normalize(direction === 'departure' ? (ans as NonNullable<GuestAnswers['departure']>).to : existing?.to ?? data.event.city);
+      const reference = normalize(ans.reference);
       if (existing) {
+        const routeChanged = normalize(existing.from) !== from || normalize(existing.to) !== to || existing.mode !== ans.mode || existing.at !== at || normalize(existing.reference) !== reference;
+        if (routeChanged) {
+          change(party, actor, `${direction === 'arrival' ? 'Arrival' : 'Departure'} route`, `${existing.from} → ${existing.to} (${existing.mode}) · ${existing.reference}`, `${from} → ${to} (${ans.mode}) · ${reference}`, 'guest-form');
+          invalidateLegPlan(data, existing.id);
+        }
         if (existing.at !== at) {
           change(party, actor, `${direction === 'arrival' ? 'Arrival' : 'Departure'} time`, existing.at ?? 'not supplied', at ?? 'not supplied', 'guest-form');
           existing.changedFrom = existing.at;
           existing.at = at;
         }
         existing.mode = ans.mode;
-        existing.reference = ans.reference;
+        existing.reference = reference;
+        existing.from = from;
+        existing.to = to;
       } else {
         data.legs.push({
           id: `${party.id}-${direction === 'arrival' ? 'arr' : 'dep'}`,
           partyId: party.id,
           direction,
           mode: ans.mode,
-          reference: ans.reference,
-          from: direction === 'arrival' ? (ans as NonNullable<GuestAnswers['arrival']>).from : data.event.city,
-          to: direction === 'arrival' ? data.event.city : (ans as NonNullable<GuestAnswers['departure']>).to,
+          reference,
+          from,
+          to,
           at,
           passengerIds: members.map((m) => m.id),
           luggage: members.length,
