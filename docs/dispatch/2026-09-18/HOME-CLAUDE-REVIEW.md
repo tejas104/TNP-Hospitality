@@ -20,7 +20,7 @@ Verify the worktree is detached, clean and exactly at HEAD; BASE is an ancestor;
 - `components/tnp/public/webgl.test.mjs`
 - `components/tnp/public/webgl.ts`
 
-Read `AGENTS.md`, `docs/PRODUCT.md`, `docs/DESIGN.md`, `docs/HOMEPAGE-REDESIGN-BRIEF.md`, `docs/tasks/TNP-HOME-REDESIGN.md` and `docs/reviews/TNP-HOME-REDESIGN-DELTA.md`. Review requirements first, then correctness, accessibility, responsive behavior, runtime safety, performance and maintainability.
+Read `AGENTS.md`, `docs/PRODUCT.md`, `docs/DESIGN.md`, `docs/HOMEPAGE-REDESIGN-BRIEF.md` and `docs/tasks/TNP-HOME-REDESIGN.md` from the detached target. The prior focused Sol delta report is intentionally not in that older target tree; read it without changing the checkout using `git show fab88ed354ed66ab62bf6f6e17d1de72a2174c6a:docs/reviews/TNP-HOME-REDESIGN-DELTA.md`. Treat that report as prior evidence, not as a verdict to inherit. Review requirements first, then correctness, accessibility, responsive behavior, runtime safety, performance and maintainability.
 
 Required retained checks:
 
