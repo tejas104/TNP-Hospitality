@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+
+import { deleteSessionWithRepository } from '../app/api/v1/session/route.ts';
 
 import {
   loadPlatformEnvironment,
@@ -108,6 +111,9 @@ class MemoryRepository {
   receipts = new Map();
   audits = [];
   domainEffects = 0;
+  revocationEffects = 0;
+  simulateConcurrentReceipt = false;
+  pendingConcurrentReceipt = null;
   connectionFailure = false;
   #transactionNumber = 0;
 
@@ -160,6 +166,7 @@ class MemoryRepository {
     const next = { ...current, revokedAt, revokedBy, revocationReason: reason };
     this.sessionsById.set(sessionId, next);
     this.sessionsByHash.set(current.tokenHash, next);
+    this.revocationEffects += 1;
     return true;
   }
   async findIdempotencyReceipt(organizationId, key) {
@@ -168,6 +175,11 @@ class MemoryRepository {
   async insertIdempotencyReceipt(receipt) {
     const key = `${receipt.organizationId}:${receipt.key}`;
     if (this.receipts.has(key)) throw new RepositoryConflictError();
+    if (this.simulateConcurrentReceipt) {
+      this.simulateConcurrentReceipt = false;
+      this.pendingConcurrentReceipt = receipt;
+      throw new RepositoryConflictError('Synthetic concurrent winner.');
+    }
     this.receipts.set(key, receipt);
   }
   async appendAudit(record) {
@@ -183,6 +195,7 @@ class MemoryRepository {
       receipts: this.receipts,
       audits: this.audits,
       domainEffects: this.domainEffects,
+      revocationEffects: this.revocationEffects,
     });
     try {
       return await work({
@@ -194,6 +207,12 @@ class MemoryRepository {
       this.receipts = snapshot.receipts;
       this.audits = snapshot.audits;
       this.domainEffects = snapshot.domainEffects;
+      this.revocationEffects = snapshot.revocationEffects;
+      if (this.pendingConcurrentReceipt) {
+        const receipt = this.pendingConcurrentReceipt;
+        this.pendingConcurrentReceipt = null;
+        this.receipts.set(`${receipt.organizationId}:${receipt.key}`, receipt);
+      }
       throw error;
     }
   }
@@ -227,6 +246,29 @@ async function issuedFixture(
   await repository.insertSession(issued.session);
   const cookie = issued.cookie.split(';', 1)[0];
   return { repository, environment, issued, cookie };
+}
+
+function logoutRequest(fixture, overrides = {}) {
+  const headers = {
+    cookie: fixture.cookie,
+    'x-csrf-token': fixture.issued.csrfToken,
+    'idempotency-key': 'logout-key-001',
+    ...overrides,
+  };
+  return new Request('http://localhost:3105/api/v1/session', {
+    method: 'DELETE',
+    headers,
+  });
+}
+
+async function performLogout(fixture, requestId = 'request-logout-first') {
+  return deleteSessionWithRepository(
+    logoutRequest(fixture),
+    fixture.environment,
+    fixture.repository,
+    requestId,
+    NOW,
+  );
 }
 
 test('configuration validates names without disclosing values', () => {
@@ -491,7 +533,7 @@ test('canonical fingerprints are stable across property order', () => {
   );
 });
 
-test('idempotent mutations replay, conflict, audit, and never retain request secrets', async () => {
+test('idempotent replay is actor-bound, audited, and never leaks another actor response', async () => {
   const repository = new MemoryRepository();
   const input = {
     actor: actor(),
@@ -504,16 +546,29 @@ test('idempotent mutations replay, conflict, audit, and never retain request sec
     now: NOW,
     effect: async () => {
       repository.domainEffects += 1;
-      return { value: { updated: true } };
+      return { value: { updated: true, privateResult: 'actor-a-only' } };
     },
   };
   const first = await executeProtectedMutation(repository, input);
-  const replay = await executeProtectedMutation(repository, input);
+  const replay = await executeProtectedMutation(repository, {
+    ...input,
+    requestId: 'request-002',
+  });
   assert.deepEqual(
     [first.replayed, replay.replayed, repository.domainEffects],
     [false, true, 1],
   );
-  assert.equal(repository.audits[0].outcome, 'succeeded');
+  assert.deepEqual(
+    repository.audits.map((audit) => [
+      audit.requestId,
+      audit.outcome,
+      audit.reasonCode ?? null,
+    ]),
+    [
+      ['request-001', 'succeeded', null],
+      ['request-002', 'succeeded', 'IDEMPOTENT_REPLAY'],
+    ],
+  );
   assert.equal(
     JSON.stringify(repository.audits).includes('super-secret-request-value'),
     false,
@@ -525,15 +580,290 @@ test('idempotent mutations replay, conflict, audit, and never retain request sec
     false,
   );
 
+  let leakedResponse;
   await assert.rejects(
     executeProtectedMutation(repository, {
       ...input,
+      actor: actor({
+        sessionId: 'session-b',
+        userId: 'user-b',
+        membershipId: 'membership-b',
+      }),
+      requestId: 'request-cross-actor',
+      effect: async () => {
+        repository.domainEffects += 1;
+        return { value: { updated: true, privateResult: 'actor-b-only' } };
+      },
+    }).then((result) => {
+      leakedResponse = result.value;
+    }),
+    (error) => error.code === 'IDEMPOTENCY_CONFLICT' && error.status === 409,
+  );
+  assert.equal(leakedResponse, undefined);
+  assert.equal(repository.domainEffects, 1);
+  assert.deepEqual(
+    [
+      repository.audits.at(-1).actorId,
+      repository.audits.at(-1).outcome,
+      repository.audits.at(-1).reasonCode,
+    ],
+    ['user-b', 'rejected', 'IDEMPOTENCY_ACTOR_MISMATCH'],
+  );
+
+  await assert.rejects(
+    executeProtectedMutation(repository, {
+      ...input,
+      requestId: 'request-payload-conflict',
       payload: { guestId: 'guest-1', privateInput: 'different' },
     }),
     (error) => error.code === 'IDEMPOTENCY_CONFLICT' && error.status === 409,
   );
   assert.equal(repository.domainEffects, 1);
   assert.equal(repository.audits.at(-1).outcome, 'rejected');
+});
+
+test('a same-actor concurrent receipt winner returns one audited replay', async () => {
+  const repository = new MemoryRepository();
+  repository.simulateConcurrentReceipt = true;
+  const result = await executeProtectedMutation(repository, {
+    actor: actor(),
+    requestId: 'request-concurrent-replay',
+    idempotencyKey: 'concurrent-key-001',
+    action: 'guest.update',
+    payload: { guestId: 'guest-1' },
+    target: { type: 'guest', id: 'guest-1' },
+    responseStatus: 200,
+    now: NOW,
+    effect: async () => {
+      repository.domainEffects += 1;
+      return { value: { updated: true } };
+    },
+  });
+
+  assert.deepEqual(
+    [result.replayed, result.value.updated, repository.domainEffects],
+    [true, true, 0],
+  );
+  assert.equal(repository.receipts.size, 1);
+  assert.deepEqual(
+    repository.audits.map((audit) => [
+      audit.requestId,
+      audit.outcome,
+      audit.reasonCode,
+    ]),
+    [['request-concurrent-replay', 'succeeded', 'IDEMPOTENT_REPLAY']],
+  );
+});
+
+test('logout replay validates the exact revoked session and returns only its stored result', async () => {
+  const fixture = await issuedFixture();
+  const first = await performLogout(fixture);
+  const replay = await deleteSessionWithRepository(
+    logoutRequest(fixture),
+    fixture.environment,
+    fixture.repository,
+    'request-logout-replay',
+    NOW,
+  );
+
+  assert.deepEqual(
+    [
+      first.status,
+      first.headers.get('idempotency-replayed'),
+      replay.status,
+      replay.headers.get('idempotency-replayed'),
+      fixture.repository.revocationEffects,
+    ],
+    [204, 'false', 204, 'true', 1],
+  );
+  assert.match(replay.headers.get('set-cookie'), /Max-Age=0/);
+  assert.deepEqual(
+    fixture.repository.audits.map((audit) => [
+      audit.requestId,
+      audit.action,
+      audit.outcome,
+      audit.reasonCode ?? null,
+    ]),
+    [
+      ['request-logout-first', 'session.revoke', 'succeeded', null],
+      [
+        'request-logout-replay',
+        'session.revoke',
+        'succeeded',
+        'IDEMPOTENT_REPLAY',
+      ],
+    ],
+  );
+  const receipt = fixture.repository.receipts.get('vendor-a:logout-key-001');
+  assert.deepEqual(
+    [receipt.actorId, receipt.action, receipt.responseStatus, receipt.response],
+    ['user-a', 'session.revoke', 204, { revoked: true }],
+  );
+});
+
+test('revoked logout replay rejects missing or mismatched receipts, keys, actions, actors, and CSRF', async () => {
+  const cases = [
+    {
+      name: 'missing receipt',
+      mutate(fixture) {
+        fixture.repository.receipts.clear();
+      },
+      expectedCode: 'IDEMPOTENCY_CONFLICT',
+    },
+    {
+      name: 'wrong key',
+      headers: { 'idempotency-key': 'logout-key-wrong' },
+      expectedCode: 'IDEMPOTENCY_CONFLICT',
+    },
+    {
+      name: 'missing key',
+      headers: { 'idempotency-key': '' },
+      expectedCode: 'IDEMPOTENCY_KEY_REQUIRED',
+    },
+    {
+      name: 'wrong action',
+      mutate(fixture) {
+        const receipt = fixture.repository.receipts.get(
+          'vendor-a:logout-key-001',
+        );
+        fixture.repository.receipts.set('vendor-a:logout-key-001', {
+          ...receipt,
+          action: 'session.rotate',
+        });
+      },
+      expectedCode: 'IDEMPOTENCY_CONFLICT',
+    },
+    {
+      name: 'wrong payload fingerprint',
+      mutate(fixture) {
+        const receipt = fixture.repository.receipts.get(
+          'vendor-a:logout-key-001',
+        );
+        fixture.repository.receipts.set('vendor-a:logout-key-001', {
+          ...receipt,
+          fingerprint: canonicalFingerprint('session.revoke', {
+            sessionId: 'different-session',
+          }),
+        });
+      },
+      expectedCode: 'IDEMPOTENCY_CONFLICT',
+    },
+    {
+      name: 'wrong actor',
+      mutate(fixture) {
+        const receipt = fixture.repository.receipts.get(
+          'vendor-a:logout-key-001',
+        );
+        fixture.repository.receipts.set('vendor-a:logout-key-001', {
+          ...receipt,
+          actorId: 'user-b',
+        });
+      },
+      expectedCode: 'IDEMPOTENCY_CONFLICT',
+    },
+    {
+      name: 'wrong stored response',
+      mutate(fixture) {
+        const receipt = fixture.repository.receipts.get(
+          'vendor-a:logout-key-001',
+        );
+        fixture.repository.receipts.set('vendor-a:logout-key-001', {
+          ...receipt,
+          response: { revoked: false },
+        });
+      },
+      expectedCode: 'IDEMPOTENCY_CONFLICT',
+    },
+    {
+      name: 'wrong csrf',
+      headers: { 'x-csrf-token': 'wrong-csrf-token' },
+      expectedCode: 'CSRF_REJECTED',
+    },
+  ];
+
+  for (const scenario of cases) {
+    const fixture = await issuedFixture();
+    await performLogout(fixture);
+    scenario.mutate?.(fixture);
+    await assert.rejects(
+      deleteSessionWithRepository(
+        logoutRequest(fixture, scenario.headers),
+        fixture.environment,
+        fixture.repository,
+        `request-${scenario.name.replaceAll(' ', '-')}`,
+        NOW,
+      ),
+      (error) => error.code === scenario.expectedCode,
+      scenario.name,
+    );
+    assert.equal(fixture.repository.revocationEffects, 1, scenario.name);
+  }
+});
+
+test('revoked logout replay is limited to self-logout and unexpired sessions', async () => {
+  for (const scenario of [
+    { revokedBy: 'platform-admin', reason: 'admin_revoke', now: NOW },
+    {
+      revokedBy: 'user-a',
+      reason: 'self_logout',
+      now: new Date(NOW.getTime() + 2 * 60 * 60 * 1000),
+    },
+  ]) {
+    const fixture = await issuedFixture();
+    await performLogout(fixture);
+    const current = fixture.repository.sessionsById.get(
+      fixture.issued.session.id,
+    );
+    const changed = {
+      ...current,
+      revokedBy: scenario.revokedBy,
+      revocationReason: scenario.reason,
+    };
+    fixture.repository.sessionsById.set(changed.id, changed);
+    fixture.repository.sessionsByHash.set(changed.tokenHash, changed);
+    await assert.rejects(
+      deleteSessionWithRepository(
+        logoutRequest(fixture),
+        fixture.environment,
+        fixture.repository,
+        `request-${scenario.reason}`,
+        scenario.now,
+      ),
+      (error) =>
+        error instanceof SessionError &&
+        ['SESSION_REVOKED', 'SESSION_EXPIRED'].includes(error.code),
+    );
+    assert.equal(fixture.repository.revocationEffects, 1);
+  }
+});
+
+test('the documented local command explicitly uses the Vercel Vite configuration', async () => {
+  const packageJson = JSON.parse(await readFile('package.json', 'utf8'));
+  const runbook = await readFile(
+    'docs/runbooks/PLATFORM-FOUNDATION.md',
+    'utf8',
+  );
+  assert.equal(packageJson.scripts.dev, 'vinext dev');
+  assert.equal(
+    packageJson.scripts['dev:vercel'],
+    'vite --config vite.config.vercel.ts',
+  );
+  assert.match(
+    runbook,
+    /npm run dev:vercel -- --host 127\.0\.0\.1 --port 3105/,
+  );
+  assert.match(runbook, /uses `vite\.config\.vercel\.ts`/);
+  for (const name of [
+    'MONGODB_URI',
+    'MONGODB_DB_NAME',
+    'SESSION_SECRET',
+    'SESSION_COOKIE_NAME',
+    'APP_BASE_URL',
+    'TNP_ENVIRONMENT',
+  ]) {
+    assert.match(runbook, new RegExp(name));
+  }
+  assert.match(runbook, /through `process\.env`/);
 });
 
 test('transaction failure rolls back domain effect and receipt, then records a failure audit', async () => {

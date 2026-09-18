@@ -103,6 +103,11 @@ export interface IssuedSession {
   readonly csrfToken: string;
 }
 
+export interface RevokedLogoutReplayContext {
+  readonly actor: ActorContext;
+  readonly session: SessionDocument;
+}
+
 function digest(secret: string, value: string): string {
   return createHmac('sha256', secret).update(value, 'utf8').digest('base64url');
 }
@@ -145,17 +150,26 @@ export function readSessionToken(request: Request, cookieName: string): string {
   return token;
 }
 
+async function findRequestSession(
+  request: Request,
+  environment: PlatformEnvironment,
+  repository: SessionRepository,
+): Promise<SessionDocument> {
+  const token = readSessionToken(request, environment.sessionCookieName);
+  const session = await repository.findSessionByTokenHash(
+    digest(environment.sessionSecret, token),
+  );
+  if (!session) throw new SessionError('SESSION_INVALID', 401);
+  return session;
+}
+
 export async function authenticateRequest(
   request: Request,
   environment: PlatformEnvironment,
   repository: SessionRepository,
   now = new Date(),
 ): Promise<AuthenticatedSession> {
-  const token = readSessionToken(request, environment.sessionCookieName);
-  const session = await repository.findSessionByTokenHash(
-    digest(environment.sessionSecret, token),
-  );
-  if (!session) throw new SessionError('SESSION_INVALID', 401);
+  const session = await findRequestSession(request, environment, repository);
   if (session.revokedAt) throw new SessionError('SESSION_REVOKED', 401);
   if (session.expiresAt.getTime() <= now.getTime())
     throw new SessionError('SESSION_EXPIRED', 401);
@@ -187,6 +201,56 @@ export async function authenticateRequest(
       userId: user.id,
       membershipId: membership.id,
       organizationId: membership.organizationId,
+      role: membership.role,
+      membershipStatus: membership.status,
+    }),
+  };
+}
+
+export async function validateRevokedLogoutReplay(
+  request: Request,
+  environment: PlatformEnvironment,
+  repository: SessionRepository,
+  now = new Date(),
+): Promise<RevokedLogoutReplayContext> {
+  const session = await findRequestSession(request, environment, repository);
+  if (
+    !session.revokedAt ||
+    session.revokedBy !== session.userId ||
+    session.revocationReason !== 'self_logout'
+  ) {
+    throw new SessionError('SESSION_REVOKED', 401);
+  }
+  if (session.expiresAt.getTime() <= now.getTime()) {
+    throw new SessionError('SESSION_EXPIRED', 401);
+  }
+  requireCsrf(request, session, environment);
+
+  const [organization, user, membership] = await Promise.all([
+    repository.findOrganizationById(session.organizationId),
+    repository.findUserById(session.userId),
+    repository.findMembershipById(session.organizationId, session.membershipId),
+  ]);
+  if (
+    !organization ||
+    organization.id !== session.organizationId ||
+    !user ||
+    user.id !== session.userId ||
+    !membership ||
+    membership.id !== session.membershipId ||
+    membership.organizationId !== session.organizationId ||
+    membership.userId !== session.userId
+  ) {
+    throw new SessionError('SESSION_REVOKED', 401);
+  }
+
+  return {
+    session,
+    actor: Object.freeze({
+      sessionId: session.id,
+      userId: session.userId,
+      membershipId: membership.id,
+      organizationId: session.organizationId,
       role: membership.role,
       membershipStatus: membership.status,
     }),

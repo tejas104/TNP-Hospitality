@@ -55,6 +55,16 @@ export interface ProtectedMutationResult<T extends JsonValue> {
   readonly replayed: boolean;
 }
 
+class ReplayRejectedError extends IdempotencyError {
+  readonly auditReasonCode: string;
+
+  constructor(auditReasonCode: string) {
+    super('IDEMPOTENCY_CONFLICT', 409);
+    this.name = 'ReplayRejectedError';
+    this.auditReasonCode = auditReasonCode;
+  }
+}
+
 const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.:-]{7,127}$/;
 
 export function requireIdempotencyKey(request: Request): string {
@@ -128,6 +138,127 @@ async function recordOutcomeAudit(
   });
 }
 
+function assertReplayMatches(
+  receipt: IdempotencyReceipt | null,
+  input: {
+    readonly actor: ActorContext;
+    readonly action: string;
+    readonly fingerprint: string;
+    readonly responseValidator?: (
+      response: JsonValue,
+      responseStatus: number,
+    ) => boolean;
+  },
+): asserts receipt is IdempotencyReceipt {
+  if (!receipt) throw new ReplayRejectedError('IDEMPOTENCY_RECEIPT_MISSING');
+  if (receipt.actorId !== input.actor.userId) {
+    throw new ReplayRejectedError('IDEMPOTENCY_ACTOR_MISMATCH');
+  }
+  if (
+    receipt.action !== input.action ||
+    receipt.fingerprint !== input.fingerprint
+  ) {
+    throw new ReplayRejectedError('IDEMPOTENCY_CONFLICT');
+  }
+  if (
+    input.responseValidator &&
+    !input.responseValidator(receipt.response, receipt.responseStatus)
+  ) {
+    throw new ReplayRejectedError('IDEMPOTENCY_RESPONSE_MISMATCH');
+  }
+}
+
+async function appendReplayAudit(
+  repository: PlatformRepository,
+  input: {
+    readonly actor: ActorContext;
+    readonly requestId: string;
+    readonly idempotencyKey: string;
+    readonly action: string;
+    readonly target: AuditTarget;
+    readonly occurredAt: Date;
+  },
+  transaction: RepositoryTransaction,
+): Promise<void> {
+  await repository.appendAudit(
+    createAuditRecord({
+      organizationId: input.actor.organizationId,
+      actorId: input.actor.userId,
+      actorRole: input.actor.role,
+      requestId: input.requestId,
+      idempotencyKey: input.idempotencyKey,
+      action: input.action,
+      target: input.target,
+      occurredAt: input.occurredAt,
+      outcome: 'succeeded',
+      reasonCode: 'IDEMPOTENT_REPLAY',
+    }),
+    transaction,
+  );
+}
+
+export async function replayProtectedMutation<T extends JsonValue>(
+  repository: PlatformRepository,
+  input: {
+    readonly actor: ActorContext;
+    readonly requestId: string;
+    readonly idempotencyKey: string;
+    readonly action: string;
+    readonly payload: JsonValue;
+    readonly target: AuditTarget;
+    readonly now?: Date;
+    readonly responseValidator?: (
+      response: JsonValue,
+      responseStatus: number,
+    ) => boolean;
+  },
+): Promise<ProtectedMutationResult<T>> {
+  if (!IDEMPOTENCY_KEY_PATTERN.test(input.idempotencyKey)) {
+    throw new IdempotencyError('IDEMPOTENCY_KEY_INVALID', 400);
+  }
+  const now = input.now ?? new Date();
+  const fingerprint = canonicalFingerprint(input.action, input.payload);
+  try {
+    return await repository.withTransaction(async (transaction) => {
+      const receipt = await repository.findIdempotencyReceipt(
+        input.actor.organizationId,
+        input.idempotencyKey,
+        transaction,
+      );
+      assertReplayMatches(receipt, {
+        actor: input.actor,
+        action: input.action,
+        fingerprint,
+        responseValidator: input.responseValidator,
+      });
+      await appendReplayAudit(
+        repository,
+        { ...input, occurredAt: now },
+        transaction,
+      );
+      return {
+        value: receipt.response as T,
+        responseStatus: receipt.responseStatus,
+        replayed: true,
+      };
+    });
+  } catch (error) {
+    if (error instanceof ReplayRejectedError) {
+      await recordOutcomeAudit(repository, {
+        actor: input.actor,
+        requestId: input.requestId,
+        idempotencyKey: input.idempotencyKey,
+        action: input.action,
+        target: input.target,
+        occurredAt: now,
+        reasonCode: error.auditReasonCode,
+        outcome: 'rejected',
+      });
+    }
+    throw error;
+  }
+}
+
 export async function executeProtectedMutation<T extends JsonValue>(
   repository: PlatformRepository,
   input: {
@@ -159,9 +290,16 @@ export async function executeProtectedMutation<T extends JsonValue>(
       transaction,
     );
     if (existing) {
-      if (existing.fingerprint !== fingerprint) {
-        throw new IdempotencyError('IDEMPOTENCY_CONFLICT', 409);
-      }
+      assertReplayMatches(existing, {
+        actor: input.actor,
+        action: input.action,
+        fingerprint,
+      });
+      await appendReplayAudit(
+        repository,
+        { ...input, occurredAt: now },
+        transaction,
+      );
       return {
         value: existing.response as T,
         responseStatus: existing.responseStatus,
@@ -209,20 +347,17 @@ export async function executeProtectedMutation<T extends JsonValue>(
   try {
     return await repository.withTransaction(run);
   } catch (error) {
-    let normalizedError = error;
+    const normalizedError = error;
     if (error instanceof RepositoryConflictError) {
-      const receipt = await repository.findIdempotencyReceipt(
-        input.actor.organizationId,
-        input.idempotencyKey,
-      );
-      if (receipt?.fingerprint === fingerprint) {
-        return {
-          value: receipt.response as T,
-          responseStatus: receipt.responseStatus,
-          replayed: true,
-        };
-      }
-      normalizedError = new IdempotencyError('IDEMPOTENCY_CONFLICT', 409);
+      return replayProtectedMutation<T>(repository, {
+        actor: input.actor,
+        requestId: input.requestId,
+        idempotencyKey: input.idempotencyKey,
+        action: input.action,
+        payload: input.payload,
+        target: input.target,
+        now,
+      });
     }
     if (
       normalizedError instanceof IdempotencyError &&
@@ -235,7 +370,10 @@ export async function executeProtectedMutation<T extends JsonValue>(
         action: input.action,
         target: input.target,
         occurredAt: now,
-        reasonCode: normalizedError.code,
+        reasonCode:
+          normalizedError instanceof ReplayRejectedError
+            ? normalizedError.auditReasonCode
+            : normalizedError.code,
         outcome: 'rejected',
       });
     } else {

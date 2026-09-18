@@ -7,6 +7,7 @@
   },
   "scripts": {
     "dev": "vinext dev",
+    "dev:vercel": "vite --config vite.config.vercel.ts",
     "build": "vinext build",
     "build:vercel": "cross-env NITRO_PRESET=vercel vite build --config vite.config.vercel.ts",
     "start": "wrangler dev --config dist/server/wrangler.json",

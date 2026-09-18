@@ -30,6 +30,16 @@ Configure values only in the relevant provider's secret controls. Do not place v
 
 Missing or invalid configuration fails readiness and authenticated endpoints closed. Rotating `SESSION_SECRET` invalidates existing session and CSRF credentials; plan a coordinated sign-out and do not rotate it as an unannounced routine deploy.
 
+### Local Vercel-config development
+
+Use the standard `npm run dev` command for ordinary frontend work. To exercise API routes through the same Vinext/Nitro configuration used by the Vercel build, supply the six variables above in the local process environment and run:
+
+```powershell
+npm run dev:vercel -- --host 127.0.0.1 --port 3105
+```
+
+The command uses `vite.config.vercel.ts` and inherits `MONGODB_URI`, `MONGODB_DB_NAME`, `SESSION_SECRET`, `SESSION_COOKIE_NAME`, `APP_BASE_URL`, and `TNP_ENVIRONMENT` through `process.env`. Obtain development values through the approved provider/secret owner and do not paste them into the command, an `.env` file, source, test output, or this runbook. Leaving the names absent is the safe missing-configuration probe: `/api/health` stays live while `/api/ready` and authenticated routes fail closed. Do not use production values for local development and do not use this command as permission to contact Atlas.
+
 ## Staging bring-up and verification
 
 1. Confirm a named staging owner, separate staging database, secret owner, network policy, budget alerts, and synthetic-only data.
