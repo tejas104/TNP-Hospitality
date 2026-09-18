@@ -27,6 +27,10 @@
   background: #062b29;
   color: #f5f1e7;
 }
+.heading a:focus-visible,
+.detailCta a:focus-visible {
+  outline-color: #e8dfc6;
+}
 .heading > a {
   display: inline-block;
   color: #d8c799;
@@ -209,6 +213,197 @@
   font-size: 11px;
   letter-spacing: 0.5px;
 }
+.detailHeading {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 9%;
+  align-items: center;
+  padding-bottom: 75px;
+}
+.detailHeading > div > a:first-child {
+  display: inline-block;
+  color: #d8c799;
+  font-size: 11px;
+  letter-spacing: 2px;
+  margin-bottom: 36px;
+}
+.detailHeading h1 {
+  font-size: clamp(44px, 5vw, 72px);
+}
+.detailHeading > div > p:last-of-type {
+  color: #c6d2c7;
+  max-width: 550px;
+  font-size: 16px;
+}
+.detailHeading figure {
+  margin: 0;
+  min-width: 0;
+}
+.detailHeading img {
+  display: block;
+  width: 100%;
+  height: 450px;
+  object-fit: cover;
+  background: #164c42;
+}
+.detailHeading figcaption {
+  font-size: 10px;
+  color: #c6d2c7;
+  padding-top: 12px;
+}
+.creamButton {
+  display: inline-flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+  background: #e8dfc6;
+  color: #173b36;
+  font-size: 13px;
+  padding: 16px 23px;
+  min-height: 50px;
+  margin-top: 15px;
+}
+.detailBody {
+  padding: 80px 8%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 65px 10%;
+}
+.detailBody h2,
+.related h2 {
+  font-size: clamp(32px, 3vw, 43px);
+  margin: 14px 0 26px;
+  letter-spacing: -1px;
+}
+.detailBody h2 em {
+  color: #4f6256;
+}
+.detailIntro > p:last-child {
+  font-size: 17px;
+  color: #4f6256;
+  max-width: 480px;
+}
+.discussion ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.discussion li {
+  display: flex;
+  align-items: baseline;
+  gap: 23px;
+  padding: 21px 0;
+  border-top: 1px solid #aeb9a6;
+}
+.discussion li span {
+  font-size: 11px;
+  color: #4f6256;
+}
+.discussion li p {
+  margin: 0;
+  font-size: 15px;
+}
+.smallCopy {
+  font-size: 12px;
+  color: #4f6256;
+  margin-top: 22px !important;
+}
+.provenance {
+  grid-column: 1/-1;
+  border-left: 3px solid #8c692c;
+  padding: 20px 25px;
+  background: #eae8dc;
+  font-size: 13px;
+  color: #4f6256;
+}
+.provenance p:last-child {
+  margin-bottom: 0;
+}
+.rsvpDetail {
+  grid-column: 1/-1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 35px;
+  border-top: 1px solid #aeb9a6;
+  padding-top: 40px;
+}
+.rsvpDetail h2 {
+  grid-column: 1/-1;
+  margin-bottom: 0;
+}
+.rsvpDetail h3 {
+  font-size: 28px;
+  margin: 0 0 20px;
+}
+.rsvpDetail p {
+  color: #4f6256;
+  font-size: 14px;
+}
+.rsvpDetail a {
+  display: inline-block;
+  padding: 8px 0;
+  border-bottom: 1px solid currentColor;
+  font-size: 13px;
+}
+.related {
+  background: #eae8dc;
+  padding: 60px 8%;
+}
+.related > a {
+  display: flex;
+  justify-content: space-between;
+  gap: 30px;
+  border-top: 1px solid #aeb9a6;
+  padding: 25px 0;
+  font:
+    28px Georgia,
+    serif;
+}
+.related small {
+  display: block;
+  font:
+    13px/1.6 system-ui,
+    sans-serif;
+  color: #4f6256;
+  max-width: 650px;
+  margin-top: 10px;
+}
+.detailCta {
+  text-align: center;
+  padding: 75px 24px;
+  background: #083d36;
+  color: #f5f1e7;
+}
+.detailCta h2 {
+  font-size: clamp(34px, 4vw, 55px);
+  margin: 22px 0;
+}
+.detailCta h2 em {
+  color: #d8c799;
+}
+.detailCta > p:last-child {
+  color: #c6d2c7;
+  font-size: 12px;
+  margin: 24px 0 0;
+}
+.catalogue {
+  padding: 45px 8%;
+  display: flex;
+  gap: 15px 30px;
+  flex-wrap: wrap;
+}
+.catalogue p {
+  width: 100%;
+  margin: 0;
+}
+.catalogue a {
+  padding: 10px 0;
+  border-bottom: 1px solid currentColor;
+  font-size: 13px;
+}
+.catalogue a[aria-current='page'] {
+  font-weight: 700;
+}
 .srOnly {
   position: absolute;
   width: 1px;
@@ -221,6 +416,28 @@
   border: 0;
 }
 @media (max-width: 700px) {
+  .detailHeading {
+    grid-template-columns: 1fr;
+    gap: 35px;
+    padding-bottom: 40px;
+  }
+  .detailHeading img {
+    height: 300px;
+  }
+  .detailBody {
+    grid-template-columns: 1fr;
+    padding: 45px 24px;
+    gap: 35px;
+  }
+  .rsvpDetail {
+    grid-template-columns: 1fr;
+  }
+  .related {
+    padding: 40px 24px;
+  }
+  .catalogue {
+    padding: 35px 24px;
+  }
   .heading {
     padding: 125px 24px 42px;
   }

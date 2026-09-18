@@ -169,7 +169,19 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <a
           className="public-skip"
           href="#main-content"
-          onClick={() => document.getElementById('main-content')?.focus()}
+          onClick={(event) => {
+            const main = document.getElementById('main-content');
+            if (main) main.focus();
+            else {
+              // The framework's invalid-slug page has a heading but no main.
+              const heading = document.querySelector('h1');
+              if (heading) {
+                event.preventDefault();
+                heading.tabIndex = -1;
+                heading.focus();
+              }
+            }
+          }}
         >
           Skip to main content
         </a>
@@ -182,7 +194,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
       >
         <span>{label}</span>
       </div>
-      <header className={`site-nav ${scrolled ? 'is-scrolled' : ''}`}>
+      <header
+        className={`site-nav ${publicPage ? 'public-nav' : ''} ${scrolled ? 'is-scrolled' : ''}`}
+      >
         <Link className="brand-mark" href="/" data-cursor="OPEN">
           <span>TNP</span>
           <small>Hospitality</small>
@@ -197,7 +211,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <div className="nav-actions">
           {!publicPage && (
             <Link className="login-link" href="/planner">
-              Planner preview
+              Login
             </Link>
           )}
           <Link
@@ -221,13 +235,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
       {!publicPage && <PreviewControls />}
       {!publicPage && <PortalSwitcher key={pathname} pathname={pathname} />}
       <MobileMenu
+        publicPage={publicPage}
         open={menuOpen}
         links={
           publicPage
             ? [...publicLinks, { label: 'Enquire', href: '/contact' }]
             : [...navLinks, ...portalLinks]
         }
-        onNavigate={() => setMenuOpen(false)}
+        onNavigate={() => {
+          if (publicPage) setMenuOpen(false);
+        }}
       />
       {children}
     </>
@@ -311,16 +328,21 @@ function PortalSwitcher({ pathname }: { pathname: string }) {
 }
 
 function MobileMenu({
+  publicPage,
   open,
   links,
   onNavigate,
 }: {
+  publicPage: boolean;
   open: boolean;
   links: { label: string; href: string }[];
   onNavigate: () => void;
 }) {
   return (
-    <div className={`mobile-menu ${open ? 'open' : ''}`} inert={!open}>
+    <div
+      className={`mobile-menu ${publicPage ? 'public-menu' : ''} ${open ? 'open' : ''}`}
+      inert={!open}
+    >
       {links.map((link) => (
         <a
           key={`${link.label}-${link.href}`}

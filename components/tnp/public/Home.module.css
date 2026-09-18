@@ -43,6 +43,12 @@
 .home svg {
   flex-shrink: 0;
 }
+.hero :is(a, button):focus-visible,
+.rsvp a:focus-visible,
+.finalCta a:focus-visible,
+.footer a:focus-visible {
+  outline-color: #e8dfc6;
+}
 .skip {
   position: fixed;
   top: 8px;

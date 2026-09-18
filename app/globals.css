@@ -288,9 +288,9 @@ img {
   border: 3px solid #73521d;
 }
 .public-skip:focus { transform: none; }
-.site-nav :is(a, button):focus-visible,
-.mobile-menu a:focus-visible { outline: 3px solid #e8dfc6; outline-offset: 5px; }
-.site-nav.is-scrolled :is(a, button):focus-visible { outline-color: #73521d; }
+.site-nav.public-nav :is(a, button):focus-visible,
+.mobile-menu.public-menu a:focus-visible { outline: 3px solid #e8dfc6; outline-offset: 5px; }
+.site-nav.public-nav.is-scrolled :is(a, button):focus-visible { outline-color: #73521d; }
 
 .site-nav {
   align-items: center;

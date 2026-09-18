@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import EnquiryForm from '@/components/tnp/public/EnquiryForm';
+import { enquiryInterest } from '@/data/public-content';
 import styles from '@/components/tnp/public/Public.module.css';
 
 export default async function ContactPage({
@@ -8,12 +9,7 @@ export default async function ContactPage({
   searchParams: Promise<{ interest?: string }>;
 }) {
   const query = await searchParams;
-  const interest =
-    query.interest === 'vendor'
-      ? 'Vendor platform interest'
-      : query.interest === 'managed-rsvp'
-        ? 'Managed RSVP enquiry'
-        : 'Event enquiry';
+  const interest = enquiryInterest(query.interest);
   return (
     <main id="main-content" tabIndex={-1} className={styles.page}>
       <section className={styles.heading}>

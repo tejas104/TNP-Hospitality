@@ -72,7 +72,7 @@ export default function EnquiryForm({
       setReady(true);
     } catch {
       setStatus(
-        'Could not load browser preview storage. Restore storage access and retry loading.',
+        'Could not load browser preview storage. Restore storage access, then reload this preview to retry.',
       );
     }
   }, []);
@@ -86,6 +86,27 @@ export default function EnquiryForm({
     // The journal is shared by this one public enquiry flow, across entry links.
   }, [restore]);
 
+  useEffect(() => {
+    let current = true;
+    const checkGeneration = async () => {
+      if (!action || !service.current) return;
+      const generation = await service.current.getGeneration();
+      if (current && generation !== action.request.expectedGeneration) {
+        setReceipt(null);
+        setStatus(
+          'The preview was reset. This earlier receipt is no longer current. Start a new enquiry.',
+        );
+      }
+    };
+    window.addEventListener('tnp-preview-reset', checkGeneration);
+    window.addEventListener('focus', checkGeneration);
+    return () => {
+      current = false;
+      window.removeEventListener('tnp-preview-reset', checkGeneration);
+      window.removeEventListener('focus', checkGeneration);
+    };
+  }, [action]);
+
   async function submit() {
     if (locked.current || !service.current) return;
     const payload = {
@@ -94,6 +115,8 @@ export default function EnquiryForm({
       message: fields.message.trim(),
     };
     const invalid = validateEnquiry(payload);
+    if (!action && payload.message === `${interest}:`)
+      invalid.message = 'Add a sample description of your plans.';
     setErrors(invalid);
     if (Object.keys(invalid).length) {
       setStatus('Check the highlighted fields.');
@@ -120,6 +143,16 @@ export default function EnquiryForm({
       setAction(current);
       const result = await service.current.mutate(current.request);
       if (!mounted.current) return;
+      if (
+        (await service.current.getGeneration()) !==
+        current.request.expectedGeneration
+      ) {
+        setReceipt(null);
+        setStatus(
+          'STALE_GENERATION: The preview was reset during this attempt. Start a new enquiry; no old receipt is current.',
+        );
+        return;
+      }
       if (result.ok) {
         const completed = { ...current, receiptId: result.value.id };
         setAction(completed);
@@ -169,7 +202,9 @@ export default function EnquiryForm({
     setStatus(
       'New synthetic enquiry. Previous saved enquiries remain in the preview scenario.',
     );
-    requestAnimationFrame(() => document.getElementById('enquiry-name')?.focus());
+    requestAnimationFrame(() =>
+      document.getElementById('enquiry-name')?.focus(),
+    );
   }
 
   return (
@@ -274,9 +309,9 @@ export default function EnquiryForm({
             <button
               className={styles.button}
               type="button"
-              onClick={() => void restore()}
+              onClick={() => window.location.reload()}
             >
-              Retry loading
+              Reload preview
             </button>
           )}
           {action && (

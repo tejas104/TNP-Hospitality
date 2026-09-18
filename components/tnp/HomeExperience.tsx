@@ -5,6 +5,7 @@ import { ArrowDown, ArrowUpRight, Check, MapPin, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { byId, media } from '@/data/media';
 import { destinations, events, roles, services } from '@/data/tnp';
+import { departmentSlugs, serviceSlugs } from '@/data/public-content';
 import HomeHero from './public/HomeHero';
 import styles from './public/Home.module.css';
 
@@ -127,13 +128,10 @@ export default function HomeExperience() {
                 >
                   <p>{service.copy}</p>
                   <Link
-                    href={index === 4 ? '#rsvp' : '/client'}
+                    href={`/services/${serviceSlugs[index]}`}
                     className={styles.textLink}
                   >
-                    {index === 4
-                      ? 'Explore RSVP services'
-                      : 'Explore the client experience'}{' '}
-                    <ArrowUpRight size={16} />
+                    Explore this service <ArrowUpRight size={16} />
                   </Link>
                 </div>
               </div>
@@ -397,6 +395,7 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.people}`}
+        id="people"
         aria-labelledby="people-title"
       >
         <div className={styles.sectionHead}>
@@ -408,12 +407,15 @@ export default function HomeExperience() {
               <em>Personal by choice.</em>
             </h2>
           </div>
-          <Link href="/freelancer" className={styles.textLink}>
-            Join the network <ArrowUpRight size={17} />
+          <Link
+            href="/contact?interest=event-coordinators"
+            className={styles.textLink}
+          >
+            Enquire about event teams <ArrowUpRight size={17} />
           </Link>
         </div>
         <div className={styles.peopleGrid}>
-          {roles.map((role) => (
+          {roles.map((role, index) => (
             <article key={role.role}>
               <img
                 src={role.image.src}
@@ -423,7 +425,11 @@ export default function HomeExperience() {
                 loading="lazy"
                 decoding="async"
               />
-              <h3>{role.role}</h3>
+              <h3>
+                <Link href={`/departments/${departmentSlugs[index]}`}>
+                  {role.role} ↗
+                </Link>
+              </h3>
               <p>{role.caption}</p>
             </article>
           ))}
