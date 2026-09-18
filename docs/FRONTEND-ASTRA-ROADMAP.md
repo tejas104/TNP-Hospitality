@@ -25,6 +25,8 @@ Only one Astra writer owns overlapping shared/public paths at a time. Service-pa
 
 User sequencing decision 2026-09-18: the final 3D model is last. Do not spend another frontend lease on the homepage scene while any planned non-3D screen milestone remains incomplete.
 
+Image/content implementation rule 2026-09-18: every non-3D Astra milestone includes purposeful replaceable image slots where imagery improves narrative, hierarchy or comprehension. Preview images remain local, typed, accessible and explicitly illustrative; client assets later replace the source metadata without redesigning the layout. Operational tables, forms and dense authenticated controls do not receive decorative photography without a product reason.
+
 ## Shared contract boundary
 
 Web UI consumes `/api/v1` and typed domain/application behavior; it does not recreate authorization, tenant filtering, capacity, attendance, quote, payout or RSVP isolation rules in components. Missing API behavior returns to the platform/domain owner. Synthetic previews stay labelled until server-backed behavior is reviewed and integrated.
