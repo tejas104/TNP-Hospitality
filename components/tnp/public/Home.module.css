@@ -105,6 +105,10 @@
 .hero h1 em {
   color: #d5c595;
 }
+.hero h1 > span,
+.hero h1 > em {
+  display: block;
+}
 .lead {
   max-width: 400px;
   color: #c4d0c6;
@@ -135,7 +139,6 @@
 }
 .primary:hover {
   background: #fff5da;
-  transform: translateY(-2px);
 }
 .lightLink,
 .textLink {
@@ -179,7 +182,46 @@
 }
 .scene {
   position: absolute;
-  inset: 0 0 28px;
+  inset: -25px -35px 42px;
+  transform: translate3d(var(--hero-x, 0px), var(--hero-y, 0px), 0);
+  transition: transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.constellationKey {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+  color: #d5c595;
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 1.4px;
+}
+.constellationKey li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.constellationKey li::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border: 1px solid #d5c595;
+  border-radius: 50%;
+}
+.constellationKey li:nth-child(2)::before {
+  border-radius: 0;
+  background: #a8c4ac;
+}
+.constellationKey li:nth-child(3)::before {
+  border-radius: 0;
+  transform: rotate(45deg);
+  background: #e5bc83;
+}
+.constellationKey li:nth-child(4)::before {
+  border-width: 2px;
 }
 .motionControl {
   position: absolute;
@@ -566,6 +608,67 @@
   padding: 0;
   margin: 0;
 }
+.journeyTrack {
+  height: 1px;
+  position: relative;
+  background: #173b3620;
+  margin: -22px 0 38px;
+}
+.journeyTrack > span {
+  position: absolute;
+  inset: 0;
+  background: #876a36;
+  transform: scaleX(var(--journey-progress, 1));
+  transform-origin: left;
+}
+.journeyTrack > i {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  top: -3px;
+  border-radius: 50%;
+  background: #876a36;
+}
+.journeyTrack > i:nth-of-type(1) {
+  left: 0;
+}
+.journeyTrack > i:nth-of-type(2) {
+  left: 50%;
+}
+.journeyTrack > i:nth-of-type(3) {
+  right: 0;
+}
+.peopleGrid img,
+.eventGrid img,
+.destinationGrid img {
+  transition: filter 350ms;
+}
+.peopleGrid article:hover img,
+.peopleGrid article:focus-within img {
+  filter: brightness(1.06);
+}
+.serviceItem button {
+  transition:
+    background 250ms,
+    color 250ms;
+}
+.serviceItem button:hover,
+.serviceItem button:focus-visible {
+  background: #eae8dc;
+}
+.primary svg,
+.lightLink svg,
+.textLink svg {
+  transition: transform 250ms;
+}
+.primary:hover svg,
+.primary:focus-visible svg,
+.lightLink:hover svg,
+.lightLink:focus-visible svg,
+.textLink:hover svg,
+.textLink:focus-visible svg {
+  transform: translateX(3px);
+}
 .process li {
   border-top: 1px solid #bba879;
   padding-top: 24px;
@@ -759,6 +862,16 @@
     height: 340px;
     margin: 0 -8px;
   }
+  .scene {
+    inset: -8px 0 45px;
+    transform: none;
+  }
+  .constellationKey {
+    gap: 10px;
+    font-size: 7px;
+    letter-spacing: 0.8px;
+    margin-top: 12px;
+  }
   .artCaption {
     bottom: 0;
   }
@@ -934,9 +1047,19 @@
     width: 100%;
   }
 }
+.home[data-motion-state='static'] * {
+  transition: none !important;
+  animation: none !important;
+}
 @media (prefers-reduced-motion: reduce) {
   .home * {
     transition: none !important;
     animation: none !important;
+  }
+  .scene,
+  .primary svg,
+  .lightLink svg,
+  .textLink svg {
+    transform: none !important;
   }
 }

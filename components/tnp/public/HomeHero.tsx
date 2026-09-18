@@ -60,91 +60,122 @@ export function PavilionFallback() {
       fill="none"
       aria-hidden="true"
     >
-      <path
-        d="M70 330 290 425 535 290 315 205Z"
-        fill="#123f38"
-        stroke="#bba879"
-      />
-      <path
-        d="M85 315 190 360 285 306 180 262Z"
-        fill="#3e7768"
-        stroke="#bba879"
-      />
-      <path
-        d="M185 265 285 309 387 250 287 208Z"
-        fill="#527f6c"
-        stroke="#bba879"
-      />
-      <path
-        d="M280 235 400 287 515 221 395 170Z"
-        fill="#d4c6a0"
-        stroke="#ead6a5"
-      />
-      <path
-        d="M85 315v20l105 46v-21M185 265v35l100 44v-35M280 235v63l120 53v-64M400 351l115-66v-64"
-        stroke="#bba879"
-        fill="#164c42"
-      />
-      <path
-        d="M115 312C150 310 170 331 199 291S248 225 299 245 401 326 455 254 380 203 345 243"
-        stroke="#f1d69b"
-        strokeWidth="3"
-      />
-      <path
-        d="M135 294v-65l48 21v65M135 229l48 21"
-        stroke="#e9d2a0"
-        strokeWidth="5"
-      />
-      <path
-        d="m247 246 28 12 23-13v-21l-28-12-23 13Z"
-        fill="#e8dfc6"
-        stroke="#bba879"
+      <defs>
+        <radialGradient id="canopy-glow">
+          <stop stopColor="#ead5a0" stopOpacity=".18" />
+          <stop offset="1" stopColor="#ead5a0" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <ellipse cx="300" cy="250" rx="165" ry="175" fill="url(#canopy-glow)" />
+      <ellipse
+        cx="300"
+        cy="363"
+        rx="120"
+        ry="30"
+        fill="#13483f"
+        stroke="#c7b481"
       />
       <ellipse
-        cx="390"
-        cy="231"
-        rx="31"
-        ry="15"
-        fill="#f1e8d1"
-        stroke="#bba879"
+        cx="300"
+        cy="355"
+        rx="103"
+        ry="24"
+        stroke="#d9c795"
+        strokeOpacity=".45"
+      />
+      <path d="M300 81v252" stroke="#dfc690" strokeOpacity=".6" />
+      {[-1, -0.66, -0.33, 0, 0.33, 0.66, 1].map((offset) => (
+        <path
+          key={offset}
+          d={`M300 93C${300 + offset * 35} 144 ${300 + offset * 165} 156 ${300 + offset * 142} 225Q${300 + offset * 140} 252 ${300 + offset * 105} 267`}
+          stroke="#ddc48d"
+          strokeWidth={Math.abs(offset) === 1 ? 2 : 1.3}
+        />
+      ))}
+      <ellipse
+        cx="300"
+        cy="225"
+        rx="142"
+        ry="33"
+        stroke="#efdab0"
+        strokeWidth="2"
+      />
+      <ellipse cx="300" cy="267" rx="105" ry="23" stroke="#c9b17d" />
+      <ellipse
+        cx="300"
+        cy="95"
+        rx="21"
+        ry="6"
+        stroke="#efdab0"
+        strokeWidth="2"
+      />
+      {Array.from({ length: 13 }, (_, i) => {
+        const angle = (i * Math.PI) / 6;
+        const x = 300 + Math.cos(angle) * 107;
+        const y = 237 + Math.sin(angle) * 22;
+        const end = y + 42 + (i % 2) * 25;
+        return (
+          <g key={i}>
+            <path
+              d={`M${x} ${y}v${end - y}`}
+              stroke="#ccb884"
+              strokeOpacity=".7"
+            />
+            <ellipse cx={x} cy={end} rx="3.4" ry="11" fill="#f3e4bd" />
+          </g>
+        );
+      })}
+      <path d="m300 304 12 17-12 18-12-18Z" fill="#f2dfad" />
+      <ellipse
+        cx="300"
+        cy="300"
+        rx="245"
+        ry="69"
+        transform="rotate(-12 300 300)"
+        stroke="#baa575"
+        strokeOpacity=".6"
       />
       {[
-        [350, 232],
-        [373, 205],
-        [425, 230],
-        [402, 259],
-      ].map(([x, y]) => (
-        <ellipse key={x} cx={x} cy={y} rx="8" ry="5" fill="#315d4f" />
+        [70, 344],
+        [211, 244],
+        [531, 252],
+        [402, 361],
+      ].map(([x, y], i) => (
+        <g key={x}>
+          <circle cx={x} cy={y} r="22" fill="#103e36" stroke="#d7be85" />
+          {i === 0 ? (
+            <g fill="#eee1bf">
+              <circle cx={x - 7} cy={y + 2} r="3" />
+              <circle cx={x} cy={y - 5} r="4" />
+              <circle cx={x + 7} cy={y + 2} r="3" />
+            </g>
+          ) : i === 1 ? (
+            <rect
+              x={x - 6}
+              y={y - 9}
+              width="12"
+              height="18"
+              rx="1"
+              fill="#a8c4ac"
+            />
+          ) : i === 2 ? (
+            <path d={`m${x} ${y - 11} 9 11-9 11-9-11Z`} fill="#e5bc83" />
+          ) : (
+            <circle cx={x} cy={y} r="8" stroke="#eadfc3" strokeWidth="4" />
+          )}
+        </g>
       ))}
-      {[
-        [122, 312],
-        [214, 267],
-        [306, 252],
-        [448, 263],
-      ].map(([x, y]) => (
-        <circle key={x} cx={x} cy={y} r="5" fill="#fff4d5" />
-      ))}
-      <g
-        fill="#d5c595"
-        fontFamily="system-ui, sans-serif"
-        fontSize="10"
-        letterSpacing="2"
-      >
-        <text x="65" y="385">
-          01 ARRIVE
-        </text>
-        <text x="215" y="185">
-          02 WELCOME
-        </text>
-        <text x="380" y="155">
-          03 CELEBRATE
-        </text>
-      </g>
     </svg>
   );
 }
 
-export default function HomeHero() {
+export default function HomeHero({
+  paused,
+  onPauseChange,
+}: {
+  paused: boolean;
+  onPauseChange: (paused: boolean) => void;
+}) {
   const container = useRef<HTMLDivElement>(null);
   const reducedMotion = useSyncExternalStore(
     subscribeMotion,
@@ -158,7 +189,6 @@ export default function HomeHero() {
   );
   const [inView, setInView] = useState(false);
   const [visited, setVisited] = useState(false);
-  const [paused, setPaused] = useState(false);
   const [failed, setFailed] = useState(false);
   const handleFailure = useCallback(() => setFailed(true), []);
   useEffect(() => {
@@ -175,7 +205,7 @@ export default function HomeHero() {
   const still = reducedMotion || mobile || paused || failed;
   const active = inView && visible && !still;
   return (
-    <div ref={container} className={styles.heroArt}>
+    <div ref={container} className={styles.heroArt} data-hero-art>
       <div
         className={styles.scene}
         aria-hidden="true"
@@ -197,14 +227,23 @@ export default function HomeHero() {
       </div>
       <div className={styles.artCaption}>
         <span>THE ART OF COMING TOGETHER</span>
-        <p>Arrival. Welcome. Celebration.</p>
+        <p>Celebration, beautifully coordinated.</p>
+        <ul
+          className={styles.constellationKey}
+          aria-label="Illustrative event coordination roles"
+        >
+          <li>Guests</li>
+          <li>Planners</li>
+          <li>Vendors</li>
+          <li>Operations</li>
+        </ul>
       </div>
       <button
         type="button"
         className={styles.motionControl}
         aria-pressed={still}
         disabled={reducedMotion || mobile || failed}
-        onClick={() => setPaused((value) => !value)}
+        onClick={() => onPauseChange(!paused)}
       >
         {still ? <Play size={12} /> : <Pause size={12} />}
         {failed

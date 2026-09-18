@@ -2,34 +2,42 @@
 
 import Link from 'next/link';
 import { ArrowDown, ArrowUpRight, Check, MapPin, Plus } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { byId, media } from '@/data/media';
 import { destinations, events, roles, services } from '@/data/tnp';
 import { departmentSlugs, serviceSlugs } from '@/data/public-content';
 import HomeHero from './public/HomeHero';
 import styles from './public/Home.module.css';
+import { useHomeMotion } from './public/useHomeMotion';
 
 export default function HomeExperience() {
   const [serviceIndex, setServiceIndex] = useState(0);
+  const [motionPaused, setMotionPaused] = useState(false);
+  const home = useRef<HTMLElement>(null);
+  useHomeMotion(home, motionPaused);
   return (
-    <main className={styles.home} id="main-content" tabIndex={-1}>
+    <main ref={home} className={styles.home} id="main-content" tabIndex={-1}>
       <section className={styles.hero} aria-labelledby="home-title">
         <div className={styles.heroCopy}>
-          <p className={styles.eyebrow}>
+          <p className={styles.eyebrow} data-hero-stage data-motion="copy">
             <span /> PEOPLE. PLACES. PERFECTLY TOGETHER.
           </p>
           <h1 id="home-title">
-            Exceptional events.
-            <br />
-            <em>Thoughtfully</em>
-            <br />
-            human.
+            <span data-hero-stage data-motion="copy">
+              Exceptional events.
+            </span>
+            <em data-hero-stage data-motion="copy">
+              Thoughtfully
+            </em>
+            <span data-hero-stage data-motion="copy">
+              human.
+            </span>
           </h1>
-          <p className={styles.lead}>
+          <p className={styles.lead} data-hero-stage data-motion="copy">
             From the first invitation to the final farewell, we bring the right
             people and every little detail together.
           </p>
-          <div className={styles.actions}>
+          <div className={styles.actions} data-hero-stage data-motion="control">
             <Link href="/contact" className={styles.primary}>
               Plan with TNP <ArrowUpRight size={18} />
             </Link>
@@ -41,7 +49,7 @@ export default function HomeExperience() {
             Luxury in Service, Excellence in Care
           </p>
         </div>
-        <HomeHero />
+        <HomeHero paused={motionPaused} onPauseChange={setMotionPaused} />
         <div className={styles.heroFoot}>
           <span>HOSPITALITY, WITH INTENTION</span>
           <a href="#services">
@@ -58,7 +66,7 @@ export default function HomeExperience() {
       >
         <p className={styles.eyebrow}>01 / THE TNP APPROACH</p>
         <div>
-          <h2 id="about-title">
+          <h2 id="about-title" data-motion="copy">
             You remember the moment.
             <br />
             <em>We care for everything around it.</em>
@@ -77,6 +85,7 @@ export default function HomeExperience() {
             decoding="async"
             width="640"
             height="480"
+            data-motion="image"
           />
           <figcaption>Considered details. Warm welcomes.</figcaption>
         </figure>
@@ -90,7 +99,7 @@ export default function HomeExperience() {
         <div className={styles.sectionHead}>
           <div>
             <p className={styles.eyebrow}>02 / OUR SERVICES</p>
-            <h2 id="services-title">
+            <h2 id="services-title" data-motion="copy">
               Good people.
               <br />
               <em>Extraordinary care.</em>
@@ -113,6 +122,8 @@ export default function HomeExperience() {
                 <h3>
                   <button
                     type="button"
+                    data-motion="control"
+                    data-stagger={index}
                     aria-expanded={serviceIndex === index}
                     aria-controls={`home-service-${index}`}
                     onClick={() => setServiceIndex(index)}
@@ -148,6 +159,7 @@ export default function HomeExperience() {
                 height="1100"
                 loading="lazy"
                 decoding="async"
+                data-motion="image"
               />
             ))}
             <div className={styles.photoLabel}>
@@ -161,7 +173,7 @@ export default function HomeExperience() {
       <section className={styles.rsvp} id="rsvp" aria-labelledby="rsvp-title">
         <div className={styles.rsvpIntro}>
           <p className={styles.eyebrow}>03 / RSVP & GUEST HOSPITALITY</p>
-          <h2 id="rsvp-title">
+          <h2 id="rsvp-title" data-motion="copy">
             Every guest matters.
             <br />
             <em>Every detail belongs.</em>
@@ -262,7 +274,7 @@ export default function HomeExperience() {
         <div className={styles.sectionHead}>
           <div>
             <p className={styles.eyebrow}>04 / THE OCCASIONS</p>
-            <h2 id="events-title">
+            <h2 id="events-title" data-motion="copy">
               A different setting.
               <br />
               <em>The same attention to detail.</em>
@@ -282,6 +294,8 @@ export default function HomeExperience() {
                 alt={event.image.alt}
                 width="800"
                 height="960"
+                data-motion="image"
+                data-stagger={index}
                 loading="lazy"
                 decoding="async"
               />
@@ -329,7 +343,7 @@ export default function HomeExperience() {
         <div className={styles.sectionHead}>
           <div>
             <p className={styles.eyebrow}>05 / DESTINATIONS</p>
-            <h2 id="destinations-title">
+            <h2 id="destinations-title" data-motion="copy">
               Where your story
               <br />
               <em>takes you.</em>
@@ -347,6 +361,7 @@ export default function HomeExperience() {
                 alt={destination.image.alt}
                 width="600"
                 height="700"
+                data-motion="image"
                 loading="lazy"
                 decoding="async"
               />
@@ -364,11 +379,18 @@ export default function HomeExperience() {
       <section
         className={`${styles.section} ${styles.process}`}
         aria-labelledby="process-title"
+        data-journey
       >
         <p className={styles.eyebrow}>06 / MADE SIMPLE</p>
-        <h2 id="process-title">
+        <h2 id="process-title" data-motion="copy">
           Consider it <em>taken care of.</em>
         </h2>
+        <div className={styles.journeyTrack} aria-hidden="true">
+          <span />
+          <i />
+          <i />
+          <i />
+        </div>
         <ol>
           {[
             [
@@ -386,7 +408,9 @@ export default function HomeExperience() {
           ].map(([title, copy], index) => (
             <li key={title}>
               <span>0{index + 1}</span>
-              <h3>{title}</h3>
+              <h3 data-motion="copy" data-stagger={index}>
+                {title}
+              </h3>
               <p>{copy}</p>
             </li>
           ))}
@@ -401,7 +425,7 @@ export default function HomeExperience() {
         <div className={styles.sectionHead}>
           <div>
             <p className={styles.eyebrow}>07 / PEOPLE OF TNP</p>
-            <h2 id="people-title">
+            <h2 id="people-title" data-motion="copy">
               Professional by nature.
               <br />
               <em>Personal by choice.</em>
@@ -422,6 +446,8 @@ export default function HomeExperience() {
                 alt={role.image.alt}
                 width="600"
                 height="720"
+                data-motion="image"
+                data-stagger={index}
                 loading="lazy"
                 decoding="async"
               />
@@ -441,6 +467,7 @@ export default function HomeExperience() {
 
       <section className={styles.finalCta} aria-labelledby="contact-title">
         <img
+          data-motion="image"
           src={byId('terrace').src}
           alt=""
           loading="lazy"
@@ -450,7 +477,7 @@ export default function HomeExperience() {
         />
         <div>
           <p className={styles.eyebrow}>LET&apos;S MAKE IT MEANINGFUL</p>
-          <h2 id="contact-title">
+          <h2 id="contact-title" data-motion="copy">
             A beautiful event begins
             <br />
             <em>with a conversation.</em>
