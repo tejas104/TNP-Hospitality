@@ -217,4 +217,3 @@ For every supplied asset provide the original file, photographer/source, usage r
 - Secrets: provider secret managers only; never documents, screenshots, source control or chat.
 - Personal data: use synthetic records until an approved protected environment and retention policy exist.
 - Approval: written decision referencing exact content/version/SHA where applicable.
-

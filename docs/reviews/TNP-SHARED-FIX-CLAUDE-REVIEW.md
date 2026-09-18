@@ -16,4 +16,3 @@ Non-blocking notes:
 3. The localStorage sequence is not cross-tab atomic, which is within the explicit single-browser preview limitation.
 
 The reviewer made no edits, commits, pushes, merges or deployments and stopped the server. Connector/memory-capture availability did not affect the review.
-
