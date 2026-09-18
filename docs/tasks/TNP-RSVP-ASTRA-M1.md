@@ -1,10 +1,19 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: CHANGES REQUESTED — CORRECTION/REFINEMENT READY for sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`. Shell model/effort variables are unavailable and are not separate runtime evidence.
+Status: ROUND-2 CHANGES REQUESTED — BOUNDED CORRECTION READY for the same sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`. Shell model/effort variables are unavailable and are not separate runtime evidence.
 
-Reviewed candidate: `7fb677bb614422e0d7b5a64842b7533e09ec8a7d`, clean and remote-equal on `codex/tnp-rsvp-claude-m1` in `D:\TNP-worktrees\TNP-RSVP-CLAUDE-M1`; port `3107` is free.
+Round-1 corrected candidate: `177cf3057b31f19d618e5a8f6a3ae3706165cca5`, clean and remote-equal on `codex/tnp-rsvp-claude-m1` in `D:\TNP-worktrees\TNP-RSVP-CLAUDE-M1`; port `3107` is free.
 
-Independent Sol/high fixed-SHA review disposition: `CHANGES REQUESTED`.
+Fresh independent Sol/high fixed-SHA delta/regression disposition: `CHANGES REQUESTED` on `177cf3057b31f19d618e5a8f6a3ae3706165cca5`.
+
+## Round-2 bounded findings
+
+Preserve all cleared Round-1 corrections and design/motion work. Change only what is necessary for these two P1 invariants plus focused tests/browser evidence:
+
+1. Scope import row receipts and party mappings to the complete logical action. Exact replay is allowed only when `{orgId, eventId, personaId, batchId, rowKey, full normalized material-row fingerprint}` matches. Same-scope changed phone, email, functions or party fields must return conflict and mutate nothing. Different event or organization must never reuse a receipt, reference or party mapping. Preserve exact failed-row retry, accepted-row replay and new-batch stable-reference skip behavior. A future shared batch identity requires a server-owned authorization contract; do not invent one here.
+2. Derive vehicle route identity from normalized actual origin and destination plus direction/window, not coarse transport-mode labels. A true same route/window may aggregate passengers and must enforce total capacity. Flight versus train/bus, different same-mode origins/destinations or any other different route in the same window must reject overlap atomically. Different windows remain allowed. Preserve stale assignment/replan and illegal lifecycle rejection.
+
+Required regression matrix: exact import replay; changed phone/email/functions/party material conflict; same-org different-event isolation; different-org/event isolation; failed-row retry; new-batch stable-reference skip; true-same-route capacity; flight/train; flight/bus; same-mode different endpoints; different-window allow; stale/illegal movement rejection. No additional visual redesign in Round 2.
 
 ## Required correction and refinement pass
 
