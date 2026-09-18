@@ -1,8 +1,8 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID } from 'node:crypto';
 
-import type { PlatformRole } from "../tenancy/model.ts";
+import type { PlatformRole } from '../tenancy/model.ts';
 
-export type AuditOutcome = "succeeded" | "rejected" | "failed";
+export type AuditOutcome = 'succeeded' | 'rejected' | 'failed';
 
 export interface AuditTarget {
   readonly type: string;
@@ -24,7 +24,10 @@ export interface AuditRecord {
   readonly reasonCode?: string;
 }
 
-export interface CreateAuditRecordInput extends Omit<AuditRecord, "id" | "schemaVersion"> {
+export interface CreateAuditRecordInput extends Omit<
+  AuditRecord,
+  'id' | 'schemaVersion'
+> {
   readonly id?: string;
 }
 
@@ -32,12 +35,12 @@ const SAFE_LABEL = /^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,127}$/;
 
 export function createAuditRecord(input: CreateAuditRecordInput): AuditRecord {
   for (const [field, value] of [
-    ["organizationId", input.organizationId],
-    ["actorId", input.actorId],
-    ["requestId", input.requestId],
-    ["action", input.action],
-    ["target.type", input.target.type],
-    ["target.id", input.target.id],
+    ['organizationId', input.organizationId],
+    ['actorId', input.actorId],
+    ['requestId', input.requestId],
+    ['action', input.action],
+    ['target.type', input.target.type],
+    ['target.id', input.target.id],
   ] as const) {
     if (!SAFE_LABEL.test(value)) {
       throw new TypeError(`Audit ${field} is malformed.`);
@@ -51,4 +54,3 @@ export function createAuditRecord(input: CreateAuditRecordInput): AuditRecord {
     target: Object.freeze({ ...input.target }),
   });
 }
-

@@ -1,15 +1,18 @@
-import { createHash, randomUUID } from "node:crypto";
+import { createHash, randomUUID } from 'node:crypto';
 
-import { createAuditRecord, type AuditTarget } from "../audit/model.ts";
+import { createAuditRecord, type AuditTarget } from '../audit/model.ts';
 import {
   RepositoryConflictError,
   type PlatformRepository,
   type RepositoryTransaction,
-} from "../data/repository.ts";
-import type { ActorContext } from "../security/authorization.ts";
+} from '../data/repository.ts';
+import type { ActorContext } from '../security/authorization.ts';
 
 export type JsonPrimitive = string | number | boolean | null;
-export type JsonValue = JsonPrimitive | readonly JsonValue[] | { readonly [key: string]: JsonValue };
+export type JsonValue =
+  | JsonPrimitive
+  | readonly JsonValue[]
+  | { readonly [key: string]: JsonValue };
 
 export interface IdempotencyReceipt {
   readonly id: string;
@@ -26,12 +29,23 @@ export interface IdempotencyReceipt {
 }
 
 export class IdempotencyError extends Error {
+  readonly code:
+    | 'IDEMPOTENCY_KEY_REQUIRED'
+    | 'IDEMPOTENCY_KEY_INVALID'
+    | 'IDEMPOTENCY_CONFLICT';
+  readonly status: 400 | 409 | 428;
+
   constructor(
-    readonly code: "IDEMPOTENCY_KEY_REQUIRED" | "IDEMPOTENCY_KEY_INVALID" | "IDEMPOTENCY_CONFLICT",
-    readonly status: 400 | 409 | 428,
+    code:
+      | 'IDEMPOTENCY_KEY_REQUIRED'
+      | 'IDEMPOTENCY_KEY_INVALID'
+      | 'IDEMPOTENCY_CONFLICT',
+    status: 400 | 409 | 428,
   ) {
     super(code);
-    this.name = "IdempotencyError";
+    this.name = 'IdempotencyError';
+    this.code = code;
+    this.status = status;
   }
 }
 
@@ -44,35 +58,45 @@ export interface ProtectedMutationResult<T extends JsonValue> {
 const IDEMPOTENCY_KEY_PATTERN = /^[A-Za-z0-9][A-Za-z0-9_.:-]{7,127}$/;
 
 export function requireIdempotencyKey(request: Request): string {
-  const value = request.headers.get("idempotency-key")?.trim();
-  if (!value) throw new IdempotencyError("IDEMPOTENCY_KEY_REQUIRED", 428);
+  const value = request.headers.get('idempotency-key')?.trim();
+  if (!value) throw new IdempotencyError('IDEMPOTENCY_KEY_REQUIRED', 428);
   if (!IDEMPOTENCY_KEY_PATTERN.test(value)) {
-    throw new IdempotencyError("IDEMPOTENCY_KEY_INVALID", 400);
+    throw new IdempotencyError('IDEMPOTENCY_KEY_INVALID', 400);
   }
   return value;
 }
 
 function canonicalize(value: JsonValue): string {
-  if (value === null || typeof value === "string" || typeof value === "boolean") {
+  if (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'boolean'
+  ) {
     return JSON.stringify(value);
   }
-  if (typeof value === "number") {
-    if (!Number.isFinite(value)) throw new TypeError("Fingerprint values must be finite JSON numbers.");
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value))
+      throw new TypeError('Fingerprint values must be finite JSON numbers.');
     return JSON.stringify(value);
   }
-  if (Array.isArray(value)) return `[${value.map(canonicalize).join(",")}]`;
+  if (Array.isArray(value)) return `[${value.map(canonicalize).join(',')}]`;
   const record = value as Readonly<Record<string, JsonValue>>;
   const entries = Object.keys(record)
     .sort()
     .map((key) => `${JSON.stringify(key)}:${canonicalize(record[key]!)}`);
-  return `{${entries.join(",")}}`;
+  return `{${entries.join(',')}}`;
 }
 
-export function canonicalFingerprint(action: string, payload: JsonValue): string {
-  return createHash("sha256").update(canonicalize({ action, payload }), "utf8").digest("base64url");
+export function canonicalFingerprint(
+  action: string,
+  payload: JsonValue,
+): string {
+  return createHash('sha256')
+    .update(canonicalize({ action, payload }), 'utf8')
+    .digest('base64url');
 }
 
-async function recordRejectedAudit(
+async function recordOutcomeAudit(
   repository: PlatformRepository,
   input: {
     actor: ActorContext;
@@ -82,6 +106,7 @@ async function recordRejectedAudit(
     target: AuditTarget;
     occurredAt: Date;
     reasonCode: string;
+    outcome: 'rejected' | 'failed';
   },
 ): Promise<void> {
   await repository.withTransaction(async (transaction) => {
@@ -95,7 +120,7 @@ async function recordRejectedAudit(
         action: input.action,
         target: input.target,
         occurredAt: input.occurredAt,
-        outcome: "rejected",
+        outcome: input.outcome,
         reasonCode: input.reasonCode,
       }),
       transaction,
@@ -120,12 +145,14 @@ export async function executeProtectedMutation<T extends JsonValue>(
   },
 ): Promise<ProtectedMutationResult<T>> {
   if (!IDEMPOTENCY_KEY_PATTERN.test(input.idempotencyKey)) {
-    throw new IdempotencyError("IDEMPOTENCY_KEY_INVALID", 400);
+    throw new IdempotencyError('IDEMPOTENCY_KEY_INVALID', 400);
   }
   const now = input.now ?? new Date();
   const fingerprint = canonicalFingerprint(input.action, input.payload);
 
-  const run = async (transaction: RepositoryTransaction): Promise<ProtectedMutationResult<T>> => {
+  const run = async (
+    transaction: RepositoryTransaction,
+  ): Promise<ProtectedMutationResult<T>> => {
     const existing = await repository.findIdempotencyReceipt(
       input.actor.organizationId,
       input.idempotencyKey,
@@ -133,7 +160,7 @@ export async function executeProtectedMutation<T extends JsonValue>(
     );
     if (existing) {
       if (existing.fingerprint !== fingerprint) {
-        throw new IdempotencyError("IDEMPOTENCY_CONFLICT", 409);
+        throw new IdempotencyError('IDEMPOTENCY_CONFLICT', 409);
       }
       return {
         value: existing.response as T,
@@ -167,12 +194,16 @@ export async function executeProtectedMutation<T extends JsonValue>(
         action: input.action,
         target,
         occurredAt: now,
-        outcome: "succeeded",
+        outcome: 'succeeded',
       }),
       transaction,
     );
     await repository.insertIdempotencyReceipt(receipt, transaction);
-    return { value: effect.value, responseStatus: input.responseStatus, replayed: false };
+    return {
+      value: effect.value,
+      responseStatus: input.responseStatus,
+      replayed: false,
+    };
   };
 
   try {
@@ -191,10 +222,13 @@ export async function executeProtectedMutation<T extends JsonValue>(
           replayed: true,
         };
       }
-      normalizedError = new IdempotencyError("IDEMPOTENCY_CONFLICT", 409);
+      normalizedError = new IdempotencyError('IDEMPOTENCY_CONFLICT', 409);
     }
-    if (normalizedError instanceof IdempotencyError && normalizedError.code === "IDEMPOTENCY_CONFLICT") {
-      await recordRejectedAudit(repository, {
+    if (
+      normalizedError instanceof IdempotencyError &&
+      normalizedError.code === 'IDEMPOTENCY_CONFLICT'
+    ) {
+      await recordOutcomeAudit(repository, {
         actor: input.actor,
         requestId: input.requestId,
         idempotencyKey: input.idempotencyKey,
@@ -202,6 +236,26 @@ export async function executeProtectedMutation<T extends JsonValue>(
         target: input.target,
         occurredAt: now,
         reasonCode: normalizedError.code,
+        outcome: 'rejected',
+      });
+    } else {
+      const candidateCode =
+        normalizedError &&
+        typeof normalizedError === 'object' &&
+        'code' in normalizedError &&
+        typeof normalizedError.code === 'string' &&
+        /^[A-Z][A-Z0-9_]{1,63}$/.test(normalizedError.code)
+          ? normalizedError.code
+          : 'MUTATION_FAILED';
+      await recordOutcomeAudit(repository, {
+        actor: input.actor,
+        requestId: input.requestId,
+        idempotencyKey: input.idempotencyKey,
+        action: input.action,
+        target: input.target,
+        occurredAt: now,
+        reasonCode: candidateCode,
+        outcome: 'failed',
       });
     }
     throw normalizedError;

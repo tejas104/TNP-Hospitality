@@ -1,4 +1,4 @@
-import type { MembershipStatus, PlatformRole } from "../tenancy/model.ts";
+import type { MembershipStatus, PlatformRole } from '../tenancy/model.ts';
 
 export interface ActorContext {
   readonly sessionId: string;
@@ -10,16 +10,25 @@ export interface ActorContext {
 }
 
 export class AuthorizationError extends Error {
+  readonly code:
+    | 'AUTHENTICATION_REQUIRED'
+    | 'ROLE_FORBIDDEN'
+    | 'MEMBERSHIP_INACTIVE'
+    | 'TENANT_FORBIDDEN';
+  readonly status: 401 | 403;
+
   constructor(
-    readonly code:
-      | "AUTHENTICATION_REQUIRED"
-      | "ROLE_FORBIDDEN"
-      | "MEMBERSHIP_INACTIVE"
-      | "TENANT_FORBIDDEN",
-    readonly status: 401 | 403,
+    code:
+      | 'AUTHENTICATION_REQUIRED'
+      | 'ROLE_FORBIDDEN'
+      | 'MEMBERSHIP_INACTIVE'
+      | 'TENANT_FORBIDDEN',
+    status: 401 | 403,
   ) {
     super(code);
-    this.name = "AuthorizationError";
+    this.name = 'AuthorizationError';
+    this.code = code;
+    this.status = status;
   }
 }
 
@@ -33,27 +42,28 @@ export function authorizeActor(
   requirement: AuthorizationRequirement = {},
 ): ActorContext {
   if (!actor) {
-    throw new AuthorizationError("AUTHENTICATION_REQUIRED", 401);
+    throw new AuthorizationError('AUTHENTICATION_REQUIRED', 401);
   }
-  if (actor.membershipStatus !== "active") {
-    throw new AuthorizationError("MEMBERSHIP_INACTIVE", 403);
+  if (actor.membershipStatus !== 'active') {
+    throw new AuthorizationError('MEMBERSHIP_INACTIVE', 403);
   }
-  if (requirement.organizationId && actor.organizationId !== requirement.organizationId) {
-    throw new AuthorizationError("TENANT_FORBIDDEN", 403);
+  if (
+    requirement.organizationId &&
+    actor.organizationId !== requirement.organizationId
+  ) {
+    throw new AuthorizationError('TENANT_FORBIDDEN', 403);
   }
   if (requirement.roles && !requirement.roles.includes(actor.role)) {
-    throw new AuthorizationError("ROLE_FORBIDDEN", 403);
+    throw new AuthorizationError('ROLE_FORBIDDEN', 403);
   }
   return actor;
 }
 
-export function assertTenantRecord<T extends { readonly organizationId: string }>(
-  actor: ActorContext,
-  record: T | null,
-): T {
+export function assertTenantRecord<
+  T extends { readonly organizationId: string },
+>(actor: ActorContext, record: T | null): T {
   if (!record || record.organizationId !== actor.organizationId) {
-    throw new AuthorizationError("TENANT_FORBIDDEN", 403);
+    throw new AuthorizationError('TENANT_FORBIDDEN', 403);
   }
   return record;
 }
-

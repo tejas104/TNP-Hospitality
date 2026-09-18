@@ -1,44 +1,48 @@
-import { randomUUID } from "node:crypto";
+import { randomUUID } from 'node:crypto';
 
 import {
   MongoClient,
   MongoServerError,
   type ClientSession,
   type Collection,
+  type CreateIndexesOptions,
   type Db,
-} from "mongodb";
+} from 'mongodb';
 
-import type { AuditRecord } from "../audit/model.ts";
-import type { PlatformEnvironment } from "../config/env.ts";
-import type { IdempotencyReceipt } from "../idempotency/service.ts";
-import type { SessionDocument } from "../security/session.ts";
+import type { AuditRecord } from '../audit/model.ts';
+import type { PlatformEnvironment } from '../config/env.ts';
+import type { IdempotencyReceipt } from '../idempotency/service.ts';
+import type { SessionDocument } from '../security/session.ts';
 import type {
   MembershipDocument,
   OrganizationDocument,
   UserDocument,
   VendorDocument,
-} from "../tenancy/model.ts";
-import { PLATFORM_INDEXES } from "./indexes.ts";
+} from '../tenancy/model.ts';
+import { PLATFORM_INDEXES } from './indexes.ts';
 import {
   RepositoryConflictError,
   type PlatformRepository,
   type RepositoryTransaction,
-} from "./repository.ts";
+} from './repository.ts';
 
 export class DatabaseUnavailableError extends Error {
-  readonly code = "DATABASE_UNAVAILABLE";
+  readonly code = 'DATABASE_UNAVAILABLE';
   readonly status = 503;
 
   constructor() {
-    super("Database dependency is unavailable.");
-    this.name = "DatabaseUnavailableError";
+    super('Database dependency is unavailable.');
+    this.name = 'DatabaseUnavailableError';
   }
 }
 
 class MongoRepositoryTransaction implements RepositoryTransaction {
   readonly transactionId = randomUUID();
+  readonly session: ClientSession;
 
-  constructor(readonly session: ClientSession) {}
+  constructor(session: ClientSession) {
+    this.session = session;
+  }
 }
 
 interface Collections {
@@ -53,20 +57,24 @@ interface Collections {
 
 function collections(database: Db): Collections {
   return {
-    organizations: database.collection<OrganizationDocument>("organizations"),
-    vendors: database.collection<VendorDocument>("vendors"),
-    users: database.collection<UserDocument>("users"),
-    memberships: database.collection<MembershipDocument>("memberships"),
-    sessions: database.collection<SessionDocument>("sessions"),
-    idempotencyReceipts: database.collection<IdempotencyReceipt>("idempotencyReceipts"),
-    auditRecords: database.collection<AuditRecord>("auditRecords"),
+    organizations: database.collection<OrganizationDocument>('organizations'),
+    vendors: database.collection<VendorDocument>('vendors'),
+    users: database.collection<UserDocument>('users'),
+    memberships: database.collection<MembershipDocument>('memberships'),
+    sessions: database.collection<SessionDocument>('sessions'),
+    idempotencyReceipts: database.collection<IdempotencyReceipt>(
+      'idempotencyReceipts',
+    ),
+    auditRecords: database.collection<AuditRecord>('auditRecords'),
   };
 }
 
-function mongoSession(transaction?: RepositoryTransaction): ClientSession | undefined {
+function mongoSession(
+  transaction?: RepositoryTransaction,
+): ClientSession | undefined {
   if (!transaction) return undefined;
   if (!(transaction instanceof MongoRepositoryTransaction)) {
-    throw new TypeError("Repository transaction belongs to another adapter.");
+    throw new TypeError('Repository transaction belongs to another adapter.');
   }
   return transaction.session;
 }
@@ -80,11 +88,12 @@ function translateWriteError(error: unknown): never {
 
 export class MongoPlatformRepository implements PlatformRepository {
   readonly #collections: Collections;
+  private readonly client: MongoClient;
+  private readonly database: Db;
 
-  constructor(
-    private readonly client: MongoClient,
-    private readonly database: Db,
-  ) {
+  constructor(client: MongoClient, database: Db) {
+    this.client = client;
+    this.database = database;
     this.#collections = collections(database);
   }
 
@@ -120,7 +129,10 @@ export class MongoPlatformRepository implements PlatformRepository {
     userId: string,
     transaction?: RepositoryTransaction,
   ): Promise<UserDocument | null> {
-    return this.#collections.users.findOne({ id: userId }, { session: mongoSession(transaction) });
+    return this.#collections.users.findOne(
+      { id: userId },
+      { session: mongoSession(transaction) },
+    );
   }
 
   async findMembershipById(
@@ -149,7 +161,9 @@ export class MongoPlatformRepository implements PlatformRepository {
     transaction?: RepositoryTransaction,
   ): Promise<void> {
     try {
-      await this.#collections.sessions.insertOne(session, { session: mongoSession(transaction) });
+      await this.#collections.sessions.insertOne(session, {
+        session: mongoSession(transaction),
+      });
     } catch (error) {
       translateWriteError(error);
     }
@@ -195,7 +209,10 @@ export class MongoPlatformRepository implements PlatformRepository {
     }
   }
 
-  async appendAudit(record: AuditRecord, transaction?: RepositoryTransaction): Promise<void> {
+  async appendAudit(
+    record: AuditRecord,
+    transaction?: RepositoryTransaction,
+  ): Promise<void> {
     try {
       await this.#collections.auditRecords.insertOne(record, {
         session: mongoSession(transaction),
@@ -209,12 +226,14 @@ export class MongoPlatformRepository implements PlatformRepository {
     work: (transaction: RepositoryTransaction) => Promise<T>,
   ): Promise<T> {
     const session = this.client.startSession();
-    let result: T | undefined;
+    let result!: T;
+    let completed = false;
     try {
       await session.withTransaction(async () => {
         result = await work(new MongoRepositoryTransaction(session));
+        completed = true;
       });
-      if (result === undefined) throw new Error("Transaction completed without a result.");
+      if (!completed) throw new Error('Transaction callback did not complete.');
       return result;
     } finally {
       await session.endSession();
@@ -224,17 +243,22 @@ export class MongoPlatformRepository implements PlatformRepository {
 
 let repositoryPromise: Promise<MongoPlatformRepository> | undefined;
 
-export function getMongoRepository(environment: PlatformEnvironment): Promise<MongoPlatformRepository> {
+export function getMongoRepository(
+  environment: PlatformEnvironment,
+): Promise<MongoPlatformRepository> {
   repositoryPromise ??= (async () => {
     const client = new MongoClient(environment.mongodbUri, {
-      appName: "tnp-hospitality-platform",
+      appName: 'tnp-hospitality-platform',
       connectTimeoutMS: 3_000,
       serverSelectionTimeoutMS: 3_000,
       retryWrites: true,
     });
     try {
       await client.connect();
-      return new MongoPlatformRepository(client, client.db(environment.mongodbDatabaseName));
+      return new MongoPlatformRepository(
+        client,
+        client.db(environment.mongodbDatabaseName),
+      );
     } catch {
       await client.close().catch(() => undefined);
       repositoryPromise = undefined;
@@ -247,11 +271,14 @@ export function getMongoRepository(environment: PlatformEnvironment): Promise<Mo
 export async function applyPlatformIndexes(database: Db): Promise<void> {
   const platformCollections = collections(database);
   for (const specification of PLATFORM_INDEXES) {
-    await platformCollections[specification.collection].createIndex(specification.keys, {
-      name: specification.name,
-      unique: specification.unique,
-      expireAfterSeconds: specification.expireAfterSeconds,
-    });
+    const options: CreateIndexesOptions = { name: specification.name };
+    if (specification.unique !== undefined)
+      options.unique = specification.unique;
+    if (specification.expireAfterSeconds !== undefined)
+      options.expireAfterSeconds = specification.expireAfterSeconds;
+    await platformCollections[specification.collection].createIndex(
+      specification.keys,
+      options,
+    );
   }
 }
-
