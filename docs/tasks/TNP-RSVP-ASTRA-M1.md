@@ -1,6 +1,27 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: READY RESERVATION — Kartik explicitly selects fresh Claude Code desktop session `b9a9e46c-394a-4e30-836e-b07cf30f2276`, actual model `claude-opus-5`, on `DESKTOP-DL9FDM7` as the sole writer. The runtime does not expose an effort field; requested effort is high and must be confirmed from the application selector before the first source edit. The reservation activates only after the current Client/Planner writer is paused at a fixed handoff so one human does not supervise two complex active builders.
+Status: CHANGES REQUESTED — CORRECTION/REFINEMENT READY for sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`. Shell model/effort variables are unavailable and are not separate runtime evidence.
+
+Reviewed candidate: `7fb677bb614422e0d7b5a64842b7533e09ec8a7d`, clean and remote-equal on `codex/tnp-rsvp-claude-m1` in `D:\TNP-worktrees\TNP-RSVP-CLAUDE-M1`; port `3107` is free.
+
+Independent Sol/high fixed-SHA review disposition: `CHANGES REQUESTED`.
+
+## Required correction and refinement pass
+
+Preserve the candidate's comprehensive RSVP behavior and truthful synthetic/provider-disabled boundary. Correct all six independent-review findings before polish:
+
+1. Enforce vehicle assignment and movement lifecycle invariants inside the local adapter mutation boundary. Before any write, evaluate the selected transfers together with every active transfer already assigned to that vehicle in the same date/window. Reject overlap and aggregate capacity conflicts atomically, reject illegal movement transitions, and reject stale versions rather than overwriting newer state.
+2. Enforce room occupancy and inventory atomically in proposal/reproposal. Reject a party above category maximum occupancy; reject exhausted category inventory while excluding that stay's existing hold where appropriate; require the current expected version before mutation.
+3. Make generated report revisions immutable and truthful. Freeze exact rows, header, counts and scope signature at generation, or invalidate the revision and disable export whenever filters/scope change. Never export live changed rows under prior revision metadata.
+4. When mobile drawer navigation changes section, suppress opener-focus restoration and move focus to the destination heading after close. Escape/cancel-only dismissal must still restore the opener.
+5. Represent Calls list/detail selection in the `party` URL parameter so activation, refresh, deep links and browser Back/Forward resolve the same party without cross-event leakage.
+6. Remove the infinite spinner rotation under `prefers-reduced-motion`; static icon plus progress text is sufficient.
+
+Add focused regression tests for overlapping same-window vehicle assignments, aggregate vehicle capacity, illegal/stale movement transitions, room occupancy/inventory/reproposal/stale cases, frozen or invalidated report scope/export, Calls URL continuity, drawer navigation focus and reduced-motion CSS.
+
+Then perform the user-requested bounded modern design/motion refinement across RSVP-owned screens. Keep the approved dark-teal/ivory/champagne TNP composition and calm editorial-operational hierarchy; do not rebuild it. Shorten the 320–390px event hero so the first useful status content appears sooner. Improve coherent surface depth, selected/changed state clarity, section/list-detail continuity, active navigation, hover/press/focus feedback, empty/loading/error transitions, drawers/dialogs and guest-step progress using the existing RSVP-local motion policy and CSS transform/opacity. No new dependency, WebGL, scroll hijacking, perpetual live effect, repeated full-table animation or motion that implies a provider send/server save. Coarse-pointer/save-data behavior and genuine reduced-motion parity are mandatory.
+
+Writable paths remain only `app/rsvp/**` and `components/tnp/portals/rsvp/**`. Everything else stays frozen. Produce one immutable correction/refinement final on the existing feature branch, ordinary non-force push only after live comparison, then stop server/browser and return the lease. Fresh independent Sol fixed-SHA delta/regression review plus Kartik acceptance precede P-controlled integration.
 
 Source: `435b62bb1f66e4c8090f3bf5e15b1fcad8d1b42d`
 
@@ -16,12 +37,13 @@ The frontend must label this boundary truthfully. It may demonstrate organizatio
 
 ## Sole writer and capacity
 
-- Writer: NEW Claude Code desktop session `b9a9e46c-394a-4e30-836e-b07cf30f2276`.
-- Actual model: `claude-opus-5`; effort field unavailable to the session, requested high.
+- Original writer: Claude Code desktop session `b9a9e46c-394a-4e30-836e-b07cf30f2276`, final `7fb677bb614422e0d7b5a64842b7533e09ec8a7d`; lease returned.
+- Correction/refinement writer: `/root/rsvp_astra_refiner`, process `01a0b5da-a640-7d92-b88e-519d07dbe96f`.
+- Verified orchestrator model/effort: `gpt-6-astra` / medium.
 - Human operator/acceptance owner: Kartik.
 - Host/profile: `DESKTOP-DL9FDM7` / `desktop-dl9fdm7\dell` under the user's separate Claude application account.
-- The lease is exclusive to this session and these paths. Do not open or reuse another TNP session.
-- No source edit until P/dispatcher confirms the Client/Planner writer is paused and records this RSVP reservation ACTIVE. Read-only preparation may continue meanwhile.
+- The correction lease is exclusive to this agent and these paths. Do not open or reuse another TNP session.
+- No source edit until P/dispatcher supplies the exact commit carrying this correction contract as `LAUNCH_CONTRACT_SHA`. Do not merge main into the feature branch.
 
 ## Writable paths
 
