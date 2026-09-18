@@ -1,23 +1,23 @@
-# TNP-B-M1 — two-prompt frontend milestone for B
+# TNP-B-M1 — Astra public/frontend milestone
 
-Status: DRAFT, NOT DISPATCHED. Writer lease NONE.
+Status: READY. Dispatch only the fresh Astra writer named by P after this Ready commit is frozen.
 Human owner: Anjaneya / H1 for product/content/visual inputs. Sole human fixed-SHA reviewer: Kartik.
 Host: Laptop 1 / DESKTOP-DL9FDM7.
 Tool/model: Codex gpt-6-astra / high for the homepage motion/3D design milestone, per the user's 2026-09-17 instruction; confirm the actual session/model/effort at Ready.
-Branch: codex/tnp-b-m1 (proposed; not created).
-Worktree: D:\TNP-worktrees\TNP-B-M1 (proposed; not created).
-Source and integrated foundation SHA: PENDING approved integration.
-Launch SHA: PENDING future Ready commit, supplied externally by P.
-Dependencies: integrated TNP-FOUND-01; TNP-B-01, split into two implementation checkpoints within the same existing scope. The second phase's first-phase dependency is an internal checked checkpoint in this grouped milestone, not a separate integration.
+Branch: `codex/tnp-b-m1`.
+Worktree: `D:\TNP-worktrees\TNP-B-M1`.
+SOURCE_SHA: `0190c5c2d6adeef6a1465c4825ce0db4e8a22a0b`, the local-main integration baseline plus a merge of homepage candidate `b1dcac83d29a0c26d490f9ede6dad8bc65f0106d` for correction; this is not homepage acceptance.
+LAUNCH_SHA: the commit carrying this Ready contract and the matching STATUS/LANES reservation; P supplies its exact full SHA after commit. Initial writer HEAD must equal it.
+Dependencies: integrated TNP-FOUND-01, A, D and TNP-SHARED-FIX-01 through local main `1a32c6b`; seeded homepage candidate above. Prompt 1 then Prompt 2 run sequentially under one lease.
 Owned paths: `components/tnp/HomeExperience.tsx`; `components/tnp/public/**`; `components/tnp/AppShell.tsx` and `app/globals.css` only for the serialized public-shell/skip-link correction; `app/services/[slug]/page.tsx`; `app/departments/[slug]/page.tsx`; `app/contact/page.tsx`; `data/public-content.ts`; `data/media.ts` only for documented client-supplied replacements.
 Mode: local labelled synthetic responsive-web preview.
-Resource proposal: port 3102, http://localhost:3102; check free before binding. Dedicated synthetic profile; no current reservation.
+Resource: port 3102 / `http://localhost:3102`, verified free at Ready; recheck before binding. Dedicated synthetic browser profile.
 Risk: Public-facing motion/3D and navigation. Content approval remains separate; reduced-motion, mobile performance, non-WebGL fallback and truthful separation from the synthetic Operations preview are acceptance gates.
-Review appointment: fresh external Claude fixed-SHA review after Astra authorship, plus Kartik as sole human reviewer. Independent Sol is added if implementation crosses architecture/security/data boundaries. Anjaneya/client still supply content and visual decisions but are not a second code-review gate. Actual appointments PENDING.
-Sharing: proposed original builder-only non-force push to codex/tnp-b-m1; effective only in the Ready contract. No current push or write lease.
+Review appointment: fresh external Claude fixed-SHA review after Astra authorship, plus Kartik as sole human reviewer. Independent Sol is added if implementation crosses architecture/security/data boundaries. Anjaneya/client still supply content and visual decisions but are not a second code-review gate.
+Sharing: the sole Astra builder may create checked commits and non-force push only `codex/tnp-b-m1` after live remote comparison. No main merge/push or deployment.
 
 ## Shared execution rules
-This is a prepared draft, not a launch instruction. P will issue the Ready version only after reviewed foundation integration, actual appointments and capacity are recorded. Do not send a developer into a missing prerequisite. SOURCE_SHA, dependency integration SHA, LAUNCH_SHA and exclusive lease are deliberately PENDING; candidate c53e13149be79f3b97aea4ef9fd3b7c8e82d2423 is not an integrated baseline.
+This Ready contract becomes executable only for the exact fresh Astra writer P names with the final LAUNCH_SHA. No other session may infer a lease from this file. Stop for a different initial HEAD, dirty worktree, remote movement, occupied port, unexpected process or path outside ownership; never reset, clean, rebase or merge main to make preflight pass.
 
 At activation read AGENTS.md, TNP-START-HERE.md, docs/PRODUCT.md, docs/DESIGN.md, docs/DOMAIN-RULES.md, docs/ARCHITECTURE.md, docs/LAUNCH-PROTOCOL.md, docs/REVIEW-CADENCE.md, both foundation contracts and the referenced phase specifications. This grouped TASK supersedes their separate per-slice launch branches only when Ready. Verify actual host/model/session, clean initial HEAD=LAUNCH_SHA, SOURCE_SHA ancestry, integrated dependency ancestry and the launch three-file allowlist. Preserve unrelated changes; never reset to make a check pass.
 
