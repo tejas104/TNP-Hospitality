@@ -84,6 +84,8 @@ Acceptance adds visual evidence at 1440x900 for recognizably distinct venue zone
 
 ## Prompt 6 — abstract constellation art-direction replacement
 
+Status: DEFERRED BY USER until the entire non-3D frontend is implemented. Do not execute this prompt from the existing launch packet. The current earlier constellation remains a temporary preview only; issue a fresh final-scene source/launch after Client/Planner, RSVP, Freelancer, remaining service/maintenance/reporting UI and final responsive polish are complete.
+
 Prompt 5 is rejected by the user before commit/push: the detailed venue, people and object density are the wrong art direction. Discard only the uncommitted Prompt 5 scene work and preserve the clean pushed Prompt 4 checkpoint plus dispatch history. The user wants the earlier abstract Celebration Constellation language restored and elevated—not a literal venue.
 
 Create one original abstract kinetic **Celebration Constellation / Solar Loom** on a clean white-to-warm-ivory background. Start from the conceptual strengths of the earlier brass canopy: a clear central luminous celebration core, elegant architectural arcs/ribs, suspended lights and a small set of coordinated role/orbit nodes. Evolve it into a memorable motion sculpture with flowing champagne-gold light, restrained ruby/red-orange accents and warm white highlights. No humans, banquet tables, building zones, floating island, literal mandap, stage, bar, furniture or dense decorative inventory.

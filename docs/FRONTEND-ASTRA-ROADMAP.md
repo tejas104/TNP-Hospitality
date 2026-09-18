@@ -14,13 +14,16 @@ Status: governing model/sequence decision from 2026-09-18. This document reserve
 
 | Order | Milestone | Astra-owned result | Dependency |
 |---|---|---|---|
-| 1 | TNP-B-M1 public frontend | Homepage review corrections, materially new single 3D model, public-shell cleanup, service/department pages and contact/vendor enquiry | Integrated D + Shared Fix; current Ready lease |
+| 1 | TNP-B-M1 public non-3D frontend | Homepage interaction corrections, public-shell/workspace discovery, service/department pages and contact/vendor enquiry; keep the earlier constellation only as a temporary preview | Integrated D + Shared Fix; current preview branch |
 | 2 | Client UI follow-up | Material Client/Planner UI creation or redesign needed to consume the production platform contracts; preserve already integrated A behavior | Platform API/auth contracts fixed; separate Ready scope |
 | 3 | RSVP UI | Managed-client and vendor workspaces, guest import/errors, function responses, follow-up, approved exports and truthful provider-disabled states | Tenant/auth/API and RSVP contract ready; retention/provider decisions |
 | 4 | Freelancer UI | Application/assessment, opportunity/claim/Coming/briefing, then attendance/earnings/payout/ratings presentation as backend contracts become ready | Platform auth plus reviewed workforce/domain services |
 | 5 | Remaining service UI | Maintenance, login/recovery/tracking/access, approved reporting presentation and final responsive polish | Corresponding server contracts and client inputs |
+| 6 | Final homepage 3D | User-selected abstract gold/red Celebration Constellation on white/ivory, motion and all fallbacks; replace the temporary scene only after the rest of the frontend is complete | Orders 1–5 complete and integrated; client imagery/content sufficiently stable |
 
 Only one Astra writer owns overlapping shared/public paths at a time. Service-page work inside the current B lease completes before Client/RSVP/Freelancer UI leases begin. Client and Freelancer paths may later run as distinct leases only when they do not share AppShell, contracts, routes or fixtures.
+
+User sequencing decision 2026-09-18: the final 3D model is last. Do not spend another frontend lease on the homepage scene while any planned non-3D screen milestone remains incomplete.
 
 ## Shared contract boundary
 
