@@ -1,6 +1,6 @@
 # ADR-0002 — production platform foundation
 
-Status: Proposed; awaiting Anjaneya and Kartik decisions listed below. No implementation lease or provider activation follows from this proposal.
+Status: Accepted for a temporary development/staging foundation on 2026-09-18. Production account ownership, data migration, provider activation and deployment remain separate client cutover gates.
 
 ## Context
 
@@ -22,6 +22,11 @@ Decision owners: Anjaneya for product, deployment and content implications; Kart
 8. Validate environment configuration at server startup/first use with names only in source. Development, staging and production secrets remain separated and owned by named humans. No real values enter Git, fixtures, tests or logs.
 9. Keep email, WhatsApp, payment, KYC, GPS and document-upload adapters disabled by default. Missing provider approval produces an explicit unavailable capability, never a synthetic success.
 10. Use additive/backward-compatible schema evolution in this milestone. Publish index intent with the query each index supports. No destructive migration, implicit data rewrite or production deployment is authorized.
+11. Use the current user-confirmed MongoDB Atlas cluster only as temporary development/staging infrastructure. Configuration is environment-only; no secret or real personal data enters Git, fixtures or logs. The client-controlled production cluster replaces it at deployment through a rehearsed export/import or application migration with reconciliation and rollback.
+12. Treat the repository's currently linked Vercel project as temporary development/preview infrastructure. The client-controlled production project/account, domain and DNS are supplied or transferred at release cutover. Current linkage is not production ownership evidence.
+13. Adopt the proposed opaque database-backed cookie-session boundary and initial roles `platform_admin`, `organization_admin`, `operations`, `finance`, `planner`, `client`, `vendor_operator`, `worker`, with membership states `invited`, `active`, `suspended`, `revoked`. Future role changes require contract tests and migration analysis.
+14. Keep document upload, email, WhatsApp and payment adapters disabled until their client/provider/security/UAT gates pass. Current production secret owners, retention policy and provider accounts remain client-input blockers, not reasons to fabricate working integrations.
+15. Use additive schema changes, feature-disable/application rollback, daily production backups and a demonstrated staging restore as the default release policy. Exact production RPO/RTO and restore operator remain client cutover inputs.
 
 Boundary map:
 
@@ -29,16 +34,16 @@ Boundary map:
 
 Route handlers own HTTP translation only. Domain/application modules own authorization requirements and invariants. Repositories own tenant-filtered persistence. Adapters own provider-specific SDKs and failure translation.
 
-## Decisions required before Ready
+## Decisions resolved for the development Ready contract
 
-- Confirm MongoDB Atlas and name development/staging/production environment ownership.
-- Approve opaque database-backed cookie sessions or choose a managed identity alternative; name the identity account owner.
-- Confirm organization, vendor, user and membership roles/statuses for the first milestone.
-- Name the deployment project owner and domain/DNS owner.
-- Name the secret owner for each environment.
-- Approve document retention, or keep upload disabled.
-- Confirm email, WhatsApp and payment adapters remain disabled until provider approval and UAT.
-- Approve backup frequency, restore evidence and rollback expectations.
+- MongoDB Atlas is approved for the temporary development/staging foundation; Kartik is the platform/domain operator and P may perform bounded technical operations through available project tooling. Production ownership changes to the client at deployment.
+- Opaque revocable database-backed cookie sessions and the initial membership model above are approved.
+- The currently linked Vercel project is approved for temporary development/preview only. Production Vercel, domain/DNS and final environment owners remain client cutover inputs.
+- Secret values remain provider-managed. Missing current connector visibility is a readiness failure, never permission to place a value in source.
+- Document upload and external email/WhatsApp/payment adapters remain disabled.
+- Backward-compatible rollback is approved. Production daily backup, restore drill, RPO/RTO and named restore operator remain mandatory before go-live.
+
+Tool evidence at acceptance: `.vercel/project.json` identifies a linked temporary project, but the connected Vercel tool returned no visible teams and could not list the project. No callable MongoDB management tool was exposed to this session. Therefore external resource existence is user-confirmed, while live account/cluster access remains unverified and cannot support a production-ready claim.
 
 ## Alternatives considered
 

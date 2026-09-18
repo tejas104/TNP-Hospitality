@@ -27,6 +27,7 @@ The release must not present browser-local synthetic behavior as production auth
 6. One heavy build per host at a time. A transient Windows Nitro `EBUSY` gets one unchanged retry after confirming no task server owns the output.
 7. No cosmetic scope after Day 10. No new dependency/provider/schema after Day 13 without release-owner exception and rollback analysis.
 8. P owns serialized integration/status/release records. H1 owns public/client/content acceptance; H2 owns workforce/Operations/finance/platform evidence.
+9. Effective 2026-09-18, Kartik provides the sole human fixed-SHA acceptance disposition across all lanes. Anjaneya continues to own product/content/visual inputs. Astra authors the homepage, Client, Freelancer, RSVP, public service pages and related frontend work under explicit Ready leases; independent AI and sensitive-domain gates remain.
 
 ## Calendar and exit evidence
 
@@ -61,7 +62,7 @@ The release must not present browser-local synthetic behavior as production auth
 | Accessibility | Keyboard operation, visible focus, labels/errors, responsive overflow and reduced motion verified. | H1 |
 | Operations | Structured logs, health checks, actionable alerts, support/runbook and incident owner. | P/H2 |
 | Release | Reproducible build, environment inventory, feature flags, backward-compatible release path and tested rollback. | P |
-| Approval | Fixed release SHA plus H1, H2, client/UAT and explicit deploy authorization. | Humans |
+| Approval | Fixed release SHA, Kartik human acceptance, required Anjaneya/client content decisions, client UAT and explicit deploy authorization. | Kartik + client decision owners |
 
 Any FAIL in security, tenant isolation, data restore, financial integrity, required provider behavior or rollback makes Day 20 a NO-GO. The correct response is to disable an explicitly optional feature with approval or move the release date—not to relabel a preview as production.
 

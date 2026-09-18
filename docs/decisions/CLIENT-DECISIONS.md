@@ -1,5 +1,17 @@
 # Client and owner decision log
 
+## Integration, infrastructure, reviewer and Astra direction (2026-09-18)
+
+The user authorizes architect-controlled local integration of the already fixed-SHA reviewed D Operations target `c6d26b00487286e8602655997c06ae298ac94052` and Shared Fix target `022449ee02626ed70bd2081c798fb65788b25b76`, treating Anjaneya and Kartik approval as supplied for those two gates. This does not authorize a main push, deployment or production operation.
+
+The current MongoDB cluster is configured for present development use and may be operated for this project, but the client will replace or take ownership of the database during deployment. The locally linked Vercel project is likewise temporary and tied to the currently connected project/account; the client will provide or receive a client-controlled production project during deployment. No secret values enter Git. Production cutover requires account ownership, environment inventory, migration reconciliation, backup/restore and rollback evidence.
+
+For future milestones Kartik is the sole human fixed-SHA reviewer across the whole project. Anjaneya remains the product/content/visual decision owner, and independent Claude/Sol/security/data/finance gates remain where required. This is not permission for author self-review.
+
+Use `gpt-6-astra` for homepage, Client, Freelancer, RSVP, public service-page and related UI/frontend creation, with actual runtime/model/effort verified at Ready. The homepage candidate is not approved as-is: the supplied external Claude review returned CHANGES REQUESTED for contrast, focus-ring visibility, vendor enquiry and public-shell exposure, and the user additionally requests a materially changed single 3D homepage model. Those corrections return to an Astra frontend milestone before fixed-SHA re-review and Kartik disposition.
+
+The requested client asset/access/content inventory is canonical in `docs/CLIENT-INPUTS-AND-ACCESS-REGISTER.md`.
+
 ## Twenty-day deployment target (2026-09-18)
 The user replaces the prior 25-day cadence with a fast-paced 20-calendar-day target through production deployment. Day 1 is 2026-09-18 and Day 20 is 2026-10-07. The compressed plan is authoritative in `docs/DELIVERY-PLAN.md`: three consolidated review windows, freeze on Day 14, QA/security/UAT/rehearsal through Day 19 and deployment on Day 20 only after fixed-SHA go/no-go and explicit deployment authorization. The shorter target does not waive server authorization, tenant isolation, atomic allocation/attendance, financial idempotency, backups/restore, rollback, independent review or external WhatsApp/provider evidence. Provider-dependent features may be disabled only through an explicit release-scope decision; previews must not be represented as production functionality.
 
