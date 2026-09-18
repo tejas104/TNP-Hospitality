@@ -1,10 +1,19 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: ROUND-2 CHANGES REQUESTED — BOUNDED CORRECTION READY for the same sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`. Shell model/effort variables are unavailable and are not separate runtime evidence.
+Status: ROUND-3 CHANGES REQUESTED — FINAL BOUNDED CORRECTION READY for the same sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`. Shell model/effort variables are unavailable and are not separate runtime evidence.
 
-Round-1 corrected candidate: `177cf3057b31f19d618e5a8f6a3ae3706165cca5`, clean and remote-equal on `codex/tnp-rsvp-claude-m1` in `D:\TNP-worktrees\TNP-RSVP-CLAUDE-M1`; port `3107` is free.
+Round-2 candidate: `87e91f9eea7ef3a317a0f16cb3381df2bf7365dc`, clean and remote-equal on `codex/tnp-rsvp-claude-m1` in `D:\TNP-worktrees\TNP-RSVP-CLAUDE-M1`; port `3107` is free.
 
-Fresh independent Sol/high fixed-SHA delta/regression disposition: `CHANGES REQUESTED` on `177cf3057b31f19d618e5a8f6a3ae3706165cca5`.
+Fresh independent Sol/high fixed-SHA Round-2 disposition: `CHANGES REQUESTED` on `87e91f9eea7ef3a317a0f16cb3381df2bf7365dc`.
+
+## Round-3 final bounded findings
+
+Preserve every cleared correction, UI, design and motion file. Change only RSVP-local adapter/logic/tests/browser evidence needed for these two remaining P1s:
+
+1. Import identity must persist every first-seen non-operational outcome, including accepted, skipped, rejected and unresolved rows, and preflight atomically before any row mutation in both directions: scope+original row slot and scope+row key. A previously seen row moved to another slot must conflict even if material is identical; a previously rejected/unresolved identity with changed material must conflict. Exact same accepted/skipped outcome replays; exact same failed operational row may retry; a new batch with an existing stable guest reference safely skips. Preserve organization/event/persona isolation and household grouping without allowing slot/key bypass.
+2. Existing travel-leg updates must persist normalized arrival origin and departure destination, not only time/mode/reference. Any material route change—origin, destination, mode, direction-related routing or time—must invalidate dependent pickup/drop movement plans atomically and require replan before dispatch, even when the timestamp is unchanged. Route identity must then use the persisted current endpoints.
+
+Required new regression cases: accepted row moved slot; rejected short-phone row changed under same slot/key; unresolved row changed; exact rejected/unresolved replay; exact failed operational retry; arrival origin persistence; departure destination persistence; mode-only change with unchanged time forces replan; endpoint-only change with unchanged time forces replan; dispatch blocked until replan; route key reflects updated endpoints. No further visual change.
 
 ## Round-2 bounded findings
 
