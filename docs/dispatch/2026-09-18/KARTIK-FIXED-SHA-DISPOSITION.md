@@ -6,17 +6,17 @@ Kartik is the sole human fixed-SHA reviewer. Review each immutable target separa
 
 - Branch: `codex/tnp-b-m1`
 - Launch: `e89c0f364abddb1fba1097ce5e43966af9f76146`
-- Final: `6ef1f2ceeb5dcc097773ad7e1b8e8f92ab81cb23`
-- Required external review: `docs/dispatch/2026-09-18/B-ASTRA-CLAUDE-REVIEW.md`
+- Final: `712610e17a0858e54d258b4e843210a169b5357b`
+- Required external review: `docs/dispatch/2026-09-18/B-ASTRA-FINAL-CLAUDE-REVIEW.md`
 - Confirm the public design direction, new 3D guest-journey model, visible service/role content, image/gallery treatment, enquiry truthfulness, and the listed missing-client-content limitations.
 
 Record one exact statement:
 
-`KARTIK APPROVES TNP-B-M1 FINAL 6ef1f2ceeb5dcc097773ad7e1b8e8f92ab81cb23 FOR ARCHITECT-CONTROLLED LOCAL INTEGRATION ONLY.`
+`KARTIK APPROVES TNP-B-M1 FINAL 712610e17a0858e54d258b4e843210a169b5357b FOR ARCHITECT-CONTROLLED LOCAL INTEGRATION ONLY.`
 
 or
 
-`KARTIK REQUESTS CHANGES TO TNP-B-M1 FINAL 6ef1f2ceeb5dcc097773ad7e1b8e8f92ab81cb23: <file/behavior-specific findings>.`
+`KARTIK REQUESTS CHANGES TO TNP-B-M1 FINAL 712610e17a0858e54d258b4e843210a169b5357b: <file/behavior-specific findings>.`
 
 ## TNP-PLATFORM-M1
 
