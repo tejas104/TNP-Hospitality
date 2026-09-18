@@ -1,0 +1,35 @@
+# Kartik fixed-SHA disposition — current review window
+
+Kartik is the sole human fixed-SHA reviewer. Review each immutable target separately; approval of one does not approve the other and does not authorize a remote-main push, deployment, provider mutation or production data operation.
+
+## TNP-B-M1 Astra public/frontend
+
+- Branch: `codex/tnp-b-m1`
+- Launch: `e89c0f364abddb1fba1097ce5e43966af9f76146`
+- Final: `6ef1f2ceeb5dcc097773ad7e1b8e8f92ab81cb23`
+- Required external review: `docs/dispatch/2026-09-18/B-ASTRA-CLAUDE-REVIEW.md`
+- Confirm the public design direction, new 3D guest-journey model, visible service/role content, image/gallery treatment, enquiry truthfulness, and the listed missing-client-content limitations.
+
+Record one exact statement:
+
+`KARTIK APPROVES TNP-B-M1 FINAL 6ef1f2ceeb5dcc097773ad7e1b8e8f92ab81cb23 FOR ARCHITECT-CONTROLLED LOCAL INTEGRATION ONLY.`
+
+or
+
+`KARTIK REQUESTS CHANGES TO TNP-B-M1 FINAL 6ef1f2ceeb5dcc097773ad7e1b8e8f92ab81cb23: <file/behavior-specific findings>.`
+
+## TNP-PLATFORM-M1
+
+- Branch: `codex/tnp-platform-m1`
+- Launch: `ce64172eff2e96bc0fdfeb4384d93ebd197712ce`
+- Final: `f0bb13590aab37c9bae69d3e1c727cfb8f20daf5`
+- Required reviews: fresh independent Sol/high plus `docs/dispatch/2026-09-18/PLATFORM-CLAUDE-REVIEW.md`
+- Confirm accepted roles/tenant model, session policy, temporary-development Mongo/Vercel boundary, client-owned production cutover, disabled providers, migration/backup/restore/rollback expectations and remaining production gates.
+
+Record one exact statement:
+
+`KARTIK APPROVES TNP-PLATFORM-M1 FINAL f0bb13590aab37c9bae69d3e1c727cfb8f20daf5 FOR ARCHITECT-CONTROLLED LOCAL INTEGRATION ONLY.`
+
+or
+
+`KARTIK REQUESTS CHANGES TO TNP-PLATFORM-M1 FINAL f0bb13590aab37c9bae69d3e1c727cfb8f20daf5: <file/behavior-specific findings>.`
