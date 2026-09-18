@@ -1,6 +1,8 @@
 SESSION TYPE: NEW SESSION
 DO NOT REUSE ANY PREVIOUS TNP ARCHITECT, REVIEWER OR DEVELOPER SESSION.
 
+SUPERSEDED — DO NOT EXECUTE. The user issued a later Godly/Origin-inspired homepage 3D and motion requirement after `6ef1f2ceeb5dcc097773ad7e1b8e8f92ab81cb23`. P will publish a replacement fixed-SHA review packet after the bounded Astra correction.
+
 # TNP-B-M1 Astra public/frontend — external Claude fixed-SHA review
 
 You are a fresh read-only external Claude reviewer. You are not the Astra author, architect P, a prior TNP reviewer or an implementation writer. Do not edit, commit, push, merge, deploy, create a lease or review a moving branch.
