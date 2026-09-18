@@ -17,6 +17,8 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { navLinks, portalLinks } from '@/data/tnp';
 import { PreviewControls } from '@/components/tnp/shared/PreviewControls';
+import WorkspaceDrawer from './public/WorkspaceDrawer';
+import { publicNavigation } from './public/access-content';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -52,7 +54,24 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   const [showPreloader, setShowPreloader] = useState(false);
   const [routeAnimating, setRouteAnimating] = useState(false);
+  const menuTrigger = useRef<HTMLButtonElement>(null);
   const label = transitionLabels[pathname] ?? 'TNP HOSPITALITY';
+  const publicPage = !['/client', '/planner', '/freelancer', '/admin'].some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+  const publicLinks = publicNavigation;
+
+  useEffect(() => {
+    if (!publicPage || !menuOpen) return;
+    const dismiss = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        menuTrigger.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', dismiss);
+    return () => window.removeEventListener('keydown', dismiss);
+  }, [publicPage, menuOpen]);
 
   useEffect(() => {
     const seen = sessionStorage.getItem('tnp-preloader-seen');
@@ -67,6 +86,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // The public photography narrative follows native scrolling. Keep the
+    // existing portal smooth-scroll behavior outside the homepage unchanged.
+    if (pathname === '/') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const lenis = new Lenis({
       lerp: 0.08,
@@ -81,7 +103,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       gsap.ticker.remove(update);
       lenis.destroy();
     };
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -105,6 +127,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   useEffect(() => {
+    if (publicPage) return;
     const context = (document as TnpModelContextDocument).modelContext;
     if (!context?.registerTool) return;
     const controller = new AbortController();
@@ -150,10 +173,31 @@ export default function AppShell({ children }: { children: ReactNode }) {
     ).catch(() => undefined);
 
     return () => controller.abort();
-  }, [router]);
+  }, [router, publicPage]);
 
   return (
     <>
+      {publicPage && (
+        <a
+          className="public-skip"
+          href="#main-content"
+          onClick={(event) => {
+            const main = document.getElementById('main-content');
+            if (main) main.focus();
+            else {
+              // The framework's invalid-slug page has a heading but no main.
+              const heading = document.querySelector('h1');
+              if (heading) {
+                event.preventDefault();
+                heading.tabIndex = -1;
+                heading.focus();
+              }
+            }
+          }}
+        >
+          Skip to main content
+        </a>
+      )}
       <Preloader active={showPreloader} />
       <CustomCursor />
       <div
@@ -162,43 +206,84 @@ export default function AppShell({ children }: { children: ReactNode }) {
       >
         <span>{label}</span>
       </div>
-      <header className={`site-nav ${scrolled ? 'is-scrolled' : ''}`}>
+      <header
+        className={`site-nav ${publicPage ? 'public-nav' : ''} ${scrolled ? 'is-scrolled' : ''} ${publicPage && menuOpen ? 'public-menu-visible' : ''}`}
+      >
         <Link className="brand-mark" href="/" data-cursor="OPEN">
           <span>TNP</span>
           <small>Hospitality</small>
         </Link>
-        <nav className="desktop-nav" aria-label="Primary navigation">
-          {navLinks.map((link) => (
-            <a key={link.label} href={link.href}>
+        <nav
+          className="desktop-nav"
+          aria-label={publicPage ? 'Homepage sections' : 'Primary navigation'}
+        >
+          {(publicPage ? publicLinks : navLinks).map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              title={
+                publicPage ? `${link.label} — homepage section` : undefined
+              }
+            >
               {link.label}
             </a>
           ))}
         </nav>
         <div className="nav-actions">
-          <Link className="login-link" href="/planner">
-            Login
-          </Link>
+          {publicPage && (
+            <Link
+              className="public-access-link"
+              href="/login"
+              aria-label="Workspace / login access"
+            >
+              <span className="access-wide">Workspace / Login</span>
+              <span className="access-compact">Workspace</span>
+            </Link>
+          )}
+          {!publicPage && (
+            <Link className="login-link" href="/planner">
+              Login
+            </Link>
+          )}
           <Link
             className="magnetic-btn small"
-            href="/client"
+            href={publicPage ? '/contact' : '/client'}
             data-cursor="EXPLORE"
           >
             Let&apos;s Talk
           </Link>
           <button
+            ref={menuTrigger}
             className="menu-toggle"
             type="button"
             aria-label="Toggle menu"
             aria-expanded={menuOpen}
+            aria-controls={publicPage ? 'public-mobile-navigation' : undefined}
             onClick={() => setMenuOpen((value) => !value)}
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </header>
-      <PreviewControls />
-      <PortalSwitcher key={pathname} pathname={pathname} />
-      <MobileMenu open={menuOpen} />
+      {!publicPage && <PreviewControls />}
+      {pathname === '/' && <WorkspaceDrawer />}
+      {!publicPage && <PortalSwitcher key={pathname} pathname={pathname} />}
+      <MobileMenu
+        publicPage={publicPage}
+        open={menuOpen}
+        links={
+          publicPage
+            ? [
+                ...publicLinks,
+                { label: 'Workspace / Login', href: '/login' },
+                { label: 'Enquire', href: '/contact' },
+              ]
+            : [...navLinks, ...portalLinks]
+        }
+        onNavigate={() => {
+          if (publicPage) setMenuOpen(false);
+        }}
+      />
       {children}
     </>
   );
@@ -280,11 +365,31 @@ function PortalSwitcher({ pathname }: { pathname: string }) {
   );
 }
 
-function MobileMenu({ open }: { open: boolean }) {
+function MobileMenu({
+  publicPage,
+  open,
+  links,
+  onNavigate,
+}: {
+  publicPage: boolean;
+  open: boolean;
+  links: { label: string; href: string }[];
+  onNavigate: () => void;
+}) {
   return (
-    <div className={`mobile-menu ${open ? 'open' : ''}`} inert={!open}>
-      {[...navLinks, ...portalLinks].map((link) => (
-        <a key={`${link.label}-${link.href}`} href={link.href}>
+    <div
+      className={`mobile-menu ${publicPage ? 'public-menu' : ''} ${open ? 'open' : ''}`}
+      id={publicPage ? 'public-mobile-navigation' : undefined}
+      role={publicPage ? 'navigation' : undefined}
+      aria-label={publicPage ? 'Public menu' : undefined}
+      inert={!open}
+    >
+      {links.map((link) => (
+        <a
+          key={`${link.label}-${link.href}`}
+          href={link.href}
+          onClick={onNavigate}
+        >
           {link.label}
         </a>
       ))}
