@@ -7,7 +7,7 @@ import {
   CalendarDays,
   LayoutDashboard,
   UserRound,
-  UsersRound,
+  Compass,
   X,
 } from 'lucide-react';
 import {
@@ -87,13 +87,14 @@ export default function WorkspaceDrawer() {
         className="workspace-trigger"
         aria-expanded={open}
         aria-controls="public-workspaces"
+        aria-label="Explore TNP workspace previews"
         onClick={() => {
           dismissed.current = open;
           setState((value) => workspaceInteraction(value, 'toggle'));
         }}
       >
-        {open ? <X size={20} /> : <UsersRound size={20} />}
-        <span>Explore workspaces</span>
+        {open ? <X size={20} /> : <Compass size={20} />}
+        <span>Explore</span>
       </button>
       <nav
         id="public-workspaces"
@@ -102,7 +103,7 @@ export default function WorkspaceDrawer() {
         hidden={!open}
       >
         <p className="workspace-kicker">YOUR TNP · PAGE LINKS</p>
-        <h2>Explore workspaces</h2>
+        <h2>Choose your TNP space</h2>
         <p className="workspace-warning">
           Synthetic previews, not production login. No real bookings, payments
           or messages.

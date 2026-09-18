@@ -617,6 +617,116 @@
   width: 100%;
   height: 210px;
 }
+.destinationFrame {
+  overflow: hidden;
+  position: relative;
+  isolation: isolate;
+}
+.destinationFrame img {
+  display: block;
+  object-fit: cover;
+  transform: scale(1.045);
+}
+.destinationItinerary {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 30px;
+  margin: 0 0 40px;
+  color: #67552e;
+  font-size: 8px;
+  letter-spacing: 1.6px;
+}
+.destinationItinerary > div {
+  height: 1px;
+  position: relative;
+  background: #876a3638;
+}
+.destinationItinerary i {
+  position: absolute;
+  inset: 0;
+  background: #876a36;
+  transform-origin: left;
+  transform: scaleX(var(--destination-progress, 1));
+}
+.destinationItinerary b {
+  position: absolute;
+  top: -9px;
+  transform: translateX(-50%);
+  background: #eae8dc;
+  padding: 2px 5px;
+  font-size: 8px;
+  font-weight: 500;
+}
+.destinationGrid figure:hover img {
+  filter: brightness(1.05);
+}
+.destinations:focus-within .destinationItinerary > div {
+  outline: 1px solid #876a36;
+  outline-offset: 5px;
+}
+@keyframes placeReveal {
+  from {
+    clip-path: inset(0 3% 4% 0);
+  }
+  to {
+    clip-path: inset(0);
+  }
+}
+@keyframes placeDepth {
+  from {
+    transform: translateY(5px) scale(1.045);
+  }
+  to {
+    transform: translateY(-5px) scale(1.045);
+  }
+}
+@keyframes placeLabel {
+  from {
+    transform: translateY(6px);
+    opacity: 0.92;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes placeJourney {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+@media (min-width: 701px) and (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .destinations[data-destination-engine='fallback'] .destinationFrame img {
+    transform: translateY(var(--destination-drift, 0px)) scale(1.045);
+  }
+  @supports (animation-timeline: scroll(root block)) and
+    (animation-range: 1px 2px) {
+    .destinations[data-destination-engine='native'] .destinationFrame {
+      animation: placeReveal linear both;
+      animation-timeline: scroll(root block);
+      animation-range: var(--place-start) var(--place-end);
+    }
+    .destinations[data-destination-engine='native'] .destinationFrame img {
+      animation: placeDepth linear both;
+      animation-timeline: scroll(root block);
+      animation-range: var(--place-start) var(--place-drift-end);
+    }
+    .destinations[data-destination-engine='native'] figcaption {
+      animation: placeLabel linear both;
+      animation-timeline: scroll(root block);
+      animation-range: var(--place-start) var(--place-end);
+    }
+    .destinations[data-destination-engine='native'] .destinationItinerary i {
+      animation: placeJourney linear both;
+      animation-timeline: scroll(root block);
+      animation-range: var(--itinerary-start) var(--itinerary-end);
+    }
+  }
+}
 .destinationGrid figure:nth-child(even) {
   padding-top: 30px;
 }
@@ -811,6 +921,66 @@
   min-height: 44px;
   display: flex;
   align-items: center;
+}
+/* Continuous section surfaces. Content stays above the final 10% blend;
+   the extra end-space is decorative, never an overlay or a scroll target. */
+.home > :is(section, footer) {
+  background-color: var(--surface-current);
+  background-image: linear-gradient(
+    to bottom,
+    var(--surface-current) 90%,
+    var(--surface-next) 100%
+  );
+}
+.home > .section {
+  padding-bottom: 160px;
+}
+.home > .hero {
+  padding-bottom: 205px;
+}
+.home .heroFoot {
+  bottom: calc(10% + 24px);
+}
+.home > .rsvp {
+  padding-bottom: 190px;
+}
+.home > .events:has(.gallery[open]) {
+  padding-bottom: 260px;
+}
+.intro {
+  border-bottom: 0;
+}
+.finalCta::after {
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    #062b29 0%,
+    #052b29d9 12%,
+    #052b29d9 85%,
+    #062b29 100%
+  );
+}
+@media (max-width: 700px) {
+  .home > .section {
+    padding-bottom: 180px;
+  }
+  .home > .rsvp {
+    padding-bottom: 260px;
+  }
+  .home > .hero {
+    padding-bottom: 200px;
+  }
+  .destinationItinerary {
+    grid-template-columns: 1fr;
+    gap: 22px;
+    margin-bottom: 34px;
+  }
+  .destinationItinerary > span:last-child {
+    display: none;
+  }
+  .destinationItinerary > div {
+    margin-inline: 8px;
+  }
 }
 @media (min-width: 1600px) {
   .hero,

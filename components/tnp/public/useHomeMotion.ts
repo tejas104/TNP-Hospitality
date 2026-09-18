@@ -3,6 +3,11 @@
 import { useEffect, type RefObject } from 'react';
 import { journeyProgress, motionPolicy } from './motion-policy';
 import { filmstripOffset } from './workspace-interaction';
+import {
+  destinationMode,
+  destinationProgress,
+  destinationRange,
+} from './destination-motion';
 
 // Progressive enhancement only: base CSS always contains the complete visible
 // page. No opacity-zero staging, pinning, scroll interception or layout writes.
@@ -21,6 +26,39 @@ export function useHomeMotion(
     let frame = 0;
     let hasRevealedHero = false;
     const seen = new WeakSet<Element>();
+    const destination = element.querySelector<HTMLElement>(
+      '[data-destination-journey]',
+    );
+    const nativeTimeline =
+      CSS.supports('animation-timeline: scroll(root block)') &&
+      CSS.supports('animation-range: 1px 2px');
+    const destinationEngine = () =>
+      destinationMode(policy().animate, policy().parallax, nativeTimeline);
+    const updateDestinationRanges = () => {
+      if (!destination) return;
+      const bounds = destination.getBoundingClientRect();
+      const top = bounds.top + scrollY;
+      destination.style.setProperty(
+        '--itinerary-start',
+        `${Math.max(0, top - innerHeight * 0.85)}px`,
+      );
+      destination.style.setProperty(
+        '--itinerary-end',
+        `${top + bounds.height - innerHeight * 0.4}px`,
+      );
+      destination
+        .querySelectorAll<HTMLElement>('[data-destination-card]')
+        .forEach((card, index) => {
+          const box = card.getBoundingClientRect();
+          const range = destinationRange(box.top + scrollY, innerHeight, index);
+          card.style.setProperty('--place-start', `${range.start}px`);
+          card.style.setProperty('--place-end', `${range.end}px`);
+          card.style.setProperty(
+            '--place-drift-end',
+            `${box.top + scrollY + box.height}px`,
+          );
+        });
+    };
     const policy = () =>
       motionPolicy({
         reduced: reduced.matches,
@@ -65,6 +103,21 @@ export function useHomeMotion(
     };
     const updateJourney = () => {
       frame = 0;
+      if (destination) {
+        const bounds = destination.getBoundingClientRect();
+        const progress =
+          destinationEngine() === 'static'
+            ? 1
+            : destinationProgress(bounds.top, bounds.height, innerHeight);
+        destination.style.setProperty(
+          '--destination-progress',
+          String(progress),
+        );
+        destination.style.setProperty(
+          '--destination-drift',
+          `${destinationEngine() === 'static' ? 0 : 5 - progress * 10}px`,
+        );
+      }
       const filmstrip = element.querySelector<HTMLElement>('[data-filmstrip]');
       if (
         filmstrip &&
@@ -110,6 +163,8 @@ export function useHomeMotion(
         'data-pointer-motion',
         policy().parallax ? 'fine' : 'none',
       );
+      destination?.setAttribute('data-destination-engine', destinationEngine());
+      updateDestinationRanges();
       updateJourney();
       if (!policy().animate) return;
       if (!hasRevealedHero) {
@@ -124,6 +179,32 @@ export function useHomeMotion(
             if (!entry.isIntersecting || seen.has(entry.target)) return;
             seen.add(entry.target);
             observer?.unobserve(entry.target);
+            if (entry.target.hasAttribute('data-destination-card')) {
+              const card = entry.target;
+              const frame = card.querySelector<HTMLElement>(
+                '[data-destination-frame]',
+              );
+              const label = card.querySelector<HTMLElement>(
+                '[data-destination-label]',
+              );
+              if (frame) {
+                const animation = frame.animate(
+                  [{ clipPath: 'inset(0 3% 4% 0)' }, { clipPath: 'inset(0)' }],
+                  {
+                    duration: 850,
+                    delay: Number((card as HTMLElement).dataset.stagger) * 45,
+                    easing: 'cubic-bezier(.18,.7,.2,1)',
+                  },
+                );
+                animations.set(frame, animation);
+                animation.onfinish = () => {
+                  animations.delete(frame);
+                };
+              }
+              if (label)
+                animate(label, Number((card as HTMLElement).dataset.stagger));
+              return;
+            }
             animate(
               entry.target as HTMLElement,
               Number((entry.target as HTMLElement).dataset.stagger ?? 0),
@@ -135,6 +216,10 @@ export function useHomeMotion(
       element
         .querySelectorAll<HTMLElement>('[data-motion]:not([data-hero-stage])')
         .forEach((target) => observer?.observe(target));
+      if (destinationEngine() === 'fallback')
+        destination
+          ?.querySelectorAll('[data-destination-card]')
+          .forEach((target) => observer?.observe(target));
     };
     const pointer = (event: PointerEvent) => {
       if (!policy().parallax || event.pointerType !== 'mouse') return;
@@ -171,6 +256,11 @@ export function useHomeMotion(
         }
       });
     configure();
+    const resize = new ResizeObserver(() => {
+      updateDestinationRanges();
+      scroll();
+    });
+    resize.observe(element);
     reduced.addEventListener('change', configure);
     mobile.addEventListener('change', configure);
     fine.addEventListener('change', configure);
@@ -182,6 +272,7 @@ export function useHomeMotion(
     element.addEventListener('focusin', focus);
     return () => {
       observer?.disconnect();
+      resize.disconnect();
       cancelAll();
       cancelAnimationFrame(frame);
       resetPointer();

@@ -10,6 +10,7 @@ import HomeHero from './public/HomeHero';
 import styles from './public/Home.module.css';
 import { useHomeMotion } from './public/useHomeMotion';
 import { canPreviewService } from './public/workspace-interaction';
+import { sectionSurface } from './public/destination-motion';
 
 export default function HomeExperience() {
   const [serviceIndex, setServiceIndex] = useState(0);
@@ -24,6 +25,7 @@ export default function HomeExperience() {
     <main ref={home} className={styles.home} id="main-content" tabIndex={-1}>
       <section
         className={styles.hero}
+        style={sectionSurface('hero')}
         id="experience"
         aria-labelledby="home-title"
       >
@@ -70,6 +72,7 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.intro}`}
+        style={sectionSurface('intro')}
         id="about"
         aria-labelledby="about-title"
       >
@@ -104,6 +107,7 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.services}`}
+        style={sectionSurface('services')}
         id="services"
         aria-labelledby="services-title"
       >
@@ -226,7 +230,12 @@ export default function HomeExperience() {
         </div>
       </section>
 
-      <section className={styles.rsvp} id="rsvp" aria-labelledby="rsvp-title">
+      <section
+        className={styles.rsvp}
+        style={sectionSurface('rsvp')}
+        id="rsvp"
+        aria-labelledby="rsvp-title"
+      >
         <div className={styles.rsvpIntro}>
           <p className={styles.eyebrow}>03 / RSVP & GUEST HOSPITALITY</p>
           <h2 id="rsvp-title" data-motion="copy">
@@ -324,6 +333,7 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.events}`}
+        style={sectionSurface('events')}
         id="events"
         aria-labelledby="events-title"
       >
@@ -448,6 +458,8 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.destinations}`}
+        style={sectionSurface('destinations')}
+        data-destination-journey
         id="destinations"
         aria-labelledby="destinations-title"
       >
@@ -464,19 +476,37 @@ export default function HomeExperience() {
             Explore venues in the client preview <ArrowUpRight size={17} />
           </Link>
         </div>
+        <div className={styles.destinationItinerary} aria-hidden="true">
+          <span>PLACES TO IMAGINE</span>
+          <div>
+            <i />
+            {destinations.map((destination, index) => (
+              <b key={destination.city} style={{ left: `${index * 20}%` }}>
+                0{index + 1}
+              </b>
+            ))}
+          </div>
+          <span>YOUR STORY, YOUR SETTING</span>
+        </div>
         <div className={styles.destinationGrid}>
-          {destinations.map((destination) => (
-            <figure key={destination.city}>
-              <img
-                src={destination.image.src}
-                alt={destination.image.alt}
-                width="600"
-                height="700"
-                data-motion="image"
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption>
+          {destinations.map((destination, index) => (
+            <figure
+              key={destination.city}
+              data-destination-card
+              data-stagger={index}
+            >
+              <div className={styles.destinationFrame} data-destination-frame>
+                <img
+                  src={destination.image.src}
+                  alt={destination.image.alt}
+                  width="600"
+                  height="700"
+                  data-destination-image
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
+              <figcaption data-destination-label>
                 <h3>{destination.city}</h3>
                 <span>
                   <MapPin size={13} /> {destination.region}
@@ -485,10 +515,14 @@ export default function HomeExperience() {
             </figure>
           ))}
         </div>
+        <p className={styles.imageNote}>
+          Illustrative destination photography. Your place, thoughtfully chosen.
+        </p>
       </section>
 
       <section
         className={`${styles.section} ${styles.process}`}
+        style={sectionSurface('process')}
         aria-labelledby="process-title"
         data-journey
       >
@@ -530,6 +564,7 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.people}`}
+        style={sectionSurface('people')}
         id="people"
         aria-labelledby="people-title"
       >
@@ -576,7 +611,11 @@ export default function HomeExperience() {
         </p>
       </section>
 
-      <section className={styles.finalCta} aria-labelledby="contact-title">
+      <section
+        className={styles.finalCta}
+        style={sectionSurface('final')}
+        aria-labelledby="contact-title"
+      >
         <img
           data-motion="image"
           src={byId('terrace').src}
@@ -599,7 +638,7 @@ export default function HomeExperience() {
           <p>Try a synthetic enquiry. No external message is sent.</p>
         </div>
       </section>
-      <footer className={styles.footer}>
+      <footer className={styles.footer} style={sectionSurface('footer')}>
         <span>
           TNP <small>HOSPITALITY</small>
         </span>
