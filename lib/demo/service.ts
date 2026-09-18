@@ -319,7 +319,15 @@ export class DemoPreviewService implements PreviewService {
     const eventId = stringField(payload, 'eventId');
     const role = stringField(payload, 'role');
     const quantity = integerField(payload, 'quantity');
-    if (!records.bookings.some((x) => x.id === bookingId) || !records.events.some((x) => x.id === eventId) || !role || quantity < 1) return fail('VALIDATION_ERROR', 'Requirement must link a booking/event and include a role and positive quantity.');
+    const booking = records.bookings.find((item) => item.id === bookingId);
+    const event = records.events.find((item) => item.id === eventId);
+    const fields: Record<string, string> = {};
+    if (!booking) fields.bookingId = 'Choose an existing booking.';
+    if (!event) fields.eventId = 'Choose an existing event.';
+    else if (booking && event.bookingId !== booking.id) fields.eventId = 'Choose an event linked to this booking.';
+    if (!role) fields.role = 'Role is required.';
+    if (quantity < 1) fields.quantity = 'Quantity must be positive.';
+    if (Object.keys(fields).length) return fail('VALIDATION_ERROR', 'Requirement must link a booking to one of its events and include a role and positive quantity.', fields);
     const requirement: Requirement = { id: `tnp-demo-requirement-${String(records.requirements.length + 1).padStart(3, '0')}`, bookingId, eventId, role, quantity, notes: stringField(payload, 'notes'), status: payload.status === 'draft' ? 'draft' : 'submitted' };
     records.requirements.push(requirement);
     return ok(requirement);

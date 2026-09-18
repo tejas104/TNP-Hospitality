@@ -129,6 +129,69 @@ test('A/B/C registration, draft and enquiry operations validate, persist and rep
   errorCode(await service.mutate(request(PREVIEW_OPERATIONS.submitAssessment, { applicantId: 'missing', score: 101 }, 'bad-assessment')), 'VALIDATION_ERROR');
 });
 
+test('requirements reject missing and cross-linked booking/event IDs without changing connected records', async () => {
+  const { service, store } = await setup();
+  await arrange(store, 'second-booking-event', (records) => {
+    records.bookings.push({
+      id: 'tnp-test-booking-002',
+      clientId: 'tnp-demo-client-001',
+      venueId: 'tnp-demo-venue-002',
+      eventName: 'Synthetic second booking',
+      city: 'Mumbai',
+      budgetPaise: 5000000,
+      status: 'submitted',
+      createdAt: records.metadata.clock,
+    });
+    records.events.push({
+      id: 'tnp-test-event-003',
+      bookingId: 'tnp-test-booking-002',
+      name: 'Synthetic event for second booking',
+      startsAt: '2026-09-20T10:00:00.000+05:30',
+      endsAt: '2026-09-20T14:00:00.000+05:30',
+      timezone: 'Asia/Kolkata',
+      venueId: 'tnp-demo-venue-002',
+      reportingDetails: 'Synthetic linkage regression fixture',
+      status: 'staffing',
+    });
+  });
+
+  const bookingsBefore = value(await service.listBookings()).items;
+  const eventsBefore = value(await service.listEvents()).items;
+  const requirementsBefore = value(await service.listRequirements()).items;
+  const payload = { role: 'Event Coordinator', quantity: 2, notes: 'Synthetic linkage validation' };
+
+  const missingBooking = await service.mutate(request(PREVIEW_OPERATIONS.submitRequirement, {
+    ...payload, bookingId: 'missing-booking', eventId: 'tnp-test-event-003',
+  }, 'requirement-missing-booking'));
+  errorCode(missingBooking, 'VALIDATION_ERROR');
+  assert.equal(missingBooking.error.fieldErrors.bookingId, 'Choose an existing booking.');
+
+  const missingEvent = await service.mutate(request(PREVIEW_OPERATIONS.submitRequirement, {
+    ...payload, bookingId: 'tnp-test-booking-002', eventId: 'missing-event',
+  }, 'requirement-missing-event'));
+  errorCode(missingEvent, 'VALIDATION_ERROR');
+  assert.equal(missingEvent.error.fieldErrors.eventId, 'Choose an existing event.');
+
+  const crossLinked = await service.mutate(request(PREVIEW_OPERATIONS.submitRequirement, {
+    ...payload, bookingId: 'tnp-demo-booking-001', eventId: 'tnp-test-event-003',
+  }, 'requirement-cross-link'));
+  errorCode(crossLinked, 'VALIDATION_ERROR');
+  assert.equal(crossLinked.error.fieldErrors.eventId, 'Choose an event linked to this booking.');
+
+  assert.deepEqual(value(await service.listBookings()).items, bookingsBefore);
+  assert.deepEqual(value(await service.listEvents()).items, eventsBefore);
+  assert.deepEqual(value(await service.listRequirements()).items, requirementsBefore);
+
+  const validRequest = request(PREVIEW_OPERATIONS.submitRequirement, {
+    ...payload, bookingId: 'tnp-test-booking-002', eventId: 'tnp-test-event-003',
+  }, 'requirement-valid-second-booking');
+  const inserted = value(await service.mutate(validRequest));
+  assert.equal(inserted.bookingId, 'tnp-test-booking-002');
+  assert.equal(inserted.eventId, 'tnp-test-event-003');
+  assert.equal((await service.mutate(validRequest)).replayed, true);
+  assert.equal(value(await service.listRequirements()).items.length, requirementsBefore.length + 1);
+});
+
 test('planner requirement to Operations allocation to worker attendance and earning remains connected', async () => {
   const { service } = await setup();
   const requirement = value(await service.mutate(request(PREVIEW_OPERATIONS.submitRequirement, {
@@ -477,6 +540,35 @@ test('ordinary and reset ledgers survive reload and enforce the normative genera
   assert.equal(originalReplayAtGeneration2.ok, true);
   assert.equal(originalReplayAtGeneration2.value.toGeneration, 1);
   assert.equal(await reloadedAgain.service.getGeneration(), 2);
+});
+
+test('preview variants remain idempotent across retry, reload and reset without masking payload conflicts', async () => {
+  const storage = new MemoryPreviewStorage();
+  const first = await setup(storage);
+  const loading = request(PREVIEW_OPERATIONS.setPreviewVariant, { key: 'global', variant: 'loading' }, 'variant-1');
+  value(await first.service.mutate(loading));
+  assert.equal((await first.service.mutate(loading)).replayed, true);
+  errorCode(await first.service.mutate(request(
+    PREVIEW_OPERATIONS.setPreviewVariant,
+    { key: 'global', variant: 'empty' },
+    'variant-1',
+  )), 'IDEMPOTENCY_CONFLICT');
+
+  const reloaded = await setup(storage);
+  const empty = request(PREVIEW_OPERATIONS.setPreviewVariant, { key: 'global', variant: 'empty' }, 'variant-2');
+  const afterReload = await reloaded.service.mutate(empty);
+  assert.equal(afterReload.ok, true);
+  assert.equal(afterReload.replayed, false);
+
+  value(await reloaded.service.resetPreview({ requestKey: 'variant-reset', expectedGeneration: 0, actorId: 'tnp-test-actor' }));
+  const readyInNewGeneration = await reloaded.service.mutate(request(
+    PREVIEW_OPERATIONS.setPreviewVariant,
+    { key: 'global', variant: 'ready' },
+    'variant-1',
+    1,
+  ));
+  assert.equal(readyInNewGeneration.ok, true);
+  assert.equal(readyInNewGeneration.replayed, false);
 });
 
 test('same-generation reset races increment once and stale delayed work cannot overwrite reset data', async () => {
