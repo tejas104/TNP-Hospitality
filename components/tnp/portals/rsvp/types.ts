@@ -10,6 +10,7 @@ export type SectionProps = {
   now: number;
   persona: Persona;
   org: Organization;
+  contextLabels: { customer: string | null; engagement: string | null };
   can: (cmd: Command['type']) => boolean;
   canView: (view: Section) => boolean;
   refresh: () => void;

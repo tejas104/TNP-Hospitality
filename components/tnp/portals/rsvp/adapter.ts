@@ -7,7 +7,7 @@ import { addDays, localDate } from './dates.ts';
 import { createFixtures, type Fixtures } from './fixtures.ts';
 import type { PreviewRow } from './importer.ts';
 import { ALL_SECTIONS } from './fixtures.ts';
-import { buildPartyRows } from './logic.ts';
+import { buildPartyRows, transferPassengers } from './logic.ts';
 import type {
   CallOutcome,
   ChangeEntry,
@@ -109,7 +109,7 @@ export type Command =
   | { type: 'assign-vehicle'; transferIds: string[]; vehicleId: string | null }
   | { type: 'replan-transfer'; transferIds: string[] }
   | { type: 'stay'; stayId: string; baseVersion: number; to: StayState; hotelId?: string; categoryId?: string; roomLabel?: string }
-  | { type: 'generate-report'; kind: ReportKind; filters: string; columns: string[] };
+  | { type: 'generate-report'; kind: ReportKind; filters: string; columns: string[]; scope?: { people: number; parties: number; records: number } };
 
 export const COMMAND_ROLES: Record<Command['type'], Role[]> = {
   'record-call': ['service-manager', 'vendor-owner', 'coordinator', 'calling-agent'],
@@ -510,6 +510,13 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
       case 'assign-vehicle': {
         const v = cmd.vehicleId ? data.vehicles.find((x) => x.id === cmd.vehicleId) : null;
         if (cmd.vehicleId && !v) return fail('not-found', 'That vehicle is not available for this event.');
+        if (v) {
+          const pax = cmd.transferIds.reduce((s, id) => {
+            const t = data.transfers.find((x) => x.id === id);
+            return s + (t ? transferPassengers(t, data) : 0);
+          }, 0);
+          if (pax > v.seats) return fail('validation', `${pax} passengers exceed the ${v.seats} seats in ${v.label}.`);
+        }
         for (const id of cmd.transferIds) {
           const t = data.transfers.find((x) => x.id === id);
           if (!t) continue;
@@ -553,7 +560,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
           s.hotelId = hotel.id;
           s.categoryId = cat.id;
         }
-        if (cmd.to === 'approved' && cmd.roomLabel !== undefined) s.roomLabel = cmd.roomLabel;
+        if (cmd.roomLabel !== undefined && persona.role !== 'customer-owner') s.roomLabel = cmd.roomLabel.trim();
         const before = s.state;
         s.state = cmd.to;
         change(p.value, actor, 'Stay', before, cmd.to, 'staff');
@@ -571,9 +578,9 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
           generatedAt: new Date(now()).toISOString(),
           revision,
           dataRevision: data.dataRevision,
-          recordCount: rows.length,
-          peopleCount: rows.reduce((s, r) => s + r.people, 0),
-          partyCount: rows.length,
+          recordCount: cmd.scope?.records ?? rows.length,
+          peopleCount: cmd.scope?.people ?? rows.reduce((s, r) => s + r.people, 0),
+          partyCount: cmd.scope?.parties ?? rows.length,
           filters: cmd.filters,
           columns: cmd.columns,
         };

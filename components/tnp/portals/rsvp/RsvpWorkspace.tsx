@@ -508,7 +508,7 @@ function EventWorkspace({
 
   const sectionProps: SectionProps | null =
     state.phase === 'ready'
-      ? { data: state.data, rows, now, persona, org, can, canView: (s: Section) => allowed.includes(s) && entitled(s), refresh, go, filters, setFilters, selectedParty, selectParty, changedIds: state.changedIds }
+      ? { data: state.data, rows, now, persona, org, contextLabels: { customer: customer?.name ?? null, engagement: engagement?.name ?? null }, can, canView: (s: Section) => allowed.includes(s) && entitled(s), refresh, go, filters, setFilters, selectedParty, selectParty, changedIds: state.changedIds }
       : null;
 
   // Rendered in the desktop sidebar and in the compact drawer, so every destination stays reachable.
@@ -530,6 +530,7 @@ function EventWorkspace({
       ) : (
         <p className={styles.sideEvent}>{event?.name}</p>
       )}
+      {(customer || engagement) && <p className={styles.sideRole}>{[customer?.name, engagement?.name].filter(Boolean).join(' · ')}</p>}
       <p className={styles.sideRole}>
         {ROLE_LABEL[persona.role]} · {persona.name}
       </p>
@@ -555,8 +556,8 @@ function EventWorkspace({
             <nav aria-label="Context" className={styles.breadcrumb}>
               <ol>
                 <li>{org.name}</li>
-                {customer && <li>{customer.name}</li>}
-                {engagement && <li>{engagement.name}</li>}
+                {customer && <li className={styles.crumbWide}>{customer.name}</li>}
+                {engagement && <li className={styles.crumbWide}>{engagement.name}</li>}
                 <li aria-current="page">
                   {event?.name} <span className={styles.tz}>({event?.timezone})</span>
                 </li>

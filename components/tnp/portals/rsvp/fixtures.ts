@@ -276,7 +276,7 @@ function buildEvent(seed: EventSeed, today: string): EventData {
           hotelId: stayState === 'requested' ? null : `${event.id}-h1`,
           categoryId: stayState === 'requested' ? null : size > 2 ? `${event.id}-h1-suite` : `${event.id}-h1-deluxe`,
           roomLabel: stayState === 'communicated' || stayState === 'approved' ? `${1 + (i % 4)}${String(10 + i).padStart(2, '0')}` : '',
-          checkIn: addDays(event.startsOn, -1),
+          checkIn: arrDay,
           checkOut: addDays(event.startsOn, functions.length),
           occupantIds: passengerIds,
           preference: size > 2 ? 'Connecting rooms near family' : '',

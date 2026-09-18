@@ -2468,6 +2468,227 @@ button.tile:hover {
   color: var(--r-good);
 }
 
+/* ---------- Hospitality ---------- */
+
+.warnPanel {
+  border-left: 4px solid #c58d1c;
+}
+
+.manifestList,
+.inventoryList,
+.gateList,
+.templateList,
+.reportKinds {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.manifestList {
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr));
+}
+
+.manifest {
+  animation: rsvpRise 320ms var(--ease-out) both;
+  border: 1px solid var(--r-line);
+  border-top: 3px solid var(--r-teal);
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  padding: 14px;
+}
+
+.manifestChanged {
+  border-top-color: var(--r-bad);
+}
+
+.manifestHead {
+  align-items: start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.manifestHead h3 {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.manifestHead p {
+  margin: 0;
+}
+
+.manifestPax {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.manifestPax strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.transferRow {
+  align-items: center;
+  border-bottom: 1px solid var(--r-line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 6px 0;
+}
+
+.transferRow > span:first-child {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.vehicleRow,
+.stepControl {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.stepControl select,
+.vehicleRow select {
+  background: #fff;
+  border: 1px solid var(--r-line-strong);
+  font: inherit;
+  max-width: 100%;
+  min-height: 40px;
+  padding: 0 8px;
+}
+
+.inventoryList li {
+  align-items: center;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(80px, 1fr) auto;
+}
+
+.meter {
+  background: #e7e2d4;
+  display: block;
+  height: 8px;
+  overflow: hidden;
+}
+
+.meter span {
+  background: var(--r-teal);
+  display: block;
+  height: 100%;
+  transition: width 320ms var(--ease-out);
+}
+
+.inventoryOver .meter span {
+  background: var(--r-bad);
+}
+
+.gateList li {
+  align-items: center;
+  border-bottom: 1px solid var(--r-line);
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.gateList li > span:first-child {
+  display: grid;
+  gap: 2px;
+}
+
+.templateChoice {
+  align-items: center;
+  border: 1px solid var(--r-line);
+  cursor: pointer;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  min-height: 52px;
+  padding: 8px 12px;
+  transition:
+    border-color 160ms ease,
+    background 160ms ease;
+}
+
+.templateChoice > span {
+  display: grid;
+  gap: 2px;
+}
+
+.templateChoice:has(input:checked) {
+  background: #eef6f4;
+  border-color: var(--r-teal);
+}
+
+.templateChoice input {
+  accent-color: var(--r-teal);
+  height: 18px;
+  width: 18px;
+}
+
+.deliveryTrack {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.deliveryTrack li {
+  border-top: 3px solid var(--r-teal);
+  display: grid;
+  gap: 2px;
+  padding: 8px 4px;
+}
+
+.deliveryTrack strong {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+}
+
+.deliveryTrack span {
+  font-size: 0.78rem;
+}
+
+.deliveryBad {
+  border-top-color: var(--r-bad) !important;
+}
+
+.messageBubble {
+  background: #e7f3ec;
+  border-radius: 2px 12px 12px 12px;
+  max-width: 44ch;
+  padding: 12px 14px;
+  white-space: pre-wrap;
+}
+
+.docQueues {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+}
+
+.previewTag {
+  border: 1px dashed var(--r-champagne);
+  color: var(--r-warn);
+  font-size: 0.74rem;
+  font-weight: 700;
+  justify-self: start;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  text-transform: uppercase;
+}
+
 /* ---------- Keyframes ---------- */
 
 @keyframes rsvpRise {
@@ -2686,7 +2907,17 @@ button.tile:hover {
   }
 
   .header {
-    padding-top: 18px;
+    padding-bottom: 20px;
+    padding-top: 14px;
+  }
+
+  /* Phones keep organization › event visible; customer and engagement stay in the Sections drawer. */
+  .crumbWide {
+    display: none;
+  }
+
+  .header .previewLabel {
+    margin-bottom: 10px;
   }
 
   .viewTitle {
@@ -2713,16 +2944,18 @@ button.tile:hover {
   }
 
   .responsiveTable tbody :is(th, td) {
+    align-items: baseline;
     border: 0;
-    display: grid;
-    gap: 10px;
-    grid-template-columns: minmax(96px, 34%) minmax(0, 1fr);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 6px;
     padding: 5px 12px;
   }
 
   .responsiveTable tbody :is(th, td)[data-label]::before {
     color: var(--r-muted);
     content: attr(data-label);
+    flex: 0 0 min(34%, 130px);
     font-size: 0.72rem;
     font-weight: 700;
     letter-spacing: 0.06em;
@@ -2761,6 +2994,16 @@ button.tile:hover {
 
   .guestNav {
     flex-wrap: wrap;
+  }
+
+  .inventoryList li {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gateList li,
+  .manifestHead {
+    align-items: start;
+    flex-direction: column;
   }
 }
 
@@ -2810,6 +3053,7 @@ button.tile:hover {
   .feedback,
   .statePanel,
   .timelineItem,
+  .manifest,
   .filterPanel,
   .bulkBar,
   .chip,
@@ -2840,6 +3084,7 @@ button.tile:hover {
 
   .navIndicator,
   .progressTrack span,
+  .meter span,
   .bar span {
     transition: none !important;
   }

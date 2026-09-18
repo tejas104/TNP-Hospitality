@@ -17,6 +17,7 @@ import {
   selectionStatus,
   sortRows,
   summarize,
+  transferPassengers,
 } from './logic.ts';
 import { motionPolicy, staggerDelay } from './motion.ts';
 import { buildReport, isStale } from './reports.ts';
@@ -307,6 +308,37 @@ test('changed arrival flags dependent transfers until replanned', async () => {
   await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'replan-transfer', transferIds: [t.id] });
   const after = buildPartyRows(await eventData(adapter), NOW).find((r) => r.party.id === flagged.party.id);
   assert.ok(!after.attention.includes('changed-arrival'));
+});
+
+test('vehicle capacity is enforced by the adapter, not only the UI', async () => {
+  const adapter = make();
+  const data = await eventData(adapter);
+  const sedan = data.vehicles.find((v) => v.seats === 3);
+  const big = [];
+  for (const t of data.transfers.filter((x) => transferPassengers(x, data) > 0)) {
+    if (big.reduce((s, x) => s + transferPassengers(x, data), 0) > 3) break;
+    big.push(t);
+  }
+  assert.ok(big.reduce((s, t) => s + transferPassengers(t, data), 0) > 3);
+  const r = await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'assign-vehicle', transferIds: big.map((t) => t.id), vehicleId: sedan.id });
+  assert.equal(r.error.code, 'validation');
+  const room = await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'assign-vehicle', transferIds: [big[0].id], vehicleId: data.vehicles.find((v) => v.seats >= 12).id });
+  assert.equal(room.ok, true);
+});
+
+test('stay transitions keep request, proposal, approval and communication distinct by role', async () => {
+  const adapter = make();
+  const data = await eventData(adapter);
+  const pending = data.stays.find((s) => s.state === 'approval-pending');
+  const party = data.parties.find((p) => p.id === pending.partyId);
+  const skip = await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'stay', stayId: pending.id, baseVersion: party.version, to: 'communicated' });
+  assert.equal(skip.error.code, 'validation');
+  const requested = data.stays.find((s) => s.state === 'requested');
+  const rp = data.parties.find((p) => p.id === requested.partyId);
+  const customerSkip = await adapter.mutate('customer-mehra', data.event.id, newRequestId(), { type: 'stay', stayId: requested.id, baseVersion: rp.version, to: 'proposed', hotelId: data.hotels[0].id, categoryId: data.hotels[0].categories[0].id });
+  assert.equal(customerSkip.error.code, 'forbidden');
+  const approve = await adapter.mutate('customer-mehra', data.event.id, newRequestId(), { type: 'stay', stayId: pending.id, baseVersion: party.version, to: 'approved' });
+  assert.equal(approve.ok, true);
 });
 
 test('calendar derives statuses from records and revises late onboarding', async () => {
