@@ -20,7 +20,8 @@ export function queueRows(rows: PartyRow[]) {
 export function CallsSection({ data, rows, now, can, go, selectedParty }: SectionProps) {
   const tz = data.event.timezone;
   const [assignee, setAssignee] = useState('all');
-  const [currentId, setCurrentId] = useState<string | null>(selectedParty);
+  // URL selection is authoritative on refresh and browser history navigation.
+  const currentId = rows.some((r) => r.party.id === selectedParty) ? selectedParty : null;
   const [position, setPosition] = useState(0);
   const queue = useMemo(() => {
     const base = queueRows(rows).filter((r) => assignee === 'all' || r.party.assignedCaller === assignee);
@@ -34,13 +35,13 @@ export function CallsSection({ data, rows, now, can, go, selectedParty }: Sectio
 
   // Preserve queue position: keep the current party, or fall back to the same position.
   const index = currentId ? queue.findIndex((r) => r.party.id === currentId) : -1;
-  const current = index >= 0 ? queue[index] : queue[Math.min(position, queue.length - 1)];
+  const current = index >= 0 ? queue[index] : queue[0];
 
   const moveTo = (i: number) => {
     const next = queue[i];
     if (!next) return;
     setPosition(i);
-    setCurrentId(next.party.id);
+    go('calls', { party: next.party.id });
     window.setTimeout(() => document.getElementById('call-card-title')?.focus(), 20);
   };
 

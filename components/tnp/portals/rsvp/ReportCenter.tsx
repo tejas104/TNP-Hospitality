@@ -2,12 +2,12 @@
 
 import { AlertTriangle, Download, FileBarChart, Printer } from 'lucide-react';
 import { useState } from 'react';
-import type { Command } from './adapter';
+import { fingerprint, type Command } from './adapter';
 import { toCsv } from './csv';
 import { formatExact } from './dates';
 import { activeFilterKeys, filterLabel, matchesFilters } from './logic';
 import type { ReportKind, ReportSnapshot } from './model';
-import { buildReport, exportFileName, isStale, REPORT_META } from './reports';
+import { buildReport, canExportReport, exportFileName, isStale, REPORT_META } from './reports';
 import type { SectionProps } from './types';
 import { ActionError, PendingLabel, Stamp, StatePanel, Tag, styles, useEventMutation } from './ui';
 
@@ -31,9 +31,10 @@ export function ReportsSection(props: SectionProps) {
   const built = buildReport(kind, data, scoped);
   const previous = data.reports.find((r) => r.kind === kind);
   const meta = REPORT_META[kind];
+  const scopeSignature = fingerprint({ kind, useFilters, filterText, filters: useFilters ? filters : null, built, org: org.id, customer: contextLabels.customer, event: data.event });
 
   const action = useEventMutation<ReportSnapshot>(
-    () => ({ type: 'generate-report', kind, filters: filterText, columns: built.columns, scope: { people: built.people, parties: built.parties, records: built.rows.length } }) satisfies Command,
+    () => ({ type: 'generate-report', kind, filters: filterText, columns: built.columns, scopeSignature, scope: { people: built.people, parties: built.parties, records: built.rows.length } }) satisfies Command,
     (snap) => {
       setSnapshot(snap);
       setExportNote(null);
@@ -41,7 +42,7 @@ export function ReportsSection(props: SectionProps) {
     (snap, replayed) => (replayed ? `Revision ${snap.revision} was already generated.` : `${meta.title} revision ${snap.revision} generated (synthetic preview).`),
   );
 
-  const current = snapshot && snapshot.kind === kind ? snapshot : null;
+  const current = canExportReport(snapshot, scopeSignature, data) ? snapshot : null;
   const header = current
     ? [
         ['Synthetic export preview — not an externally delivered report'],
@@ -234,8 +235,8 @@ export function ReportsSection(props: SectionProps) {
           {built.rows.length > 50 && <p className={styles.meta}>Showing 50 of {built.rows.length} rows; the CSV contains all rows.</p>}
         </section>
       ) : (
-        <StatePanel title="No preview yet" headingLevel={3}>
-          <p>Generate a revision to preview rows and export a CSV. Generated times come from the synthetic adapter and are not audit evidence.</p>
+        <StatePanel title={snapshot ? 'Generate a new revision' : 'No preview yet'} headingLevel={3}>
+          <p>{snapshot ? 'The report scope or records changed. The previous preview and export are disabled; generate a revision for this exact scope. ' : ''}Generate a revision to preview rows and export a CSV. Generated times come from the synthetic adapter and are not audit evidence.</p>
         </StatePanel>
       )}
 

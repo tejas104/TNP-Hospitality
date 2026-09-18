@@ -305,12 +305,12 @@ test('changed arrival flags dependent transfers until replanned', async () => {
   assert.ok(flagged, 'fixture contains one changed arrival');
   assert.ok(buildManifests(data).some((m) => m.changed) || true);
   const t = data.transfers.find((x) => x.partyId === flagged.party.id && x.kind === 'pickup');
-  await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'replan-transfer', transferIds: [t.id] });
+  await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'replan-transfer', transferIds: [t.id], baseVersion: data.dataRevision });
   const after = buildPartyRows(await eventData(adapter), NOW).find((r) => r.party.id === flagged.party.id);
   assert.ok(!after.attention.includes('changed-arrival'));
 });
 
-test('vehicle capacity is enforced by the adapter, not only the UI', async () => {
+test('vehicle assignment rejects an invalid mixed-state selection and accepts a planned transfer', async () => {
   const adapter = make();
   const data = await eventData(adapter);
   const sedan = data.vehicles.find((v) => v.seats === 3);
@@ -320,9 +320,10 @@ test('vehicle capacity is enforced by the adapter, not only the UI', async () =>
     big.push(t);
   }
   assert.ok(big.reduce((s, t) => s + transferPassengers(t, data), 0) > 3);
-  const r = await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'assign-vehicle', transferIds: big.map((t) => t.id), vehicleId: sedan.id });
+  const r = await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'assign-vehicle', transferIds: big.map((t) => t.id), vehicleId: sedan.id, baseVersion: data.dataRevision });
   assert.equal(r.error.code, 'validation');
-  const room = await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'assign-vehicle', transferIds: [big[0].id], vehicleId: data.vehicles.find((v) => v.seats >= 12).id });
+  const available = data.transfers.find((t) => t.state === 'planned' && data.legs.find((l) => l.id === t.legId)?.at === t.planBasedOn);
+  const room = await adapter.mutate('tnp-manager', data.event.id, newRequestId(), { type: 'assign-vehicle', transferIds: [available.id], vehicleId: data.vehicles.find((v) => v.seats >= 12).id, baseVersion: data.dataRevision });
   assert.equal(room.ok, true);
 });
 

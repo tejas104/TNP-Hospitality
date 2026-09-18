@@ -124,6 +124,11 @@ export function isStale(snapshot: ReportSnapshot, data: Pick<EventData, 'dataRev
   return snapshot.dataRevision < data.dataRevision;
 }
 
+/** A metadata-only revision may export only the exact content it was generated for. */
+export function canExportReport(snapshot: ReportSnapshot | null, scopeSignature: string, data: Pick<EventData, 'dataRevision'>) {
+  return Boolean(snapshot?.scopeSignature && snapshot.scopeSignature === scopeSignature && !isStale(snapshot, data));
+}
+
 export function exportFileName(kind: ReportKind, eventName: string, revision: number) {
   const slug = eventName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   return `${slug}-${kind}-r${revision}-synthetic-preview.csv`;

@@ -2,7 +2,7 @@
 
 import { AlertTriangle, ArrowRight, Car, Plane, RouteOff } from 'lucide-react';
 import { useMemo, useState } from 'react';
-import type { Command } from './adapter';
+import { TRANSFER_TRANSITIONS, type Command } from './adapter';
 import { formatDay, formatExact, isoToZonedLocal, localDate, zonedToIso } from './dates';
 import { buildManifests, changedArrival, dependentsOfLeg, transferPassengers, type Manifest } from './logic';
 import { STAY_LABEL, TRANSFER_LABEL, TRAVEL_MODE_LABEL, type Transfer, type TransferState, type TravelLeg } from './model';
@@ -225,14 +225,6 @@ function ChangeLeg({ leg, props, onClose, onOpenMovements }: { leg: TravelLeg; p
 
 // ---------- Movements ----------
 
-const NEXT_STATES: Partial<Record<TransferState, TransferState[]>> = {
-  requested: ['planned', 'cancelled'],
-  planned: ['cancelled'],
-  assigned: ['dispatched', 'cancelled'],
-  dispatched: ['guest-met', 'no-show'],
-  'guest-met': ['completed'],
-};
-
 export function MovementsSection(props: SectionProps) {
   const { data, rows, can } = props;
   const tz = data.event.timezone;
@@ -299,7 +291,7 @@ export function MovementsSection(props: SectionProps) {
                         {partyOf(t.partyId)?.party.displayName} · {transferPassengers(t, data)} pax
                       </span>
                       <Tag tone="info">{TRANSFER_LABEL[t.state]}</Tag>
-                      {editable && <TransferStep key={`${t.id}-${t.state}`} transfer={t} />}
+                      {editable && <TransferStep key={`${t.id}-${t.state}`} transfer={t} baseVersion={data.dataRevision} onRefresh={props.refresh} />}
                     </li>
                   ))}
                 </ul>
@@ -326,7 +318,7 @@ export function MovementsSection(props: SectionProps) {
                   <Tag tone="warn">{TRANSFER_LABEL[t.state]}</Tag>
                   {editable &&
                     (leg?.at ? (
-                      <TransferStep key={`${t.id}-${t.state}`} transfer={t} />
+                      <TransferStep key={`${t.id}-${t.state}`} transfer={t} baseVersion={data.dataRevision} onRefresh={props.refresh} />
                     ) : (
                       <WhyUnavailable>A movement cannot be planned until the guest shares the {t.kind === 'pickup' ? 'arrival' : 'departure'} time.</WhyUnavailable>
                     ))}
@@ -344,7 +336,7 @@ function ChangedWarnings({ transfers, props }: { transfers: Transfer[]; props: S
   const { data, rows } = props;
   const tz = data.event.timezone;
   const action = useEventMutation(
-    () => ({ type: 'replan-transfer', transferIds: transfers.map((t) => t.id) }) satisfies Command,
+    () => ({ type: 'replan-transfer', transferIds: transfers.map((t) => t.id), baseVersion: data.dataRevision }) satisfies Command,
     undefined,
     (_v, replayed) => (replayed ? 'Replanning already recorded.' : `${transfers.length} transfer(s) moved back to planned against the new times; vehicles released for a capacity re-check.`),
   );
@@ -364,7 +356,7 @@ function ChangedWarnings({ transfers, props }: { transfers: Transfer[]; props: S
           );
         })}
       </ul>
-      <ActionError status={action.status} onRetry={action.retry} />
+      <ActionError status={action.status} onRetry={action.retry} onRefresh={props.refresh} />
       {props.can('replan-transfer') && (
         <button type="button" className={styles.btnPrimary} onClick={action.start} disabled={action.status.phase === 'pending'}>
           <PendingLabel pending={action.status.phase === 'pending'} idle="Replan against new times" busy="Replanning…" />
@@ -380,7 +372,7 @@ function VehicleAssign({ manifest, props }: { manifest: Manifest; props: Section
   const selected = data.vehicles.find((v) => v.id === vehicleId);
   const over = Boolean(selected && manifest.passengers > selected.seats);
   const action = useEventMutation(
-    () => ({ type: 'assign-vehicle', transferIds: manifest.transfers.map((t) => t.id), vehicleId: vehicleId || null }) satisfies Command,
+    () => ({ type: 'assign-vehicle', transferIds: manifest.transfers.map((t) => t.id), vehicleId: vehicleId || null, baseVersion: data.dataRevision }) satisfies Command,
     undefined,
     (_v, replayed) => (replayed ? 'Assignment already recorded.' : vehicleId ? `Assigned ${selected?.label} to ${manifest.transfers.length} transfer(s).` : 'Vehicle released.'),
   );
@@ -407,16 +399,16 @@ function VehicleAssign({ manifest, props }: { manifest: Manifest; props: Section
           <PendingLabel pending={action.status.phase === 'pending'} idle={vehicleId ? 'Assign' : 'Release'} busy="Saving…" />
         </button>
       )}
-      <ActionError status={action.status} onRetry={action.retry} />
+      <ActionError status={action.status} onRetry={action.retry} onRefresh={props.refresh} />
     </div>
   );
 }
 
-function TransferStep({ transfer }: { transfer: Transfer }) {
-  const options = NEXT_STATES[transfer.state] ?? [];
+function TransferStep({ transfer, baseVersion, onRefresh }: { transfer: Transfer; baseVersion: number; onRefresh: () => void }) {
+  const options = TRANSFER_TRANSITIONS[transfer.state] ?? [];
   const [next, setNext] = useState<TransferState | ''>('');
   const action = useEventMutation(
-    () => (next ? ({ type: 'transfer', transferId: transfer.id, state: next } satisfies Command) : null),
+    () => (next ? ({ type: 'transfer', transferId: transfer.id, state: next, baseVersion } satisfies Command) : null),
     undefined,
     () => `Recorded: ${next ? TRANSFER_LABEL[next] : ''}. No message was sent to the driver or guest.`,
   );
@@ -437,7 +429,7 @@ function TransferStep({ transfer }: { transfer: Transfer }) {
       <button type="button" className={styles.btnGhost} disabled={!next || action.status.phase === 'pending'} onClick={action.start}>
         Record
       </button>
-      <ActionError status={action.status} onRetry={action.retry} />
+      <ActionError status={action.status} onRetry={action.retry} onRefresh={onRefresh} />
     </span>
   );
 }

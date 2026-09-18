@@ -198,7 +198,8 @@ function StayMove({ stay, move, props, onClose }: { stay: Stay; move: Move; prop
   const hotel = data.hotels.find((h) => h.id === hotelId);
   const cat = hotel?.categories.find((c) => c.id === categoryId);
   const usage = categoryUsage(data).find((u) => u.cat.id === categoryId);
-  const wouldExceed = Boolean(move.needsRoom && usage && stay.categoryId !== categoryId && usage.held + 1 > usage.cat.inventory);
+  const existingHold = stay.hotelId === hotelId && stay.categoryId === categoryId && ['proposed', 'approval-pending', 'approved', 'communicated', 'checked-in'].includes(stay.state);
+  const wouldExceed = Boolean(move.needsRoom && usage && usage.held - Number(existingHold) + 1 > usage.cat.inventory);
   const tooMany = Boolean(move.needsRoom && cat && stay.occupantIds.length > cat.maxOccupancy);
   const staff = persona.role !== 'customer-owner' && persona.role !== 'hotel-contact';
   const action = useEventMutation(

@@ -268,6 +268,7 @@ export type ReportKind =
   | 'final';
 
 export type ReportSnapshot = {
+  scopeSignature?: string;
   id: string;
   kind: ReportKind;
   eventId: string;

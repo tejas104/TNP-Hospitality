@@ -807,6 +807,7 @@
   gap: 14px;
   min-width: 0;
   padding: clamp(16px, 2.4vw, 26px);
+  box-shadow: 0 2px 0 #062b2905, 0 12px 30px -24px #062b2929;
 }
 
 .panel p {
@@ -3025,6 +3026,74 @@ button.tile:hover {
   }
 }
 
+/* Shared RSVP surface and interaction rhythm; no new global styles. */
+.eventHero,
+.detailPane,
+.callCard,
+.manifest,
+.statePanel {
+  box-shadow: 0 12px 32px -26px #062b2940;
+}
+
+.queueItem,
+.templateChoice,
+.navItem,
+.stepper li span {
+  transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.queueItem[aria-current='true'],
+.templateChoice:has(input:checked) {
+  background: #e7efea;
+  box-shadow: inset 3px 0 0 var(--r-teal);
+}
+
+.navItem[aria-current='page'] {
+  box-shadow: inset 3px 0 0 #bba879;
+}
+
+.manifestChanged {
+  border-inline-start: 3px solid #94712e;
+}
+
+.stepper li[aria-current='step'] span {
+  box-shadow: 0 0 0 4px #00808016;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .queueItem:hover,
+  .templateChoice:hover {
+    background: #f0f3ed;
+  }
+  .btnPrimary:active,
+  .btnSecondary:active,
+  .queueItem:active {
+    transform: translateY(1px);
+  }
+}
+
+@media (max-width: 480px) {
+  .eventHeroCopy {
+    padding: 16px;
+    gap: 6px;
+  }
+  .eventHeroCopy h2 {
+    font-size: 1.65rem;
+    line-height: 1.08;
+  }
+  .eventHero .illustration {
+    aspect-ratio: 3 / 1;
+    max-height: 124px;
+  }
+  .heroCountdown {
+    font-size: 1.1rem;
+  }
+  .queueList {
+    max-height: 180px;
+    border-bottom: 2px solid var(--r-line-strong);
+  }
+}
+
 /* Reduced motion: no spatial travel, stagger, shimmer or scaling; very short fades only. */
 @media (prefers-reduced-motion: reduce) {
   .root *,
@@ -3079,7 +3148,8 @@ button.tile:hover {
   }
 
   .spin {
-    animation: rsvpSpin 2s linear infinite !important;
+    animation: none !important;
+    transform: none !important;
   }
 
   .navIndicator,

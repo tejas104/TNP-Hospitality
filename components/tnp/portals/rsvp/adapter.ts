@@ -7,7 +7,7 @@ import { addDays, localDate } from './dates.ts';
 import { createFixtures, type Fixtures } from './fixtures.ts';
 import type { PreviewRow } from './importer.ts';
 import { ALL_SECTIONS } from './fixtures.ts';
-import { buildPartyRows, transferPassengers } from './logic.ts';
+import { buildManifests, buildPartyRows } from './logic.ts';
 import type {
   CallOutcome,
   ChangeEntry,
@@ -105,11 +105,11 @@ export type Command =
   | { type: 'bulk-assign-caller'; items: Array<{ partyId: string; baseVersion: number }>; caller: string }
   | { type: 'create-party'; draft: PartyDraft }
   | { type: 'change-leg'; legId: string; baseVersion: number; at: string | null; reference: string }
-  | { type: 'transfer'; transferId: string; state: TransferState }
-  | { type: 'assign-vehicle'; transferIds: string[]; vehicleId: string | null }
-  | { type: 'replan-transfer'; transferIds: string[] }
+  | { type: 'transfer'; transferId: string; baseVersion: number; state: TransferState }
+  | { type: 'assign-vehicle'; transferIds: string[]; baseVersion: number; vehicleId: string | null }
+  | { type: 'replan-transfer'; transferIds: string[]; baseVersion: number }
   | { type: 'stay'; stayId: string; baseVersion: number; to: StayState; hotelId?: string; categoryId?: string; roomLabel?: string }
-  | { type: 'generate-report'; kind: ReportKind; filters: string; columns: string[]; scope?: { people: number; parties: number; records: number } };
+  | { type: 'generate-report'; kind: ReportKind; filters: string; columns: string[]; scopeSignature?: string; scope?: { people: number; parties: number; records: number } };
 
 export const COMMAND_ROLES: Record<Command['type'], Role[]> = {
   'record-call': ['service-manager', 'vendor-owner', 'coordinator', 'calling-agent'],
@@ -136,6 +136,15 @@ const STAY_TRANSITIONS: Record<StayState, StayState[]> = {
   communicated: ['checked-in', 'proposed'],
   'checked-in': ['checked-out'],
   'checked-out': [],
+};
+
+export const TRANSFER_TRANSITIONS: Partial<Record<TransferState, TransferState[]>> = {
+  requested: ['planned', 'cancelled'],
+  'awaiting-details': ['planned', 'cancelled'],
+  planned: ['cancelled'],
+  assigned: ['dispatched', 'cancelled'],
+  dispatched: ['guest-met', 'no-show'],
+  'guest-met': ['completed'],
 };
 
 export type ImportRowOutcome = {
@@ -496,30 +505,49 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
         return { ok: true, replayed: false, value: structuredClone(leg) };
       }
       case 'transfer': {
+        if (cmd.baseVersion !== data.dataRevision) return fail('stale-version', 'Movement records changed. Refresh before recording a new status.');
         const t = data.transfers.find((x) => x.id === cmd.transferId);
         if (!t) return fail('not-found', 'This transfer no longer exists.');
+        if (!TRANSFER_TRANSITIONS[t.state]?.includes(cmd.state)) return fail('validation', `A transfer cannot move from ${t.state} to ${cmd.state}.`);
+        const leg = data.legs.find((l) => l.id === t.legId);
+        if (cmd.state === 'planned' && !leg?.at) return fail('validation', 'A travel time is required before planning.');
         if (cmd.state === 'dispatched' && !t.vehicleId) return fail('validation', 'Assign a vehicle and driver before dispatch.');
+        if (cmd.state === 'dispatched' && leg?.at !== t.planBasedOn) return fail('conflict', 'Travel changed after planning. Replan before dispatch.');
+        if (cmd.state === 'dispatched') {
+          const conflict = buildManifests(data).find((m) => m.vehicleId === t.vehicleId && m.capacityIssue);
+          if (conflict) return fail('conflict', conflict.capacityIssue as string);
+        }
+        const before = t.state;
         t.state = cmd.state;
+        if (cmd.state === 'planned') t.planBasedOn = leg?.at ?? null;
         const party = data.parties.find((p) => p.id === t.partyId);
         if (party) {
-          change(party, actor, `${t.kind === 'pickup' ? 'Pickup' : 'Drop'} status`, '', cmd.state, 'staff');
-          touch(data, party);
+          change(party, actor, `${t.kind === 'pickup' ? 'Pickup' : 'Drop'} status`, before, cmd.state, 'staff');
         }
+        touch(data, party);
         return { ok: true, replayed: false, value: structuredClone(t) };
       }
       case 'assign-vehicle': {
+        if (cmd.baseVersion !== data.dataRevision) return fail('stale-version', 'Movement records changed. Refresh before assigning a vehicle.');
         const v = cmd.vehicleId ? data.vehicles.find((x) => x.id === cmd.vehicleId) : null;
         if (cmd.vehicleId && !v) return fail('not-found', 'That vehicle is not available for this event.');
+        const ids = new Set(cmd.transferIds);
+        if (!ids.size || ids.size !== cmd.transferIds.length) return fail('validation', 'Select distinct transfers.');
+        const selected = data.transfers.filter((t) => ids.has(t.id));
+        if (selected.length !== ids.size) return fail('not-found', 'A selected transfer no longer exists.');
+        if (selected.some((t) => !['planned', 'assigned'].includes(t.state))) return fail('validation', 'Only planned or assigned transfers can change vehicle.');
+        if (v && selected.some((t) => {
+          const leg = data.legs.find((l) => l.id === t.legId);
+          return !leg?.at || leg.at !== t.planBasedOn;
+        })) return fail('conflict', 'Travel details changed or are incomplete. Replan before assigning.');
+        // Validate the complete prospective manifest, including existing holds,
+        // without touching live state. One failure rejects the whole batch.
+        const prospective = { ...data, transfers: data.transfers.map((t) => ids.has(t.id) ? { ...t, vehicleId: cmd.vehicleId } : t) };
         if (v) {
-          const pax = cmd.transferIds.reduce((s, id) => {
-            const t = data.transfers.find((x) => x.id === id);
-            return s + (t ? transferPassengers(t, data) : 0);
-          }, 0);
-          if (pax > v.seats) return fail('validation', `${pax} passengers exceed the ${v.seats} seats in ${v.label}.`);
+          const conflict = buildManifests(prospective).find((m) => m.vehicleId === v.id && m.capacityIssue);
+          if (conflict) return fail('conflict', conflict.capacityIssue as string);
         }
-        for (const id of cmd.transferIds) {
-          const t = data.transfers.find((x) => x.id === id);
-          if (!t) continue;
+        for (const t of selected) {
           t.vehicleId = cmd.vehicleId;
           if (cmd.vehicleId && (t.state === 'planned' || t.state === 'requested')) t.state = 'assigned';
           if (!cmd.vehicleId && t.state === 'assigned') t.state = 'planned';
@@ -528,10 +556,13 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
         return { ok: true, replayed: false, value: cmd.transferIds.length };
       }
       case 'replan-transfer': {
-        for (const id of cmd.transferIds) {
-          const t = data.transfers.find((x) => x.id === id);
-          const leg = data.legs.find((l) => l.id === t?.legId);
-          if (!t || !leg) continue;
+        if (cmd.baseVersion !== data.dataRevision) return fail('stale-version', 'Movement records changed. Refresh before replanning.');
+        const ids = new Set(cmd.transferIds);
+        const selected = data.transfers.filter((t) => ids.has(t.id));
+        if (!ids.size || ids.size !== cmd.transferIds.length || selected.length !== ids.size) return fail('validation', 'Select existing, distinct transfers.');
+        if (selected.some((t) => !['planned', 'assigned', 'dispatched'].includes(t.state) || !data.legs.find((l) => l.id === t.legId)?.at)) return fail('validation', 'Only planned, assigned or dispatched transfers with a travel time can be replanned.');
+        for (const t of selected) {
+          const leg = data.legs.find((l) => l.id === t.legId)!;
           t.planBasedOn = leg.at;
           leg.changedFrom = null;
           // Replanning releases the vehicle so capacity is rechecked for the new window.
@@ -554,9 +585,12 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
           return fail('forbidden', 'Hotel contacts record check-in and check-out only.');
         }
         if (cmd.to === 'proposed') {
-          const hotel = data.hotels.find((h) => h.id === cmd.hotelId);
-          const cat = hotel?.categories.find((c) => c.id === cmd.categoryId);
+          const hotel = data.hotels.find((h) => h.id === (cmd.hotelId ?? s.hotelId));
+          const cat = hotel?.categories.find((c) => c.id === (cmd.categoryId ?? s.categoryId));
           if (!hotel || !cat) return fail('validation', 'Choose a hotel and room category.', false, { categoryId: 'Choose a room category.' });
+          if (s.occupantIds.length > cat.maxOccupancy) return fail('conflict', `${s.occupantIds.length} occupants exceed the ${cat.maxOccupancy}-person maximum for ${cat.name}.`);
+          const held = data.stays.filter((other) => other.id !== s.id && other.hotelId === hotel.id && other.categoryId === cat.id && ['proposed', 'approval-pending', 'approved', 'communicated', 'checked-in'].includes(other.state)).length;
+          if (held >= cat.inventory) return fail('conflict', `${cat.name} is fully held (${held} of ${cat.inventory}). Choose another category.`);
           s.hotelId = hotel.id;
           s.categoryId = cat.id;
         }
@@ -583,6 +617,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
           partyCount: cmd.scope?.parties ?? rows.length,
           filters: cmd.filters,
           columns: cmd.columns,
+          scopeSignature: cmd.scopeSignature,
         };
         data.reports.unshift(snapshot);
         return { ok: true, replayed: false, value: structuredClone(snapshot) };

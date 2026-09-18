@@ -357,6 +357,7 @@ function EventWorkspace({
   const [loadKey, setLoadKey] = useState(0);
   const [filters, setFilters] = useState<GuestFilters>(EMPTY_FILTERS);
   const [drawer, setDrawer] = useState(false);
+  const [drawerNavigated, setDrawerNavigated] = useState(false);
   const [scenario, setScenarioState] = useState<Scenario>('none');
   const headingRef = useRef<HTMLHeadingElement>(null);
   const firstView = useRef(true);
@@ -415,6 +416,7 @@ function EventWorkspace({
   const setUrl = pushSearch;
 
   const go = useCallback((next: Section, opts?: GoOptions) => {
+    setDrawerNavigated(true);
     if (opts?.filters) setFilters({ ...EMPTY_FILTERS, ...opts.filters });
     pushSearch({ view: next, party: opts?.party ?? null });
     setDrawer(false);
@@ -574,7 +576,7 @@ function EventWorkspace({
               </div>
               <div className={styles.headerTools}>
                 <Tag tone="muted">{ROLE_LABEL[persona.role]}</Tag>
-                <button type="button" className={styles.compactNavBtn} onClick={() => setDrawer(true)} aria-haspopup="dialog">
+                <button type="button" className={styles.compactNavBtn} onClick={() => { setDrawerNavigated(false); setDrawer(true); }} aria-haspopup="dialog">
                   <Menu size={16} aria-hidden /> Sections
                 </button>
               </div>
@@ -631,7 +633,7 @@ function EventWorkspace({
           </div>
         </div>
       </div>
-      <Modal open={drawer} title="Workspace sections" onClose={() => setDrawer(false)} variant="drawer">
+      <Modal open={drawer} title="Workspace sections" onClose={() => setDrawer(false)} variant="drawer" closeFocusRef={drawerNavigated ? headingRef : undefined}>
         <div className={styles.drawerDark}>{contextBlock}</div>
         <SidebarNav nav={visibleNav} view={view} entitled={entitled} onGo={(s) => go(s)} compact />
         <div className={styles.drawerDark}>

@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertTriangle, Check, Copy, ImageOff, Info, Loader2, RefreshCw, X } from 'lucide-react';
-import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useId, useMemo, useRef, useState, useSyncExternalStore, type ReactNode, type RefObject } from 'react';
 import { byId } from '@/data/media';
 import { createRsvpAdapter, newRequestId, type AdapterError, type Command, type Result, type RsvpAdapter, type StorageLike } from './adapter';
 import { formatExact, relativeTime } from './dates';
@@ -381,6 +381,7 @@ export function Modal({
   children,
   description,
   variant = 'center',
+  closeFocusRef,
 }: {
   open: boolean;
   title: string;
@@ -388,6 +389,7 @@ export function Modal({
   children: ReactNode;
   description?: string;
   variant?: 'center' | 'drawer';
+  closeFocusRef?: RefObject<HTMLElement | null>;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const returnTo = useRef<HTMLElement | null>(null);
@@ -408,12 +410,12 @@ export function Modal({
     if (!d) return;
     const handleClose = () => {
       // Return focus to the control that opened the dialog.
-      returnTo.current?.focus?.();
+      (closeFocusRef?.current ?? returnTo.current)?.focus?.();
       if (open) onClose();
     };
     d.addEventListener('close', handleClose);
     return () => d.removeEventListener('close', handleClose);
-  }, [open, onClose]);
+  }, [open, onClose, closeFocusRef]);
   return (
     <dialog
       ref={ref}
