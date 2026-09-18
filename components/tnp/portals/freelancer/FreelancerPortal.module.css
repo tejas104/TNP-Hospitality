@@ -26,6 +26,9 @@
 .workspace [inert] {
   opacity: 0.65;
 }
+.workspace label {
+  color: var(--muted);
+}
 .workspace * {
   box-sizing: border-box;
 }
@@ -607,7 +610,7 @@
 }
 .workspaceNav button > span {
   font-size: 9px;
-  color: #61776a;
+  color: #4f6559;
 }
 .workspaceNav button > small {
   border: 1px solid #afbbb0;

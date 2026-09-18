@@ -52,12 +52,10 @@ export function ApplicationFlow({
       try {
         setDraft(readDraft(window.localStorage.getItem(key)));
         setSaved('Draft restored on this browser');
-      } catch (e) {
+      } catch {
         setDraft(freshDraft());
         setSaved(
-          e instanceof Error
-            ? e.message
-            : 'Storage unavailable. Draft stays in memory.',
+          'Saved draft unavailable. Your draft stays in memory; keep this page open. No browser storage is required to edit it.',
         );
       }
       setReady(true);
@@ -112,6 +110,54 @@ export function ApplicationFlow({
   }
   const score = sampleScore(draft.answers);
   if (!ready) return <output>Restoring your application…</output>;
+  if (!application && w.data!.worker) {
+    const worker = w.data!.worker;
+    return (
+      <section
+        className={styles.result}
+        aria-labelledby="existing-worker-heading"
+      >
+        <div className={styles.resultIcon}>
+          <FileCheck2 size={30} />
+        </div>
+        <p className={styles.eyebrow}>YOUR EXISTING SAMPLE PROFILE</p>
+        <h2 id="existing-worker-heading">
+          Your worker profile is already on record.
+        </h2>
+        <p>
+          This selected profile already has a worker record. A new application
+          cannot edit its name, role or approval state.
+        </p>
+        <dl className={styles.facts}>
+          <div>
+            <dt>Current display name</dt>
+            <dd>{worker.displayName}</dd>
+          </div>
+          <div>
+            <dt>Current role</dt>
+            <dd>{worker.role}</dd>
+          </div>
+          <div>
+            <dt>Sample approval</dt>
+            <dd>
+              {worker.approved
+                ? 'Approved sample worker'
+                : 'Not approved in the sample scenario'}
+            </dd>
+          </div>
+          <div>
+            <dt>Worker reference</dt>
+            <dd>{worker.id}</dd>
+          </div>
+        </dl>
+        <p className={styles.note}>
+          Use Opportunities and Assignments to explore this worker’s current
+          sample records. Choose New sample applicant to try the application
+          flow. No profile change has been submitted.
+        </p>
+      </section>
+    );
+  }
   if (application)
     return (
       <section className={styles.result} aria-labelledby="application-result">
@@ -133,6 +179,13 @@ export function ApplicationFlow({
             ? 'The application is saved in this browser’s synthetic service. A sample assessment does not approve your account or unlock real work.'
             : application.reviewReason}
         </p>
+        {w.data!.worker && (
+          <p className={styles.note}>
+            Current worker profile: {w.data!.worker.displayName} ·{' '}
+            {w.data!.worker.role}. An application does not change an existing
+            worker profile.
+          </p>
+        )}
         <div className={styles.receipt}>
           <span>Application reference</span>
           <strong>{application.id}</strong>

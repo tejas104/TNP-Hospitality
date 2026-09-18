@@ -8,6 +8,7 @@ import type {
   PreviewMutationMap,
   PreviewService,
   ScenarioMetadata,
+  Worker,
 } from '../../../../lib/contracts/preview.ts';
 import { getBrowserPreviewService } from '../../../../lib/services/preview.ts';
 import {
@@ -28,6 +29,7 @@ export type WorkspaceData = {
   opportunities: Opportunity[];
   assignments: Assignment[];
   metadata: ScenarioMetadata;
+  worker: Worker | null;
 };
 export function useFreelancer(profile: string) {
   const service = useRef<PreviewService | null>(null);
@@ -66,15 +68,24 @@ export function useFreelancer(profile: string) {
       const s = service.current ?? (await getBrowserPreviewService());
       service.current = s;
       const generation = await s.getGeneration();
-      const [applications, assessments, opportunities, assignments, metadata] =
-        await Promise.all([
-          s.listApplications(),
-          s.listAssessments(profile),
-          s.listOpportunities(profile),
-          s.listAssignments(profile),
-          s.getScenarioMetadata(),
-        ]);
+      const [
+        applications,
+        assessments,
+        opportunities,
+        assignments,
+        metadata,
+        worker,
+      ] = await Promise.all([
+        s.listApplications(),
+        s.listAssessments(profile),
+        s.listOpportunities(profile),
+        s.listAssignments(profile),
+        s.getScenarioMetadata(),
+        s.getStanding(profile),
+      ]);
       if (epoch.current !== token) return;
+      if (!worker.ok && worker.error.code !== 'NOT_FOUND')
+        throw new Error(`${worker.error.code}: ${worker.error.message}`);
       for (const result of [
         applications,
         assessments,
@@ -94,6 +105,7 @@ export function useFreelancer(profile: string) {
         [applications, assessments, opportunities, assignments].some(
           (r) => r.generation !== generation,
         ) ||
+        worker.generation !== generation ||
         (await s.getGeneration()) !== generation
       ) {
         throw new Error(
@@ -110,6 +122,7 @@ export function useFreelancer(profile: string) {
         opportunities: opportunities.value.items,
         assignments: assignments.value.items,
         metadata,
+        worker: worker.ok ? worker.value : null,
       };
       const key = storageKey('requests', profile, generation);
       if (journalKey.current !== key) {
@@ -120,12 +133,10 @@ export function useFreelancer(profile: string) {
             profile,
             generation,
           );
-        } catch (e) {
+        } catch {
           requests.current = {};
           setStorageWarning(
-            e instanceof Error
-              ? e.message
-              : 'Saved retry identity unavailable.',
+            'Saved retry data is unavailable. New retry identities stay in memory; keep this page open until actions are resolved.',
           );
         }
         setPendingRequests(Object.values(requests.current));
@@ -134,7 +145,14 @@ export function useFreelancer(profile: string) {
       setData(next);
     } catch (e) {
       if (epoch.current === token)
-        setError(e instanceof Error ? e.message : 'Preview unavailable.');
+        setError(
+          e instanceof DOMException &&
+            (e.name === 'SecurityError' || e.name === 'QuotaExceededError')
+            ? 'Browser storage is unavailable, so the shared preview cannot load. Allow site storage and reload this page. No records were changed.'
+            : e instanceof Error
+              ? e.message
+              : 'Preview unavailable.',
+        );
     } finally {
       if (epoch.current === token) setLoading(false);
     }
@@ -185,6 +203,14 @@ export function useFreelancer(profile: string) {
     if (!s || !current || busyRef.current || loading || error) return false;
     const invocationEpoch = epoch.current;
     const slot = actionSlot(operation, payload);
+    if (operation === 'registerApplicant' && current.worker) {
+      delete requests.current[slot];
+      persist();
+      setNotice(
+        'This sample profile already has a worker record. No new application or profile changes were submitted. Review its current details in Application.',
+      );
+      return false;
+    }
     const saved = requests.current[slot];
     if (!retry && saved && !samePayload(saved.payload, payload)) {
       setNotice(
@@ -218,6 +244,23 @@ export function useFreelancer(profile: string) {
     setBusy(true);
     setNotice('Saving your sample action…');
     try {
+      if (operation === 'registerApplicant') {
+        const worker = await s.getStanding(profile, { variant: 'ready' });
+        if (invocationEpoch !== epoch.current) return false;
+        if (worker.ok) {
+          delete requests.current[slot];
+          persist();
+          setNotice(
+            'A worker record already exists for this profile. No new application or profile changes were submitted.',
+          );
+          await load();
+          return false;
+        }
+        if (worker.error.code !== 'NOT_FOUND')
+          throw new Error(
+            'The current worker profile could not be checked. No application was submitted.',
+          );
+      }
       // The frozen service owns validation, allocation and idempotency.
       const result = await s.mutate(request);
       const now = await s.getGeneration();

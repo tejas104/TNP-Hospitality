@@ -125,7 +125,10 @@ try {
     'local storage failure keeps draft in memory across workspace navigation',
     async () => {
       await page.evaluate(() => {
-        const original = Object.getOwnPropertyDescriptor(Storage.prototype, 'setItem').value;
+        const original = Object.getOwnPropertyDescriptor(
+          Storage.prototype,
+          'setItem',
+        ).value;
         window.__restoreStorage = () => {
           Storage.prototype.setItem = original;
         };
@@ -611,6 +614,218 @@ try {
       );
       await button('Reset preview');
       await ready();
+    },
+  );
+  await check(
+    'seeded workers cannot submit misleading profile changes or replay an old application draft',
+    async () => {
+      for (const id of [
+        'tnp-demo-worker-003',
+        'tnp-demo-worker-006',
+        'tnp-demo-worker-007',
+      ]) {
+        await profile(id);
+        await page
+          .getByRole('heading', {
+            name: 'Your worker profile is already on record.',
+          })
+          .waitFor();
+        assert.equal(await page.locator('#sample-name').count(), 0);
+        assert.equal(
+          await page
+            .getByRole('button', { name: 'Submit sample application' })
+            .count(),
+          0,
+        );
+        const before = await service(async (s) => ({
+          workers: await Promise.all(
+            [
+              'tnp-demo-worker-003',
+              'tnp-demo-worker-006',
+              'tnp-demo-worker-007',
+            ].map((id) => s.getStanding(id)),
+          ),
+          apps: await s.listApplications(),
+        }));
+        await page.evaluate((id) => {
+          const envelope = JSON.parse(localStorage.getItem('tnp-preview-v1'));
+          const request = {
+            actorId: id,
+            expectedGeneration: envelope.generation,
+            requestKey: `old-application-${id}`,
+            operation: 'registerApplicant',
+            payload: {
+              applicantId: id,
+              displayName: 'Sample Alex',
+              role: 'Volunteer',
+            },
+          };
+          localStorage.setItem(
+            `tnp-freelancer-v1:requests:${envelope.generation}:${id}`,
+            JSON.stringify({ [`registerApplicant:${id}`]: request }),
+          );
+        }, id);
+        await page.reload();
+        await ready();
+        await button('Retry same action');
+        await page
+          .getByText(/No new application or profile changes were submitted/)
+          .waitFor();
+        const after = await service(async (s) => ({
+          workers: await Promise.all(
+            [
+              'tnp-demo-worker-003',
+              'tnp-demo-worker-006',
+              'tnp-demo-worker-007',
+            ].map((id) => s.getStanding(id)),
+          ),
+          apps: await s.listApplications(),
+        }));
+        assert.deepEqual(after, before);
+        assert.equal(
+          await page.getByRole('button', { name: 'Retry same action' }).count(),
+          0,
+        );
+        const current = before.workers.find((w) => w.value.id === id).value;
+        assert.match(
+          await page
+            .getByRole('region', {
+              name: 'Your worker profile is already on record.',
+            })
+            .innerText(),
+          new RegExp(current.displayName),
+        );
+      }
+    },
+  );
+  await check(
+    'blocked local draft and retry storage use friendly in-memory fallback',
+    async () => {
+      const blocked = await browser.newContext({
+        viewport: { width: 390, height: 844 },
+      });
+      try {
+        await blocked.addInitScript(() => {
+          const get = Object.getOwnPropertyDescriptor(
+            Storage.prototype,
+            'getItem',
+          ).value;
+          const set = Object.getOwnPropertyDescriptor(
+            Storage.prototype,
+            'setItem',
+          ).value;
+          Storage.prototype.getItem = function (k) {
+            if (k.startsWith('tnp-freelancer-v1:'))
+              throw new DOMException(
+                'The operation is insecure.',
+                'SecurityError',
+              );
+            return get.call(this, k);
+          };
+          Storage.prototype.setItem = function (k, v) {
+            if (k.startsWith('tnp-freelancer-v1:'))
+              throw new DOMException(
+                'The operation is insecure.',
+                'SecurityError',
+              );
+            return set.call(this, k, v);
+          };
+        });
+        const p = await blocked.newPage();
+        await p.goto(`${origin}/freelancer`);
+        await p.locator('#sample-name').waitFor();
+        assert.match(
+          await p.locator('main').innerText(),
+          /Saved draft unavailable. Your draft stays in memory/,
+        );
+        assert.match(
+          await p.locator('main').innerText(),
+          /New retry identities stay in memory/,
+        );
+        assert.doesNotMatch(
+          await p.locator('main').innerText(),
+          /operation is insecure/i,
+        );
+        await p.locator('#sample-name').selectOption('Sample Morgan');
+        await p.locator('#sample-role').selectOption('Volunteer');
+        await p
+          .getByRole('button', { name: 'Continue', exact: true })
+          .press('Enter');
+        await p.locator('#sample-experience').selectOption('Getting started');
+        const navigation = p.getByRole('navigation', {
+          name: 'Freelancer workspace',
+        });
+        await navigation
+          .getByRole('button', { name: /Opportunities/i })
+          .press('Enter');
+        await navigation
+          .getByRole('button', { name: /Application/i })
+          .press('Enter');
+        assert.equal(
+          await p.locator('#sample-experience').inputValue(),
+          'Getting started',
+        );
+        assert.match(
+          await p.locator('main').innerText(),
+          /Draft stays in memory/,
+        );
+      } finally {
+        await blocked.close();
+      }
+    },
+  );
+  await check(
+    'small application labels filters and navigation numerals meet 4.5 to 1 contrast',
+    async () => {
+      await profile('tnp-demo-freelancer-new');
+      async function ratios(selector) {
+        return page.locator(selector).evaluateAll((elements) => {
+          const rgb = (text) => text.match(/[\d.]+/g).map(Number);
+          const luminance = (channels) =>
+            channels
+              .slice(0, 3)
+              .map((c) => {
+                c /= 255;
+                return c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+              })
+              .reduce((v, c, i) => v + c * [0.2126, 0.7152, 0.0722][i], 0);
+          return elements
+            .filter((el) => el.checkVisibility())
+            .map((el) => {
+              let parent = el;
+              let bg;
+              while (parent) {
+                const value = rgb(getComputedStyle(parent).backgroundColor);
+                if (value.length === 3 || value[3] > 0) {
+                  bg = value;
+                  break;
+                }
+                parent = parent.parentElement;
+              }
+              const foreground = luminance(rgb(getComputedStyle(el).color));
+              const background = luminance(bg ?? [255, 255, 255]);
+              return {
+                text: el.textContent.trim().slice(0, 45),
+                ratio:
+                  (Math.max(foreground, background) + 0.05) /
+                  (Math.min(foreground, background) + 0.05),
+              };
+            });
+        });
+      }
+      const application = await ratios(
+        'main label, nav[aria-label="Freelancer workspace"] button > span',
+      );
+      await nav('opportunities');
+      const filters = await ratios(
+        'main label, nav[aria-label="Freelancer workspace"] button > span',
+      );
+      for (const result of [...application, ...filters])
+        assert.ok(result.ratio >= 4.5, `${result.text}: ${result.ratio}`);
+      console.log(
+        'Contrast measurements:',
+        JSON.stringify([...application, ...filters]),
+      );
     },
   );
   assert.deepEqual(problems, []);
