@@ -1,9 +1,9 @@
 # TNP-C-M1 — two-prompt frontend milestone for C
 
 Status: DRAFT, NOT DISPATCHED. Writer lease NONE.
-Human: Kartik / H2.
+Human/domain owner and sole human reviewer: Kartik / H2.
 Host: planned Laptop1 / DESKTOP-DL9FDM7 under a separate Kartik-operated team profile; actual profile/session/path evidence PENDING Ready preflight. Laptop2 remains fallback.
-Tool/model: Claude Sonnet / actual version and effort PENDING; confirm actual session at Ready.
+Tool/model: `gpt-6-astra` / high requested by the user for Freelancer UI; actual runtime/model/effort PENDING and mandatory at Ready preflight.
 Branch: codex/tnp-c-m1 (proposed; not created).
 Worktree: D:\TNP-worktrees\TNP-C-M1 (proposed; not created).
 Source and integrated foundation SHA: PENDING approved integration.
@@ -13,7 +13,7 @@ Owned paths: components/tnp/portals/freelancer/**, including feature-local style
 Mode: local labelled synthetic responsive-web preview.
 Resource proposal: port 3103, http://localhost:3103; check free before binding. Dedicated synthetic profile; no current reservation.
 Risk: Frozen synthetic onboarding/opportunity UI; identity, allocation or shared-contract changes escalate.
-Review appointment: Fresh independent Codex Sol/high provides requested and opposite-model review; human Anjaneya. Actual appointment PENDING.
+Review appointment: fresh external Claude fixed-SHA review after Astra authorship; Kartik is sole human reviewer. Add independent Sol if the milestone crosses security/data/finance/domain boundaries. Actual appointment PENDING.
 Sharing: proposed original builder-only non-force push to codex/tnp-c-m1; effective only in the Ready contract. No current push or write lease.
 
 ## Shared execution rules

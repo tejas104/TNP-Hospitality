@@ -1,0 +1,36 @@
+# TNP Astra frontend roadmap
+
+Status: governing model/sequence decision from 2026-09-18. This document reserves no writer by itself; every milestone still needs an exact Ready contract, source/launch SHA, worktree, owned paths, checks and reviewers.
+
+## Model and review policy
+
+- `gpt-6-astra` authors all new or materially revised homepage, public service, Client, Freelancer, RSVP and related UI/frontend surfaces.
+- The actual runtime/model/effort must be verified before mutation. A requested Astra assignment is not evidence that Astra ran.
+- Astra does not own authentication, database, provider, finance or shared domain semantics unless a separate contract explicitly assigns them.
+- Fresh Claude provides the normal opposite-model fixed-SHA review for Astra-authored UI. Sensitive cross-module/API/security/data changes also receive the specialist review named by their contract.
+- Kartik is the sole human fixed-SHA reviewer. Anjaneya remains the product/content/visual input owner.
+
+## Delivery order
+
+| Order | Milestone | Astra-owned result | Dependency |
+|---|---|---|---|
+| 1 | TNP-B-M1 public frontend | Homepage review corrections, materially new single 3D model, public-shell cleanup, service/department pages and contact/vendor enquiry | Integrated D + Shared Fix; current Ready lease |
+| 2 | Client UI follow-up | Material Client/Planner UI creation or redesign needed to consume the production platform contracts; preserve already integrated A behavior | Platform API/auth contracts fixed; separate Ready scope |
+| 3 | RSVP UI | Managed-client and vendor workspaces, guest import/errors, function responses, follow-up, approved exports and truthful provider-disabled states | Tenant/auth/API and RSVP contract ready; retention/provider decisions |
+| 4 | Freelancer UI | Application/assessment, opportunity/claim/Coming/briefing, then attendance/earnings/payout/ratings presentation as backend contracts become ready | Platform auth plus reviewed workforce/domain services |
+| 5 | Remaining service UI | Maintenance, login/recovery/tracking/access, approved reporting presentation and final responsive polish | Corresponding server contracts and client inputs |
+
+Only one Astra writer owns overlapping shared/public paths at a time. Service-page work inside the current B lease completes before Client/RSVP/Freelancer UI leases begin. Client and Freelancer paths may later run as distinct leases only when they do not share AppShell, contracts, routes or fixtures.
+
+## Shared contract boundary
+
+Web UI consumes `/api/v1` and typed domain/application behavior; it does not recreate authorization, tenant filtering, capacity, attendance, quote, payout or RSVP isolation rules in components. Missing API behavior returns to the platform/domain owner. Synthetic previews stay labelled until server-backed behavior is reviewed and integrated.
+
+## Acceptance repeated for every Astra milestone
+
+- Deliberate hierarchy and reuse of proven tokens/components; no indiscriminate card grids or decorative motion.
+- Desktop and mobile, real keyboard order/activation, visible focus, WCAG AA text/non-text contrast and no horizontal overflow.
+- Loading, empty, validation, error, retry, success, refresh and stale-state behavior where applicable.
+- Reduced-motion and low-capability fallbacks; measured 3D/image budgets on public pages.
+- Truthful provider/data state, no real personal data in fixtures and no synthetic success represented as production.
+- Exact fixed SHA, changed-path allowlist, command results, browser evidence, limitations, fresh review and Kartik disposition before integration.
