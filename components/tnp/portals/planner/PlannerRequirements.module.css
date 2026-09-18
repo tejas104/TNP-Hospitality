@@ -3,8 +3,59 @@
   margin: 28px auto 60px;
   padding: clamp(28px, 5vw, 58px);
   color: #ece8df;
-  background: #172921;
+  background: #062b29;
   border-radius: 28px;
+}
+.section :is(button, input, select):focus-visible {
+  outline: 3px solid #008080;
+  outline-offset: 3px;
+}
+.section :is(button, select, input) {
+  min-height: 44px;
+}
+.section code {
+  font-size: 0.74rem;
+}
+.storageNotice {
+  color: #e0e6df;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.resultCount {
+  margin: 0 0 4px;
+  font-size: 0.75rem;
+  color: #52615b;
+  grid-column: 1 / -1;
+}
+.statusCopy {
+  margin: 24px 0 0;
+  color: #52615b;
+  line-height: 1.6;
+  font-size: 0.85rem;
+}
+.section :is(p, strong, h2, h3, dd) {
+  overflow-wrap: anywhere;
+}
+.filters label > div:focus-within {
+  outline: 3px solid #008080;
+  outline-offset: 3px;
+}
+.title > div {
+  min-width: 0;
+}
+.title > svg,
+.links svg {
+  flex-shrink: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .records > button {
+    transition:
+      border-color 160ms ease,
+      background 160ms ease;
+  }
+  .records > button:hover {
+    border-color: #008080;
+  }
 }
 
 .header {
@@ -12,6 +63,9 @@
   grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.65fr);
   gap: 28px;
   align-items: end;
+}
+.header :global(.section-kicker) {
+  color: #d6c79f;
 }
 
 .header h2 {
@@ -140,7 +194,7 @@
 
 .records span,
 .title span {
-  color: #6f7e78;
+  color: #52615b;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -222,7 +276,7 @@
 
 .links small,
 .meta dt {
-  color: #75817c;
+  color: #52615b;
   font-size: 0.68rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -239,7 +293,7 @@
   position: relative;
   display: grid;
   gap: 8px;
-  color: #7a847f;
+  color: #52615b;
   font-size: 0.76rem;
   text-transform: capitalize;
 }
