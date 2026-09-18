@@ -29,6 +29,8 @@ Image/content implementation rule 2026-09-18: every non-3D Astra milestone inclu
 
 CLIENT/PLANNER FOLLOW-UP DRAFTED 2026-09-18: `docs/tasks/TNP-CLIENT-ASTRA-M1.md` now bounds the next Astra visual/frontend milestone around the already integrated synthetic Client and Planner workflows. It preserves booking, registration, requirement, quote/status, identity and refresh/reset behavior; uses replaceable illustrative image slots only where they aid discovery/context; and freezes shared services, route glue and platform semantics. It remains Draft until the current public correction is fixed/reviewed and an exact source/launch/lease/reviewer packet is issued.
 
+ALL REMAINING NON-3D FRONTEND REQUESTED 2026-09-18: The user directs completion of all remaining frontend pages and workflows. The work is serialized into `TNP-CLIENT-ASTRA-M1`, `TNP-RSVP-ASTRA-M1`, `TNP-FREELANCER-ASTRA-M1`, `TNP-FREELANCER-ASTRA-M2` and `TNP-PUBLIC-ASTRA-M2`, followed by integrated I01 verification and only then the final 3D milestone. This does not combine overlapping portals/shared files into one branch or move Operations/finance rules into Astra presentation code. Each Draft still needs reviewed dependencies, exact source/launch/lease and fixed-SHA review.
+
 ## Shared contract boundary
 
 Web UI consumes `/api/v1` and typed domain/application behavior; it does not recreate authorization, tenant filtering, capacity, attendance, quote, payout or RSVP isolation rules in components. Missing API behavior returns to the platform/domain owner. Synthetic previews stay labelled until server-backed behavior is reviewed and integrated.
