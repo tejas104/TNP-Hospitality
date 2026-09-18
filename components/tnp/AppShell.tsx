@@ -53,6 +53,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [showPreloader, setShowPreloader] = useState(false);
   const [routeAnimating, setRouteAnimating] = useState(false);
   const label = transitionLabels[pathname] ?? 'TNP HOSPITALITY';
+  const publicPage = !['/client', '/planner', '/freelancer', '/admin'].some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
+  const publicLinks = [
+    { label: 'Experience', href: '/' },
+    { label: 'Services', href: '/#services' },
+    { label: 'RSVP', href: '/#rsvp' },
+    { label: 'Occasions', href: '/#events' },
+    { label: 'About', href: '/#about' },
+  ];
 
   useEffect(() => {
     const seen = sessionStorage.getItem('tnp-preloader-seen');
@@ -105,6 +115,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   useEffect(() => {
+    if (publicPage) return;
     const context = (document as TnpModelContextDocument).modelContext;
     if (!context?.registerTool) return;
     const controller = new AbortController();
@@ -150,10 +161,19 @@ export default function AppShell({ children }: { children: ReactNode }) {
     ).catch(() => undefined);
 
     return () => controller.abort();
-  }, [router]);
+  }, [router, publicPage]);
 
   return (
     <>
+      {publicPage && (
+        <a
+          className="public-skip"
+          href="#main-content"
+          onClick={() => document.getElementById('main-content')?.focus()}
+        >
+          Skip to main content
+        </a>
+      )}
       <Preloader active={showPreloader} />
       <CustomCursor />
       <div
@@ -168,19 +188,21 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <small>Hospitality</small>
         </Link>
         <nav className="desktop-nav" aria-label="Primary navigation">
-          {navLinks.map((link) => (
+          {(publicPage ? publicLinks : navLinks).map((link) => (
             <a key={link.label} href={link.href}>
               {link.label}
             </a>
           ))}
         </nav>
         <div className="nav-actions">
-          <Link className="login-link" href="/planner">
-            Login
-          </Link>
+          {!publicPage && (
+            <Link className="login-link" href="/planner">
+              Planner preview
+            </Link>
+          )}
           <Link
             className="magnetic-btn small"
-            href="/client"
+            href={publicPage ? '/contact' : '/client'}
             data-cursor="EXPLORE"
           >
             Let&apos;s Talk
@@ -196,9 +218,17 @@ export default function AppShell({ children }: { children: ReactNode }) {
           </button>
         </div>
       </header>
-      <PreviewControls />
-      <PortalSwitcher key={pathname} pathname={pathname} />
-      <MobileMenu open={menuOpen} />
+      {!publicPage && <PreviewControls />}
+      {!publicPage && <PortalSwitcher key={pathname} pathname={pathname} />}
+      <MobileMenu
+        open={menuOpen}
+        links={
+          publicPage
+            ? [...publicLinks, { label: 'Enquire', href: '/contact' }]
+            : [...navLinks, ...portalLinks]
+        }
+        onNavigate={() => setMenuOpen(false)}
+      />
       {children}
     </>
   );
@@ -280,11 +310,23 @@ function PortalSwitcher({ pathname }: { pathname: string }) {
   );
 }
 
-function MobileMenu({ open }: { open: boolean }) {
+function MobileMenu({
+  open,
+  links,
+  onNavigate,
+}: {
+  open: boolean;
+  links: { label: string; href: string }[];
+  onNavigate: () => void;
+}) {
   return (
     <div className={`mobile-menu ${open ? 'open' : ''}`} inert={!open}>
-      {[...navLinks, ...portalLinks].map((link) => (
-        <a key={`${link.label}-${link.href}`} href={link.href}>
+      {links.map((link) => (
+        <a
+          key={`${link.label}-${link.href}`}
+          href={link.href}
+          onClick={onNavigate}
+        >
           {link.label}
         </a>
       ))}

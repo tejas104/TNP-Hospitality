@@ -11,10 +11,7 @@ import styles from './public/Home.module.css';
 export default function HomeExperience() {
   const [serviceIndex, setServiceIndex] = useState(0);
   return (
-    <main className={styles.home} id="main-content">
-      <a className={styles.skip} href="#services">
-        Skip to services
-      </a>
+    <main className={styles.home} id="main-content" tabIndex={-1}>
       <section className={styles.hero} aria-labelledby="home-title">
         <div className={styles.heroCopy}>
           <p className={styles.eyebrow}>
@@ -32,7 +29,7 @@ export default function HomeExperience() {
             people and every little detail together.
           </p>
           <div className={styles.actions}>
-            <Link href="/client" className={styles.primary}>
+            <Link href="/contact" className={styles.primary}>
               Plan with TNP <ArrowUpRight size={18} />
             </Link>
             <a href="#rsvp" className={styles.lightLink}>
@@ -200,8 +197,11 @@ export default function HomeExperience() {
                 <Check size={16} /> Guest forms & organised event reports
               </li>
             </ul>
-            <Link href="/client" className={styles.lightLink}>
-              Explore the client preview <ArrowUpRight size={17} />
+            <Link
+              href="/contact?interest=managed-rsvp"
+              className={styles.lightLink}
+            >
+              Enquire about managed RSVP <ArrowUpRight size={17} />
             </Link>
             <img
               src={byId('floral').src}
@@ -221,8 +221,9 @@ export default function HomeExperience() {
               <br />A workspace of your own.
             </h3>
             <p>
-              Manage RSVP for multiple customers and events. TNP will provision
-              your vendor access, with separate teams and event records.
+              A planned workspace for managing RSVP across customers and events,
+              with vendor access provisioned by TNP. Register your interest
+              below.
             </p>
             <ul>
               <li>
@@ -232,11 +233,11 @@ export default function HomeExperience() {
                 <Check size={16} /> Guest categories, forms & logistics
               </li>
               <li>
-                <Check size={16} /> Controlled WhatsApp documents & exports
+                <Check size={16} /> Planned WhatsApp, documents & exports
               </li>
             </ul>
-            <Link href="/planner" className={styles.lightLink}>
-              Explore the planner preview <ArrowUpRight size={17} />
+            <Link href="/contact?interest=vendor" className={styles.lightLink}>
+              Register vendor interest <ArrowUpRight size={17} />
             </Link>
             <img
               src={byId('guest-experience').src}
@@ -250,8 +251,8 @@ export default function HomeExperience() {
         </div>
         <p className={styles.previewNote}>
           Platform in development. Vendor login, WhatsApp automation and private
-          document storage are planned capabilities. The linked portals use
-          synthetic preview data.
+          document storage are planned and disabled. Enquiries are synthetic
+          previews; no external message is sent.
         </p>
       </section>
 
@@ -448,10 +449,10 @@ export default function HomeExperience() {
             <br />
             <em>with a conversation.</em>
           </h2>
-          <Link href="/client" className={styles.primary}>
+          <Link href="/contact" className={styles.primary}>
             Plan with TNP <ArrowUpRight size={18} />
           </Link>
-          <p>Explore the client preview to begin shaping your event.</p>
+          <p>Try a synthetic enquiry. No external message is sent.</p>
         </div>
       </section>
       <footer className={styles.footer}>

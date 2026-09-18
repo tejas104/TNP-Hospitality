@@ -276,6 +276,22 @@ img {
   text-transform: uppercase;
 }
 
+.public-skip {
+  position: fixed;
+  top: 8px;
+  left: 12px;
+  transform: translateY(-180%);
+  z-index: 10001;
+  padding: 14px 20px;
+  background: #f5f1e7;
+  color: #173b36;
+  border: 3px solid #73521d;
+}
+.public-skip:focus { transform: none; }
+.site-nav :is(a, button):focus-visible,
+.mobile-menu a:focus-visible { outline: 3px solid #e8dfc6; outline-offset: 5px; }
+.site-nav.is-scrolled :is(a, button):focus-visible { outline-color: #73521d; }
+
 .site-nav {
   align-items: center;
   color: var(--ivory);

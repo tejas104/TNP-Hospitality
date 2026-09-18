@@ -37,7 +37,7 @@
   scroll-margin-top: 110px;
 }
 .home :is(a, button, summary):focus-visible {
-  outline: 3px solid #bd8c36;
+  outline: 3px solid #8c692c;
   outline-offset: 6px;
 }
 .home svg {
@@ -285,7 +285,7 @@
   margin-bottom: 20px;
 }
 .sectionHead > p {
-  color: #62736b;
+  color: #4f6256;
   font-size: 13px;
   max-width: 310px;
 }
@@ -478,7 +478,7 @@
 }
 .imageNote {
   font-size: 10px;
-  color: #647269;
+  color: #4f6256;
   margin-top: 20px !important;
 }
 .gallery {
@@ -575,7 +575,7 @@
   margin: 18px 0 12px;
 }
 .process li p {
-  color: #637468;
+  color: #4f6256;
   font-size: 13px;
   max-width: 325px;
 }
@@ -596,7 +596,7 @@
   margin: 18px 0 7px;
 }
 .peopleGrid p {
-  color: #637468;
+  color: #4f6256;
   font-size: 12px;
   max-width: 245px;
 }
