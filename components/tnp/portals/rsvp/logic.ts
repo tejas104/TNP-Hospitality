@@ -512,10 +512,15 @@ export function buildManifests(data: EventData): Manifest[] {
     const hour = Number(new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', hourCycle: 'h23' }).format(new Date(leg.at)));
     const block = Math.floor(hour / 3) * 3;
     const window = `${String(block).padStart(2, '0')}:00–${String(block + 3).padStart(2, '0')}:00`;
-    const location = t.kind === 'pickup' ? `${leg.mode === 'train' ? 'Railway station' : leg.mode === 'bus' ? 'Bus terminal' : 'Airport'} → hotel` : `Hotel → ${leg.mode === 'train' ? 'Railway station' : 'Airport'}`;
-    const key = `${t.kind}|${date}|${window}|${location}|${t.vehicleId ?? 'unassigned'}`;
+    const normalizeEndpoint = (value: string) => value.normalize('NFKC').trim().replace(/\s+/g, ' ').toLocaleLowerCase('en');
+    const route = [t.kind, leg.direction, leg.mode, normalizeEndpoint(leg.from), normalizeEndpoint(leg.to)];
+    // Do not pool unknown endpoints. Even equal coarse mode labels cannot
+    // establish that two movements follow the same actual route.
+    if (!route[3] || !route[4]) route.push(leg.id);
+    const location = `${leg.from.trim() || 'Origin not supplied'} → ${leg.to.trim() || 'Destination not supplied'} (${leg.mode})`;
+    const key = JSON.stringify([route, date, window, t.vehicleId]);
     const m = groups.get(key) ?? {
-      id: `mf-${t.kind}-${date}-${block}-${location.length}-${t.vehicleId ?? 'none'}`,
+      id: `mf-${encodeURIComponent(key)}`,
       kind: t.kind,
       date,
       window,

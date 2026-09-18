@@ -162,7 +162,7 @@ type State = {
   anchor: string;
   fixtures: Fixtures;
   receipts: Record<string, { fingerprint: string; result: Result<unknown> }>;
-  rowReceipts: Record<string, ImportRowOutcome>;
+  rowReceipts: Record<string, { fingerprint: string; outcome: ImportRowOutcome }>;
   importParties: Record<string, string>;
   seq: number;
 };
@@ -660,27 +660,51 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
     if (!scoped.ok) return scoped;
     if (!COMMAND_ROLES['create-party'].includes(scoped.value.persona.role)) return fail('forbidden', 'Your role cannot import guests.');
     const { data, persona } = scoped.value;
+    const scope = { orgId: data.event.orgId, eventId, personaId, batchId };
+    const rowIdentity = (row: PreviewRow) => `v2:${fingerprint({ ...scope, rowNumber: row.rowNumber })}`;
+    const partyIdentity = (row: PreviewRow) => `v2:${fingerprint({ ...scope, partyKey: row.partyKey })}`;
+    const materialFingerprint = (row: PreviewRow) => fingerprint({
+      rowKey: row.key,
+      partyKey: row.partyKey,
+      values: Object.fromEntries(Object.entries(row.values).map(([key, value]) => [key, value.normalize('NFKC').replace(/\s+/g, ' ').trim()])),
+      functionIds: [...new Set(row.functionIds)].sort(),
+    });
+    // Bind the original row slot as well as its key: editing a party/name can
+    // regenerate a different preview key, but it is still a changed batch row.
+    // Validate every retained identity before applying any row in this request.
+    const incoming = new Map<string, string>();
+    for (const row of rows) {
+      const identity = rowIdentity(row);
+      const material = materialFingerprint(row);
+      const prior = state.rowReceipts[identity];
+      if ((prior && prior.fingerprint !== material) || (incoming.has(identity) && incoming.get(identity) !== material)) {
+        return fail('conflict', `Import row ${row.rowNumber} changed under the same batch identity. Start a new batch; no rows were changed.`);
+      }
+      incoming.set(identity, material);
+    }
     let attempt = 0;
     const outcomes = rows.map((row): ImportRowOutcome => {
-      const rk = `${batchId}#${row.key}`;
+      const rk = rowIdentity(row);
       const prior = state.rowReceipts[rk];
-      if (prior && prior.result !== 'failed') return { ...prior, replayed: true };
+      if (prior && prior.outcome.result !== 'failed') return { ...prior.outcome, replayed: true };
+      const remember = (outcome: ImportRowOutcome) => {
+        state.rowReceipts[rk] = { fingerprint: materialFingerprint(row), outcome };
+        return outcome;
+      };
       if (row.status === 'invalid' || row.status === 'duplicate') {
         return { rowNumber: row.rowNumber, key: row.key, result: 'rejected', reason: row.issues.map((i) => i.reason).join('; '), replayed: false };
       }
       if (row.status === 'review') return { rowNumber: row.rowNumber, key: row.key, result: 'unresolved', reason: 'Possible existing guest — needs staff review; not merged.', replayed: false };
-      const batchParty = state.importParties[`${batchId}|${row.partyKey}`];
+      const batchParty = state.importParties[partyIdentity(row)];
       const refExists = row.values.guest_ref && data.parties.some((p) => p.ref.toLowerCase() === row.values.guest_ref.toLowerCase());
       if (!batchParty && refExists) {
         const out: ImportRowOutcome = { rowNumber: row.rowNumber, key: row.key, result: 'skipped', reason: 'Reference already imported; skipped to avoid a duplicate.', replayed: false };
-        state.rowReceipts[rk] = out;
-        return out;
+        return remember(out);
       }
       attempt += 1;
       if (s === 'partial-import' && attempt % 3 === 0) {
         const out: ImportRowOutcome = { rowNumber: row.rowNumber, key: row.key, result: 'failed', reason: 'Temporary service failure. Eligible for retry with the same batch.', replayed: false };
-        state.rowReceipts[rk] = out;
-        return out;
+        return remember(out);
       }
       let party = data.parties.find((p) => p.id === batchParty);
       if (!party) {
@@ -714,7 +738,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
           changes: [],
         };
         data.parties.push(party);
-        state.importParties[`${batchId}|${row.partyKey}`] = id;
+        state.importParties[partyIdentity(row)] = id;
       }
       const index = data.members.filter((m) => m.partyId === party.id).length + 1;
       data.members.push({
@@ -722,7 +746,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
         partyId: party.id,
         name: row.values.member_name,
         ageBand: row.values.age_band.toLowerCase() === 'child' ? 'child' : 'adult',
-        invitedFunctionIds: row.functionIds,
+        invitedFunctionIds: [...row.functionIds],
         responses: Object.fromEntries(row.functionIds.map((f) => [f, 'awaiting' as FunctionRsvp])),
         attendance: 'expected',
         dietary: '',
@@ -733,12 +757,11 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
       change(party, persona.name, 'Imported guest', '—', row.values.member_name, 'import');
       touch(data, party);
       const out: ImportRowOutcome = { rowNumber: row.rowNumber, key: row.key, result: 'accepted', reason: 'Imported', partyRef: party.ref, replayed: false };
-      state.rowReceipts[rk] = out;
-      return out;
+      return remember(out);
     });
     if (s === 'partial-import') scenario = 'none';
     persist();
-    return { ok: true, replayed: false, value: outcomes };
+    return { ok: true, replayed: false, value: structuredClone(outcomes) };
   }
 
   // ---------- Guest invitation (restricted link) ----------
