@@ -684,22 +684,32 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
     // Validate every retained identity before applying any row in this request.
     const incoming = new Map<string, string>();
     const knownKeys = new Map<string, number>();
+    const knownMaterials = new Map<string, number>();
+    // Receipt fingerprints retain canonical values, so older receipts can be
+    // indexed without trusting parser-derived keys or introducing a new scope.
+    const stableMaterial = (material: string) => {
+      const { values, functionIds } = JSON.parse(material);
+      return fingerprint({ values, functionIds });
+    };
     for (const [identity, receipt] of Object.entries(state.rowReceipts)) {
       // Derive the reverse index from persisted scoped receipts. This also covers
       // accepted Round-2 receipts without inventing a new batch or losing history.
       if (receipt.outcome && identity === `v2:${fingerprint({ ...scope, rowNumber: receipt.outcome.rowNumber })}`) {
         knownKeys.set(receipt.outcome.key, receipt.outcome.rowNumber);
+        knownMaterials.set(stableMaterial(receipt.fingerprint), receipt.outcome.rowNumber);
       }
     }
     for (const row of rows) {
       const identity = rowIdentity(row);
       const material = materialFingerprint(row);
+      const stable = stableMaterial(material);
       const prior = state.rowReceipts[identity];
-      if ((knownKeys.has(row.key) && knownKeys.get(row.key) !== row.rowNumber) || (prior && prior.fingerprint !== material) || (incoming.has(identity) && incoming.get(identity) !== material)) {
+      if ((knownMaterials.has(stable) && knownMaterials.get(stable) !== row.rowNumber) || (knownKeys.has(row.key) && knownKeys.get(row.key) !== row.rowNumber) || (prior && prior.fingerprint !== material) || (incoming.has(identity) && incoming.get(identity) !== material)) {
         return fail('conflict', `Import row ${row.rowNumber} changed under the same batch identity. Start a new batch; no rows were changed.`);
       }
       incoming.set(identity, material);
       knownKeys.set(row.key, row.rowNumber);
+      knownMaterials.set(stable, row.rowNumber);
     }
     let attempt = 0;
     const outcomes = rows.map((row): ImportRowOutcome => {
@@ -891,7 +901,21 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
     const attending = members.some((m) => Object.values(m.responses).some((v) => v === 'confirmed' || v === 'tentative'));
     const upsertLeg = (direction: 'arrival' | 'departure', ans: GuestAnswers['arrival'] | GuestAnswers['departure']) => {
       const existing = data.legs.find((l) => l.partyId === party.id && l.direction === direction);
-      if (!attending || !ans) return;
+      if (!ans) {
+        if (existing) {
+          change(party, actor, `${direction === 'arrival' ? 'Arrival' : 'Departure'} details`, `${existing.from} → ${existing.to}`, 'Details later', 'guest-form');
+          invalidateLegPlan(data, existing.id);
+          for (const transfer of data.transfers) {
+            if (transfer.legId === existing.id && ['requested', 'awaiting-details', 'planned', 'assigned', 'dispatched'].includes(transfer.state)) {
+              transfer.legId = null;
+              transfer.state = 'awaiting-details';
+            }
+          }
+          data.legs = data.legs.filter((l) => l.id !== existing.id);
+        }
+        return;
+      }
+      if (!attending) return;
       const at = ans.at || null;
       const normalize = (value: string) => value.normalize('NFKC').trim().replace(/\s+/g, ' ');
       const from = normalize(direction === 'arrival' ? (ans as NonNullable<GuestAnswers['arrival']>).from : existing?.from ?? data.event.city);
@@ -935,6 +959,10 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
       const leg = data.legs.find((l) => l.partyId === party.id && l.direction === (kind === 'pickup' ? 'arrival' : 'departure'));
       const t = data.transfers.find((x) => x.partyId === party.id && x.kind === kind);
       const want = attending && wanted;
+      // Reconnect every active dependency after details-later creates a new leg.
+      for (const transfer of data.transfers) {
+        if (transfer.partyId === party.id && transfer.kind === kind && transfer.state === 'awaiting-details') transfer.legId = leg?.id ?? null;
+      }
       if (t) {
         if (!want && t.state !== 'not-required') t.state = 'cancelled';
         if (want && (t.state === 'cancelled' || t.state === 'not-required')) t.state = leg?.at ? 'requested' : 'awaiting-details';
