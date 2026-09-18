@@ -1,35 +1,98 @@
-# TNP-FREELANCER-ASTRA-M1 — onboarding, opportunity and notification frontend
+# TNP-FREELANCER-ASTRA-M1 — synthetic onboarding and opportunity frontend
 
-Status: DRAFT — no writer lease. Prepared from the user's 2026-09-18 instruction to complete all remaining non-3D frontend pages and workflows.
+Status: READY — sole writer `/root/freelancer_builder`, `CODEX_THREAD_ID` `01a0b4fa-f7ad-7e31-a0ea-babdec221d0b`, verified actual `gpt-6-astra` / high on `DESKTOP-DL9FDM7`. The inherited parent `CODEX_SESSION_ID` is not the writer identity.
+
+Responsible human/product owner: Anjaneya / H1. Sole human fixed-SHA acceptance reviewer: Kartik.
+
+Source: `c18920f6023f869ab6103ddbc256a9c1836a8215`
+
+Branch/worktree/port: `codex/tnp-freelancer-astra-m1` / `D:\TNP-worktrees\TNP-FREELANCER-ASTRA-M1` / `3108`
+
+The commit carrying this Ready contract is the LAUNCH_SHA supplied externally after commit creation. Initial worktree HEAD must equal that exact commit and Source must be its ancestor.
 
 ## Result
 
-Use verified `gpt-6-astra` / high to replace the current static Freelancer shell with complete mobile-first synthetic application, assessment, opportunity, claim, assignment response and notification-centre workflows backed by reviewed contracts.
+Replace the current static Freelancer shell with a complete mobile-first synthetic application, assessment, opportunity, claim and assignment-response workspace using the existing reviewed preview service. Preserve exact request identity, generation, reset and service-result semantics. This task does not add or change shared contracts.
 
-## Proposed ownership
+## Writable paths
 
-- `app/freelancer/**`
-- `components/tnp/portals/freelancer/**`
-- local Freelancer presentation helpers/styles/tests only
+- `components/tnp/portals/freelancer/FreelancerPortal.tsx`
+- `components/tnp/portals/freelancer/FreelancerPortal.module.css`
+- Freelancer-local presentation components, state/draft/action helpers and focused tests under `components/tnp/portals/freelancer/**`
 
-Freeze AppShell/global CSS, other portals, shared contracts/services/fixtures, packages, server allocation/notification code and providers.
+Existing `app/freelancer/page.tsx` route glue is frozen because it already renders `FreelancerPortal`. Also freeze AppShell/global CSS, `PortalHero`, all shared components/contracts/services/fixtures, Client, Planner, RSVP, Operations, public/homepage files, packages/lockfiles, server/API/provider code and docs/registers. Import the shared preview service normally; do not bypass or recreate it.
+
+## Contract truth and exclusions
+
+- Registration persists only applicant ID, display name and role. Experience, skills and availability may appear only as clearly local draft/presentation fields and must not be described as persisted application fields.
+- Assessment accepts a supplied score. Local questions are a labelled sample experience, not an approved assessment policy or server-scored examination.
+- Existing application statuses are the only authoritative statuses. Do not invent a change-requested workflow or real KYC lifecycle.
+- No secure anonymous tracking token exists. Any reference lookup is a labelled synthetic current-profile view, not production authorization.
+- No notification DTO/query/read/expiry/delivery contract exists. A local `Updates` view may derive action-needed items from the selected worker's existing opportunities/assignments, but it must not claim a server notification, provider delivery or unrestricted broadcast.
+- Eligibility currently reflects service-supported approval, role and assessment behavior. Do not claim location/availability/rating targeting that the service does not enforce.
+- Coming/Not Coming uses the existing assignment response operation. Pending response is truthful; do not fabricate an expiry or briefing acknowledgement.
+- Attendance, event passes, GPS, KYC documents, earnings, payouts, ratings and standing are outside this milestone. Remove or replace the current misleading static previews rather than keeping dead controls.
 
 ## Prompt 1 — application and assessment
 
-- Editable application steps for personal details, experience, skills, availability and preferred role using synthetic-safe fields.
-- Assessment questions/results, validation, previous/next, loading/error/retry/recovery and submitted reference.
-- Application tracking by reference without login.
-- KYC status presentation only; no real identity document or live verification claim.
-- Admin-review pending/approved/rejected/change-requested states and truthful portal-access gating.
+- Freelancer-local editorial hero without the shared Operations Demo link.
+- Mobile-first multi-step application using only synthetic-safe values.
+- Persisted display name/role separated visibly from local-only draft experience, skills and availability.
+- Draft dirty/saved/storage-failure presentation, refresh recovery and reset behavior scoped by preview generation/profile.
+- Validation summary, first-invalid-field focus, stable labels/descriptions and back/next preservation.
+- Labelled sample assessment questions, review step, result and service-backed submit/retry using captured generation and stable request key.
+- Truthful pending/rejected/approved-sample explanations and a copyable submitted reference.
+- Loading, error, same-request retry, stale generation, lost-response recovery and duplicate-submit protection.
 
-## Prompt 2 — opportunities, assignment and notifications
+Run applicable checks and create one checked checkpoint before Prompt 2.
 
-- Eligible opportunity feed/detail filtered by role, schedule, location and availability; full/ineligible/overlap/unavailable states come from the service.
-- Claim action, live filled/required counts, duplicate/retry/conflict handling and exact assignment identity.
-- Distinct initial claim, Coming, Not Coming, no-response, released, cancelled and replaced states with briefing acknowledgement.
-- Notification centre UI for opportunity publication and assigned pre-event confirmation prompts. It must display synthetic delivery state unless the production notification service is integrated.
-- Server-owned recipient eligibility is mandatory. Never show an unrestricted client-side broadcast to all accounts.
+## Prompt 2 — opportunities and assignment responses
 
-## Gates
+- Service-backed opportunity feed/detail with search and contract-backed role/location/date display filters.
+- Announced result count, true empty versus filtered empty, keyboard-removable filters and safe selection reconciliation.
+- Schedule/timezone, rate amount/unit, reporting information and live filled/required quantities from the service, including 6/40 cases.
+- Clear eligibility and unavailable/full/ineligible/overlap explanations from service outcomes.
+- Claim action with exact request/retry identity, duplicate/conflict handling and post-mutation assignment/roster reread.
+- Keep initial claim distinct from Coming and Not Coming. Show pending response, replaced and cancelled/inactive states truthfully.
+- Two opportunity and assignment identities must never cross during filtering, retry, refresh or reset.
+- A compact phone workspace with Application, Opportunities, Assignments and derived Updates sections.
+- Purposeful motion for steps, selection, filters, sheets, pending/success/error feedback and changed records, with complete reduced-motion behavior.
 
-Requires reviewed/integrated platform auth and workforce/allocation/notification contracts plus an exact source/launch/lease/reviewer packet. Verify 1440/1100/390, real keyboard/touch, application recovery, two opportunities/assignments, capacity/eligibility/overlap errors, refresh/reset and notification read/expiry behavior. Real FCM/device tokens/jobs/provider delivery are separate backend work.
+## Microfeatures
+
+- Search clear action, announced count, helpful empty-state next action and exact/friendly timestamps.
+- Dirty/saved indicator, safe discard confirmation and in-memory fallback when browser storage fails.
+- Copy-reference feedback with manual fallback.
+- Updated-since-opened/stale indicator where supported by local query ordering.
+- Retry preserving entered data and original request identity; explicit new-action versus retry-same-action behavior.
+- One calm feedback region instead of stacked toast noise.
+- Long reference/name wrapping, safe narrow-screen sheets and local comfortable/compact density where useful.
+- Image/media only if existing local assets have truthful illustrative metadata and robust failure fallback; no decorative photo wall.
+
+## Visual, motion and accessibility direction
+
+Use established TNP teal `#008080`, hover `#006b6b`, deep teal `#062b29`, ivory `#f5f1e7`, champagne `#bba879`, Georgia display and existing body stack. Build a restrained editorial onboarding experience plus compact professional opportunity workspace. Avoid generic gradients, glass-card piles and giant operational headings.
+
+Use maximum purposeful motion through CSS opacity/transform and installed tools only where sequencing materially helps. No new dependency, scroll hijacking, perpetual motion, repeated full-list animation, WebGL/3D or animation implying server/provider completion. Implement `prefers-reduced-motion`, touch/coarse-pointer behavior and cleanup from the start.
+
+All forms, filters, drawers/sheets and actions must work with keyboard and touch; provide visible focus, error associations, focus recovery/return, semantic headings, text-plus-colour status, usable target sizes and no hover-only information.
+
+## Verification
+
+Run:
+
+- `npm run lint`
+- `npx --no-install tsc --noEmit --incremental false`
+- relevant focused Freelancer and shared `node --test` commands
+- `npm run build:vercel`
+- `git diff --check`
+
+Exercise incomplete/valid application, draft refresh/recovery/reset/storage failure, duplicate submit, same-request retry, stale generation, sample assessment, two opportunity/assignment identities, available/full/unavailable/ineligible/overlap/duplicate claim, Claim versus Coming/Not Coming, replaced/cancelled state, true/filtered empty and derived Updates truthfulness.
+
+Verify `1440x900`, `1100x900`, `390x844`, `320px`, both sides of changed breakpoints, real Tab/Shift+Tab/Enter/Space, touch, reduced motion, contrast, overflow, footer/fixed-overlay obstruction, console and hydration. A Windows Nitro `EBUSY` permits one unchanged retry only after stopping task-owned processes.
+
+## Review and handoff
+
+After Prompt 1 create a checked non-force checkpoint push. After Prompt 2 create one immutable final, compare the live feature ref, non-force push only this branch, stop the server/browser, confirm port3108 free, clean worktree and remote equality, then return the lease.
+
+Report Source, Launch, checkpoint and final SHAs, every changed file, actual commands/results, browser evidence and limitations. Fresh external Claude review plus Kartik fixed-SHA acceptance precede P-controlled integration. Add fresh independent Sol review if implementation crosses the approved synthetic/frontend boundary. No main push, deployment, provider connection or production mutation.
