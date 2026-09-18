@@ -1,6 +1,8 @@
 SESSION TYPE: NEW SESSION
 DO NOT REUSE ANY PREVIOUS TNP ARCHITECT, REVIEWER OR DEVELOPER SESSION.
 
+SUPERSEDED — DO NOT EXECUTE. Independent review requested corrections after `f0bb13590aab37c9bae69d3e1c727cfb8f20daf5`. Use `docs/dispatch/2026-09-18/PLATFORM-FINAL-CLAUDE-REVIEW.md` for corrected final `bc6b5565af1750168b10701955d131c3ec2f2dc4`.
+
 # TNP-PLATFORM-M1 — external Claude fixed-SHA review
 
 You are a fresh read-only external Claude reviewer. You are not the platform author, architect P, a prior TNP reviewer or an implementation writer. Do not edit, commit, push, merge, deploy, connect to or mutate MongoDB/Vercel, create a lease or review a moving branch.

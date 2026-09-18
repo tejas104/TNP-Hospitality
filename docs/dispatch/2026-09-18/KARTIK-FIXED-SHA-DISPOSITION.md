@@ -22,14 +22,14 @@ or
 
 - Branch: `codex/tnp-platform-m1`
 - Launch: `ce64172eff2e96bc0fdfeb4384d93ebd197712ce`
-- Final: `f0bb13590aab37c9bae69d3e1c727cfb8f20daf5`
-- Required reviews: fresh independent Sol/high plus `docs/dispatch/2026-09-18/PLATFORM-CLAUDE-REVIEW.md`
+- Final: `bc6b5565af1750168b10701955d131c3ec2f2dc4`
+- Required reviews: fresh focused independent Sol/high plus `docs/dispatch/2026-09-18/PLATFORM-FINAL-CLAUDE-REVIEW.md`
 - Confirm accepted roles/tenant model, session policy, temporary-development Mongo/Vercel boundary, client-owned production cutover, disabled providers, migration/backup/restore/rollback expectations and remaining production gates.
 
 Record one exact statement:
 
-`KARTIK APPROVES TNP-PLATFORM-M1 FINAL f0bb13590aab37c9bae69d3e1c727cfb8f20daf5 FOR ARCHITECT-CONTROLLED LOCAL INTEGRATION ONLY.`
+`KARTIK APPROVES TNP-PLATFORM-M1 FINAL bc6b5565af1750168b10701955d131c3ec2f2dc4 FOR ARCHITECT-CONTROLLED LOCAL INTEGRATION ONLY.`
 
 or
 
-`KARTIK REQUESTS CHANGES TO TNP-PLATFORM-M1 FINAL f0bb13590aab37c9bae69d3e1c727cfb8f20daf5: <file/behavior-specific findings>.`
+`KARTIK REQUESTS CHANGES TO TNP-PLATFORM-M1 FINAL bc6b5565af1750168b10701955d131c3ec2f2dc4: <file/behavior-specific findings>.`
