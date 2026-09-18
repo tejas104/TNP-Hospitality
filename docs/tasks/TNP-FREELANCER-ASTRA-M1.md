@@ -1,6 +1,16 @@
 # TNP-FREELANCER-ASTRA-M1 — synthetic onboarding and opportunity frontend
 
-Status: READY — sole writer `/root/freelancer_builder`, `CODEX_THREAD_ID` `01a0b4fa-f7ad-7e31-a0ea-babdec221d0b`, verified actual `gpt-6-astra` / high on `DESKTOP-DL9FDM7`. The inherited parent `CODEX_SESSION_ID` is not the writer identity.
+Status: CHANGES REQUESTED — CORRECTION READY for the original sole writer `/root/freelancer_builder`, `CODEX_THREAD_ID` `01a0b4fa-f7ad-7e31-a0ea-babdec221d0b`, verified actual `gpt-6-astra` / high on `DESKTOP-DL9FDM7`. The inherited parent `CODEX_SESSION_ID` is not the writer identity.
+
+Reviewed candidate: `eab038055b620165ea3e1e2ef5f100db4946ff91`
+
+External Claude fixed-SHA review disposition: `CHANGES REQUESTED`.
+
+Correction scope is limited to the existing Freelancer directory. Fix the P2 false persistence receipt for seeded workers: do not tell an existing worker that submitted display name/role were saved when the service retains the authoritative existing worker record. Either suppress that application path for profiles with an existing worker record or use truthful copy that clearly separates the new pending application from the current worker profile. Add focused regression coverage for `worker-003`, `worker-006`, and `worker-007` or an equivalent complete seeded-worker matrix.
+
+Also fix the two bounded P3s in the same pass: map blocked/unavailable browser storage to the designed in-memory fallback instead of surfacing the raw browser exception, and raise the small-label/navigation-numeral contrast to WCAG AA. Writable correction paths are `ApplicationFlow.tsx`, `useFreelancer.ts`, `FreelancerPortal.module.css`, and Freelancer-local tests/browser checks under `components/tnp/portals/freelancer/**`. All other paths remain frozen.
+
+Return one new immutable, clean, pushed, remote-equal final SHA with focused tests, lint, explicit TypeScript, build, diff check and browser reproduction for the corrected receipt/storage/contrast states. The same Claude review session performs a focused fixed-SHA delta/regression re-review; Kartik acceptance and P-controlled integration remain mandatory.
 
 Responsible human/product owner: Anjaneya / H1. Sole human fixed-SHA acceptance reviewer: Kartik.
 
