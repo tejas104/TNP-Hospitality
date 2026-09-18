@@ -1,6 +1,6 @@
 # TNP-PLATFORM-M1 — temporary-development modular-monolith foundation
 
-Status: READY. Dispatch only the fresh Sol/high writer named by P after this Ready commit is frozen.
+Status: CHANGES REQUESTED. Reopen only the original platform writer under the bounded correction contract after P supplies the correction LAUNCH_SHA.
 
 Responsible human and sole human fixed-SHA reviewer: H2 Kartik. Anjaneya supplies any product/content decision but is not a second code-review gate.
 Sole writer: fresh internal Codex subagent `/root/platform_builder`, assigned `gpt-5.6-sol` / high on DESKTOP-DL9FDM7.
@@ -56,3 +56,13 @@ Run locked install after approved dependency changes; lint; non-incremental Type
 Builder returns baseline/checkpoints/final SHA, exact changed files, commands/results, API/test evidence, index rationale, migration/rollback limitations and clean local/remote state, then pauses. No main merge/push, deployment or production/provider operation.
 
 The sole writer may create checked commits and non-force push only `codex/tnp-platform-m1` after live remote comparison. Any need to modify existing UI/domain/preview paths or introduce another dependency is a stop-and-escalate condition.
+
+## Fixed-SHA correction after independent review
+
+Correction SOURCE_SHA: `f0bb13590aab37c9bae69d3e1c727cfb8f20daf5`. Resolve only the three findings recorded in `docs/reviews/TNP-PLATFORM-M1-SOL-REVIEW.md`:
+
+1. bind idempotency replay to the original actor or membership, reject cross-actor same-tenant reuse without exposing the cached response, and append safe actor/request replay audit evidence without re-running the effect, including the concurrent conflict/replay path;
+2. implement a narrowly scoped revoked-session logout replay that verifies the same token/session/action/actor/key and CSRF, returns only the stored logout result, clears the cookie, and cannot authorize a new mutation or any other route;
+3. add and document an explicit Vercel-config local-development command so the existing `process.env` boundary receives the six named variables, while preserving the standard frontend command and fail-closed behavior.
+
+Correction ownership is limited to `server/idempotency/service.ts`, `server/security/session.ts`, `app/api/v1/session/route.ts`, `tests/platform-foundation.test.mjs`, `docs/runbooks/PLATFORM-FOUNDATION.md`, and `package.json`. `server/data/indexes.ts`, Mongo repository code, lockfile, every UI/domain/preview path and all provider resources remain frozen unless P publishes a revised prerequisite. Add focused reproductions for cross-actor replay, same-actor replay audit, concurrent replay audit, exact logout replay, revoked-session non-replay rejection, wrong CSRF/key/action rejection and the documented command. Run the full prior matrix and safe synthetic API probes, push one new immutable final, stop servers and pause for focused independent Sol, separate external Claude and Kartik review.
