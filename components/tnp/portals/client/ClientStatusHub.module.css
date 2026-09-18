@@ -3,8 +3,28 @@
   margin: 0 auto 88px;
   padding: clamp(28px, 5vw, 64px);
   color: #f6f0e6;
-  background: #14251f;
-  border-radius: 32px;
+  background: var(--dark);
+  border-radius: 0;
+  scroll-margin-top: 125px;
+}
+.hub :is(a, button, input, select, textarea):focus-visible {
+  outline: 3px solid #73521d;
+  outline-offset: 4px;
+}
+.hub > .viewState button:focus-visible {
+  outline-color: #e8dfc6;
+}
+.hub:focus-visible {
+  outline: 3px solid #73521d;
+  outline-offset: 4px;
+}
+.header h2 em {
+  color: #dbc897;
+}
+.recordCount {
+  color: #c8d1c9;
+  font-size: 12px;
+  margin: 16px 0;
 }
 
 .header {
@@ -68,7 +88,7 @@
   grid-template-columns: minmax(260px, 0.34fr) minmax(0, 1fr);
   overflow: hidden;
   background: #f5f0e8;
-  border-radius: 24px;
+  border-radius: 0;
 }
 
 .directory {
@@ -145,8 +165,8 @@
 
 .records > button.selected {
   background: #fff;
-  border-color: #aa7e43;
-  box-shadow: 0 8px 24px rgb(38 36 29 / 9%);
+  border-color: var(--primary);
+  box-shadow: inset 3px 0 var(--primary);
 }
 
 .records span,
@@ -241,7 +261,7 @@
 }
 
 .meta dt {
-  color: #77817d;
+  color: #4f6256;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -274,7 +294,7 @@
 .block header p,
 .inlineEmpty {
   margin: 4px 0 0;
-  color: #6d7773;
+  color: #4f6256;
 }
 
 .eventGrid,
@@ -334,10 +354,16 @@
 .quoteActions button {
   padding: 10px 13px;
   color: #fff;
-  background: #18342b;
-  border: 1px solid #18342b;
+  background: var(--primary);
+  border: 1px solid var(--primary);
   border-radius: 9px;
   cursor: pointer;
+}
+.quoteActions button:hover {
+  background: var(--primary-hover);
+}
+.quoteActions button.guard:hover {
+  background: #f4e5d7;
 }
 
 .quoteActions button.guard {
