@@ -1,10 +1,19 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: ROUND-3 CHANGES REQUESTED — FINAL BOUNDED CORRECTION READY for the same sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`. Shell model/effort variables are unavailable and are not separate runtime evidence.
+Status: ROUND-4 CHANGES REQUESTED — MINIMAL ADAPTER CORRECTION READY for the same sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`. Shell model/effort variables are unavailable and are not separate runtime evidence.
 
-Round-2 candidate: `87e91f9eea7ef3a317a0f16cb3381df2bf7365dc`, clean and remote-equal on `codex/tnp-rsvp-claude-m1` in `D:\TNP-worktrees\TNP-RSVP-CLAUDE-M1`; port `3107` is free.
+Round-3 candidate: `992b00d49ee1209e0289c2167fad5408318bd2e8`, clean and remote-equal on `codex/tnp-rsvp-claude-m1` in `D:\TNP-worktrees\TNP-RSVP-CLAUDE-M1`; port `3107` is free.
 
-Fresh independent Sol/high fixed-SHA Round-2 disposition: `CHANGES REQUESTED` on `87e91f9eea7ef3a317a0f16cb3381df2bf7365dc`.
+Fresh independent Sol/high fixed-SHA Round-3 disposition: `CHANGES REQUESTED` on `992b00d49ee1209e0289c2167fad5408318bd2e8`.
+
+## Round-4 minimal adapter findings
+
+Preserve all cleared work. Change only RSVP-local adapter/import identity behavior and focused tests/browser evidence for these two P1s:
+
+1. Add a batch-scope material-identity reverse index independent of parser line number and parser-derived row key. The same normalized material row moved because blank lines or ordering change its line/key must conflict atomically and never append a duplicate. Preflight slot, parser key and stable material identity before any mutation. Preserve legitimate multi-member household grouping, exact replay, rejected/unresolved replay, operational failure retry, stable-reference skip and org/event/persona isolation.
+2. Clearing an existing known arrival/departure answer to `null` (details later) must persist the cleared travel state, release/invalidate every active dependent pickup/drop plan and block assignment/dispatch until new details are supplied and the movement is replanned. No obsolete leg, vehicle, `planBasedOn` or dispatchable state may survive. Preserve the already-cleared non-null endpoint/mode/reference/time update path.
+
+Required regressions must use actual `previewImport` parser output before and after an inserted blank line or reordering, plus Node/browser clearing-known-travel-to-null followed by attempted dispatch. No UI/design/motion changes.
 
 ## Round-3 final bounded findings
 
