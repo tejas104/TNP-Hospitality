@@ -6,6 +6,8 @@
 - One allocation service handles worker claims and admin assignment. Admin override must not silently overfill. H2 owns implementation; H1 reviews and both approve contracts.
 - Production claim acceptance requires 20 concurrent requests on 10 slots -> exactly 10 assignments, then 500 on 10 -> exactly 10; duplicate requests and simultaneous overlapping events must remain safe.
 - Distinguish initial assignment acceptance from attendance reconfirmation. Expiry/confirm/decline/replacement races must preserve capacity and audit.
+- Publishing Positions enters staffing and produces opportunity notifications only for active eligible freelancers whose role, availability, rating and location permit the opportunity. This is not an unrestricted broadcast of event details to every account. Assigned freelancers separately receive the configurable pre-event Coming/Not Coming prompt; expiry/nonresponse flags replacement without silently changing capacity.
+- Production notifications require server-owned audience selection, durable at-least-once jobs, idempotent per-recipient delivery, retries/backoff, deduplication, failure/dead-letter visibility, device-token lifecycle and authorization-safe payloads. A feed badge or browser-only toast is not delivery proof.
 - Attendance requires eligible assignment, authorized event-scoped TL/coordinator, valid event token/code and server evidence. GPS denial is recorded as missing, never valid; the PDF requires a missing-GPS check-in path.
 - Corrections preserve original attendance evidence and append reason/actor/time. Never display an unsaved action as persisted.
 - Earnings derive from verified attendance and an agreed rate snapshot. Adjustments require reasons. TL/coordinator then Finance approvals are explicit.
