@@ -18,6 +18,7 @@ import { ReactNode, useEffect, useRef, useState } from 'react';
 import { navLinks, portalLinks } from '@/data/tnp';
 import { PreviewControls } from '@/components/tnp/shared/PreviewControls';
 import WorkspaceDrawer from './public/WorkspaceDrawer';
+import { publicNavigation } from './public/access-content';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -53,17 +54,24 @@ export default function AppShell({ children }: { children: ReactNode }) {
   const [scrolled, setScrolled] = useState(false);
   const [showPreloader, setShowPreloader] = useState(false);
   const [routeAnimating, setRouteAnimating] = useState(false);
+  const menuTrigger = useRef<HTMLButtonElement>(null);
   const label = transitionLabels[pathname] ?? 'TNP HOSPITALITY';
   const publicPage = !['/client', '/planner', '/freelancer', '/admin'].some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
-  const publicLinks = [
-    { label: 'Experience', href: '/#experience' },
-    { label: 'Services', href: '/#services' },
-    { label: 'RSVP', href: '/#rsvp' },
-    { label: 'Events', href: '/#events' },
-    { label: 'About', href: '/#about' },
-  ];
+  const publicLinks = publicNavigation;
+
+  useEffect(() => {
+    if (!publicPage || !menuOpen) return;
+    const dismiss = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setMenuOpen(false);
+        menuTrigger.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', dismiss);
+    return () => window.removeEventListener('keydown', dismiss);
+  }, [publicPage, menuOpen]);
 
   useEffect(() => {
     const seen = sessionStorage.getItem('tnp-preloader-seen');
@@ -199,7 +207,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <span>{label}</span>
       </div>
       <header
-        className={`site-nav ${publicPage ? 'public-nav' : ''} ${scrolled ? 'is-scrolled' : ''}`}
+        className={`site-nav ${publicPage ? 'public-nav' : ''} ${scrolled ? 'is-scrolled' : ''} ${publicPage && menuOpen ? 'public-menu-visible' : ''}`}
       >
         <Link className="brand-mark" href="/" data-cursor="OPEN">
           <span>TNP</span>
@@ -222,6 +230,16 @@ export default function AppShell({ children }: { children: ReactNode }) {
           ))}
         </nav>
         <div className="nav-actions">
+          {publicPage && (
+            <Link
+              className="public-access-link"
+              href="/login"
+              aria-label="Workspace / login access"
+            >
+              <span className="access-wide">Workspace / Login</span>
+              <span className="access-compact">Workspace</span>
+            </Link>
+          )}
           {!publicPage && (
             <Link className="login-link" href="/planner">
               Login
@@ -235,10 +253,12 @@ export default function AppShell({ children }: { children: ReactNode }) {
             Let&apos;s Talk
           </Link>
           <button
+            ref={menuTrigger}
             className="menu-toggle"
             type="button"
             aria-label="Toggle menu"
             aria-expanded={menuOpen}
+            aria-controls={publicPage ? 'public-mobile-navigation' : undefined}
             onClick={() => setMenuOpen((value) => !value)}
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -253,7 +273,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
         open={menuOpen}
         links={
           publicPage
-            ? [...publicLinks, { label: 'Enquire', href: '/contact' }]
+            ? [
+                ...publicLinks,
+                { label: 'Workspace / Login', href: '/login' },
+                { label: 'Enquire', href: '/contact' },
+              ]
             : [...navLinks, ...portalLinks]
         }
         onNavigate={() => {
@@ -355,6 +379,9 @@ function MobileMenu({
   return (
     <div
       className={`mobile-menu ${publicPage ? 'public-menu' : ''} ${open ? 'open' : ''}`}
+      id={publicPage ? 'public-mobile-navigation' : undefined}
+      role={publicPage ? 'navigation' : undefined}
+      aria-label={publicPage ? 'Public menu' : undefined}
       inert={!open}
     >
       {links.map((link) => (

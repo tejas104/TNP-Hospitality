@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import {
   ArrowUpRight,
   BriefcaseBusiness,
   CalendarDays,
-  LayoutDashboard,
+  HeartHandshake,
   UserRound,
   Compass,
   X,
@@ -14,13 +15,9 @@ import {
   workspaceInteraction,
   type WorkspaceState,
 } from './workspace-interaction';
+import { accessAudiences } from './access-content';
 
-const workspaces = [
-  { name: 'Client', href: '/client', icon: UserRound },
-  { name: 'Planner', href: '/planner', icon: CalendarDays },
-  { name: 'Freelancer', href: '/freelancer', icon: BriefcaseBusiness },
-  { name: 'Operations preview', href: '/admin', icon: LayoutDashboard },
-];
+const icons = [UserRound, CalendarDays, BriefcaseBusiness, HeartHandshake];
 
 // Homepage-only sibling of the existing portal switcher: non-modal navigation,
 // no authentication claim and no synthetic data controls on the public page.
@@ -87,14 +84,14 @@ export default function WorkspaceDrawer() {
         className="workspace-trigger"
         aria-expanded={open}
         aria-controls="public-workspaces"
-        aria-label="Explore TNP workspace previews"
+        aria-label="Your space — find TNP workspace access"
         onClick={() => {
           dismissed.current = open;
           setState((value) => workspaceInteraction(value, 'toggle'));
         }}
       >
         {open ? <X size={20} /> : <Compass size={20} />}
-        <span>Explore</span>
+        <span>Your space</span>
       </button>
       <nav
         id="public-workspaces"
@@ -102,19 +99,28 @@ export default function WorkspaceDrawer() {
         aria-label="Workspace preview pages"
         hidden={!open}
       >
-        <p className="workspace-kicker">YOUR TNP · PAGE LINKS</p>
+        <p className="workspace-kicker">YOUR TNP · FIND YOUR PLACE</p>
         <h2>Choose your TNP space</h2>
         <p className="workspace-warning">
           Synthetic previews, not production login. No real bookings, payments
           or messages.
         </p>
-        {workspaces.map(({ name, href, icon: Icon }) => (
-          <a key={href} href={href}>
-            <Icon size={20} />
-            <span>{name}</span>
-            <ArrowUpRight size={16} />
-          </a>
-        ))}
+        {accessAudiences.map(({ name, href, summary }, index) => {
+          const Icon = icons[index];
+          return (
+            <a key={href} href={href}>
+              <Icon size={20} aria-hidden="true" />
+              <span>
+                <strong>{name}</strong>
+                <small>{summary}</small>
+              </span>
+              <ArrowUpRight size={16} aria-hidden="true" />
+            </a>
+          );
+        })}
+        <Link className="workspace-access-link" href="/login">
+          Workspace / login access <ArrowUpRight size={16} aria-hidden="true" />
+        </Link>
       </nav>
     </div>
   );
