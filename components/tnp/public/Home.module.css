@@ -922,54 +922,21 @@
   display: flex;
   align-items: center;
 }
-/* Continuous section surfaces. Content stays above the final 10% blend;
+/* Hero-only continuity. Content stays above the final 15% blend;
    the extra end-space is decorative, never an overlay or a scroll target. */
-.home > :is(section, footer) {
-  background-color: var(--surface-current);
+.home > .hero {
+  background-color: var(--hero-surface);
   background-image: linear-gradient(
     to bottom,
-    var(--surface-current) 90%,
-    var(--surface-next) 100%
+    var(--hero-surface) var(--hero-solid-stop),
+    var(--hero-next) 100%
   );
-}
-.home > .section {
-  padding-bottom: 160px;
-}
-.home > .hero {
-  padding-bottom: 205px;
-}
-.home .heroFoot {
-  bottom: calc(10% + 24px);
-}
-.home > .rsvp {
-  padding-bottom: 190px;
-}
-.home > .events:has(.gallery[open]) {
   padding-bottom: 260px;
 }
-.intro {
-  border-bottom: 0;
-}
-.finalCta::after {
-  pointer-events: none;
-  background: linear-gradient(
-    to bottom,
-    #062b29 0%,
-    #052b29d9 12%,
-    #052b29d9 85%,
-    #062b29 100%
-  );
+.home .heroFoot {
+  bottom: calc(15% + 24px);
 }
 @media (max-width: 700px) {
-  .home > .section {
-    padding-bottom: 180px;
-  }
-  .home > .rsvp {
-    padding-bottom: 260px;
-  }
-  .home > .hero {
-    padding-bottom: 200px;
-  }
   .destinationItinerary {
     grid-template-columns: 1fr;
     gap: 22px;

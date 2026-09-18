@@ -10,7 +10,7 @@ import HomeHero from './public/HomeHero';
 import styles from './public/Home.module.css';
 import { useHomeMotion } from './public/useHomeMotion';
 import { canPreviewService } from './public/workspace-interaction';
-import { sectionSurface } from './public/destination-motion';
+import { heroSurface } from './public/destination-motion';
 
 export default function HomeExperience() {
   const [serviceIndex, setServiceIndex] = useState(0);
@@ -25,7 +25,7 @@ export default function HomeExperience() {
     <main ref={home} className={styles.home} id="main-content" tabIndex={-1}>
       <section
         className={styles.hero}
-        style={sectionSurface('hero')}
+        style={heroSurface}
         id="experience"
         aria-labelledby="home-title"
       >
@@ -72,7 +72,6 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.intro}`}
-        style={sectionSurface('intro')}
         id="about"
         aria-labelledby="about-title"
       >
@@ -107,7 +106,6 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.services}`}
-        style={sectionSurface('services')}
         id="services"
         aria-labelledby="services-title"
       >
@@ -230,12 +228,7 @@ export default function HomeExperience() {
         </div>
       </section>
 
-      <section
-        className={styles.rsvp}
-        style={sectionSurface('rsvp')}
-        id="rsvp"
-        aria-labelledby="rsvp-title"
-      >
+      <section className={styles.rsvp} id="rsvp" aria-labelledby="rsvp-title">
         <div className={styles.rsvpIntro}>
           <p className={styles.eyebrow}>03 / RSVP & GUEST HOSPITALITY</p>
           <h2 id="rsvp-title" data-motion="copy">
@@ -333,7 +326,6 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.events}`}
-        style={sectionSurface('events')}
         id="events"
         aria-labelledby="events-title"
       >
@@ -458,7 +450,6 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.destinations}`}
-        style={sectionSurface('destinations')}
         data-destination-journey
         id="destinations"
         aria-labelledby="destinations-title"
@@ -522,7 +513,6 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.process}`}
-        style={sectionSurface('process')}
         aria-labelledby="process-title"
         data-journey
       >
@@ -564,7 +554,6 @@ export default function HomeExperience() {
 
       <section
         className={`${styles.section} ${styles.people}`}
-        style={sectionSurface('people')}
         id="people"
         aria-labelledby="people-title"
       >
@@ -611,11 +600,7 @@ export default function HomeExperience() {
         </p>
       </section>
 
-      <section
-        className={styles.finalCta}
-        style={sectionSurface('final')}
-        aria-labelledby="contact-title"
-      >
+      <section className={styles.finalCta} aria-labelledby="contact-title">
         <img
           data-motion="image"
           src={byId('terrace').src}
@@ -638,7 +623,7 @@ export default function HomeExperience() {
           <p>Try a synthetic enquiry. No external message is sent.</p>
         </div>
       </section>
-      <footer className={styles.footer} style={sectionSurface('footer')}>
+      <footer className={styles.footer}>
         <span>
           TNP <small>HOSPITALITY</small>
         </span>

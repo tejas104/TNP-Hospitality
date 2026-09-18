@@ -4,8 +4,7 @@ import {
   destinationMode,
   destinationProgress,
   destinationRange,
-  homepageSurfaces,
-  sectionSurface,
+  heroSurface,
 } from './destination-motion.ts';
 test('destination enhancement is static for touch or disabled motion and preserves unsupported fallback', () => {
   assert.equal(destinationMode(true, true, true), 'native');
@@ -29,13 +28,10 @@ test('six image entry ranges are staggered, positive, finite and settle before l
     if (i) assert.ok(r.start > destinationRange(5000, 900, i - 1).start);
   }
 });
-test('all major surfaces meet the next section continuously including both teal-to-ivory seams', () => {
-  const surfaces = Object.values(homepageSurfaces);
-  for (let i = 0; i < surfaces.length - 1; i++)
-    assert.equal(surfaces[i][1], surfaces[i + 1][0]);
-  assert.deepEqual(sectionSurface('hero'), {
-    '--surface-current': '#062b29',
-    '--surface-next': '#f5f1e7',
+test('hero alone reserves the final 15 percent for teal-to-ivory continuity', () => {
+  assert.deepEqual(heroSurface, {
+    '--hero-surface': '#062b29',
+    '--hero-next': '#f5f1e7',
+    '--hero-solid-stop': '85%',
   });
-  assert.equal(sectionSurface('rsvp')['--surface-next'], '#f5f1e7');
 });

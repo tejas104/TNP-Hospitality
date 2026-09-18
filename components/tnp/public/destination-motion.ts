@@ -35,25 +35,9 @@ export function destinationRange(top: number, viewport: number, index: number) {
   };
 }
 
-export const homepageSurfaces = {
-  hero: ['#062b29', '#f5f1e7'],
-  intro: ['#f5f1e7', '#f5f1e7'],
-  services: ['#f5f1e7', '#083d36'],
-  rsvp: ['#083d36', '#f5f1e7'],
-  events: ['#f5f1e7', '#eae8dc'],
-  destinations: ['#eae8dc', '#f5f1e7'],
-  process: ['#f5f1e7', '#f5f1e7'],
-  people: ['#f5f1e7', '#062b29'],
-  final: ['#062b29', '#062b29'],
-  footer: ['#062b29', '#062b29'],
-} as const;
-
-export function sectionSurface(
-  section: keyof typeof homepageSurfaces,
-): CSSProperties {
-  const [current, next] = homepageSurfaces[section];
-  return {
-    '--surface-current': current,
-    '--surface-next': next,
-  } as CSSProperties;
-}
+// Only the hero participates in the section-to-section continuity treatment.
+export const heroSurface = {
+  '--hero-surface': '#062b29',
+  '--hero-next': '#f5f1e7',
+  '--hero-solid-stop': '85%',
+} as CSSProperties;
