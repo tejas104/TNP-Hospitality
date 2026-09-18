@@ -218,8 +218,7 @@ export function useFreelancer(profile: string) {
     setBusy(true);
     setNotice('Saving your sample action…');
     try {
-      // The frozen service owns validation, allocation and idempotency. This cast only
-      // restores the discriminated request union at the generic call boundary.
+      // The frozen service owns validation, allocation and idempotency.
       const result = await s.mutate(request);
       const now = await s.getGeneration();
       if (invocationEpoch !== epoch.current || now !== current.generation) {
@@ -239,18 +238,76 @@ export function useFreelancer(profile: string) {
         return false;
       }
       // Query the canonical records after every accepted mutation, even on replay.
+      if (request.operation === 'registerApplicant') {
+        const applications = await s.listApplications({ variant: 'ready' });
+        if (
+          !applications.ok ||
+          !applications.value.items.some(
+            (a) =>
+              a.id === result.value.id &&
+              a.applicantId === request.payload.applicantId &&
+              a.role === request.payload.role,
+          )
+        )
+          throw new Error(
+            'Application receipt could not be reconciled with the current service record.',
+          );
+      }
+      if (request.operation === 'submitAssessment') {
+        const assessments = await s.listAssessments(profile, {
+          variant: 'ready',
+        });
+        if (
+          !assessments.ok ||
+          !assessments.value.items.some(
+            (a) =>
+              a.id === result.value.id &&
+              a.applicantId === request.payload.applicantId &&
+              a.score === request.payload.score,
+          )
+        )
+          throw new Error(
+            'Assessment receipt could not be reconciled with the current service record.',
+          );
+      }
       if (
         operation === 'claimOpportunity' ||
         operation === 'respondToAssignment'
       ) {
         const value = result.value as Assignment;
-        const roster = await s.listRoster(value.eventId, { variant: 'ready' });
-        if (!roster.ok)
+        const [roster, assignments] = await Promise.all([
+          s.listRoster(value.eventId, { variant: 'ready' }),
+          s.listAssignments(profile, { variant: 'ready' }),
+        ]);
+        const record = assignments.ok
+          ? assignments.value.items.find((a) => a.id === value.id)
+          : undefined;
+        const matches =
+          record?.workerId === profile &&
+          record.eventId === value.eventId &&
+          record.positionId === value.positionId &&
+          (request.operation !== 'claimOpportunity' ||
+            record.positionId === request.payload.positionId) &&
+          (request.operation !== 'respondToAssignment' ||
+            (record.id === request.payload.assignmentId &&
+              record.response === request.payload.response));
+        if (
+          !roster.ok ||
+          !matches ||
+          (record.allocationState === 'active' &&
+            !roster.value.items.some(
+              (a) => a.id === record.id && a.workerId === profile,
+            ))
+        )
           throw new Error(
-            'Action accepted; roster reread failed. Retry the same action to reconcile.',
+            'Action accepted; assignment and roster could not be reconciled. Retry the same action to reconcile.',
           );
       }
-      if (invocationEpoch !== epoch.current) return false;
+      if (
+        invocationEpoch !== epoch.current ||
+        (await s.getGeneration()) !== current.generation
+      )
+        return false;
       delete requests.current[slot];
       persist();
       setNotice(

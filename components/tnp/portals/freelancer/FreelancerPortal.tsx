@@ -1,18 +1,51 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ArrowUpRight, RefreshCw, Sparkles } from 'lucide-react';
 import { ApplicationFlow } from './ApplicationFlow';
+import {
+  AssignmentWorkspace,
+  OpportunityWorkspace,
+  UpdatesWorkspace,
+} from './OpportunityWorkspace';
 import { profiles } from './freelancerState.ts';
 import { useFreelancer } from './useFreelancer';
 import styles from './FreelancerPortal.module.css';
 
 export function FreelancerPortal() {
-  const [profile, setProfile] = useState<string>(profiles[0].id);
+  const [profile, setProfile] = useState<string | null>(null);
+  useEffect(() => {
+    void Promise.resolve().then(() => {
+      try {
+        const saved = window.sessionStorage.getItem('tnp-freelancer-profile');
+        setProfile(
+          profiles.some((p) => p.id === saved) ? saved : profiles[0].id,
+        );
+      } catch {
+        setProfile(profiles[0].id);
+      }
+    });
+  }, []);
+  if (!profile)
+    return (
+      <main className={styles.workspace}>
+        <output className={styles.loading}>
+          Opening the freelancer workspace…
+        </output>
+      </main>
+    );
+  function changeProfile(value: string) {
+    try {
+      window.sessionStorage.setItem('tnp-freelancer-profile', value);
+    } catch {
+      /* Selection remains available in memory. */
+    }
+    setProfile(value);
+  }
   return (
     <FreelancerWorkspace
       key={profile}
       profile={profile}
-      setProfile={setProfile}
+      setProfile={changeProfile}
     />
   );
 }
@@ -24,6 +57,15 @@ function FreelancerWorkspace({
   setProfile: (profile: string) => void;
 }) {
   const w = useFreelancer(profile);
+  const [section, setSection] = useState('application');
+  const content = useRef<HTMLDivElement>(null);
+  function navigate(next: string) {
+    setSection(next);
+    window.setTimeout(() => {
+      content.current?.focus();
+      content.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }, 0);
+  }
   return (
     <main className={styles.workspace}>
       <header className={styles.hero}>
@@ -84,6 +126,23 @@ function FreelancerWorkspace({
           'Use sample choices only. No real identity checks, tracking or payments.'}
         {w.storageWarning && <p>{w.storageWarning}</p>}
       </output>
+      <nav className={styles.workspaceNav} aria-label="Freelancer workspace">
+        {['application', 'opportunities', 'assignments', 'updates'].map(
+          (item, index) => (
+            <button
+              key={item}
+              aria-current={section === item ? 'page' : undefined}
+              onClick={() => navigate(item)}
+            >
+              <span>0{index + 1}</span>
+              {item}
+              {item === 'assignments' && w.data && (
+                <small>{w.data.assignments.length}</small>
+              )}
+            </button>
+          ),
+        )}
+      </nav>
       {w.pendingRequests.length > 0 && (
         <section
           className={styles.recovery}
@@ -140,7 +199,14 @@ function FreelancerWorkspace({
         </section>
       )}
       {w.data && (
-        <div inert={w.loading || !!w.error} aria-busy={w.loading}>
+        <div
+          id="freelancer-content"
+          className={styles.workspaceContent}
+          ref={content}
+          tabIndex={-1}
+          inert={w.loading || !!w.error}
+          aria-busy={w.loading}
+        >
           {w.error && (
             <p className={styles.note}>
               Last-loaded records are shown below. Actions are unavailable until
@@ -158,11 +224,31 @@ function FreelancerWorkspace({
               </p>
             </section>
           ) : (
-            <ApplicationFlow
-              key={`${profile}:${w.data.generation}`}
-              profile={profile}
-              workspace={w}
-            />
+            <div key={`${profile}:${w.data.generation}`}>
+              <div hidden={section !== 'application'}>
+                <ApplicationFlow profile={profile} workspace={w} />
+              </div>
+              <div hidden={section !== 'opportunities'}>
+                <OpportunityWorkspace
+                  profile={profile}
+                  workspace={w}
+                  openAssignments={() => navigate('assignments')}
+                />
+              </div>
+              <div hidden={section !== 'assignments'}>
+                <AssignmentWorkspace
+                  workspace={w}
+                  openOpportunities={() => navigate('opportunities')}
+                />
+              </div>
+              <div hidden={section !== 'updates'}>
+                <UpdatesWorkspace
+                  workspace={w}
+                  openOpportunities={() => navigate('opportunities')}
+                  openAssignments={() => navigate('assignments')}
+                />
+              </div>
+            </div>
           )}
         </div>
       )}
