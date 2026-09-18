@@ -377,10 +377,16 @@
 .serviceItem[data-active='true'] button {
   color: #17654e;
 }
-.serviceItem > div {
-  padding: 0 32px 25px;
+.serviceDetails {
+  border-top: 1px solid #173b3630;
+  padding: 22px 0 0;
+  min-height: 165px;
 }
-.serviceItem p {
+.serviceDetails h4 {
+  font-size: 23px;
+  margin-bottom: 10px;
+}
+.serviceDetails p {
   font-size: 13px;
   color: #5e7166;
   max-width: 410px;
@@ -494,22 +500,22 @@
   line-height: 1.8;
 }
 .eventGrid {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  display: flex;
   gap: 24px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #876a36 #e5e2d5;
+  padding: 5px 3px 18px;
+  scroll-behavior: auto;
 }
 .eventGrid figure {
-  grid-column: span 2;
-}
-.eventGrid figure:nth-child(n + 4) {
-  grid-column: span 3;
+  flex: 0 0 42%;
+  min-width: 0;
 }
 .eventGrid img {
   width: 100%;
-  height: 285px;
-}
-.eventGrid figure:nth-child(n + 4) img {
-  height: 220px;
+  height: 380px;
 }
 .eventGrid figcaption {
   padding: 16px 0 8px;
@@ -523,6 +529,38 @@
   font-size: 25px;
   margin-top: 5px;
   text-transform: capitalize;
+}
+.filmstripControls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: -12px 0 22px;
+}
+.filmstripControls p {
+  color: #4f6256;
+  font-size: 12px;
+  max-width: 430px;
+}
+.filmstripControls > div {
+  display: flex;
+  gap: 10px;
+}
+.filmstripControls button {
+  border: 1px solid #876a36;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  background: transparent;
+  color: #173b36;
+}
+.filmstripControls button:hover {
+  background: #e8dfc6;
+}
+.eventGrid:focus-visible {
+  outline: 3px solid #8c692c;
+  outline-offset: 5px;
 }
 .imageNote {
   font-size: 10px;
@@ -926,10 +964,6 @@
     gap: 14px;
     padding: 20px 0;
   }
-  .serviceItem > div {
-    padding-left: 26px;
-    padding-right: 8px;
-  }
   .servicePhoto {
     min-height: 320px;
   }
@@ -960,22 +994,15 @@
     height: 175px;
   }
   .eventGrid {
-    grid-template-columns: 1fr 1fr;
-    gap: 22px 15px;
+    gap: 16px;
+    scroll-snap-type: x mandatory;
   }
-  .eventGrid figure,
-  .eventGrid figure:nth-child(n + 4) {
-    grid-column: auto;
+  .eventGrid figure {
+    flex-basis: 86%;
+    scroll-snap-align: start;
   }
-  .eventGrid figure:first-child {
-    grid-column: 1/-1;
-  }
-  .eventGrid img,
-  .eventGrid figure:nth-child(n + 4) img {
-    height: 170px;
-  }
-  .eventGrid figure:first-child img {
-    height: 250px;
+  .eventGrid img {
+    height: 310px;
   }
   .eventGrid h3 {
     font-size: 21px;

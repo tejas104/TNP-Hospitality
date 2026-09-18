@@ -17,6 +17,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { navLinks, portalLinks } from '@/data/tnp';
 import { PreviewControls } from '@/components/tnp/shared/PreviewControls';
+import WorkspaceDrawer from './public/WorkspaceDrawer';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -57,10 +58,10 @@ export default function AppShell({ children }: { children: ReactNode }) {
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
   const publicLinks = [
-    { label: 'Experience', href: '/' },
+    { label: 'Experience', href: '/#experience' },
     { label: 'Services', href: '/#services' },
     { label: 'RSVP', href: '/#rsvp' },
-    { label: 'Occasions', href: '/#events' },
+    { label: 'Events', href: '/#events' },
     { label: 'About', href: '/#about' },
   ];
 
@@ -77,6 +78,9 @@ export default function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    // The public photography narrative follows native scrolling. Keep the
+    // existing portal smooth-scroll behavior outside the homepage unchanged.
+    if (pathname === '/') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const lenis = new Lenis({
       lerp: 0.08,
@@ -91,7 +95,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
       gsap.ticker.remove(update);
       lenis.destroy();
     };
-  }, []);
+  }, [pathname]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
@@ -201,9 +205,18 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <span>TNP</span>
           <small>Hospitality</small>
         </Link>
-        <nav className="desktop-nav" aria-label="Primary navigation">
+        <nav
+          className="desktop-nav"
+          aria-label={publicPage ? 'Homepage sections' : 'Primary navigation'}
+        >
           {(publicPage ? publicLinks : navLinks).map((link) => (
-            <a key={link.label} href={link.href}>
+            <a
+              key={link.label}
+              href={link.href}
+              title={
+                publicPage ? `${link.label} — homepage section` : undefined
+              }
+            >
               {link.label}
             </a>
           ))}
@@ -233,6 +246,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
       {!publicPage && <PreviewControls />}
+      {pathname === '/' && <WorkspaceDrawer />}
       {!publicPage && <PortalSwitcher key={pathname} pathname={pathname} />}
       <MobileMenu
         publicPage={publicPage}

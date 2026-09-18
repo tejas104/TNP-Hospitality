@@ -9,15 +9,24 @@ import { departmentSlugs, serviceSlugs } from '@/data/public-content';
 import HomeHero from './public/HomeHero';
 import styles from './public/Home.module.css';
 import { useHomeMotion } from './public/useHomeMotion';
+import { canPreviewService } from './public/workspace-interaction';
 
 export default function HomeExperience() {
   const [serviceIndex, setServiceIndex] = useState(0);
+  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
+  const activeService = previewIndex ?? serviceIndex;
+  const serviceList = useRef<HTMLDivElement>(null);
+  const filmstrip = useRef<HTMLDivElement>(null);
   const [motionPaused, setMotionPaused] = useState(false);
   const home = useRef<HTMLElement>(null);
   useHomeMotion(home, motionPaused);
   return (
     <main ref={home} className={styles.home} id="main-content" tabIndex={-1}>
-      <section className={styles.hero} aria-labelledby="home-title">
+      <section
+        className={styles.hero}
+        id="experience"
+        aria-labelledby="home-title"
+      >
         <div className={styles.heroCopy}>
           <p className={styles.eyebrow} data-hero-stage data-motion="copy">
             <span /> PEOPLE. PLACES. PERFECTLY TOGETHER.
@@ -87,7 +96,9 @@ export default function HomeExperience() {
             height="480"
             data-motion="image"
           />
-          <figcaption>Considered details. Warm welcomes.</figcaption>
+          <figcaption>
+            Considered details. Warm welcomes. Illustrative preview imagery.
+          </figcaption>
         </figure>
       </section>
 
@@ -112,31 +123,72 @@ export default function HomeExperience() {
           </p>
         </div>
         <div className={styles.serviceLayout}>
-          <div className={styles.serviceList}>
+          <div
+            ref={serviceList}
+            className={styles.serviceList}
+            onPointerLeave={() => setPreviewIndex(null)}
+            onFocus={(event) => {
+              if (
+                (event.target as HTMLElement).closest(
+                  '[data-service-details]',
+                ) &&
+                previewIndex !== null
+              )
+                setServiceIndex(previewIndex);
+              setPreviewIndex(null);
+            }}
+          >
             {services.map((service, index) => (
               <div
                 key={service.number}
                 className={styles.serviceItem}
-                data-active={serviceIndex === index}
+                data-active={activeService === index}
               >
                 <h3>
                   <button
                     type="button"
                     data-motion="control"
                     data-stagger={index}
-                    aria-expanded={serviceIndex === index}
+                    id={`home-service-trigger-${index}`}
+                    aria-expanded={activeService === index}
                     aria-controls={`home-service-${index}`}
-                    onClick={() => setServiceIndex(index)}
+                    onPointerEnter={(event) => {
+                      if (
+                        canPreviewService(
+                          event.pointerType,
+                          matchMedia('(hover: hover) and (pointer: fine)')
+                            .matches,
+                          Boolean(
+                            serviceList.current?.contains(
+                              document.activeElement,
+                            ),
+                          ),
+                        )
+                      )
+                        setPreviewIndex(index);
+                    }}
+                    onClick={() => {
+                      setServiceIndex(index);
+                      setPreviewIndex(null);
+                    }}
                   >
                     <span>{service.number}</span>
                     {service.title}
                     <Plus size={18} />
                   </button>
                 </h3>
-                <div
+              </div>
+            ))}
+            <div className={styles.serviceDetails}>
+              {services.map((service, index) => (
+                <section
+                  key={service.number}
                   id={`home-service-${index}`}
-                  hidden={serviceIndex !== index}
+                  data-service-details
+                  aria-labelledby={`home-service-trigger-${index}`}
+                  hidden={activeService !== index}
                 >
+                  <h4>{service.title}</h4>
                   <p>{service.copy}</p>
                   <Link
                     href={`/services/${serviceSlugs[index]}`}
@@ -144,15 +196,19 @@ export default function HomeExperience() {
                   >
                     Explore this service <ArrowUpRight size={16} />
                   </Link>
-                </div>
-              </div>
-            ))}
+                </section>
+              ))}
+            </div>
+            <p className={styles.imageNote}>
+              Illustrative service preview. Select a row to keep its details
+              open.
+            </p>
           </div>
           <div className={styles.servicePhoto}>
             {services.map((service, index) => (
               <img
                 key={service.number}
-                hidden={serviceIndex !== index}
+                hidden={activeService !== index}
                 src={service.image.src}
                 alt={service.image.alt}
                 width="900"
@@ -164,7 +220,7 @@ export default function HomeExperience() {
             ))}
             <div className={styles.photoLabel}>
               <span>THE PEOPLE BEHIND THE EXPERIENCE</span>
-              <p>{services[serviceIndex].title}</p>
+              <p>{services[activeService].title}</p>
             </div>
           </div>
         </div>
@@ -283,10 +339,65 @@ export default function HomeExperience() {
           <p>
             From intimate gatherings to grand celebrations.
             <br />
-            Explore the possibilities.
+            Explore the possibilities. Illustrative preview photography.
           </p>
         </div>
-        <div className={styles.eventGrid}>
+        <div className={styles.filmstripControls}>
+          <p id="filmstrip-help">
+            A few possibilities, in pictures. Swipe, use the arrow keys, or
+            browse with the buttons.
+          </p>
+          <div>
+            <button
+              type="button"
+              aria-label="Previous photographs"
+              onClick={() => {
+                filmstrip.current?.setAttribute(
+                  'data-filmstrip-manual',
+                  'true',
+                );
+                filmstrip.current?.scrollBy({
+                  left: -(filmstrip.current.clientWidth * 0.8),
+                  behavior: 'instant',
+                });
+              }}
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              aria-label="Next photographs"
+              onClick={() => {
+                filmstrip.current?.setAttribute(
+                  'data-filmstrip-manual',
+                  'true',
+                );
+                filmstrip.current?.scrollBy({
+                  left: filmstrip.current.clientWidth * 0.8,
+                  behavior: 'instant',
+                });
+              }}
+            >
+              →
+            </button>
+          </div>
+        </div>
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Native horizontal scroll region needs keyboard and touch access. */}
+        <section
+          ref={filmstrip}
+          className={styles.eventGrid}
+          data-filmstrip
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Keyboard users must be able to focus and scroll the gallery.
+          tabIndex={0}
+          aria-label="Illustrative event photography"
+          aria-describedby="filmstrip-help"
+          onPointerDown={(event) =>
+            event.currentTarget.setAttribute('data-filmstrip-manual', 'true')
+          }
+          onKeyDown={(event) =>
+            event.currentTarget.setAttribute('data-filmstrip-manual', 'true')
+          }
+        >
           {events.map((event, index) => (
             <figure key={event.title}>
               <img
@@ -307,7 +418,7 @@ export default function HomeExperience() {
               </figcaption>
             </figure>
           ))}
-        </div>
+        </section>
         <p className={styles.imageNote}>
           Illustrative imagery for event inspiration; not a verified portfolio
           of TNP commissions.
