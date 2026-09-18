@@ -23,7 +23,7 @@ MongoDB Atlas is the stated database direction in scope evidence. No backend/dat
 Client-supplied TNP imagery/content and invoice template are still unverified. Current Unsplash media is preview material, not evidence that the PDF's imagery acceptance is met.
 
 ## Milestones and acceptance
-Day 1 = kickoff date pending. Day 3 appointment/time zone and client decision owner pending. Dates printed in historical documents are not confirmed kickoff dates.
+Day 1 is 2026-09-18 under the current 20-calendar-day plan, and Day 3 is 2026-09-20. Appointment/time-zone and client decision ownership remain pending.
 Day 3 target F01–F16, equally weighted 16/20 frontend screen sets. Remaining F17–F20 by Day 6.
 A frontend-ready set has working primary actions, consistent fixtures, validation and relevant loading/empty/error/success states, accessible navigation, desktop/mobile verification, truthful preview labels and an independent human walkthrough.
 Production-integrated additionally requires real authorized APIs, persistence, invariant/failure tests and provider evidence.
