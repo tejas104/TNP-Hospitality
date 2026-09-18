@@ -9,7 +9,7 @@ import {
   RotateCcw,
   Sparkles,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   MutationRequest,
   Planner,
@@ -17,7 +17,11 @@ import type {
   Venue,
 } from '@/lib/contracts/preview';
 import { getBrowserPreviewService } from '@/lib/services/preview';
-import { byId } from '@/data/media';
+import {
+  clientIllustrations,
+  venueIllustration,
+  type ClientIllustration,
+} from './illustrative-media';
 import { ClientStatusHub } from './ClientStatusHub';
 import {
   actionFingerprint,
@@ -119,6 +123,7 @@ const money = (paise: number) =>
 export function ClientExperience() {
   const [draft, setDraft] = useState(initialDraft);
   const [draftReady, setDraftReady] = useState(false);
+  const [draftStorage, setDraftStorage] = useState('Preparing local draft…');
   const [venues, setVenues] = useState<Venue[]>([]);
   const [planners, setPlanners] = useState<Planner[]>([]);
   const [catalogueState, setCatalogueState] = useState<
@@ -232,8 +237,18 @@ export function ClientExperience() {
     };
   }, []);
   useEffect(() => {
-    if (draftReady)
-      window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    if (!draftReady) return;
+    const timer = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+        setDraftStorage('Draft saved in this browser');
+      } catch {
+        setDraftStorage(
+          'Draft is in memory only. Browser storage is unavailable.',
+        );
+      }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [draft, draftReady]);
   const loadCatalogues = useCallback(async (variant?: PreviewVariant) => {
     const service = await getBrowserPreviewService();
@@ -244,12 +259,16 @@ export function ClientExperience() {
       service.listPlanners(variant ? { variant } : undefined),
     ]);
     if (!venueResult.ok) {
-      setCatalogueState('error');
+      setCatalogueState(
+        venueResult.error.code === 'PREVIEW_LOADING' ? 'loading' : 'error',
+      );
       setCatalogueMessage(venueResult.error.message);
       return;
     }
     if (!plannerResult.ok) {
-      setCatalogueState('error');
+      setCatalogueState(
+        plannerResult.error.code === 'PREVIEW_LOADING' ? 'loading' : 'error',
+      );
       setCatalogueMessage(plannerResult.error.message);
       return;
     }
@@ -357,9 +376,19 @@ export function ClientExperience() {
     return !Object.keys(next).length;
   }
   function move(direction: -1 | 1) {
-    if (direction === 1 && !validate(draft.step)) return;
-    update(
-      'step',
+    if (direction === 1 && !validate(draft.step)) {
+      window.requestAnimationFrame(() => {
+        const content = document.getElementById(
+          `booking-${draft.step.toLowerCase()}-step`,
+        );
+        (
+          content?.querySelector<HTMLElement>('[aria-invalid="true"]') ??
+          content
+        )?.focus();
+      });
+      return;
+    }
+    moveAndFocus(
       steps[Math.max(0, Math.min(steps.length - 1, stepIndex + direction))],
     );
   }
@@ -392,43 +421,50 @@ export function ClientExperience() {
     }
     setSubmitting(true);
     setNotice('Saving this labelled synthetic booking…');
-    const result = await (await getBrowserPreviewService()).mutate(request);
-    setSubmitting(false);
-    if (!result.ok) {
-      const message = `${result.error.code}: ${result.error.message}`;
+    try {
+      const result = await (await getBrowserPreviewService()).mutate(request);
+      if (!result.ok) {
+        const message = `${result.error.code}: ${result.error.message}`;
+        const persisted = persistBookingAction({
+          storageVersion: 1,
+          operation: request.operation,
+          fingerprint,
+          request,
+          status: 'error',
+          errorMessage: message,
+        });
+        setNotice(
+          persisted
+            ? message
+            : `${message} LOCAL_ACTION_UNAVAILABLE: The failed action identity could not be persisted; retry only on this page with the displayed same-request control.`,
+        );
+        setErrors(result.error.fieldErrors ?? {});
+        return;
+      }
+      const message = `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}. This is sample preview data, not a live booking.`;
       const persisted = persistBookingAction({
         storageVersion: 1,
         operation: request.operation,
         fingerprint,
         request,
-        status: 'error',
-        errorMessage: message,
+        status: 'success',
+        receipt: { id: result.value.id, message },
       });
-      setNotice(
-        persisted
-          ? message
-          : `${message} LOCAL_ACTION_UNAVAILABLE: The failed action identity could not be persisted; retry only on this page with the displayed same-request control.`,
+      setBookingId(result.value.id);
+      setPending(null);
+      window.dispatchEvent(
+        new CustomEvent('tnp-a-booking-saved', {
+          detail: { id: result.value.id },
+        }),
       );
-      setErrors(result.error.fieldErrors ?? {});
-      return;
+      setNotice(serviceSuccessNotice(message, persisted));
+    } catch {
+      setNotice(
+        'The preview response was unavailable. No receipt is confirmed here. Retry the same request to recover its outcome.',
+      );
+    } finally {
+      setSubmitting(false);
     }
-    const message = `${result.replayed ? 'Recovered' : 'Saved'} ${result.value.id}. This is sample preview data, not a live booking.`;
-    const persisted = persistBookingAction({
-      storageVersion: 1,
-      operation: request.operation,
-      fingerprint,
-      request,
-      status: 'success',
-      receipt: { id: result.value.id, message },
-    });
-    setBookingId(result.value.id);
-    setPending(null);
-    window.dispatchEvent(
-      new CustomEvent('tnp-a-booking-saved', {
-        detail: { id: result.value.id },
-      }),
-    );
-    setNotice(serviceSuccessNotice(message, persisted));
   }
   async function submit() {
     if (!validate('Review') || !venue || !planner) {
@@ -522,8 +558,15 @@ export function ClientExperience() {
     await perform(request);
   }
   function clearDraft() {
-    window.localStorage.removeItem(DRAFT_KEY);
-    clearAction(window.localStorage, ACTION_KEY);
+    try {
+      window.localStorage.removeItem(DRAFT_KEY);
+      clearAction(window.localStorage, ACTION_KEY);
+    } catch {
+      setDraftStorage(
+        'Local draft could not be cleared. Your current brief is unchanged.',
+      );
+      return;
+    }
     setDraft(initialDraft);
     setErrors({});
     setBookingId('');
@@ -549,28 +592,62 @@ export function ClientExperience() {
 
   return (
     <main className={`portal-page client-page ${styles.clientRoot}`}>
-      <section className="client-hero">
-        <img
-          src={byId('palace-courtyard').src}
-          alt={byId('palace-courtyard').alt}
-        />
-        <div>
-          <p className="eyebrow">CLIENT EXPERIENCE · SYNTHETIC PREVIEW</p>
-          <h1>Shape the celebration, one considered choice at a time.</h1>
+      <a className={styles.skip} href="#client-brief">
+        Skip to your brief
+      </a>
+      <section className={styles.editorialHero}>
+        <div className={styles.heroCopy}>
+          <p className={styles.eyebrow}>
+            THE CLIENT EXPERIENCE · SYNTHETIC PREVIEW
+          </p>
+          <h1>
+            A place.
+            <br />A partner.
+            <br />
+            <em>Your celebration.</em>
+          </h1>
           <p>
-            Explore sample venues and planners, keep a local draft, and create a
-            connected preview booking. No live reservation, verification,
-            tracking, or payment occurs.
+            Begin with a setting that moves you. Bring the right people
+            together. Shape the details, one considered choice at a time.
+          </p>
+          <a href="#client-brief" className={styles.primaryLink}>
+            Start your sample brief <ArrowRight size={18} />
+          </a>
+          <small>
+            No live reservation, verification, tracking or payment. Use sample
+            information only.
+          </small>
+        </div>
+        <ClientImage slot={clientIllustrations.introduction} hero />
+      </section>
+      <nav className={styles.localNav} aria-label="Client workspace sections">
+        <span>YOUR CELEBRATION, CONSIDERED</span>
+        <a href="#client-discovery">01 · Discover</a>
+        <a href="#client-brief">02 · Build a brief</a>
+        <a href="#client-status">03 · Follow your booking</a>
+      </nav>
+      <section id="client-discovery" className={styles.discovery}>
+        <div>
+          <p className={styles.eyebrow}>A LITTLE DIRECTION</p>
+          <h2>
+            What brings
+            <br />
+            <em>you together?</em>
+          </h2>
+          <p>
+            Choose the context for your local brief. Your choice does not change
+            sample availability or pricing.
           </p>
         </div>
-      </section>
-      <section className="client-discovery">
-        <div className="category-stack" aria-label="Event category selection">
+        <div
+          className={styles.categories}
+          aria-label="Event category selection"
+        >
           {categories.map((item) => (
             <button
               key={item}
               type="button"
-              className={draft.category === item ? 'active' : ''}
+              className={draft.category === item ? styles.categoryActive : ''}
               onClick={() => update('category', item)}
               aria-pressed={draft.category === item}
             >
@@ -579,30 +656,38 @@ export function ClientExperience() {
             </button>
           ))}
         </div>
-        <div className="concierge-panel">
-          <span>{draft.category}</span>
-          <h2>A concierge brief, not a ticket.</h2>
-          <p>
-            This guided preview keeps the editorial discovery experience while
-            making every primary action testable and linked to the shared
-            synthetic service.
-          </p>
-          <div className="concierge-images">
-            <img src={byId('tablescape').src} alt={byId('tablescape').alt} />
-            <img src={byId('hostess').src} alt={byId('hostess').alt} />
-          </div>
-        </div>
       </section>
-      <section className={styles.wizard} aria-labelledby="booking-wizard-title">
+      <section
+        id="client-brief"
+        tabIndex={-1}
+        className={styles.wizard}
+        aria-labelledby="booking-wizard-title"
+      >
         <aside className={styles.intro}>
           <p className="section-kicker">FOUR-STEP BOOKING PREVIEW</p>
           <h2 id="booking-wizard-title">
-            Build a brief that survives the journey.
+            A few choices.
+            <br />
+            <em>A clearer picture.</em>
           </h2>
           <p>
             Your synthetic draft is stored only in this browser. Shared preview
             reset remains separate.
           </p>
+          <dl className={styles.briefSummary}>
+            <div>
+              <dt>Occasion · local context</dt>
+              <dd>{draft.category}</dd>
+            </div>
+            <div>
+              <dt>Your setting</dt>
+              <dd>{venue?.name || 'Choose a sample venue'}</dd>
+            </div>
+            <div>
+              <dt>Your partner · local context</dt>
+              <dd>{planner?.displayName || 'Choose a sample planner'}</dd>
+            </div>
+          </dl>
           <button
             type="button"
             className={styles.textButton}
@@ -621,7 +706,8 @@ export function ClientExperience() {
                 <button
                   type="button"
                   disabled={index > stepIndex}
-                  onClick={() => index <= stepIndex && update('step', step)}
+                  aria-current={index === stepIndex ? 'step' : undefined}
+                  onClick={() => index <= stepIndex && moveAndFocus(step)}
                 >
                   <span>{String(index + 1).padStart(2, '0')}</span>
                   {step}
@@ -629,6 +715,9 @@ export function ClientExperience() {
               </li>
             ))}
           </ol>
+          <p className={styles.stepCaption}>
+            Step {stepIndex + 1} of 4 · {draft.step}
+          </p>
           <output className={styles.status} aria-live="polite">
             <i data-state={catalogueState} />
             <p>{catalogueMessage}</p>
@@ -649,7 +738,10 @@ export function ClientExperience() {
                 <span>01</span>
                 <div>
                   <h3>Choose the setting.</h3>
-                  <p>“TNP-owned” follows the frozen sample catalogue flag.</p>
+                  <p>
+                    Browse by city and sample budget. Photographs illustrate the
+                    destination, not the named venue.
+                  </p>
                 </div>
               </header>
               <div className={styles.filters}>
@@ -705,34 +797,39 @@ export function ClientExperience() {
                 </div>
               ) : (
                 <div className={styles.choices}>
-                  {visibleVenues.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className={
-                        draft.venueId === item.id
-                          ? styles.selected
-                          : styles.choice
-                      }
-                      onClick={() => {
-                        update('venueId', item.id);
-                        update('city', item.city);
-                      }}
-                      aria-pressed={draft.venueId === item.id}
-                    >
-                      <small>
-                        <MapPin size={15} /> {item.city} · up to {item.capacity}
-                      </small>
-                      <strong>{item.name}</strong>
-                      <span>{item.recommendation}</span>
-                      <em>
-                        {item.isOwned
-                          ? 'TNP-owned sample venue'
-                          : 'Sample partner venue'}{' '}
-                        · from {money(item.budgetBandPaise.min)}
-                      </em>
-                    </button>
-                  ))}
+                  {catalogueState === 'ready' &&
+                    visibleVenues.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        className={
+                          draft.venueId === item.id
+                            ? styles.selected
+                            : styles.choice
+                        }
+                        onClick={() => {
+                          update('venueId', item.id);
+                          update('city', item.city);
+                        }}
+                        aria-pressed={draft.venueId === item.id}
+                      >
+                        {venueIllustration(item.city) && (
+                          <ClientImage slot={venueIllustration(item.city)!} />
+                        )}
+                        <small>
+                          <MapPin size={15} /> {item.city} · up to{' '}
+                          {item.capacity}
+                        </small>
+                        <strong>{item.name}</strong>
+                        <span>{item.recommendation}</span>
+                        <em>
+                          {item.isOwned
+                            ? 'TNP-owned sample venue'
+                            : 'Sample partner venue'}{' '}
+                          · from {money(item.budgetBandPaise.min)}
+                        </em>
+                      </button>
+                    ))}
                 </div>
               )}
               {errors.venueId && (
@@ -758,29 +855,38 @@ export function ClientExperience() {
                 </div>
               </header>
               <div className={styles.choices}>
-                {planners.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    className={
-                      draft.plannerId === item.id
-                        ? styles.selected
-                        : styles.choice
-                    }
-                    onClick={() => update('plannerId', item.id)}
-                    aria-pressed={draft.plannerId === item.id}
-                  >
-                    <small>
-                      <Sparkles size={15} /> Preview match{' '}
-                      {item.recommendationScore}%
-                    </small>
-                    <strong>{item.displayName}</strong>
-                    <span>{item.city}</span>
-                    <em>
-                      {item.verificationState.replace('-', ' ')} · sample state
-                    </em>
-                  </button>
-                ))}
+                {catalogueState === 'ready' &&
+                  planners.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={
+                        draft.plannerId === item.id
+                          ? styles.selected
+                          : styles.choice
+                      }
+                      onClick={() => update('plannerId', item.id)}
+                      aria-pressed={draft.plannerId === item.id}
+                    >
+                      <span className={styles.monogram} aria-hidden="true">
+                        {item.displayName
+                          .split(' ')
+                          .slice(0, 2)
+                          .map((word) => word[0])
+                          .join('')}
+                      </span>
+                      <small>
+                        <Sparkles size={15} /> Preview match{' '}
+                        {item.recommendationScore}%
+                      </small>
+                      <strong>{item.displayName}</strong>
+                      <span>{item.city}</span>
+                      <em>
+                        {item.verificationState.replace('-', ' ')} · sample
+                        state
+                      </em>
+                    </button>
+                  ))}
               </div>
               {errors.plannerId && (
                 <p className={styles.error}>{errors.plannerId}</p>
@@ -813,8 +919,13 @@ export function ClientExperience() {
                       update('eventName', event.target.value)
                     }
                     aria-invalid={Boolean(errors.eventName)}
+                    aria-describedby={
+                      errors.eventName ? 'client-event-error' : undefined
+                    }
                   />
-                  {errors.eventName && <span>{errors.eventName}</span>}
+                  {errors.eventName && (
+                    <span id="client-event-error">{errors.eventName}</span>
+                  )}
                 </label>
                 <label>
                   City
@@ -822,8 +933,13 @@ export function ClientExperience() {
                     value={draft.city}
                     onChange={(event) => update('city', event.target.value)}
                     aria-invalid={Boolean(errors.city)}
+                    aria-describedby={
+                      errors.city ? 'client-city-error' : undefined
+                    }
                   />
-                  {errors.city && <span>{errors.city}</span>}
+                  {errors.city && (
+                    <span id="client-city-error">{errors.city}</span>
+                  )}
                 </label>
                 <label>
                   Sample budget (₹)
@@ -834,8 +950,13 @@ export function ClientExperience() {
                       update('budgetRupees', event.target.value)
                     }
                     aria-invalid={Boolean(errors.budgetRupees)}
+                    aria-describedby={
+                      errors.budgetRupees ? 'client-budget-error' : undefined
+                    }
                   />
-                  {errors.budgetRupees && <span>{errors.budgetRupees}</span>}
+                  {errors.budgetRupees && (
+                    <span id="client-budget-error">{errors.budgetRupees}</span>
+                  )}
                 </label>
                 <label>
                   Estimated guests
@@ -846,8 +967,13 @@ export function ClientExperience() {
                       update('guestCount', event.target.value)
                     }
                     aria-invalid={Boolean(errors.guestCount)}
+                    aria-describedby={
+                      errors.guestCount ? 'client-guests-error' : undefined
+                    }
                   />
-                  {errors.guestCount && <span>{errors.guestCount}</span>}
+                  {errors.guestCount && (
+                    <span id="client-guests-error">{errors.guestCount}</span>
+                  )}
                 </label>
                 <label className={styles.wide}>
                   Support notes
@@ -905,6 +1031,17 @@ export function ClientExperience() {
                   </dd>
                 </div>
               </dl>
+              <div className={styles.reviewEdits} aria-label="Edit your brief">
+                <button type="button" onClick={() => moveAndFocus('Venue')}>
+                  Edit venue
+                </button>
+                <button type="button" onClick={() => moveAndFocus('Planner')}>
+                  Edit planner
+                </button>
+                <button type="button" onClick={() => moveAndFocus('Details')}>
+                  Edit details
+                </button>
+              </div>
               {(catalogueState !== 'ready' || !venue || !planner) && (
                 <div className={styles.blocked} role="alert">
                   <CircleAlert size={20} />
@@ -943,7 +1080,7 @@ export function ClientExperience() {
                 >
                   {bookingId ? <CheckCircle2 /> : <CircleAlert />}
                   <div>
-                    <strong>{bookingId || 'Booking not saved'}</strong>
+                    <strong>{bookingId || 'No booking receipt yet'}</strong>
                     <p>{notice}</p>
                   </div>
                 </output>
@@ -987,11 +1124,51 @@ export function ClientExperience() {
                 Continue <ArrowRight size={17} />
               </button>
             )}
-            <span>Draft saved locally</span>
+            <output>{draftStorage}</output>
           </footer>
         </div>
       </section>
       <ClientStatusHub />
     </main>
+  );
+}
+
+function ClientImage({
+  slot,
+  hero = false,
+}: {
+  slot: ClientIllustration;
+  hero?: boolean;
+}) {
+  const [failed, setFailed] = useState(false);
+  const image = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      if (image.current?.complete && !image.current.naturalWidth) setFailed(true);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+  return (
+    <span className={`${styles.illustration} ${hero ? styles.heroImage : ''}`}>
+      {failed ? (
+        <span className={styles.imageFallback}>{slot.fallback}</span>
+      ) : (
+        <img
+          ref={image}
+          src={slot.src}
+          alt={slot.alt}
+          width={1600}
+          height={900}
+          loading={hero ? 'eager' : 'lazy'}
+          decoding="async"
+          style={{ objectPosition: slot.position }}
+          onError={() => setFailed(true)}
+        />
+      )}
+      <span className={styles.imageCaption}>
+        {slot.caption}
+        <small>{slot.source}</small>
+      </span>
+    </span>
   );
 }

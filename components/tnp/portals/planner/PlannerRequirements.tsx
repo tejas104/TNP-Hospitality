@@ -7,7 +7,7 @@ import {
   RefreshCcw,
   Search,
 } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   Booking,
   PreviewEvent,
@@ -30,56 +30,84 @@ export function PlannerRequirements() {
   const [search, setSearch] = useState('');
   const [status, setStatus] = useState('all');
   const [lookupNotice, setLookupNotice] = useState('');
+  const [storageNotice, setStorageNotice] = useState('');
+  const loadSequence = useRef(0);
+  const lookupSequence = useRef(0);
 
   const load = useCallback(
     async (variant?: PreviewVariant, preferred?: string) => {
+      const sequence = ++loadSequence.current;
+      ++lookupSequence.current;
+      setLookupNotice('');
       setViewState('loading');
       setMessage('Loading workforce requirements...');
-      const service = await getBrowserPreviewService();
-      const options = variant ? { variant } : undefined;
-      const [requirementResult, bookingResult, eventResult] = await Promise.all(
-        [
-          service.listRequirements(options),
-          service.listBookings(options),
-          service.listEvents(options),
-        ],
-      );
-      const failure = [requirementResult, bookingResult, eventResult].find(
-        (result) => !result.ok,
-      );
-      if (failure && !failure.ok) {
-        const loading = failure.error.code === 'PREVIEW_LOADING';
-        setViewState(loading ? 'loading' : 'error');
-        setMessage(
-          loading
-            ? 'The synthetic requirement list is in its requested loading state.'
-            : `${failure.error.code}: ${failure.error.message}`,
+      try {
+        const service = await getBrowserPreviewService();
+        const options = variant ? { variant } : undefined;
+        const [requirementResult, bookingResult, eventResult] =
+          await Promise.all([
+            service.listRequirements(options),
+            service.listBookings(options),
+            service.listEvents(options),
+          ]);
+        if (sequence !== loadSequence.current) return;
+        const failure = [requirementResult, bookingResult, eventResult].find(
+          (result) => !result.ok,
         );
-        return;
+        if (failure && !failure.ok) {
+          const loading = failure.error.code === 'PREVIEW_LOADING';
+          setViewState(loading ? 'loading' : 'error');
+          setMessage(
+            loading
+              ? 'The synthetic requirement list is in its requested loading state.'
+              : `${failure.error.code}: ${failure.error.message}`,
+          );
+          return;
+        }
+        if (!requirementResult.ok || !bookingResult.ok || !eventResult.ok)
+          return;
+        const next = requirementResult.value.items;
+        setRequirements(next);
+        setBookings(bookingResult.value.items);
+        setEvents(eventResult.value.items);
+        setViewState(next.length ? 'ready' : 'empty');
+        setMessage(
+          next.length
+            ? 'Connected requirement records ready.'
+            : 'No workforce requirements exist in this synthetic preview state.',
+        );
+        let stored = '';
+        try {
+          stored = window.localStorage.getItem(SELECTED_KEY) ?? '';
+        } catch {
+          setStorageNotice(
+            'Selection is kept on this page only; browser storage is unavailable.',
+          );
+        }
+        if (!preferred && stored && next.some((item) => item.id === stored))
+          setStorageNotice(
+            'Restored your selected sample requirement from this browser.',
+          );
+        setSelectedId((current) => {
+          const candidate = preferred || current || stored;
+          return next.some((item) => item.id === candidate)
+            ? candidate
+            : next[0]?.id || '';
+        });
+      } catch {
+        if (sequence !== loadSequence.current) return;
+        setViewState('error');
+        setMessage(
+          'The sample directory could not be loaded. Retry to restore connected records.',
+        );
       }
-      if (!requirementResult.ok || !bookingResult.ok || !eventResult.ok) return;
-      const next = requirementResult.value.items;
-      setRequirements(next);
-      setBookings(bookingResult.value.items);
-      setEvents(eventResult.value.items);
-      setViewState(next.length ? 'ready' : 'empty');
-      setMessage(
-        next.length
-          ? 'Connected requirement records ready.'
-          : 'No workforce requirements exist in this synthetic preview state.',
-      );
-      setSelectedId((current) => {
-        const stored = window.localStorage.getItem(SELECTED_KEY) ?? '';
-        const candidate = preferred || current || stored;
-        return next.some((item) => item.id === candidate)
-          ? candidate
-          : next[0]?.id || '';
-      });
     },
     [],
   );
 
   useEffect(() => {
+    const reads = loadSequence;
+    const lookups = lookupSequence;
     const timer = window.setTimeout(() => void load(), 0);
     const onPreview = (event: Event) => {
       const variant = (event as CustomEvent<{ variant: PreviewVariant }>).detail
@@ -87,16 +115,30 @@ export function PlannerRequirements() {
       void load(variant);
     };
     const onReset = () => {
+      try {
+        window.localStorage.removeItem(SELECTED_KEY);
+      } catch {
+        setStorageNotice(
+          'Selection is kept on this page only; browser storage is unavailable.',
+        );
+      }
       setSelectedId('');
+      setSearch('');
+      setStatus('all');
       setLookupNotice('');
       void load();
     };
-    const onSaved = (event: Event) =>
+    const onSaved = (event: Event) => {
+      setSearch('');
+      setStatus('all');
       void load(undefined, (event as CustomEvent<{ id: string }>).detail.id);
+    };
     window.addEventListener('tnp-preview-change', onPreview);
     window.addEventListener('tnp-preview-reset', onReset);
     window.addEventListener('tnp-a-requirement-saved', onSaved);
     return () => {
+      ++reads.current;
+      ++lookups.current;
       window.clearTimeout(timer);
       window.removeEventListener('tnp-preview-change', onPreview);
       window.removeEventListener('tnp-preview-reset', onReset);
@@ -105,7 +147,17 @@ export function PlannerRequirements() {
   }, [load]);
 
   useEffect(() => {
-    if (selectedId) window.localStorage.setItem(SELECTED_KEY, selectedId);
+    if (!selectedId) return;
+    const timer = window.setTimeout(() => {
+      try {
+        window.localStorage.setItem(SELECTED_KEY, selectedId);
+      } catch {
+        setStorageNotice(
+          'Selection is kept on this page only; browser storage is unavailable.',
+        );
+      }
+    }, 0);
+    return () => window.clearTimeout(timer);
   }, [selectedId]);
 
   const visible = useMemo(() => {
@@ -119,26 +171,40 @@ export function PlannerRequirements() {
             .includes(needle)),
     );
   }, [requirements, search, status]);
-  const requirement = requirements.find((item) => item.id === selectedId);
+  const requirement =
+    viewState === 'ready'
+      ? visible.find((item) => item.id === selectedId)
+      : undefined;
   const booking = bookings.find((item) => item.id === requirement?.bookingId);
   const event = events.find((item) => item.id === requirement?.eventId);
   const stages = ['draft', 'submitted', 'staffing'] as const;
   const activeStage = requirement ? stages.indexOf(requirement.status) : -1;
 
   async function findMissingRecord() {
+    const sequence = ++lookupSequence.current;
     setLookupNotice('Looking up a deliberately missing sample requirement...');
-    const result = await (
-      await getBrowserPreviewService()
-    ).getRequirement('tnp-demo-requirement-missing');
-    setLookupNotice(
-      result.ok
-        ? `Unexpected record returned: ${result.value.id}`
-        : `${result.error.code}: ${result.error.message}`,
-    );
+    try {
+      const result = await (
+        await getBrowserPreviewService()
+      ).getRequirement('tnp-demo-requirement-missing');
+      if (sequence !== lookupSequence.current) return;
+      setLookupNotice(
+        result.ok
+          ? `Unexpected record returned: ${result.value.id}`
+          : `${result.error.code}: ${result.error.message}`,
+      );
+    } catch {
+      if (sequence === lookupSequence.current)
+        setLookupNotice(
+          'Sample lookup unavailable. You can try this lookup again.',
+        );
+    }
   }
 
   return (
     <section
+      id="planner-directory"
+      tabIndex={-1}
       className={styles.section}
       aria-labelledby="requirement-list-title"
     >
@@ -154,7 +220,11 @@ export function PlannerRequirements() {
           mean a live team has been staffed.
         </p>
       </header>
-      <output className={styles.state} data-state={viewState}>
+      <output
+        className={styles.state}
+        data-state={viewState}
+        aria-live="polite"
+      >
         <span>{message}</span>
         {viewState === 'error' && (
           <button type="button" onClick={() => void load()}>
@@ -162,6 +232,9 @@ export function PlannerRequirements() {
           </button>
         )}
       </output>
+      {storageNotice && (
+        <output className={styles.storageNotice}>{storageNotice}</output>
+      )}
       <div className={styles.workspace}>
         <aside className={styles.listPane}>
           <div className={styles.filters}>
@@ -190,24 +263,30 @@ export function PlannerRequirements() {
             </label>
           </div>
           <div className={styles.records}>
-            {visible.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={item.id === selectedId ? styles.selected : ''}
-                aria-pressed={item.id === selectedId}
-                onClick={() => {
-                  setSelectedId(item.id);
-                  setLookupNotice('');
-                }}
-              >
-                <span>{item.status}</span>
-                <strong>
-                  {item.quantity} x {item.role}
-                </strong>
-                <code>{item.id}</code>
-              </button>
-            ))}
+            {viewState === 'ready' && (
+              <output className={styles.resultCount}>
+                {visible.length} of {requirements.length} sample requirements
+              </output>
+            )}
+            {viewState === 'ready' &&
+              visible.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={item.id === selectedId ? styles.selected : ''}
+                  aria-pressed={item.id === selectedId}
+                  onClick={() => {
+                    setSelectedId(item.id);
+                    setLookupNotice('');
+                  }}
+                >
+                  <span>{item.status}</span>
+                  <strong>
+                    {item.quantity} x {item.role}
+                  </strong>
+                  <code>{item.id}</code>
+                </button>
+              ))}
             {viewState === 'ready' && !visible.length && (
               <div className={styles.empty}>
                 <CircleAlert size={20} />
@@ -264,11 +343,19 @@ export function PlannerRequirements() {
                   </div>
                 </article>
               </div>
+              <p className={styles.statusCopy}>
+                {requirement.status === 'draft'
+                  ? 'Draft sample brief. It has not been submitted.'
+                  : requirement.status === 'submitted'
+                    ? 'Submitted to the synthetic scenario. No live staffing or approval is performed.'
+                    : 'Sample staffing stage. This does not confirm a live team.'}
+              </p>
               <div className={styles.progress} aria-label="Requirement status">
                 {stages.map((stage, index) => (
                   <div
                     key={stage}
                     className={index <= activeStage ? styles.done : ''}
+                    aria-current={index === activeStage ? 'step' : undefined}
                   >
                     <i />
                     <span>{stage}</span>
@@ -297,7 +384,17 @@ export function PlannerRequirements() {
           ) : (
             <div className={styles.blank}>
               <CircleAlert />
-              <p>Select a sample requirement to inspect its linked IDs.</p>
+              <p>
+                {viewState === 'loading'
+                  ? 'Loading connected sample records…'
+                  : viewState === 'error'
+                    ? 'Restore the directory before inspecting a record.'
+                    : viewState === 'empty'
+                      ? 'No sample requirements yet. Add a connected workforce brief above.'
+                      : !visible.length
+                        ? 'Clear your filters to see available sample records.'
+                        : 'Select a visible sample requirement to inspect its linked IDs.'}
+              </p>
             </div>
           )}
         </div>

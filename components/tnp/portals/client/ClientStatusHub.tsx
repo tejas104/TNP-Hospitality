@@ -120,7 +120,12 @@ export function ClientStatusHub() {
           : 'Connected booking, event, quote and collection records ready.',
       );
       setSelectedId((current) => {
-        const stored = window.localStorage.getItem(SELECTED_KEY) ?? '';
+        let stored = '';
+        try {
+          stored = window.localStorage.getItem(SELECTED_KEY) ?? '';
+        } catch {
+          /* Selection remains available in memory. */
+        }
         const candidate = preferred || current || stored;
         return nextBookings.some((item) => item.id === candidate)
           ? candidate
@@ -159,7 +164,13 @@ export function ClientStatusHub() {
   }, [load]);
 
   useEffect(() => {
-    if (selectedId) window.localStorage.setItem(SELECTED_KEY, selectedId);
+    if (selectedId) {
+      try {
+        window.localStorage.setItem(SELECTED_KEY, selectedId);
+      } catch {
+        /* No persistence claim is made for selection. */
+      }
+    }
   }, [selectedId]);
 
   const visibleBookings = useMemo(() => {
@@ -195,30 +206,40 @@ export function ClientStatusHub() {
 
   async function runApproval(request: MutationRequest<'clientApproveQuote'>) {
     setQuoteBusy(true);
-    setQuoteNotice({
-      kind: 'success',
-      message: 'Applying the sample approval with version protection...',
-    });
-    const result = await (await getBrowserPreviewService()).mutate(request);
-    setQuoteBusy(false);
-    if (!result.ok) {
-      setPendingApproval(request);
+    setPendingApproval(request);
+    try {
+      setQuoteNotice({
+        kind: 'success',
+        message: 'Applying the sample approval with version protection...',
+      });
+      const result = await (await getBrowserPreviewService()).mutate(request);
+      if (!result.ok) {
+        setPendingApproval(request);
+        setQuoteNotice({
+          kind: 'error',
+          message: `${result.error.code}: ${result.error.message} No approval was applied.`,
+        });
+        return;
+      }
+      setPendingApproval(null);
+      setQuotes((current) =>
+        current.map((item) =>
+          item.id === result.value.id ? result.value : item,
+        ),
+      );
+      setQuoteNotice({
+        kind: 'success',
+        message: `${result.replayed ? 'Recovered' : 'Applied'} approval to ${result.value.id} version ${result.value.version}.`,
+      });
+    } catch {
       setQuoteNotice({
         kind: 'error',
-        message: `${result.error.code}: ${result.error.message} No approval was applied.`,
+        message:
+          'The preview response was unavailable. Retry the same approval request to recover its outcome.',
       });
-      return;
+    } finally {
+      setQuoteBusy(false);
     }
-    setPendingApproval(null);
-    setQuotes((current) =>
-      current.map((item) =>
-        item.id === result.value.id ? result.value : item,
-      ),
-    );
-    setQuoteNotice({
-      kind: 'success',
-      message: `${result.replayed ? 'Recovered' : 'Applied'} approval to ${result.value.id} version ${result.value.version}.`,
-    });
   }
 
   async function approve(stale = false) {
@@ -241,30 +262,40 @@ export function ClientStatusHub() {
     request: MutationRequest<'clientRequestQuoteRevision'>,
   ) {
     setQuoteBusy(true);
-    setQuoteNotice({
-      kind: 'success',
-      message: 'Sending a version-aware sample revision request...',
-    });
-    const result = await (await getBrowserPreviewService()).mutate(request);
-    setQuoteBusy(false);
-    if (!result.ok) {
-      setPendingRevision(request);
+    setPendingRevision(request);
+    try {
+      setQuoteNotice({
+        kind: 'success',
+        message: 'Sending a version-aware sample revision request...',
+      });
+      const result = await (await getBrowserPreviewService()).mutate(request);
+      if (!result.ok) {
+        setPendingRevision(request);
+        setQuoteNotice({
+          kind: 'error',
+          message: `${result.error.code}: ${result.error.message}`,
+        });
+        return;
+      }
+      setPendingRevision(null);
+      setQuotes((current) =>
+        current.map((item) =>
+          item.id === result.value.id ? result.value : item,
+        ),
+      );
+      setQuoteNotice({
+        kind: 'success',
+        message: `${result.replayed ? 'Recovered' : 'Saved'} revision request for ${result.value.id}.`,
+      });
+    } catch {
       setQuoteNotice({
         kind: 'error',
-        message: `${result.error.code}: ${result.error.message}`,
+        message:
+          'The preview response was unavailable. Retry the same revision request to recover its outcome.',
       });
-      return;
+    } finally {
+      setQuoteBusy(false);
     }
-    setPendingRevision(null);
-    setQuotes((current) =>
-      current.map((item) =>
-        item.id === result.value.id ? result.value : item,
-      ),
-    );
-    setQuoteNotice({
-      kind: 'success',
-      message: `${result.replayed ? 'Recovered' : 'Saved'} revision request for ${result.value.id}.`,
-    });
   }
 
   async function requestRevision() {
@@ -292,11 +323,20 @@ export function ClientStatusHub() {
   }
 
   return (
-    <section className={styles.hub} aria-labelledby="client-status-title">
+    <section
+      id="client-status"
+      tabIndex={-1}
+      className={styles.hub}
+      aria-labelledby="client-status-title"
+    >
       <header className={styles.header}>
         <div>
           <p className="section-kicker">CLIENT EVENT & FINANCE STATUS</p>
-          <h2 id="client-status-title">Follow the same sample IDs forward.</h2>
+          <h2 id="client-status-title">
+            Your plans,
+            <br />
+            <em>in one place.</em>
+          </h2>
         </div>
         <p>
           Statuses are simulated. Collection records are client receipts, not
@@ -312,6 +352,11 @@ export function ClientStatusHub() {
           </button>
         )}
       </output>
+      <p className={styles.recordCount}>
+        {viewState === 'ready'
+          ? `${visibleBookings.length} of ${bookings.length} sample bookings · select a record to follow its details`
+          : 'Your records will appear when the sample data is available.'}
+      </p>
 
       <div className={styles.workspace}>
         <aside className={styles.directory}>
@@ -341,25 +386,29 @@ export function ClientStatusHub() {
             </label>
           </div>
           <div className={styles.records}>
-            {visibleBookings.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className={item.id === selectedId ? styles.selected : ''}
-                onClick={() => {
-                  setSelectedId(item.id);
-                  setLookupNotice('');
-                  setQuoteNotice(null);
-                }}
-                aria-pressed={item.id === selectedId}
-              >
-                <strong>{item.eventName}</strong>
-                <span>{item.id}</span>
-                <small>
-                  {item.city} - {item.status}
-                </small>
-              </button>
-            ))}
+            {viewState === 'ready' &&
+              visibleBookings.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  className={item.id === selectedId ? styles.selected : ''}
+                  disabled={quoteBusy}
+                  onClick={() => {
+                    setSelectedId(item.id);
+                    setLookupNotice('');
+                    setQuoteNotice(null);
+                    setPendingApproval(null);
+                    setPendingRevision(null);
+                  }}
+                  aria-pressed={item.id === selectedId}
+                >
+                  <strong>{item.eventName}</strong>
+                  <span>{item.id}</span>
+                  <small>
+                    {item.city} - {item.status}
+                  </small>
+                </button>
+              ))}
             {viewState === 'ready' && !visibleBookings.length && (
               <div className={styles.empty}>
                 <CircleAlert size={20} />
@@ -387,7 +436,7 @@ export function ClientStatusHub() {
         </aside>
 
         <div className={styles.detail}>
-          {booking ? (
+          {viewState === 'ready' && booking ? (
             <>
               <div className={styles.bookingHeader}>
                 <div>

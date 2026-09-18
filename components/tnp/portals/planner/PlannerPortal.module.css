@@ -1,5 +1,262 @@
 .plannerRoot {
-  overflow-x: clip;
+  background: #f5f1e7;
+  color: #062b29;
+  padding-bottom: 64px;
+}
+
+.plannerRoot *,
+.plannerRoot *::before,
+.plannerRoot *::after {
+  box-sizing: border-box;
+}
+.plannerRoot :is(input, select, textarea, button, a):focus-visible {
+  outline: 3px solid #008080;
+  outline-offset: 4px;
+}
+.plannerRoot :is(button, a) {
+  touch-action: manipulation;
+}
+.plannerRoot :is(form, section) {
+  scroll-margin-top: 110px;
+}
+.plannerRoot :is(button, input, select, textarea):disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+.plannerRoot :is(h1, h2, h3, p, code, output) {
+  overflow-wrap: anywhere;
+}
+.skip {
+  position: fixed;
+  z-index: 100;
+  top: 12px;
+  left: 16px;
+  padding: 14px;
+  background: #fff;
+  color: #062b29;
+  transform: translateY(-180%);
+}
+.skip:focus {
+  transform: none;
+}
+.workspaceHero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+  gap: clamp(24px, 5vw, 80px);
+  align-items: center;
+  padding: 70px clamp(24px, 6vw, 90px) 56px;
+  background: #062b29;
+  color: #f5f1e7;
+}
+.eyebrow {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: #d6c79f;
+}
+.workspaceHero h1 {
+  margin: 26px 0;
+  font:
+    400 clamp(3.2rem, 6.4vw, 6.5rem)/0.96 Georgia,
+    serif;
+  letter-spacing: -0.055em;
+}
+.workspaceHero h1 em {
+  color: #d6c79f;
+  font-weight: 400;
+}
+.workspaceHero p:not(.eyebrow) {
+  max-width: 560px;
+  color: #e0e6df;
+  line-height: 1.75;
+}
+.workspaceHero small {
+  display: block;
+  max-width: 560px;
+  color: #c4d2cb;
+  line-height: 1.6;
+}
+.contextImage {
+  margin: 0;
+  align-self: stretch;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  min-width: 0;
+}
+.contextImage img,
+.imageFallback {
+  width: 100%;
+  height: 100%;
+  min-height: 290px;
+  max-height: 430px;
+  object-fit: cover;
+  border-radius: 3px;
+}
+.imageFallback {
+  display: grid;
+  place-items: center;
+  padding: 30px;
+  background: #153f3b;
+  color: #f5f1e7;
+  font:
+    1.8rem/1.3 Georgia,
+    serif;
+}
+.contextImage figcaption {
+  padding-top: 13px;
+  font-size: 0.72rem;
+  line-height: 1.6;
+  color: #eee5d0;
+}
+.contextImage figcaption small {
+  font-size: 0.65rem;
+  color: #c4d2cb;
+}
+.localNav {
+  display: flex;
+  align-items: center;
+  gap: 20px 30px;
+  flex-wrap: wrap;
+  padding: 22px clamp(24px, 6vw, 90px);
+  border-bottom: 1px solid #d9d2c4;
+}
+.localNav span {
+  margin-right: auto;
+  font-size: 0.65rem;
+  letter-spacing: 0.14em;
+  font-weight: 800;
+  color: #586761;
+}
+.localNav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 0.8rem;
+  color: #062b29;
+  text-underline-offset: 6px;
+}
+.formFields {
+  display: grid;
+  gap: 17px;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  border: 0;
+}
+.formFields > *,
+.formFields label {
+  min-width: 0;
+}
+.formFields :is(input, select, textarea) {
+  width: 100%;
+  min-width: 0;
+}
+.formFields h2 {
+  margin: 0;
+  font:
+    400 clamp(1.7rem, 3vw, 2.5rem)/1.1 Georgia,
+    serif;
+}
+.visuallyHidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.draftNotice {
+  display: block;
+  margin: -10px 0 24px;
+  font-size: 0.78rem;
+  color: #52615b;
+}
+.contextNote {
+  padding: 12px 0;
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.6;
+  border-block: 1px solid #d9d2c4;
+  color: #52615b;
+}
+.linkedContext {
+  padding: 16px;
+  background: #e8eee7;
+  border-left: 3px solid #008080;
+}
+.linkedContext span {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  color: #52615b;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+.linkedContext strong {
+  font:
+    1.25rem Georgia,
+    serif;
+}
+.linkedContext p {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+.linkedContext code {
+  display: block;
+  font-size: 0.7rem;
+}
+.illustrativeJourney {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 20px 24px;
+}
+.illustrativeJourney > p {
+  width: 100%;
+  margin: 0;
+  line-height: 1.7;
+  color: #52615b;
+}
+.journeyStage {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid #bba879;
+  color: #062b29;
+  font-size: 0.8rem;
+}
+.journeyStage small {
+  color: #59695f;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .workspaceHero > div,
+  .contextImage {
+    animation: reveal 420ms ease-out both;
+  }
+  .contextImage {
+    animation-delay: 70ms;
+  }
+  .localNav a {
+    transition: color 160ms ease;
+  }
+  .localNav a:hover {
+    color: #008080;
+  }
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .plannerRoot :global(.portal-hero),
@@ -138,7 +395,7 @@
   display: inline-flex;
   gap: 7px;
   justify-self: start;
-  min-height: 38px;
+  min-height: 44px;
 }
 
 @keyframes pulse {
@@ -149,6 +406,11 @@
 }
 
 @media (max-width: 900px) {
+  .workspaceHero {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    padding-inline: 24px;
+    gap: 24px;
+  }
   .sectionHeader,
   .forms {
     grid-template-columns: 1fr;
@@ -162,6 +424,27 @@
 }
 
 @media (max-width: 560px) {
+  .workspaceHero {
+    grid-template-columns: 1fr;
+    padding: 36px 20px;
+  }
+  .workspaceHero h1 {
+    font-size: clamp(2.8rem, 13vw, 4.4rem);
+  }
+  .contextImage img,
+  .imageFallback {
+    min-height: 0;
+    height: 200px;
+  }
+  .localNav {
+    gap: 8px;
+    padding: 16px 20px;
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .localNav span {
+    padding-bottom: 8px;
+  }
   .plannerRoot {
     padding-bottom: 132px;
   }
@@ -192,6 +475,13 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .plannerRoot *,
+  .plannerRoot *::before,
+  .plannerRoot *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
   .referenceState i[data-state='loading'] {
     animation: none;
   }
