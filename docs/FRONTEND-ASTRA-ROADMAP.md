@@ -27,6 +27,8 @@ User sequencing decision 2026-09-18: the final 3D model is last. Do not spend an
 
 Image/content implementation rule 2026-09-18: every non-3D Astra milestone includes purposeful replaceable image slots where imagery improves narrative, hierarchy or comprehension. Preview images remain local, typed, accessible and explicitly illustrative; client assets later replace the source metadata without redesigning the layout. Operational tables, forms and dense authenticated controls do not receive decorative photography without a product reason.
 
+CLIENT/PLANNER FOLLOW-UP DRAFTED 2026-09-18: `docs/tasks/TNP-CLIENT-ASTRA-M1.md` now bounds the next Astra visual/frontend milestone around the already integrated synthetic Client and Planner workflows. It preserves booking, registration, requirement, quote/status, identity and refresh/reset behavior; uses replaceable illustrative image slots only where they aid discovery/context; and freezes shared services, route glue and platform semantics. It remains Draft until the current public correction is fixed/reviewed and an exact source/launch/lease/reviewer packet is issued.
+
 ## Shared contract boundary
 
 Web UI consumes `/api/v1` and typed domain/application behavior; it does not recreate authorization, tenant filtering, capacity, attendance, quote, payout or RSVP isolation rules in components. Missing API behavior returns to the platform/domain owner. Synthetic previews stay labelled until server-backed behavior is reviewed and integrated.
