@@ -1,6 +1,17 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: ROUND-4 FIXED-SHA HANDOFF — PAUSED FOR FRESH SOL/HIGH REVIEW. The same sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`, returned its lease.
+Status: ROUND-5 CHANGES REQUESTED — QUEUED, NOT ACTIVE. Fresh independent Sol/high returned `CHANGES REQUESTED` on Round-4 candidate `e142cf2713df8ced51c5ce67334a4a2f93e0a5e9`. The same Astra/medium writer remains paused until one current frontend writer returns its lease; do not exceed the two-builder cadence.
+
+## Round-5 compatibility findings
+
+Preserve all cleared RSVP UI/design/motion and adapter behavior. The next correction is RSVP-local adapter plus focused tests/browser evidence only:
+
+1. Preserve exact replay of retained historical import receipts when an older batch contains duplicate normalized material across different slots/outcomes (for example row 2 accepted and identical row 3 rejected). Preflight each exact slot/key/material/outcome receipt before applying the new material reverse-identity conflict. An unchanged exact row must replay its own stored outcome even if the same material also has another retained slot; an unseen or moved occurrence must still conflict atomically. Preserve the new-batch first-request duplicate rejection, blank-line/reorder protection, household grouping, operational retry, stable-reference skip and org/event/persona isolation.
+2. Clearing current arrival/departure details must release/invalidate active dependent movement plans, but it must not orphan or erase immutable historical movement evidence. `guest-met` and `completed` transfers must retain a valid referenced leg snapshot, vehicle and plan basis and remain visible in historical manifests/audit views. Delete a leg only when no retained transfer references it. Assignment/dispatch for current/future movement remains blocked until details and replan.
+
+Required regressions: construct a real retained Round-3-style duplicate receipt batch and prove exact accepted/rejected replay plus moved/unseen conflict; clear travel with requested/planned/assigned plus guest-met/completed dependents and prove active release, blocked future dispatch, no dangling `legId`, preserved historical manifest/vehicle/plan evidence and no accidental deletion. No UI/CSS/design changes.
+
+Round-4 candidate and reviewer evidence remain below for history.
 
 Round-4 candidate: `e142cf2713df8ced51c5ce67334a4a2f93e0a5e9`, clean, pushed and live remote-equal on `codex/tnp-rsvp-claude-m1`; exact delta is `adapter.ts`, `round4.test.mjs`, `round4-browser.mjs` and `ROUND4-EVIDENCE.md`. Builder reports 149/149 full tests, 77/77 RSVP tests, lint, explicit non-incremental TypeScript, diff check, first-attempt build and focused real-browser checks PASS. P independently verified remote equality, exact four-file scope, clean worktree and free port `3107`; builder evidence remains subject to the fresh independent review.
 
