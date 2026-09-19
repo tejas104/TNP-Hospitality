@@ -1,6 +1,6 @@
 # TNP-BRAND-TEAL-M1 — client-selected teal platform sweep
 
-Status: ROUND-2 CORRECTION ACTIVE after fresh Claude returned `CHANGES REQUESTED` on clean pushed remote-equal `fc7746e06601ca670b09dc8dd47895c543dfec58`. Exact collaboration task `/root/brand_teal_astra_correction`, orchestrator-selected Astra/low, passed read-only preflight and received architect contract `f546918bd2b98690353b25d6a8d39191af52594f` as sole writer for the bounded twelve-file correction. Fresh Claude re-review and Kartik exact-SHA acceptance remain required.
+Status: ROUND-2 FIXED-SHA PAUSED FOR SAME-CLAUDE REVIEW at clean pushed remote-equal `48189e0b8783ef8abf80040997115a67275def57`, direct child of `fc7746e06601ca670b09dc8dd47895c543dfec58`. Astra/low collaboration writer lease is closed and port3111 is free. Same Claude session `local_caafefbd-0c4e-46b4-a5e8-a9a989d8b7bf` must perform focused rendered re-review; Kartik exact-SHA acceptance remains separate.
 
 Responsible human/product decision owner and sole fixed-SHA human acceptance reviewer: Kartik. Client decision evidence: user instruction on 2026-09-19, recorded in `docs/decisions/CLIENT-DECISIONS.md` and `docs/DESIGN.md` at Source.
 
@@ -82,3 +82,5 @@ Fresh Claude review must use the packet at `docs/dispatch/2026-09-19/BRAND-TEAL-
 Claude found remaining green 3D/fallback surfaces, low-contrast teal text/labels/status/errors, nearly invisible Operations focus, cascade-dependent action boundaries, an unreadable Freelancer success pill, dark-green `PreviewControls`, a mismatched Planner legend and an incomplete palette guard. Layout, data/state and behavior are otherwise frozen.
 
 The bounded correction packet is `docs/dispatch/2026-09-19/BRAND-TEAL-ASTRA-ROUND2-CORRECTION.md`. It authorizes only the exact twelve visual/test files listed there from candidate `fc7746e...`. Operations Reports aggregate adoption remains separate. One immutable successor, fresh Claude focused re-review and Kartik acceptance precede P-controlled integration.
+
+Round-two final is `48189e0b8783ef8abf80040997115a67275def57`. P independently confirmed live remote equality, direct parent, clean worktree, exact twelve-file scope, diff check and all 79 discovered tests. Builder reports palette/contrast guard 5/5, lint with three inherited warnings, explicit TypeScript and first-attempt Vercel build PASS. It could not access a controllable browser, so rendered viewport/focus/overflow/console/fallback proof remains intentionally pending for same-Claude review packet `docs/dispatch/2026-09-19/BRAND-TEAL-CLAUDE-ROUND2-REREVIEW.md`.
