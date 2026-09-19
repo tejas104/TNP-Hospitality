@@ -1,6 +1,6 @@
 # TNP-BRAND-TEAL-M1 — client-selected teal platform sweep
 
-Status: ROUND-2 CORRECTION READY after fresh Claude returned `CHANGES REQUESTED` on clean pushed remote-equal `fc7746e06601ca670b09dc8dd47895c543dfec58`. Exact Astra/low collaboration task `/root/brand_teal_astra_correction` passed read-only preflight on the named worktree/branch/port and may become the sole correction writer only after receiving the architect contract commit. Fresh Claude re-review and Kartik exact-SHA acceptance remain required.
+Status: ROUND-2 CORRECTION ACTIVE after fresh Claude returned `CHANGES REQUESTED` on clean pushed remote-equal `fc7746e06601ca670b09dc8dd47895c543dfec58`. Exact collaboration task `/root/brand_teal_astra_correction`, orchestrator-selected Astra/low, passed read-only preflight and received architect contract `f546918bd2b98690353b25d6a8d39191af52594f` as sole writer for the bounded twelve-file correction. Fresh Claude re-review and Kartik exact-SHA acceptance remain required.
 
 Responsible human/product decision owner and sole fixed-SHA human acceptance reviewer: Kartik. Client decision evidence: user instruction on 2026-09-19, recorded in `docs/decisions/CLIENT-DECISIONS.md` and `docs/DESIGN.md` at Source.
 
