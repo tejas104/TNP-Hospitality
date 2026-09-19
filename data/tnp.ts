@@ -6,28 +6,28 @@ export const services = [
     title: 'Event Coordinators',
     copy: 'Senior professionals for live-event ownership, client communication and on-ground decision making. Typically 5+ years experience.',
     image: byId('coordinator'),
-    tint: '#084C49',
+    tint: '#008080',
   },
   {
     number: '02',
     title: 'Event Executives',
     copy: 'Reliable event floor support for vendors, guest movement, checkpoints and service rhythm. Approximately 3-3.5 years experience.',
     image: byId('event-hall'),
-    tint: '#0F6B68',
+    tint: '#008080',
   },
   {
     number: '03',
     title: 'Volunteers',
     copy: 'Trained support teams for entry, wayfinding, backstage movement and event-day errands. Approximately 1-2 years experience.',
     image: byId('team-briefing'),
-    tint: '#172321',
+    tint: '#008080',
   },
   {
     number: '04',
     title: 'Hostesses / Guest Hospitality',
     copy: 'Guest-facing professionals selected for presentation, warmth, communication and calm service under pressure.',
     image: byId('hostess'),
-    tint: '#062B29',
+    tint: '#008080',
   },
   {
     number: '05',
@@ -41,7 +41,7 @@ export const services = [
     title: 'Venue / Event Discovery',
     copy: 'Curated discovery support for clients searching for the right destination, venue or experience canvas.',
     image: byId('architecture'),
-    tint: '#084C49',
+    tint: '#008080',
   },
 ];
 

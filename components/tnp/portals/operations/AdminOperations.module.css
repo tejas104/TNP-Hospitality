@@ -3,7 +3,7 @@
   background: transparent;
   border: 0;
   border-left: 2px solid transparent;
-  color: rgb(245 241 231 / 72%);
+  color: #fff;
   cursor: pointer;
   display: flex;
   font: inherit;
@@ -15,47 +15,48 @@
 
 .navButton:hover:not(:disabled), .navButton:focus-visible, .navButtonActive {
   border-left-color: var(--champagne);
-  color: var(--ivory);
+  color: #fff;
 }
 
 .navButton:disabled { color: rgb(245 241 231 / 34%); cursor: not-allowed; }
 .navButton small { font-size: 0.62rem; letter-spacing: 0.06em; text-transform: uppercase; }
-.navLabel { color: var(--champagne); font-size: 0.68rem; letter-spacing: 0.12em; margin-top: 18px; text-transform: uppercase; }
-.headerMeta { align-items: center; color: rgb(245 241 231 / 68%); display: flex; flex-wrap: wrap; gap: 14px; margin-top: 22px; }
+.navLabel { color: #fff; font-size: 0.68rem; letter-spacing: 0.12em; margin-top: 18px; text-transform: uppercase; }
+.headerMeta { align-items: center; color: #fff; display: flex; flex-wrap: wrap; gap: 14px; margin-top: 22px; }
+.headerMeta :global(.status-pill.green), .eventTabs :global(.status-pill.green) { background: rgb(255 255 255 / 12%); color: #fff; }
 .metricButton { appearance: none; background: transparent; border: 0; color: inherit; cursor: pointer; font: inherit; padding: 0; text-align: left; }
 .metricButton > span { height: 100%; transition: border-color 180ms ease, transform 180ms ease; }
 .metricButton:hover > span, .metricButton:focus-visible > span { border-color: var(--champagne); transform: translateY(-2px); }
 .compactNav { display: none; }
 .compactNav ul { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); list-style: none; margin: 0 0 8px; padding: 0; }
-.compactNav button { align-items: center; background: rgb(229 225 205 / 7%); border: 1px solid rgb(229 225 205 / 16%); color: rgb(245 241 231 / 78%); cursor: pointer; display: flex; font: inherit; min-height: 48px; padding: 10px 14px; text-align: left; width: 100%; }
-.compactNav button:hover { border-color: var(--champagne); color: var(--ivory); }
-.compactNav button:focus-visible { outline: 3px solid var(--champagne); outline-offset: 2px; }
-.compactNav .compactNavActive { background: rgb(187 168 121 / 18%); border-color: var(--champagne); box-shadow: inset 3px 0 0 var(--champagne); color: var(--ivory); font-weight: 700; }
+.compactNav button { align-items: center; background: rgb(229 225 205 / 7%); border: 1px solid rgb(229 225 205 / 16%); color: #fff; cursor: pointer; display: flex; font: inherit; min-height: 48px; padding: 10px 14px; text-align: left; width: 100%; }
+.compactNav button:hover { border-color: var(--champagne); color: #fff; }
+.compactNav button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.compactNav .compactNavActive { background: rgb(187 168 121 / 18%); border-color: var(--champagne); box-shadow: inset 3px 0 0 var(--champagne); color: #fff; font-weight: 700; }
 .workspace { outline: none; scroll-margin-top: 104px; }
-.workspace:focus-visible { box-shadow: 0 0 0 3px var(--champagne); }
+.workspace:focus-visible { box-shadow: 0 0 0 3px #fff; }
 .panelHeading { align-items: end; display: flex; gap: 32px; justify-content: space-between; margin: 40px 0 24px; }
 .panelHeading h2, .statePanel h2 { font-family: var(--font-display); font-size: clamp(2.1rem, 4vw, 3.5rem); font-weight: 400; line-height: 1; margin: 0; }
-.panelHeading > p, .panelHeading > span { color: rgb(245 241 231 / 68%); max-width: 34rem; }
+.panelHeading > p, .panelHeading > span { color: #fff; max-width: 34rem; }
 .summaryRows { display: grid; gap: 8px; margin: 22px 0; }
-.summaryRows span, .identityBlock span { background: rgb(8 76 73 / 7%); padding: 11px 12px; }
+.summaryRows span, .identityBlock span { background: rgb(0 128 128 / 7%); padding: 11px 12px; }
 .filters { align-items: end; background: rgb(229 225 205 / 8%); display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) minmax(180px, 0.32fr); margin-bottom: 18px; padding: 16px; }
 .filters label { display: grid; font-size: 0.72rem; gap: 7px; letter-spacing: 0.06em; text-transform: uppercase; }
 .filters input, .filters select { background: #fffdf8; border: 1px solid rgb(23 35 33 / 18%); color: var(--ink); font: inherit; min-height: 44px; padding: 10px 12px; width: 100%; }
 .inputWithIcon { position: relative; }
-.inputWithIcon svg { color: var(--teal); left: 12px; position: absolute; top: 13px; }
+.inputWithIcon svg { color: var(--primary-hover); left: 12px; position: absolute; top: 13px; }
 .inputWithIcon input { padding-left: 42px; }
 .eventTabs { display: grid; gap: 10px; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 18px; }
-.eventTabs > button { align-items: center; background: rgb(229 225 205 / 7%); border: 1px solid rgb(229 225 205 / 12%); color: var(--ivory); cursor: pointer; display: grid; font: inherit; gap: 12px; grid-template-columns: auto 1fr auto; padding: 16px; text-align: left; }
+.eventTabs > button { align-items: center; background: rgb(229 225 205 / 7%); border: 1px solid rgb(229 225 205 / 12%); color: #fff; cursor: pointer; display: grid; font: inherit; gap: 12px; grid-template-columns: auto 1fr auto; padding: 16px; text-align: left; }
 .eventTabs > button:hover, .eventTabs > button:focus-visible, .eventTabs > .eventTabActive { background: rgb(229 225 205 / 13%); border-color: var(--champagne); }
 .eventTabs span { display: grid; gap: 3px; }
-.eventTabs small, .rosterRow small { color: rgb(245 241 231 / 58%); overflow-wrap: anywhere; }
-.rosterPanel { background: #073f3d; color: var(--ivory); min-width: 0; padding: clamp(18px, 3vw, 30px); }
+.eventTabs small, .rosterRow small { color: #fff; overflow-wrap: anywhere; }
+.rosterPanel { background: #008080; color: #fff; min-width: 0; padding: clamp(18px, 3vw, 30px); }
 .rosterHeading { align-items: center; display: flex; gap: 14px; margin-bottom: 18px; }
 .rosterHeading h3 { font-family: var(--font-display); font-size: 2rem; font-weight: 400; margin: 0; }
 .rosterRow { align-items: start; border-top: 1px solid rgb(245 241 231 / 15%); display: flex; gap: 18px; justify-content: space-between; padding: 14px 0; }
 .rosterRow div { display: grid; gap: 4px; }
-.rosterRow span, .muted { color: rgb(245 241 231 / 68%); }
-.actionMessage { background: rgb(8 76 73 / 9%); border-left: 3px solid var(--teal); display: grid; gap: 8px; margin-top: 16px; padding: 12px; }
+.rosterRow span, .muted { color: #fff; }
+.actionMessage { background: rgb(0 128 128 / 9%); border-left: 3px solid var(--teal); display: grid; gap: 8px; margin-top: 16px; padding: 12px; }
 .actionMessage button, .filteredEmpty button { background: transparent; border: 0; color: inherit; cursor: pointer; font: inherit; padding: 0; text-align: left; text-decoration: underline; }
 .actionError { border-left-color: #b33e2f; }
 .identityBlock { display: grid; gap: 8px; margin: 20px 0; }
@@ -70,7 +71,7 @@
 .cardTitle { align-items: start; display: flex; gap: 18px; justify-content: space-between; margin-bottom: 18px; }
 .cardTitle h3, .controlForm h3, .evidenceCard h3 { font-family: var(--font-display); font-size: clamp(1.65rem, 3vw, 2.3rem); font-weight: 400; line-height: 1; margin: 0; }
 .pendingBadge, .reviewedBadge { border: 1px solid currentcolor; border-radius: 999px; color: #8b4e13; font-size: .68rem; letter-spacing: .08em; padding: 5px 9px; text-transform: uppercase; }
-.reviewedBadge { color: var(--teal); }
+.reviewedBadge { color: var(--primary-hover); }
 .queueRow { align-items: start; border-top: 1px solid rgb(23 35 33 / 14%); display: flex; gap: 18px; justify-content: space-between; padding: 13px 0; }
 .queueRow > div { display: grid; gap: 4px; min-width: 0; }
 .queueRow > div:last-child { max-width: 48%; text-align: right; }
@@ -80,7 +81,7 @@
 .controlForm input, .controlForm select, .controlForm textarea { background: #fffdf8; border: 1px solid rgb(23 35 33 / 22%); border-radius: 0; color: var(--ink); font: inherit; min-height: 44px; padding: 10px 12px; text-transform: none; width: 100%; }
 .controlForm textarea { min-height: 84px; resize: vertical; }
 .controlForm :focus-visible { outline: 3px solid var(--champagne); outline-offset: 2px; }
-.policyNote { background: rgb(8 76 73 / 8%); border-left: 3px solid var(--teal); font-size: .84rem; line-height: 1.5; margin: 0; padding: 11px 12px; }
+.policyNote { background: rgb(0 128 128 / 8%); border-left: 3px solid var(--teal); font-size: .84rem; line-height: 1.5; margin: 0; padding: 11px 12px; }
 .emptyAction { background: rgb(139 78 19 / 9%); border-left: 3px solid #8b4e13; font-size: .84rem; line-height: 1.5; margin: 0; padding: 11px 12px; }
 .evidenceCard { display: grid; gap: 11px; }
 .evidenceCard p { margin: 0; }

@@ -2,27 +2,27 @@
   width: min(1380px, calc(100% - 40px));
   margin: 0 auto 88px;
   padding: clamp(28px, 5vw, 64px);
-  color: #f6f0e6;
+  color: #fff;
   background: var(--dark);
   border-radius: 0;
   scroll-margin-top: 125px;
 }
 .hub :is(a, button, input, select, textarea):focus-visible {
-  outline: 3px solid #73521d;
+  outline: 3px solid #fff;
   outline-offset: 4px;
 }
 .hub > .viewState button:focus-visible {
-  outline-color: #e8dfc6;
+  outline-color: #fff;
 }
 .hub:focus-visible {
   outline: 3px solid #73521d;
   outline-offset: 4px;
 }
 .header h2 em {
-  color: #dbc897;
+  color: #fff;
 }
 .recordCount {
-  color: #c8d1c9;
+  color: #fff;
   font-size: 12px;
   margin: 16px 0;
 }
@@ -46,7 +46,7 @@
 
 .header > p {
   margin: 0;
-  color: #c8d1c9;
+  color: #fff;
   line-height: 1.7;
 }
 
@@ -58,7 +58,7 @@
   min-height: 52px;
   margin-bottom: 18px;
   padding: 12px 16px;
-  color: #dce7df;
+  color: #fff;
   background: rgb(255 255 255 / 6%);
   border: 1px solid rgb(255 255 255 / 12%);
   border-radius: 14px;
@@ -93,7 +93,7 @@
 
 .directory {
   padding: 20px;
-  color: #173129;
+  color: #202423;
   background: #e5ded2;
   border-right: 1px solid #cec3b2;
 }
@@ -108,7 +108,7 @@
 .quote label {
   display: grid;
   gap: 7px;
-  color: #54635d;
+  color: #59615f;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -129,7 +129,7 @@
 .filters select,
 .quote textarea {
   width: 100%;
-  color: #173129;
+  color: #202423;
   background: #fff;
   border: 1px solid #c9c1b5;
   border-radius: 10px;
@@ -155,7 +155,7 @@
   display: grid;
   gap: 4px;
   padding: 14px;
-  color: #173129;
+  color: #202423;
   text-align: left;
   background: rgb(255 255 255 / 58%);
   border: 1px solid transparent;
@@ -172,7 +172,7 @@
 .records span,
 .records small,
 .directory output {
-  color: #65726d;
+  color: #59615f;
   overflow-wrap: anywhere;
 }
 
@@ -185,7 +185,7 @@
 }
 
 .empty button {
-  color: #173129;
+  color: #202423;
   background: none;
   border: 0;
   text-decoration: underline;
@@ -205,7 +205,7 @@
 .detail {
   min-width: 0;
   padding: clamp(22px, 4vw, 44px);
-  color: #173129;
+  color: #202423;
 }
 
 .bookingHeader,
@@ -233,8 +233,8 @@
 .pill {
   display: inline-flex;
   padding: 5px 8px;
-  color: #365449;
-  background: #dbe6de;
+  color: #006b6b;
+  background: rgb(0 128 128 / 11%);
   border-radius: 999px;
   font-size: 0.68rem;
   font-weight: 800;
@@ -243,7 +243,7 @@
 }
 
 .detail code {
-  color: #63716b;
+  color: #59615f;
   overflow-wrap: anywhere;
 }
 
@@ -261,7 +261,7 @@
 }
 
 .meta dt {
-  color: #4f6256;
+  color: #59615f;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -294,7 +294,7 @@
 .block header p,
 .inlineEmpty {
   margin: 4px 0 0;
-  color: #4f6256;
+  color: #59615f;
 }
 
 .eventGrid,
@@ -383,8 +383,8 @@
   align-items: flex-start;
   margin-top: 14px;
   padding: 11px;
-  color: #4f5f59;
-  background: #edf2ee;
+  color: #59615f;
+  background: #f4f0e8;
   border-radius: 9px;
 }
 
