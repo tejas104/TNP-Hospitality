@@ -1,6 +1,6 @@
 # TNP-BRAND-AGGREGATE-M2 — integrated palette adoption and guard closure
 
-Status: READY for inline architect implementation after launch from the commit carrying this record. This is a bounded post-integration correction, not a redesign and not authority for UX Foundation or Client source work.
+Status: FIXED-SHA HANDOFF / FRESH CLAUDE AND KARTIK REVIEW REQUIRED. Inline implementation is complete at exact clean pushed remote-equal `d5c15be0be3acf984206a0a29c3f16dabe522bdf`, direct child of Launch `99b4c98c0888ea1b3703830356386b71b7152149`. This remains a bounded post-integration correction, not a redesign and not authority for UX Foundation or Client source work.
 
 Responsible product decision owner and sole human fixed-SHA acceptance reviewer: Kartik. Writer: current architect task `01a0b965-d3e3-73d2-a866-a81332d1904e` on DESKTOP-DL9FDM7, inline only per the user's no-subagent direction. Runtime model/effort metadata are unavailable and are not inferred. Fresh independent Claude fixed-SHA review follows authorship.
 
@@ -40,3 +40,19 @@ All TSX/behavior/domain/service/contract/fixture, public/homepage, Client/Planne
 - stop the server, prove port3117 free, return one clean pushed immutable SHA for fresh Claude and Kartik review.
 
 No self-certification or integration before those reviews.
+
+## Immutable candidate returned 2026-09-20
+
+- candidate: `d5c15be0be3acf984206a0a29c3f16dabe522bdf`;
+- branch: `codex/tnp-brand-aggregate-m2`;
+- remote equality: verified after ordinary non-force push;
+- exact delta: the three writable paths above, with 28 insertions and 21 deletions;
+- focused guard: 6/6 PASS;
+- independently discovered project tests: 18 files / 118 tests PASS;
+- lint: PASS with the same three inherited React-compiler warnings in `hooks/use-mobile.ts:16` and `components/tnp/AppShell.tsx:79,116`;
+- explicit non-incremental TypeScript: PASS;
+- Vercel build: PASS on the first attempt, with normal existing chunk/dynamic-import/nf3 warnings only;
+- browser: `/freelancer` and `/admin` Reports at 1440x900, 1100x900 and 390x844; no horizontal overflow or console warning/error, visible keyboard focus, readable teal panels and a wrapping export-status output measured as `rgba(0, 128, 128, 0.09)` over neutral ink;
+- cleanup: development server stopped and port3117 free.
+
+Fresh review packet: `docs/dispatch/2026-09-20/BRAND-AGGREGATE-M2-CLAUDE-FIXED-SHA-REVIEW.md`. The fixed synthetic PreviewControls and right-edge workspace control are inherited shared-shell concerns reserved for UX Foundation; they are not reopened by this three-file correction.
