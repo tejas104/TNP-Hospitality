@@ -31,6 +31,25 @@ export type WorkspaceData = {
   metadata: ScenarioMetadata;
   worker: Worker | null;
 };
+// This is a replay admission check, not a success receipt. Only the service
+// ledger can decide whether the retained key/payload replays or conflicts.
+export function isRetainedRegistration(
+  request: FreelancerRequest,
+  retained: FreelancerRequest | undefined,
+  applications: Application[],
+  profile: string,
+  generation: number,
+) {
+  return (
+    request.operation === 'registerApplicant' &&
+    retained?.operation === 'registerApplicant' &&
+    request.actorId === profile &&
+    request.payload.applicantId === profile &&
+    request.expectedGeneration === generation &&
+    samePayload(request, retained) &&
+    applications.some((application) => application.applicantId === profile)
+  );
+}
 export function useFreelancer(profile: string) {
   const service = useRef<PreviewService | null>(null);
   const epoch = useRef(0);
@@ -203,14 +222,6 @@ export function useFreelancer(profile: string) {
     if (!s || !current || busyRef.current || loading || error) return false;
     const invocationEpoch = epoch.current;
     const slot = actionSlot(operation, payload);
-    if (operation === 'registerApplicant' && current.worker) {
-      delete requests.current[slot];
-      persist();
-      setNotice(
-        'This sample profile already has a worker record. No new application or profile changes were submitted. Review its current details in Application.',
-      );
-      return false;
-    }
     const saved = requests.current[slot];
     if (!retry && saved && !samePayload(saved.payload, payload)) {
       setNotice(
@@ -248,15 +259,31 @@ export function useFreelancer(profile: string) {
         const worker = await s.getStanding(profile, { variant: 'ready' });
         if (invocationEpoch !== epoch.current) return false;
         if (worker.ok) {
-          delete requests.current[slot];
-          persist();
-          setNotice(
-            'A worker record already exists for this profile. No new application or profile changes were submitted.',
-          );
-          await load();
-          return false;
+          const applications = await s.listApplications({ variant: 'ready' });
+          if (invocationEpoch !== epoch.current) return false;
+          if (!applications.ok)
+            throw new Error(
+              'Existing application records could not be checked.',
+            );
+          if (
+            !isRetainedRegistration(
+              request as FreelancerRequest,
+              saved,
+              applications.value.items,
+              profile,
+              applications.generation,
+            )
+          ) {
+            delete requests.current[slot];
+            persist();
+            setNotice(
+              'This sample profile already has a worker record. No new application or profile changes were submitted. Review its current details in Application.',
+            );
+            await load();
+            return false;
+          }
         }
-        if (worker.error.code !== 'NOT_FOUND')
+        if (!worker.ok && worker.error.code !== 'NOT_FOUND')
           throw new Error(
             'The current worker profile could not be checked. No application was submitted.',
           );

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createPreviewService } from '../../../../lib/services/preview.ts';
+import { isRetainedRegistration } from './useFreelancer.ts';
 import {
   actionSlot,
   createRequest,
@@ -58,12 +59,59 @@ test('lost application response replays one exact request after journal reload',
   const first = await service.mutate(request);
   assert.equal(first.ok, true);
   const restored = Object.values(readRequests(journal, actor, 0))[0];
+  const workerBeforeRetry = await service.getStanding(actor);
+  assert.equal(workerBeforeRetry.ok, true);
+  const beforeRetry = (await service.listApplications()).value.items;
+  assert.equal(
+    isRetainedRegistration(restored, restored, beforeRetry, actor, 0),
+    true,
+  );
+  assert.equal(
+    isRetainedRegistration(restored, undefined, beforeRetry, actor, 0),
+    false,
+  );
+  assert.equal(
+    isRetainedRegistration(
+      restored,
+      restored,
+      beforeRetry,
+      'different-profile',
+      0,
+    ),
+    false,
+  );
+  assert.equal(
+    isRetainedRegistration(restored, restored, beforeRetry, actor, 1),
+    false,
+  );
   const replay = await service.mutate(restored);
   assert.equal(replay.replayed, true);
   assert.equal(replay.value.id, first.value.id);
   const applications = (await service.listApplications()).value.items;
   assert.equal(applications.filter((a) => a.applicantId === actor).length, 1);
   assert.equal(currentApplication(applications, actor).id, first.value.id);
+  assert.deepEqual(await service.getStanding(actor), workerBeforeRetry);
+  const changed = {
+    ...restored,
+    payload: { ...restored.payload, role: 'Hostess' },
+  };
+  assert.equal(
+    isRetainedRegistration(changed, restored, beforeRetry, actor, 0),
+    false,
+  );
+  // Even if the retained journal was changed, the ledger remains authoritative.
+  assert.equal(
+    isRetainedRegistration(changed, changed, beforeRetry, actor, 0),
+    true,
+  );
+  const conflict = await service.mutate(changed);
+  assert.equal(conflict.ok, false);
+  assert.equal(conflict.error.code, 'IDEMPOTENCY_CONFLICT');
+  assert.deepEqual(
+    (await service.listApplications()).value.items,
+    applications,
+  );
+  assert.deepEqual(await service.getStanding(actor), workerBeforeRetry);
   assert.equal(currentApplication(applications, 'different-profile'), null);
   assert.throws(() => readRequests(journal, 'different-profile', 0));
   assert.throws(() => readRequests(journal, actor, 1));
@@ -75,6 +123,39 @@ test('lost application response replays one exact request after journal reload',
   const stale = await service.mutate(restored);
   assert.equal(stale.ok, false);
   assert.equal(stale.error.code, 'STALE_GENERATION');
+  assert.equal(
+    isRetainedRegistration(
+      restored,
+      restored,
+      (await service.listApplications()).value.items,
+      actor,
+      1,
+    ),
+    false,
+  );
+});
+
+test('seeded worker journals and fresh registrations do not qualify as application replay', async () => {
+  const service = await createPreviewService();
+  const apps = (await service.listApplications()).value.items;
+  for (const actor of [
+    'tnp-demo-worker-003',
+    'tnp-demo-worker-006',
+    'tnp-demo-worker-007',
+  ]) {
+    const request = createRequest(
+      'registerApplicant',
+      { applicantId: actor, displayName: 'Sample Alex', role: 'Volunteer' },
+      actor,
+      0,
+      `seeded-${actor}`,
+    );
+    assert.equal((await service.getStanding(actor)).ok, true);
+    assert.equal(
+      isRetainedRegistration(request, request, apps, actor, 0),
+      false,
+    );
+  }
 });
 
 test('assessment remains separate from approval and restores the service record', async () => {

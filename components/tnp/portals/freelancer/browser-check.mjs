@@ -159,14 +159,119 @@ try {
     },
   );
   await check(
-    'application and assessment persist independently without duplicate submission',
+    'new application lost response recovers exact receipt after worker creation with conflict and profile isolation',
     async () => {
       await button('Continue');
       await page.locator('#question-0').check();
       await page.locator('input[name="question-1"][value="1"]').check();
       await page.locator('input[name="question-2"][value="2"]').check();
       await button('Continue');
+      await service(async (s) => {
+        const original = s.mutate.bind(s);
+        s.mutate = async (request) => {
+          const result = await original(request);
+          if (request.operation === 'registerApplicant' && result.ok) {
+            window.__registrationReceipt = { request, result };
+            s.mutate = original;
+            throw new Error('Synthetic lost registration response');
+          }
+          return result;
+        };
+      });
       await button('Submit sample application');
+      await page.getByText(/Synthetic lost registration response/).waitFor();
+      const accepted = await page.evaluate(() => window.__registrationReceipt);
+      assert.equal(accepted.result.ok, true);
+      const originalWorker = await service(
+        async (s) => (await s.getStanding('tnp-demo-freelancer-new')).value,
+      );
+      assert.equal(originalWorker.displayName, 'Sample Alex');
+      const journalKey = `tnp-freelancer-v1:requests:${accepted.request.expectedGeneration}:tnp-demo-freelancer-new`;
+      const originalJournal = await page.evaluate(
+        (k) => localStorage.getItem(k),
+        journalKey,
+      );
+      await profile('tnp-demo-worker-003');
+      assert.equal(
+        await page
+          .getByRole('button', { name: 'Retry same action', exact: true })
+          .count(),
+        0,
+      );
+      await profile('tnp-demo-freelancer-new');
+      await page.reload();
+      await ready();
+      // Corrupt only the synthetic retry payload. The ledger must reject the
+      // same key with a different payload rather than duplicate or alter records.
+      await page.evaluate(
+        ({ k, journal }) => {
+          const requests = JSON.parse(journal);
+          Object.values(requests)[0].payload.role = 'Hostess';
+          localStorage.setItem(k, JSON.stringify(requests));
+        },
+        { k: journalKey, journal: originalJournal },
+      );
+      await page.reload();
+      await ready();
+      await button('Retry same action');
+      await page.getByText(/IDEMPOTENCY_CONFLICT/).waitFor();
+      assert.deepEqual(
+        await service(
+          async (s) => (await s.getStanding('tnp-demo-freelancer-new')).value,
+        ),
+        originalWorker,
+      );
+      assert.equal(
+        (
+          await service(async (s) =>
+            (await s.listApplications()).value.items.filter(
+              (a) => a.applicantId === 'tnp-demo-freelancer-new',
+            ),
+          )
+        ).length,
+        1,
+      );
+      await page.evaluate(
+        ({ k, journal }) => localStorage.setItem(k, journal),
+        { k: journalKey, journal: originalJournal },
+      );
+      await page.reload();
+      await ready();
+      await service(async (s) => {
+        const original = s.mutate.bind(s);
+        s.mutate = async (request) => {
+          const result = await original(request);
+          window.__registrationReplay = { request, result };
+          return result;
+        };
+      });
+      await button('Retry same action');
+      await page.getByText(/Recovered the same sample action/).waitFor();
+      const recovered = await page.evaluate(() => window.__registrationReplay);
+      assert.deepEqual(recovered.request, accepted.request);
+      assert.equal(recovered.result.replayed, true);
+      assert.equal(recovered.result.value.id, accepted.result.value.id);
+      const workerCount = await page.evaluate(async () => {
+        const { PREVIEW_STORAGE_KEY } =
+          await import('/lib/contracts/preview.ts');
+        const persisted = JSON.parse(localStorage.getItem(PREVIEW_STORAGE_KEY));
+        return persisted.records.workers.filter(
+          (worker) => worker.id === 'tnp-demo-freelancer-new',
+        ).length;
+      });
+      assert.equal(workerCount, 1);
+      assert.deepEqual(
+        await service(
+          async (s) => (await s.getStanding('tnp-demo-freelancer-new')).value,
+        ),
+        originalWorker,
+      );
+      assert.equal(
+        await page
+          .getByRole('button', { name: 'Retry same action', exact: true })
+          .count(),
+        0,
+      );
       await page
         .getByRole('heading', {
           name: 'A good beginning. Your review is next.',
