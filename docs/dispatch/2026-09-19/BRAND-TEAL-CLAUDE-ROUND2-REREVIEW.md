@@ -2,6 +2,8 @@ SESSION TYPE: OLD SESSION `local_caafefbd-0c4e-46b4-a5e8-a9a989d8b7bf`
 
 DO NOT OPEN A NEW SESSION. Resume only the same Claude Code desktop review session that returned `CHANGES REQUESTED` on `fc7746e06601ca670b09dc8dd47895c543dfec58`.
 
+SUPERSEDED BEFORE DISPATCH: P's independent rendered sweep found the Client status-hub kicker at approximately 1.33:1 on `48189e0...`. Do not review this target. Wait for the round-three successor and a replacement exact-SHA packet.
+
 # TNP-BRAND-TEAL-M1 — round-two focused fixed-SHA re-review
 
 READ-ONLY REVIEW ONLY — DO NOT IMPLEMENT. Review exact candidate:
