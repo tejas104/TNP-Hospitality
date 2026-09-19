@@ -836,7 +836,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
     const arr = legs.find((l) => l.direction === 'arrival');
     const dep = legs.find((l) => l.direction === 'departure');
     const stay = data.stays.find((s) => s.partyId === party.id);
-    const transfers = data.transfers.filter((t) => t.partyId === party.id && t.state !== 'not-required' && t.state !== 'cancelled');
+    const transfers = data.transfers.filter((t) => t.partyId === party.id && ['requested', 'awaiting-details', 'planned', 'assigned', 'dispatched'].includes(t.state));
     const today = localDate(now(), data.event.timezone);
     return structuredClone({
       event: data.event,
@@ -977,7 +977,10 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
         if (!want && t.state !== 'not-required') t.state = 'cancelled';
         if (want && (t.state === 'cancelled' || t.state === 'not-required')) t.state = leg?.at ? 'requested' : 'awaiting-details';
       } else if (want) {
-        data.transfers.push({ id: `${party.id}-${kind}`, partyId: party.id, legId: leg?.id ?? null, kind, state: leg?.at ? 'requested' : 'awaiting-details', vehicleId: null, planBasedOn: null });
+        const baseId = `${party.id}-${kind}`;
+        let id = baseId;
+        while (data.transfers.some((transfer) => transfer.id === id)) id = `${baseId}-${++state.seq}`;
+        data.transfers.push({ id, partyId: party.id, legId: leg?.id ?? null, kind, state: leg?.at ? 'requested' : 'awaiting-details', vehicleId: null, planBasedOn: null });
       }
     };
     setTransfer('pickup', answers.pickup);
