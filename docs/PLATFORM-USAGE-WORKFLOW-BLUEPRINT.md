@@ -296,7 +296,7 @@ Pending policy: whether two separate assignments on the same calendar date creat
 
 ## 11. RSVP as a separate paid product
 
-RSVP is a detailed WhatsApp-connected product, not a small add-on screen. It supports two activation paths.
+RSVP is a detailed, multi-event WhatsApp messaging and information-collection product, not a small add-on screen. It is not a calling, travel/hotel booking, vehicle-dispatch or payment product.
 
 ```mermaid
 flowchart TD
@@ -307,15 +307,15 @@ flowchart TD
     E --> F[Admin activates entitlement, limits and service dates]
     F --> G[Vendor owner invites team]
     G --> H[Create events and import guests]
-    H --> I[WhatsApp campaigns and guest replies]
-    I --> J[Calling, documents, travel, pickup, stay and rooming]
-    J --> K[Event-day operations]
-    K --> L[Versioned Excel/PDF reports and closure]
+    H --> I[All-events Today dashboard and event workspaces]
+    I --> J[WhatsApp campaigns and guest replies]
+    J --> K[Collect and categorize RSVP, party, travel/stay needs]
+    K --> L[Versioned Excel/PDF information reports and closure]
 ```
 
 A Client, client-appointed planner or assigned TNP Planner may request RSVP for an existing event. Admin creates/revises the quotation for the event's billing party, then grants the RSVP engagement. TNP staff or the authorized customer/vendor team operates it according to the selected mode.
 
-The detailed workspace includes event/functions, guest/household directory, function-wise responses, WhatsApp inbox, calling queue, conditional forms, approved document desk, travel/pickup/drop, hotels/rooming, campaigns, attention queues, exports, team permissions, subscription/usage and support.
+The organization workspace includes a daily all-events command centre plus a separate workspace for every event. Each event contains functions, guest/household directory, function-wise responses, WhatsApp inbox, campaigns, structured reply categorization, travel/stay/pickup information needs, attention queues, exports, team permissions and support. Ambiguous free text requires human confirmation. There is no phone calling, ticket/hotel/vehicle booking, inventory allocation, dispatch or RSVP payment processing.
 
 The full operational specification remains in [RSVP-SERVICE-BLUEPRINT.md](RSVP-SERVICE-BLUEPRINT.md). Real WhatsApp, documents and guest data require provider approval, consent, private storage, tenant isolation, durable jobs and audit.
 
@@ -405,7 +405,8 @@ Planner talent cards show professional evidence, consented imagery, skills, rele
 - Rating authority is event/assignment scoped and auditable.
 - Attendance correction preserves original evidence and recalculates only unfinalized earnings; later corrections create review/adjustment.
 - Calendar-month payout cannot pay the same payable entry twice.
-- RSVP organizations, guests, documents, messages and exports remain tenant isolated.
+- RSVP organizations, event workspaces, guests, messages, interpreted replies and exports remain tenant/event isolated.
+- RSVP travel/stay/pickup data remains information-only and cannot claim a booking, room allocation, vehicle dispatch or payment.
 - WhatsApp submitted/sent/delivered/read/replied and RSVP confirmed remain separate states.
 - Failed, uncertain and reversed collections/payouts require reconciliation.
 
@@ -419,7 +420,7 @@ Planner talent cards show professional evidence, consented imagery, skills, rele
 6. Multi-product order lines, Admin-only quotation UI and grant centre.
 7. Venue/workforce resource planning and Planner assignment within grant.
 8. Freelancer opportunities, attendance, rating hierarchy and monthly statement UI.
-9. RSVP order/entitlement integration plus detailed RSVP product batches.
+9. RSVP order/entitlement integration plus message-only multi-event, reply-categorization and information-reporting batches.
 10. Aggregate responsive, keyboard, privacy, permission, error, security, finance and UAT verification.
 11. Homepage final refinement last.
 
@@ -435,7 +436,7 @@ Planner talent cards show professional evidence, consented imagery, skills, rele
 8. Workforce supervision graph, rating scale/weighting/dispute/publication rules.
 9. Day/shift/overtime/overnight/cancellation and same-date multiple-assignment payment rules.
 10. Monthly cutoff timezone, late attendance/correction and payout release date.
-11. RSVP packages, limits, vendor payment/activation, sender mode, WhatsApp provider and guest-document policy.
+11. RSVP packages, limits, commercial activation, sender mode, WhatsApp provider, event volume, categorization policy and information/document policy.
 12. Client product recommendations, approved copy, imagery and UAT scenarios.
 
 The full collection list is [CLIENT-INPUTS-AND-ACCESS-REGISTER.md](CLIENT-INPUTS-AND-ACCESS-REGISTER.md).

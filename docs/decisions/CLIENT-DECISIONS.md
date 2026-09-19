@@ -1,5 +1,13 @@
 # Client and owner decision log
 
+## RSVP WhatsApp-only, information-only and multi-event correction (2026-09-19)
+
+The user narrows RSVP to WhatsApp messaging and information collection. There is no phone/mobile calling workflow. The product collects guest replies, segregates them by event/function/party and information category, and flags ambiguous free text for human confirmation while preserving the original message.
+
+Travel, pickup/drop and stay are information fields and reports only. RSVP does not search or reserve tickets, hotels, rooms or vehicles; allocate inventory; dispatch drivers; or process those bookings/payments. Human teams perform real-world bookings and payments outside the app using the collected information/reports.
+
+RSVP is a daily multi-event product. Every vendor/customer organization receives an all-events command centre and separate isolated workspaces for each event, with event-scoped guests, WhatsApp inbox, campaigns, reply categorization, information needs and reports. ADR-0005 and the rewritten RSVP blueprint supersede broader calling/room-allocation/vehicle-dispatch acceptance in the existing RSVP candidate.
+
 ## Corrected TNP product, Planner, RSVP, quotation and monthly-pay model (2026-09-19)
 
 This supersedes the earlier interpretation of Planner as primarily an external customer organization. TNP sells four connected product families: hospitality People/workforce (including Event Coordinator, Event Executive, Hostess, Volunteer and Porter), TNP Planner, Venue and detailed RSVP.

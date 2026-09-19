@@ -36,7 +36,7 @@ Recommended first actions:
 - Client: start/resume the guided event builder, review an Admin quotation, or manage an existing event/product order.
 - TNP Planner candidate: complete experience evidence or review the Admin decision. Approved TNP Planner: open the assigned event's next approval/resource action.
 - Freelancer: finish application/assessment, browse eligible opportunities, or respond to the next assignment.
-- RSVP: open needs-attention/today queue before summary metrics.
+- RSVP: open the all-events `Today` command centre, then the selected event's unanswered/ambiguous/failed-message queue before summary metrics.
 - Operations: open pending reviews/attendance exceptions before aggregate metrics.
 
 ## Shared design contract
@@ -90,9 +90,9 @@ Rules:
 - exit clears only demo identity;
 - connected preview reset is labelled cross-portal and remains separate from RSVP-local reset;
 - production login/recovery is separate and stays disabled until reviewed auth contracts exist;
-- RSVP guest invitation tokens are not demo staff profiles.
+- RSVP guest invitation tokens are not demo staff profiles. Organization/event switching clears event-local guest, inbox and report selection.
 
-Canonical access routes are `/login`, `/login?workspace=<allowlisted-workspace>`, `/client`, `/planner`, `/freelancer`, `/operations`, `/rsvp/login` and `/rsvp/workspace`. Retain `/admin` only as a compatibility redirect until all references/tests migrate.
+Canonical access routes are `/login`, `/login?workspace=<allowlisted-workspace>`, `/client`, `/planner`, `/freelancer`, `/operations`, `/rsvp/login`, `/rsvp/workspace` and event-scoped `/rsvp/events/:id`. Retain `/admin` only as a compatibility redirect until all references/tests migrate.
 
 ## Partner discovery contract
 
@@ -117,13 +117,13 @@ Do not force this abstraction onto Freelancer opportunities, Planner requirement
 
 ## Implementation sequence
 
-1. Close and integrate the fixed-SHA gates for RSVP, Freelancer, corrected Operations Reports and Brand Teal.
-2. Run the aggregate `#008080` adoption guard after those candidates are combined.
+1. Close and integrate the fixed-SHA gates for Freelancer, corrected Operations Reports and Brand Teal. Preserve the technically reviewed RSVP predecessor frozen but do not integrate it as current product scope.
+2. Run the aggregate `#008080` adoption guard on the accepted combined platform.
 3. Execute serialized `TNP-UX-FOUNDATION-M1`: cursor isolation, surface classifier, route manifest, destination-accurate navigation, demo catalogue/session, non-obscuring preview chrome, action/numeric/density primitives.
 4. Client/Planner presentation pass: task-first hierarchy, compact spacing, obvious actions and PartnerCard adoption.
 5. Freelancer M2: attendance, pass, earnings, payout, ratings and standing using reviewed contracts, plus the shared demo/UX primitives.
 6. Operations finance/admin/maintenance frontend and corrected Reports adoption.
-7. RSVP shared-shell/demo/palette adoption without weakening its existing persona/access semantics.
+7. Execute `TNP-RSVP-MESSAGE-ONLY-M2`: shared-shell/demo/palette adoption plus WhatsApp-only multi-event/event-workspace correction without carrying forward calling, booking, inventory, allocation, dispatch or payment semantics.
 8. Public/access M2: approved content, access/recovery states, cross-portal polish and asset replacement.
 9. Integrated desktop/mobile/keyboard/touch/reduced-motion/performance regression.
 10. Homepage navigation, visual storytelling and final 3D/cursor refinement last.

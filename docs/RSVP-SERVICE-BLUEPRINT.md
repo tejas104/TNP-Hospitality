@@ -1,160 +1,278 @@
-# TNP RSVP, Guest Hospitality and Logistics Service
+# TNP RSVP message and information service blueprint
 
-Status: product and architecture proposal, 2026-09-17. Based on the user's explicit requirement and supplied TNP 30-day operating brief. This is a dedicated sellable service; it is not implemented, launched, priced or scheduled by this document. Existing A/D milestones are unchanged. Real guest-document collection requires the proposed private backend and access controls before activation.
+Status: corrected canonical RSVP product direction, 2026-09-19. RSVP is a separately sold, multi-event WhatsApp messaging and information-collection product. It is not a phone-calling system, travel/hotel/vehicle booking engine, dispatch system or payment processor.
 
-## 0. Product order and activation boundary (corrected 2026-09-19)
+The current reviewed RSVP frontend candidate was built against a broader earlier scope. Its organization isolation, guest import, messaging concepts, event context, reports and visual foundation remain useful, but its Calls, vehicle dispatch, room inventory/allocation and operational booking behavior are not current product acceptance. A bounded correction milestone is required before integration.
 
-RSVP is one of TNP's four product families alongside People/workforce, TNP Planner and Venue. It has two activation paths:
+## 1. Product purpose
 
-1. A vendor/customer organization registers for the RSVP product. Admin reviews the organization and requested package, creates the official quotation, records required acceptance/payment state, then activates a time/usage-scoped organization entitlement. Only after activation can the vendor owner invite a team and operate events.
-2. A Client, authorized client-appointed planner or assigned TNP Planner requests RSVP for an existing TNP event. Admin creates or revises the quotation for the event's billing party, then grants an RSVP engagement to that event. The authorized customer team or TNP service team operates it according to the purchased mode.
+RSVP helps an authorized vendor or TNP event team:
 
-Submitting a request, accepting a quotation and receiving workspace entitlement are separate states. A Planner cannot activate RSVP merely by selecting it. RSVP remains detailed: WhatsApp communication/reconciliation, guest/party/function responses, calling, documents where approved, travel, pickup/drop, rooming, reports, tenant isolation, team permissions and audit.
+- operate many events every day from one organization account;
+- send approved WhatsApp messages and forms;
+- receive and reconcile guest replies;
+- organize guests by event, function, household/party and reply status;
+- collect travel, pickup/drop, stay, dietary, accessibility and other requested information;
+- identify missing, conflicting or ambiguous answers;
+- follow up by WhatsApp message;
+- generate controlled event reports for the people who perform real-world booking and operations.
 
-## 1. Product and commercial model
+Real people book hotels, rooms, tickets, vehicles or other services outside this RSVP app. Real-world supplier payments and guest/client payments are also outside this RSVP app. The product records information needs and communication status; it does not claim inventory, reservation, dispatch or payment authority.
 
-TNP can sell RSVP/hospitality management independently of staffing, venue booking or event planning. Create an RSVP service engagement for a customer with its own events/functions, guest list, assigned TNP team, package/scope, service dates, agreed guest allowance, communication usage and operational reports. Link an existing TNP booking when relevant; never require one to buy RSVP.
+## 2. Activation paths
 
-Latest confirmed user decision (2026-09-17): support BOTH TNP-managed service with customer portal and vendor-operated RSVP workspaces. TNP sells access to multiple vendors; each vendor creates and manages its own events and RSVP operations. This expands the earlier TNP-managed-only choice. TNP controls vendor accounts, access state and commercial entitlements through its administration area. White-label domains and independent vendor billing/resale are not implied by access sales. Proposed packages may cover RSVP, travel/rooming and complete hospitality; prices and included usage remain undecided.
+### Vendor-operated product
 
-### Vendor administration and isolation
-TNP administrator can invite/activate/suspend/reactivate vendor organizations, assign package, subscription/service dates, event/guest/user/message limits, see usage and manage staff membership. Vendor owners can invite scoped team members and create/manage multiple events. An organization is the data isolation boundary; events are nested inside it. The same person may belong to several organizations only through explicit memberships and an organization switcher. A vendor never accesses another vendor's guests, documents, conversations or exports.
+```mermaid
+flowchart TD
+    A[Vendor requests RSVP product] --> B[Organization registration]
+    B --> C[Admin review]
+    C --> D[Admin issues quotation]
+    D --> E[Vendor accepts and satisfies required payment outside RSVP operations]
+    E --> F[Admin activates RSVP entitlement]
+    F --> G[Vendor owner invites team]
+    G --> H[Create and operate multiple event workspaces]
+```
 
-TNP manages access through invitations, role assignment, session revocation and recovery workflows, not by viewing or sharing vendor passwords. Support access to guest information must be explicitly scoped and audited. Suspension blocks new sessions and actions and revokes active sessions through server checks; retention/export/renewal handling must be agreed before production. Package limits must be enforced by the backend rather than merely hiding UI buttons. Keep manual entitlement assignment available without assuming automated billing is ready.
+### TNP-managed event
 
-For first implementation, use TNP admin plus vendor owner/coordinator plus event-scoped client viewer/approver and guest roles. TNP-managed engagements use the same domain under the TNP operating organization. Sender ownership is a production dependency: each vendor's WhatsApp number/account must be bound to its organization, or an explicitly designed shared-TNP-sender mode must resolve event/guest identity safely. Never route solely by a guest phone number across vendors.
+A Client, client-appointed planner or assigned TNP Planner may request RSVP for an existing TNP event. Admin sends the product quotation to the event's billing party and grants the RSVP engagement. Authorized TNP/vendor team members then operate the same message-and-information workspace model.
 
-## 2. Dedicated login and workspaces
+Request, quotation acceptance, commercial payment state and entitlement activation remain separate records. RSVP workspace actions do not process the commercial payment.
 
-Proposed routes, not existing deployed routes: /rsvp/login, /rsvp/workspace, /rsvp/events/:id, and a restricted guest invitation link.
+## 3. Workspace hierarchy
 
-- TNP platform administrator: vendor provisioning, packages/limits, expiry/suspension, membership, usage and audited support access.
-- TNP service manager: authorized managed engagements, team assignment, workload, commercial scope and escalation.
-- Vendor owner/coordinator: only their organization's events, clients, guest data, WhatsApp connections, documents and reports; no global TNP administration.
-- TNP coordinator/calling agent: assigned events/guest groups, shared WhatsApp inbox, call outcomes, follow-ups and approved documents.
-- Customer owner: only their organization's events; summary, approved guest editing/imports, rooming/message approvals, scoped reports. No access to other customers or TNP staffing/finance administration.
-- Hotel contact: approved rooming list and necessary stay details only.
-- Transport coordinator/driver: assigned movements and necessary passenger/contact data; no identity-document archive or full guest list.
-- Guest/family organizer: mobile invitation form and authorized party members only; expiring/revocable link, with stronger verification for sensitive document access.
+One organization login can manage many events. Do not create a disconnected application or password for every event.
 
-Use one identity system with server-enforced organization, engagement, event and action permissions; dedicated UI does not require a separate authentication database. Staff/admin stronger authentication should be part of identity design. Log exports, sensitive document access and delegated access. Customer branding can cover event name, image, language and approved copy while retaining clear sender identity.
+```mermaid
+flowchart TD
+    O[Organization RSVP workspace] --> T[Today across all events]
+    O --> EV[All events]
+    O --> TM[Team and permissions]
+    O --> EN[Entitlement and usage]
+    O --> OR[Organization reports]
 
-## 3. Guest classification: separate dimensions, not one overloaded status
+    EV --> E1[Event workspace A]
+    EV --> E2[Event workspace B]
+    EV --> E3[Event workspace C]
 
-| Dimension | Values / rules |
+    E1 --> D1[Event dashboard]
+    E1 --> G1[Guests and parties]
+    E1 --> I1[WhatsApp inbox]
+    E1 --> C1[Campaigns and templates]
+    E1 --> N1[Collected information]
+    E1 --> R1[Reports]
+    E1 --> S1[Event settings and team]
+```
+
+### Organization-level daily dashboard
+
+The initial dashboard answers, across all active events:
+
+- Which events are active today, upcoming or overdue?
+- How many guests replied, remain unanswered or need review?
+- Which messages failed, are scheduled or require approved retry?
+- Which events have unresolved RSVP, party, travel, pickup/drop or stay information?
+- Which event changed since the operator last opened it?
+- Which team member owns each WhatsApp follow-up queue?
+
+Each event card shows event name, date/functions, reply progress, needs-attention reasons, latest change and one clear `Open event workspace` action.
+
+### Event workspace
+
+Each event has its own URL and persistent event context. Recommended sections:
+
+1. **Overview:** function-wise RSVP, unanswered, ambiguous replies, failed messages, changes and next action.
+2. **Guests & parties:** households and people kept separate, function invitations, search/filter, tags and history.
+3. **WhatsApp inbox:** event-scoped conversations, delivery/reply states, ownership, unread and needs-review.
+4. **Campaigns:** approved template, audience preview, schedule, send state, failure/retry and opt-out suppression.
+5. **Information:** collected travel/stay/pickup/dietary/accessibility answers and missing/conflicting values.
+6. **Reports:** versioned guest, response, travel-needs, stay-needs, pickup-needs, message and change reports.
+7. **Event team/settings:** scoped membership, functions, approved sender/template state and audit.
+
+Changing events clears event-local selection and filters so no guest, reply or report from the previous event remains visible.
+
+## 4. WhatsApp-only communication
+
+- No phone/mobile call queue, call button, call outcome or caller-performance feature.
+- Follow-up is by WhatsApp message only, using approved templates where required.
+- Operators may own message queues so two people do not message the same guest unnecessarily.
+- Messaging states remain distinct: draft, scheduled, queued, submitted, sent, delivered, read-if-known, failed, uncertain and replied.
+- None of those delivery states means the guest confirmed attendance.
+- Opt-out, wrong-number, blocked and do-not-contact states suppress future sends according to policy.
+- Provider-disabled preview UI must never claim a message was actually sent.
+
+## 5. Reply collection and guest segregation
+
+The app collects and organizes guest information from structured WhatsApp replies, approved forms/buttons and operator-confirmed interpretation of free text.
+
+```mermaid
+flowchart LR
+    A[WhatsApp reply] --> B[Provider event deduplication]
+    B --> C[Resolve organization and event]
+    C --> D[Match guest/party or unresolved queue]
+    D --> E[Extract structured answers]
+    E --> F[Suggested information categories]
+    F --> G{Clear and valid?}
+    G -->|Yes| H[Record with source and timestamp]
+    G -->|Ambiguous or conflicting| I[Human review queue]
+    I --> H
+    H --> J[Update event dashboard and reports]
+```
+
+Suggested categories:
+
+- function-wise RSVP: awaiting, confirmed, tentative, declined or cancelled;
+- household/party members and accompanying count;
+- dietary or accessibility needs;
+- arrival/departure mode, date, time, origin/destination and reference if supplied;
+- pickup/drop required, not required or details pending;
+- stay required, not required, dates, people and preferences;
+- VIP/service tags supplied by authorized staff;
+- question/support request;
+- unknown, ambiguous or conflicting information.
+
+Automatic/rule-assisted categorization is a suggestion, not an irreversible decision. Ambiguous free text, shared phone numbers, contradictory answers and sensitive changes require an operator to confirm the correct guest, event and category. Preserve the original message alongside any structured interpretation.
+
+## 6. Guest and party model
+
+- A household/party may share a phone number but contains distinct people.
+- RSVP is recorded per invited function and person/party rule; one family reply is not automatically one attendee.
+- `Awaiting confirmation` is not `Declined`.
+- Delivery/read/reply and attendance answers are separate dimensions.
+- A guest may revise an earlier answer; history records old/new, source, actor and time.
+- Duplicate suggestions never silently merge guests.
+- One phone number across events never authorizes cross-event data merging.
+
+## 7. Information collection, not booking
+
+### Travel information
+
+Collect only what the approved event asks for: arrival/departure mode, date/time, origin/destination, reference, pickup/drop need and notes. Show missing/conflicting/changed information and export it for the human operations team.
+
+Do not search fares, reserve tickets, allocate vehicles, dispatch drivers, enforce vehicle capacity or record a provider payment.
+
+### Stay information
+
+Collect stay required/not required, check-in/out dates, party size, preferences, accessibility and notes. Show missing/conflicting/changed answers and export them for the human hotel/operations team.
+
+Do not expose hotel inventory, hold rooms, allocate room numbers, book accommodation, calculate supplier charges or take payment.
+
+### External outcomes
+
+If the client later wants staff to record that a real-world booking was completed elsewhere, a separately approved read-only reference/status field may be added. It cannot become an inventory, reservation or payment workflow without a new product decision.
+
+## 8. Event/function and reply dimensions
+
+| Dimension | Example values |
 |---|---|
-| Invitation | Not prepared, pending client approval, scheduled, sent, delivered, failed; read when provider reports it |
-| Response contact | No response, replied-needs-review, response recorded; independent of delivery/read status |
-| RSVP per function | Awaiting confirmation, confirmed, tentative, declined, cancelled |
-| Party | Family/group ID, primary contact, named individual members, allowed accompanying count, adults/children |
-| Stay | Not required, requested, awaiting approval, allocated, details communicated, checked in, checked out |
-| Arrival transport | Flight, train, bus, self-drive, local/private transport; multiple journeys supported |
-| Departure transport | Separate from arrival, with its own time, mode and assistance |
-| Pickup and drop | Not required, requested, awaiting details, planned, vehicle/driver assigned, dispatched, guest met, completed, cancelled/no-show |
-| Documents | Not required, requested, received, under review, accepted, rejected/replace, expired/deleted |
-| Service priority | Standard, VIP, VVIP; separate tags for family side, language and service needs |
-| Event-day attendance | Expected, arrived, checked in, departed, no-show; confirmation is not actual arrival |
+| Invitation | draft, approved, scheduled, sent, delivered, failed |
+| Contact/reply | unanswered, replied, needs review, resolved |
+| RSVP per function | awaiting, confirmed, tentative, declined, cancelled |
+| Party | primary contact, members, accompanying count, adults/children if approved |
+| Travel information | not requested, missing, partial, complete, changed, conflicting |
+| Pickup/drop need | not requested, not required, required, details pending |
+| Stay need | not requested, not required, required, dates/details pending |
+| Dietary/accessibility | none reported, provided, needs review |
+| Message permission | eligible, opted out, wrong number, blocked, do not contact |
+| Review | clear, ambiguous, duplicate candidate, cross-event conflict |
 
-Example: confirmed for reception, declined for ceremony, replied, arriving by train, pickup requested, no hotel stay, ticket received, ID not required. The same guest can self-drive on arrival and need a departure transfer.
+## 9. Campaign and follow-up workflow
 
-Treat 'Not Confirmed' from the brief as awaiting confirmation, not as a synonym for declined. Report people and households separately so one family reply does not count as one attendee. Shared phone numbers must not merge different guests automatically.
+```mermaid
+flowchart TD
+    A[Choose event and approved template] --> B[Build eligible audience]
+    B --> C[Preview exact recipients and exclusions]
+    C --> D[Authorized approval if required]
+    D --> E[Schedule or send]
+    E --> F[Provider states and failures]
+    F --> G[Replies enter event inbox]
+    G --> H[Categorization and human review]
+    H --> I[Needs-follow-up WhatsApp queue]
+    I --> J[Next approved message]
+```
 
-## 4. Screens and primary workflows
+Audience selection uses current event/function invitation, contact permission, response state and previous message state. Retry is idempotent and cannot double-send a successful provider request.
 
-1. Service dashboard: customer/event selector, confirmed/tentative/declined people, unanswered contacts, pending documents/travel, room capacity, outstanding pickups, overdue tasks and recent changes.
-2. Guest directory: saved filters and combined categories, grouping, search, safe bulk actions, assignment to calling agents, change history and duplicate review.
-3. Guest profile: invited functions, individual/party answers, conversation/call timeline, documents, arrival/departure, stay, requests and next action.
-4. Shared inbox/calling queue: assigned owner, message delivery and response states, call attempts/outcomes, language, next follow-up, internal notes and escalation; avoid two agents chasing the same guest.
-5. Mobile form builder: event invitation, party members, function-wise RSVP, arrival/departure details, pickup/drop, stay, dietary/accessibility requests, optional document upload, confirmation and revision link. Conditional questions prevent asking a declining guest for travel or IDs. Only request sensitive details when required, with purpose and access explained.
-6. Document desk: missing/requested/received queues, previews, guest/event association, reviewer and reason, replacement version and restricted downloads.
-7. Travel and transport board: arrivals/departures by date/time/location, missing information, grouped rides, luggage/seats, vehicle/driver allocation, dispatch and actual pickup/drop confirmation.
-8. Rooming board: hotels, categories, inventory and stay date ranges, family/group preferences, accessibility needs, allocation conflicts, customer approval, guest communication.
-9. Campaign/calendar: versioned templates, relevant audience, preview/sample recipients, customer approval, schedule, cancellation, delivery/failure queue and opt-outs.
-10. Reports and approvals: versioned master guest sheet, travel manifest, pickup/drop sheet, hotel rooming list, daily pending report, change report, final hospitality audit and post-event summary.
+## 10. Reports
 
-## 5. Supplied service calendar, configurable by engagement
+Reports are controlled snapshots, not editable booking sheets.
 
-These offsets are days before the customer's event, not software-development deadlines.
+- event/function guest counts;
+- confirmed/tentative/declined/unanswered;
+- reply and needs-review queue;
+- party/accompanying summary;
+- dietary/accessibility information;
+- travel-information summary;
+- pickup/drop-needs summary;
+- stay-needs summary;
+- message delivery/failure/opt-out summary;
+- daily changes and unresolved information;
+- event closure communication report.
 
-| Offset | Work and exit evidence |
-|---|---|
-| T-30 | Guest import, invitation/RSVP kickoff, caller assignment, master guest list |
-| T-28 | Record responses and accompanying-member changes; daily updated master view |
-| T-26 | Request required IDs, record received files and pending follow-ups |
-| T-24 | Cross-check names/contact/party/stay; escalate unresolved information |
-| T-22 | Arrival/departure and transport category collection; logistics master |
-| T-20 | Confirm times/locations and preliminary pickup/drop requirements |
-| T-18 to T-16 | Rooming proposal, hotel/client approval, approved room communication |
-| T-15 | Supplied 'Save the Date' / e-invite milestone; confirm naming because invitation already began at T-30 |
-| T-10 | Final confirmation calls, counts, travel/documents/rooming follow-up |
-| T-7 | Guest/travel/room/pickup reconfirmation and VIP/VVIP review |
-| T-5 | Final movement plan, transport/hotel coordination and special requirements |
-| T-3 | Guest -> RSVP -> documents -> stay -> room -> travel -> pickup -> drop audit and versioned team reports |
-| T-2 | Late room details only if not previously communicated and approved; final instructions |
-| Each function day | Relevant guest event name, time, location, dress code, parking/transport, assistance contact; operational check-in |
-| After event | Departure transfers, thank-you audience/copy approval, closure report and retention/deletion tasks |
+Every export includes organization/event, filters, record count, timezone, generated-at, revision and exporter. CSV/Excel output neutralizes formula injection. A report revision is immutable or visibly invalidated when its source scope changes.
 
-Every milestone creates work with an owner, due date, status and escalation. Message sending is conditional on audience eligibility, consent, current facts and approvals; milestones do not send blindly. Late service onboarding offers a compressed plan for staff approval; it does not send all overdue messages at once. Rescheduling an event revises future jobs and prevents duplicate invitations/reminders.
+## 11. Permissions and isolation
 
-## 6. WhatsApp and guest-document chain
+- TNP Admin: organization entitlement, suspension/reactivation, limits and audited support.
+- Vendor owner: own organization, team and all authorized events.
+- Event manager: assigned events, guests, messages, information and reports.
+- Message operator: assigned event inbox/campaign/follow-up scope.
+- Client viewer/approver: explicitly shared event summaries, campaigns or reports.
+- Guest: expiring/revocable invitation/reply scope for the authorized party/event only.
 
-Use the official WhatsApp Business Platform through a selected provider or direct Cloud API; do not promise access to arbitrary personal WhatsApp chats or previous chat history. Messages/documents sent to the connected business number after setup enter this workflow:
+Every read, write, export and provider event is organization- and event-scoped. Direct IDs, phone numbers and message provider IDs never grant access.
 
-Authenticated webhook -> durable event receipt -> deduplicate provider message ID -> identify sender and candidate event/party -> attach to existing conversation or staff matching queue -> download media using server credentials -> validate type/size and quarantine/scan -> private object storage -> scoped guest document record -> reviewer confirmation -> timeline and pending queue update.
+## 12. Core records
 
-Record organization/event/guest, sender, provider message ID, timestamps, original filename/type, checksum, storage key, document purpose, review status, reviewer and access history. Receiving a file is not verifying the guest's identity. For ambiguous sender/event/member matches, do not attach an ID to a guessed person. A failed download remains 'media pending/failed' with retry and operator alert, not 'document received'.
+`VendorOrganization`, `OrganizationMembership`, `AccessEntitlement`, `RSVPEventWorkspace`, `FunctionEvent`, `GuestParty`, `GuestMember`, `Invitation`, `FunctionResponse`, `WhatsAppConnection`, `Conversation`, `Message`, `ReplyInterpretation`, `InformationAnswer`, `Campaign`, `TemplateApprovalState`, `FollowUpTask`, `ImportBatch`, `ExportSnapshot` and `AuditEvent`.
 
-Keep documents in private storage; a provider media URL is not a durable archive. Meta's documented media retrieval URL expires after five minutes. Use authorized short-lived viewing links, revocation and an explicit retention schedule; do not include raw IDs in routine Excel/PDF reports or driver views. OCR can propose ticket/ID fields but requires human confirmation before overwriting guest facts. Treat uploaded content as untrusted data; macros, scripts and instructions in documents must never execute.
+The corrected core does not contain `CallAttempt`, live `HotelInventory`, `RoomAllocation`, `TravelBooking`, `VehicleAllocation`, `TransferDispatch` or RSVP payment-processing records.
 
-Messaging records distinguish queued, submitted, sent, delivered, read-if-known, failed and uncertain. None of these means RSVP confirmed. Use approved templates where required outside the customer-service window, maintain consent/opt-out evidence, and stop future reminders for opted-out or ineligible recipients. Keep a manual calling/web-form fallback and operational alerts. Client-specific numbers/branding require a separate account-onboarding decision if the first release uses a TNP-owned sender.
+## 13. Critical invariants
 
-## 7. Excel, PDF and a single master record
+- Organization/event isolation on every read/write/export/webhook.
+- One provider event applied once; uncertain sends reconcile before retry.
+- Original message preserved beside structured interpretation.
+- Ambiguous guest/event matches remain unresolved, never guessed.
+- Event switching cannot retain another event's selected guest or report.
+- Opt-outs and wrong-number states suppress future eligible audiences.
+- Guest/party/function counts remain correct after revisions and duplicate import.
+- Multi-event dashboards derive from event-scoped records without merging identities by phone alone.
+- No UI state claims ticket, room, vehicle or supplier booking/payment.
 
-The platform is the authoritative guest record. Excel/PDF are controlled inputs and timestamped outputs, not competing editable masters.
+## 14. Frontend experience
 
-- Excel/CSV import: sample template, column mapping, validation, duplicate/conflict preview, row-level errors, import batch and rollback/reversal plan. Use stable guest IDs; never match on name alone. Re-import is idempotent. Neutralize formula injection on exports.
-- PDF import: store as source evidence; proposed extraction with staff review where feasible. Do not promise arbitrary PDFs become accurate structured guest lists automatically.
-- Excel/PDF export: selected organization/event, filters, record count, timezone, generated-at and revision, scoped columns, who exported, and a delta report since previous export.
-- Reports: guest/party counts, RSVP per function, documents pending, hotel/stay inventory, arrival/departure, pickup/drop manifests, VIP attention, communication delivery, follow-up workload and final closure.
-- A late flight/guest-count/room change records old/new values, actor, source and time; it reopens affected logistics tasks and marks prior manifests outdated. Resending updated room/transport information requires appropriate approval.
+- Organization-level `Today` view with compact event cards and real needs-attention reasons.
+- Event switcher searchable by date/name/status; recent events and keyboard operation.
+- Every page visibly identifies organization and event.
+- Event dashboard prioritizes unanswered, ambiguous, failed-send and changed-information queues before large metrics.
+- Inbox uses list-detail layout, readable message timeline, original reply plus structured interpretation and review action.
+- Information view uses filters and grouped rows, not operational booking cards.
+- Buttons use exact verbs: `Send WhatsApp message`, `Review reply`, `Confirm category`, `Export information`, `Open event`.
+- No `Call guest`, `Assign vehicle`, `Book room`, `Take payment` or misleading equivalent.
+- Responsive 1440/1100/390/320 behavior, 44px actions, visible focus, reduced motion and no fixed chrome over controls.
 
-## 8. Proposed architecture decision (RSVP-ADR-DRAFT-01)
+## 15. Delivery batches
 
-Decision proposed: add a distinct RSVP domain to the existing modular application with a dedicated responsive portal, shared identity, private media storage and durable integration jobs. Preserve the current frontend framework. Do not create a separate microservice system or native app solely for RSVP.
+1. **Scope correction:** remove/hide calling and booking/dispatch/allocation UI/contracts from current product acceptance; preserve useful guest/import/event/message foundations.
+2. **Multi-event shell:** all-events daily dashboard, event switcher, separate event URLs/context and cross-event leak tests.
+3. **WhatsApp inbox/campaigns:** provider-disabled states, audiences, scheduling, delivery/failure/retry, opt-out and event-scoped conversations.
+4. **Reply interpretation:** structured answers, suggested categories, ambiguous/conflicting review and original-message provenance.
+5. **Information/reporting:** travel/stay/pickup needs as information only, immutable exports and daily change reports.
+6. **Production provider/security:** real WhatsApp onboarding, webhooks, durable jobs, tenant authorization, monitoring, backup/restore and UAT.
 
-Core records: VendorOrganization, OrganizationMembership, AccessEntitlement, CustomerOrganization, RSVPServiceEngagement, FunctionEvent, GuestParty, GuestMember, Invitation, FunctionResponse, WhatsAppConnection, Conversation, Message, CallAttempt, Consent, GuestDocument, TravelLeg, TransferJob, VehicleAllocation, HotelStay, RoomAllocation, FollowUpTask, Approval, ImportBatch, ExportSnapshot and AuditEvent. Customer organizations and engagements are scoped to their operating vendor organization; vendor and customer are not interchangeable roles.
+## 16. Client decisions still required
 
-Server services own authorization, transitions, counts, capacity and documents. Provider adapters and jobs own WhatsApp receipt/send/media retries. Browser-local demo fixtures may show the flow but cannot certify actual login, private document access or live delivery.
+- Vendor-specific or shared TNP WhatsApp sender mode.
+- Packages, event/guest/user/message limits, service dates and renewal/suspension policy.
+- Approved languages, templates, reminder cadence and quiet hours.
+- Structured reply/form questions for each information category.
+- Which classifications may be accepted automatically versus require human confirmation.
+- Travel/stay/pickup fields and which are optional or sensitive.
+- Whether external booking reference/status may be recorded after humans complete work elsewhere.
+- Document/attachment need, file types, retention, access and deletion.
+- Export columns, branding, recipients and retention.
+- Expected concurrent vendors, active daily events, guests and message volume.
 
-Critical invariants: organization isolation on every read/write/export/media request; one provider event applied once; concurrent guest edits use versions; correct party/member/function joins; no overbooked rooms or vehicle seats; uncertain sends reconcile before resending; opt-outs suppress future jobs; approved rooming only communicated; deletion applies to owned media and access links according to policy.
-
-Consequence: this is substantially larger than the previous 'basic RSVP' slice. It needs explicit contracts and separately owned milestones. The current 20-day release target in `docs/DELIVERY-PLAN.md` includes only the gated v1 RSVP/vendor scope described there; it does not promise the entire expanded blueprint without provider approval and release evidence. Do not absorb this work into A or D silently. New builder dispatch still requires an explicit Ready lease; planning/onboarding preparation can continue.
-
-## 9. Delivery batches and acceptance
-
-Phase 0: TNP-managed plus vendor-operated models are confirmed. Settle sender ownership/onboarding, account suspension/expiry policy, required documents/retention, party/function rules, package scope and provider access. Prepare contracts and UI flow using synthetic data; begin WhatsApp onboarding separately.
-
-Batch 1 prerequisite: TNP vendor administration, vendor login/membership, organization isolation and manual package/access controls. Then dedicated vendor/customer/team workspace + guest directory/import; conditional guest/family RSVP form + response/calling queues. Split into additional two-prompt milestones as needed rather than forcing all identity work into two prompts. Verify two vendors cannot access each other's data even through direct IDs, file URLs, exports and webhooks; verify suspension/session revocation and per-event permissions. Household/function counts must remain correct on revisions and duplicate import.
-
-Batch 2: WhatsApp inbox/templates + private media ingestion/document desk. Verify actual guest message/file -> correct event/person or unmatched queue -> authorized view; replay webhook, expired media URL, unsupported file, rejected scan, opt-out and provider failure cases.
-
-Batch 3: travel/pickup/drop + rooming/approval, with Excel/PDF exports. Verify capacity/date overlaps, flight changes reopening affected tasks, driver/hotel view scoping and export revision accuracy.
-
-Batch 4: scheduled service calendar + event-day/closure and resilience. Verify cancellation/rescheduling/late onboarding, no duplicate sends, role-specific walkthrough, delivery/reply end-to-end evidence and backup/restore before production activation.
-
-Each batch can contain two compatible implementation prompts with internal checked checkpoints and one consolidated review. This is a proposed decomposition, not a Ready lease or fixed delivery-date promise.
-
-Useful later additions: reusable service templates; multilingual approved forms/copy; assigned caller performance; guest duplicate suggestions; waitlist/capacity handling; transport grouping with manual approval; structured change acknowledgements; event-day offline contingency manifests; event budget/usage tracking. AI extraction/translation never silently approves ID, RSVP, rooming or logistics changes.
-
-## 10. Decisions needed before production implementation
-
-TNP-managed service with customer portal AND vendor-operated multi-event workspaces are confirmed. Remaining decisions: vendor-specific versus shared sender ownership/onboarding; suspension/expiry/export policy; required identity documents and who may review them; retention/deletion period; expected vendor/event/guest/message volume; hotel/driver access; approved calling/message cadence and languages; commercial packages and release scope. These decisions do not block synthetic UX planning, but no real ID upload or external message send is authorized by this blueprint.
-
-## Provider references checked 2026-09-17
-
-- Meta media retrieval: https://www.postman.com/meta/whatsapp-business-platform/request/ptjyi84/retrieve-media-url
-- WhatsApp Business Messaging Policy: https://whatsappbusiness.com/policy/
-- Business onboarding can take several weeks: https://www.twilio.com/docs/whatsapp/self-sign-up
-- Template approval may require up to48hours: https://www.twilio.com/docs/whatsapp/tutorial/message-template-approvals-statuses
-
-Prior recommended21-28day onboarding buffer is a planning allowance, not an approval guarantee. The brief starts operations30days before an event, so complete onboarding before that kickoff whenever possible; for a fresh account begin preparation roughly7-8weeks before the first event, allowing approval buffer before T-30. This is a planning recommendation, not a new confirmed event or project date.
+Business verification, sender/display-name, number onboarding and template approvals remain separate external gates; no approval timing is promised.

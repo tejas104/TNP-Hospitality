@@ -27,7 +27,7 @@ The platform now follows a task-first hierarchy. Keep the established TNP editor
 - Show a star rating only when value, scale, review count, source and verifier exist. Otherwise show truthful recommendation/match language or no rating.
 - `Sample budget band`, `sample rate`, `starting at`, `per event/day/hour/guest/room-night` are distinct labels and cannot be interchanged.
 - Illustrative/destination images retain a visible provenance caption and cannot masquerade as partner photography. Provide stable aspect ratio, accessible alt text and a branded fallback.
-- First adoption is Client venue/planner selection. Freelancer opportunities, RSVP organizations, operational hotel inventory, requirements and worker rows keep separate semantics.
+- First adoption is Client venue/TNP-Planner selection. Freelancer opportunities, RSVP organization/event workspaces and information-only travel/stay needs, requirements and worker rows keep separate semantics. RSVP must not use partner cards to imply hotel/vehicle inventory or booking.
 
 ## Latest user homepage direction (2026-09-17)
 The user now requests homepage reorganization, retaining approximately75% of current images/removing25%, and a prominent3Danimated visual. This supersedes the older public-homepage composition/gallery preservation instructions below. Preserve brand colours/type identity and the separate Operations layout. Use a clear service hierarchy, one primary scene, measured performance, responsive layout, reduced-motion and WebGL fallbacks. See HOMEPAGE-REDESIGN-BRIEF.md for the proposed bounded milestone; no writer lease is granted by this note.

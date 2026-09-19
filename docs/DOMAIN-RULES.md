@@ -20,13 +20,16 @@
 - Three consecutive poor ratings trigger human review. Permanent deactivation is a human decision; no automatic irreversible policy is approved.
 - TNP Planner ratings and Event Coordinator ratings are assignment/event scoped. Event Coordinators may rate only client-approved lower-level roles assigned to their coordinated event; no self, unrelated-event or unrestricted subordinate rating.
 - Freelancer monthly earnings derive from verified attendance-day entries and immutable assignment day-rate snapshots within a defined calendar-month timezone. Event count alone is not pay, and the same payable entry cannot be included twice.
+- RSVP communication is WhatsApp message only; no phone/mobile calling workflow is part of the product.
+- RSVP travel, pickup/drop and stay values are collected information, not evidence of a ticket/room/vehicle booking, dispatch or payment. The original guest message remains evidence; categorization never overwrites it.
+- RSVP organization dashboards may aggregate attention counts across events, but guest/message/information reads and writes remain explicitly event scoped. Event switching cannot retain or expose another event's selected guest or report.
 
 ## Pending decision register
 No entry below is approved merely because a source proposed a default. H1 collects client decisions; H2 supplies operational implications. Dates use relative days until kickoff is agreed.
 
 | ID | Question / source tension | Owner | Needed by / blocked work |
 |---|---|---|---|
-| DEC-01 | User confirmed TNP-managed sellable RSVP service with client portal, WhatsApp/documents and hospitality/logistics on 2026-09-17. Detailed documents/access/retention, provider, cadence approval and delivery reforecast remain pending; see RSVP-SERVICE-BLUEPRINT.md | Anjaneya + Kartik + client | Before RSVP implementation contracts and real guest onboarding |
+| DEC-01 | RSVP is confirmed as a sellable vendor/TNP multi-event, WhatsApp-message and information-collection product. Calling, booking, room/vehicle allocation, dispatch and RSVP payment processing are excluded. Detailed attachment/access/retention, provider, categorization and message cadence approval remain pending; see RSVP-SERVICE-BLUEPRINT.md | Anjaneya + Kartik + client | Before RSVP implementation contracts and real guest onboarding |
 | DEC-02 | Initial acceptance versus T−2h reconfirmation, T−1h expiry, cancellations and late replacements; configurable windows proposed | Kartik + client | Before allocation/jobs contract |
 | DEC-03 | Setup/travel buffers, midnight intervals and overlap reservations before final confirmation | Kartik + client | Before allocation |
 | DEC-04 | Daily attendance-based pay is confirmed as the base direction; define partial/overnight day, same-date multiple assignment, missing checkout, overtime, lateness and cancellation adjustments | Kartik + client | Before earnings |
@@ -44,6 +47,8 @@ No entry below is approved merely because a source proposed a default. H1 collec
 | DEC-19 | Planner assignment limits inside a grant; venue selection/hold rules; allocation exception authority | Kartik + client | Before Planner resource assignment |
 | DEC-20 | Rating hierarchy, dimensions, weighting, dispute/publication and eligibility effect | Kartik + client | Before production ratings |
 | DEC-21 | Payable-day definition, same-date multiple assignments, partial/overnight/overtime/cancellation, cutoff timezone and payout date | Kartik + client | Before production monthly earnings |
+| DEC-22 | RSVP structured reply categories, auto-suggestion versus mandatory human confirmation, ambiguous/free-text handling and original-message retention | Kartik + client | Before reply interpretation |
+| DEC-23 | RSVP all-events daily metrics, per-event workspace lifecycle, archive/retention and expected concurrent event/message volume | Kartik + client | Before multi-event production scale |
 
 Record actual decisions with evidence in decisions/CLIENT-DECISIONS.md. Pending policy may be represented as labelled scenario assumptions in preview fixtures, never silently used as production authority.
 

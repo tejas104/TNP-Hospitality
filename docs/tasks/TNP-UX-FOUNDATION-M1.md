@@ -1,6 +1,6 @@
 # TNP-UX-FOUNDATION-M1 — shared portal navigation, demo access and interaction foundation
 
-Status: DRAFT — no writer lease. Do not implement until the fixed-SHA RSVP, Freelancer, corrected Operations Reports and Brand Teal candidates are reviewed, accepted and integrated, followed by an aggregate palette/regression check.
+Status: DRAFT — no writer lease. Do not implement until the fixed-SHA Freelancer, corrected Operations Reports and Brand Teal candidates are reviewed, accepted and integrated, followed by an aggregate palette/regression check. The technically reviewed RSVP predecessor is no longer an integration prerequisite because its product scope was superseded; keep RSVP feature paths frozen and provide only the shared route/access adapter boundary consumed later by `TNP-RSVP-MESSAGE-ONLY-M2`.
 
 Responsible product/visual owner and sole human fixed-SHA acceptance reviewer: Kartik for code acceptance; Anjaneya/client direction remains required for final content/assets. Proposed UI author: fresh verified `gpt-6-astra` / medium. Fresh external Claude fixed-SHA review follows Astra authorship. Actual identity/model/host/worktree/source/launch/port/review appointment are pending.
 
@@ -37,7 +37,7 @@ All portal-local feature directories, public homepage sections/3D, shared servic
 3. Use one typed route manifest for desktop/mobile navigation, portal switching, active state, transition labels and demo workspace catalogue. No duplicate or semantically false portal links.
 4. Public shell presents one clear Workspaces link. Workspace shell presents Home, Workspaces, complete portal switching, active demo identity, Switch profile and Exit demo. Guest invitations never expose staff navigation.
 5. Implement truthful named synthetic profile selection using tab-scoped session storage plus memory fallback. Do not request passwords or imply production auth. Direct workspace entry without a profile returns to the relevant chooser. Label the senior TNP Planner demo separately from a client-appointed planner, which remains a scoped Client-organization persona.
-6. Preserve RSVP's accepted task-local persona/access semantics through an adapter contract; do not replace its organization/event rules. Preserve the Freelancer candidate's named profile matrix through a later feature-owned adapter.
+6. Provide an RSVP adapter boundary for organization-level and event-scoped routes without importing the superseded Calls/booking/allocation model. Preserve the Freelancer candidate's named profile matrix through a later feature-owned adapter. Corrected RSVP persona/event behavior remains feature-owned by `TNP-RSVP-MESSAGE-ONLY-M2`.
 7. Switching/exit/reset semantics match the UX brief. Preview tools and warnings cannot cover task actions at required viewports; reset labels state their true scope.
 8. Add semantic action, numeric and density primitives with at least three proven shared consumers before abstraction. Primary/secondary/tertiary are distinguishable without hover; operational numbers use body-family tabular numerals.
 9. Canonicalize `/operations` while keeping `/admin` as a compatibility redirect until all references and browser tests are migrated.

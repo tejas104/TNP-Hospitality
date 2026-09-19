@@ -159,13 +159,18 @@ For every supplied asset provide the original file, photographer/source, usage r
 ## 11. RSVP and guest hospitality
 
 - Confirm supported operating modes: TNP-managed, vendor self-service, or both.
+- Confirm WhatsApp message-only communication; there is no phone/mobile calling queue or call outcome workflow.
+- Provide the expected number of simultaneously active events per organization, events per day, guests per event and daily/peak message volume.
+- Define the organization-level daily dashboard metrics and the required separate event-workspace lifecycle: draft, active, completed, archived and reopened if allowed.
 - Guest import template with required columns, accepted formats, row-error policy and duplicate rules.
 - Guest categories, households/plus-ones, function-wise invitations and response options.
-- Dietary, accessibility, travel, pickup, accommodation and special-request fields.
-- Invitation sender identity, languages, reminder cadence, manual follow-up ownership and escalation windows.
+- Dietary, accessibility, travel, pickup/drop, stay and special-request information fields. These are collection/reporting fields, not booking or allocation instructions.
+- Approve the reply categorization rules: structured auto-accept fields, suggested categories, mandatory human-review cases, ambiguity/conflict handling and original-message retention.
+- Invitation sender identity, languages, WhatsApp reminder cadence, message-follow-up ownership, quiet hours and escalation windows.
 - Rules for guest edits, RSVP closure, late changes, walk-ins and duplicate identities.
 - Vendor/customer isolation rules and TNP administrator visibility.
-- Required Excel/PDF exports and exact columns, grouping, branding and audit requirements.
+- Required Excel/PDF exports and exact columns, grouping, branding and audit requirements for the humans who perform real-world bookings outside the RSVP app.
+- Confirm that RSVP will not search/reserve/pay for tickets, hotels, rooms or vehicles and will not assign/dispatch drivers. Decide whether staff may record a read-only external reference/status after work is completed elsewhere.
 - Consent text, privacy notice, document policy and post-event retention/deletion schedule.
 - Named UAT events and synthetic UAT guests; production guest data must not be used in development fixtures.
 
