@@ -1,6 +1,6 @@
 # TNP-BRAND-TEAL-M1 — client-selected teal platform sweep
 
-Status: READY for fresh internal `/root/brand_teal_builder`, requested `gpt-5.6-sol` / high on `DESKTOP-DL9FDM7`. Actual runtime/model/effort must be verified in the agent startup report before the first source edit.
+Status: PAUSED FOR FRESH CLAUDE FIXED-SHA REVIEW at clean pushed remote-equal final `fc7746e06601ca670b09dc8dd47895c543dfec58`. The Sol/high writer lease is closed, port 3111 is free, and no source writer is active. Kartik exact-SHA acceptance remains required after Claude disposition.
 
 Responsible human/product decision owner and sole fixed-SHA human acceptance reviewer: Kartik. Client decision evidence: user instruction on 2026-09-19, recorded in `docs/decisions/CLIENT-DECISIONS.md` and `docs/DESIGN.md` at Source.
 
@@ -68,3 +68,11 @@ If an in-scope page needs a non-color structural or behavior change to meet this
 Run the focused palette guard plus all existing public/shared/portal tests affected by the source range, lint, explicit non-incremental TypeScript, Vercel build and `git diff --check`. Use the one unchanged Nitro `EBUSY` retry rule only after stopping task-owned processes.
 
 Create one immutable final commit, ordinary non-force push, stop browser/server, prove port3111 free and clean remote equality. Report exact changed files, literal/token inventory before/after, commands/results, viewport/keyboard/contrast/computed-color evidence, remaining candidate-branch adoption list and limitations. Then pause for fresh Claude and Kartik review. No self-certification, integration, deployment or provider mutation.
+
+## Fixed-SHA handoff
+
+Final candidate: `fc7746e06601ca670b09dc8dd47895c543dfec58` on `origin/codex/tnp-brand-teal-m1`, exactly one commit after Launch. P independently confirmed clean remote equality, Launch ancestry, the exact fourteen-file allowlist, `git diff --check`, 40 focused palette/public/shared tests and explicit non-incremental TypeScript.
+
+Builder evidence reports the palette guard 3/3, affected tests 73/73, lint with three unchanged inherited warnings, TypeScript, first-attempt Vercel build, browser matrices across nine routes at 1440/1100/390, keyboard navigation, no overflow/console errors, mobile no-canvas fallback and measured contrast all pass. The visible hero and sampled portal surfaces compute to `rgb(0, 128, 128)`. Reduced-motion and WebGL-loss policy were covered by focused tests; the available browser tooling could not force those two OS/runtime conditions. This limitation must remain explicit.
+
+Fresh Claude review must use the packet at `docs/dispatch/2026-09-19/BRAND-TEAL-CLAUDE-FIXED-SHA-REVIEW.md`. Not-yet-integrated RSVP final `0c562341cb97b1a3e1ecc6638677850a6692552f`, Freelancer final `28ecc920ffe055db0495159e90ee1a1ce3ed2226`, and the pending Operations Reports CSV-cleanup successor remain outside this candidate. After their acceptance/integration, a bounded aggregate adoption delta must recolor their old literals and pass the palette guard before the platform can be called fully color-complete.
