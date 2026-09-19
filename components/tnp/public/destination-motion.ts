@@ -37,7 +37,7 @@ export function destinationRange(top: number, viewport: number, index: number) {
 
 // Only the hero participates in the section-to-section continuity treatment.
 export const heroSurface = {
-  '--hero-surface': '#062b29',
+  '--hero-surface': '#008080',
   '--hero-next': '#f5f1e7',
   '--hero-solid-stop': '85%',
 } as CSSProperties;

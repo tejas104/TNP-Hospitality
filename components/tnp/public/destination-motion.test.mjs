@@ -30,7 +30,7 @@ test('six image entry ranges are staggered, positive, finite and settle before l
 });
 test('hero alone reserves the final 15 percent for teal-to-ivory continuity', () => {
   assert.deepEqual(heroSurface, {
-    '--hero-surface': '#062b29',
+    '--hero-surface': '#008080',
     '--hero-next': '#f5f1e7',
     '--hero-solid-stop': '85%',
   });

@@ -1,6 +1,6 @@
 .home {
   background: #f5f1e7;
-  color: #173b36;
+  color: #202423;
   font-size: 16px;
   line-height: 1.6;
 }
@@ -23,7 +23,7 @@
   letter-spacing: -1.7px;
 }
 .home h2 em {
-  color: #5d756a;
+  color: #59615f;
 }
 .home img {
   object-fit: cover;
@@ -47,7 +47,7 @@
 .rsvp a:focus-visible,
 .finalCta a:focus-visible,
 .footer a:focus-visible {
-  outline-color: #e8dfc6;
+  outline-color: #fff;
 }
 .skip {
   position: fixed;
@@ -68,8 +68,8 @@
   align-items: center;
   min-height: 810px;
   padding: 160px 6% 114px;
-  background: #062b29;
-  color: #f5f1e7;
+  background: #008080;
+  color: #fff;
   isolation: isolate;
 }
 .heroCopy {
@@ -84,7 +84,7 @@
   text-transform: uppercase;
 }
 .hero .eyebrow {
-  color: #d5c595;
+  color: #fff;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -103,7 +103,7 @@
   margin: 30px 0 25px;
 }
 .hero h1 em {
-  color: #d5c595;
+  color: #fff;
 }
 .hero h1 > span,
 .hero h1 > em {
@@ -111,7 +111,7 @@
 }
 .lead {
   max-width: 400px;
-  color: #c4d0c6;
+  color: #fff;
   font-size: 16px;
   line-height: 1.8;
 }
@@ -130,7 +130,7 @@
   min-height: 53px;
   padding: 15px 23px;
   background: #e8dfc6;
-  color: #173b36;
+  color: #202423;
   font-size: 12px;
   font-weight: 650;
   transition:
@@ -151,10 +151,10 @@
   border-bottom: 1px solid currentColor;
 }
 .lightLink {
-  color: #e8dfc6;
+  color: #fff;
 }
 .textLink {
-  color: #20564b;
+  color: #006b6b;
 }
 .lightLink:hover,
 .textLink:hover {
@@ -166,13 +166,13 @@
   font:
     italic 15px Georgia,
     serif;
-  color: #adbbac;
+  color: #fff;
 }
 .heroArt {
   position: relative;
   min-width: 0;
   height: 555px;
-  background: radial-gradient(ellipse at 50% 50%, #15534880, transparent 67%);
+  background: radial-gradient(ellipse at 50% 50%, rgb(255 255 255 / 9%), transparent 67%);
 }
 .pavilion {
   position: absolute;
@@ -194,7 +194,7 @@
   padding: 0;
   margin: 18px 0 0;
   list-style: none;
-  color: #d5c595;
+  color: #fff;
   font-size: 8px;
   text-transform: uppercase;
   letter-spacing: 1.4px;
@@ -213,7 +213,8 @@
 }
 .constellationKey li:nth-child(2)::before {
   border-radius: 0;
-  background: #a8c4ac;
+  background: #fff;
+  border-color: #fff;
 }
 .constellationKey li:nth-child(3)::before {
   border-radius: 0;
@@ -232,7 +233,7 @@
   gap: 7px;
   min-height: 44px;
   padding: 8px 10px;
-  color: #d8cda9;
+  color: #fff;
   background: transparent;
   border: 1px solid #bba87950;
   font-size: 10px;
@@ -255,14 +256,14 @@
 .artCaption span {
   font-size: 9px;
   letter-spacing: 2.4px;
-  color: #c6b98f;
+  color: #fff;
 }
 .artCaption p {
   margin-top: 5px;
   font:
     italic 17px Georgia,
     serif;
-  color: #c6d3c6;
+  color: #fff;
 }
 .heroFoot {
   display: flex;
@@ -276,7 +277,7 @@
   padding-top: 22px;
   font-size: 9px;
   letter-spacing: 1.4px;
-  color: #b1c2b6;
+  color: #fff;
 }
 .heroFoot a {
   display: flex;
@@ -285,7 +286,7 @@
   gap: 12px;
   font-size: 11px;
   letter-spacing: 0.2px;
-  color: #e8dfc6;
+  color: #fff;
 }
 .section {
   padding: 96px 6%;
@@ -297,7 +298,7 @@
   gap: 34px;
   padding-top: 85px;
   padding-bottom: 85px;
-  border-bottom: 1px solid #173b3620;
+  border-bottom: 1px solid #20242320;
 }
 .intro > .eyebrow {
   padding-top: 9px;
@@ -309,7 +310,7 @@
 .intro p:not(.eyebrow) {
   max-width: 520px;
   font-size: 13px;
-  color: #60716a;
+  color: #59615f;
   margin-top: 22px;
 }
 .intro img {
@@ -333,7 +334,7 @@
   margin-bottom: 20px;
 }
 .sectionHead > p {
-  color: #4f6256;
+  color: #59615f;
   font-size: 13px;
   max-width: 310px;
 }
@@ -343,10 +344,10 @@
   gap: 70px;
 }
 .serviceItem {
-  border-top: 1px solid #173b3630;
+  border-top: 1px solid #20242330;
 }
 .serviceItem:last-child {
-  border-bottom: 1px solid #173b3630;
+  border-bottom: 1px solid #20242330;
 }
 .serviceItem h3 {
   font-family: inherit;
@@ -361,11 +362,11 @@
   background: none;
   padding: 22px 0;
   font-size: 16px;
-  color: #173b36;
+  color: #202423;
 }
 .serviceItem button span {
   font-size: 10px;
-  color: #4f6256;
+  color: #59615f;
 }
 .serviceItem button svg {
   margin-left: auto;
@@ -375,10 +376,10 @@
   transform: rotate(45deg);
 }
 .serviceItem[data-active='true'] button {
-  color: #17654e;
+  color: #006b6b;
 }
 .serviceDetails {
-  border-top: 1px solid #173b3630;
+  border-top: 1px solid #20242330;
   padding: 22px 0 0;
   min-height: 165px;
 }
@@ -388,7 +389,7 @@
 }
 .serviceDetails p {
   font-size: 13px;
-  color: #5e7166;
+  color: #59615f;
   max-width: 410px;
   margin-bottom: 10px;
 }
@@ -406,9 +407,9 @@
 .photoLabel {
   position: absolute;
   inset: auto 0 0;
-  background: linear-gradient(transparent, #052b29e8);
+  background: linear-gradient(transparent, rgb(0 0 0 / 91%));
   padding: 75px 30px 25px;
-  color: #f5f1e7;
+  color: #fff;
 }
 .photoLabel span {
   font-size: 9px;
@@ -422,8 +423,8 @@
 }
 .rsvp {
   padding: 90px 9%;
-  background: #083d36;
-  color: #f5f1e7;
+  background: #008080;
+  color: #fff;
 }
 .rsvpIntro {
   text-align: center;
@@ -431,14 +432,14 @@
   margin: auto;
 }
 .rsvpIntro .eyebrow {
-  color: #d4c294;
+  color: #fff;
   margin-bottom: 20px;
 }
 .rsvp h2 em {
-  color: #d4c294;
+  color: #fff;
 }
 .rsvpIntro > p:last-child {
-  color: #c6d2c7;
+  color: #fff;
   margin: 24px auto 0;
   max-width: 550px;
   font-size: 14px;
@@ -455,7 +456,7 @@
   padding-top: 25px;
 }
 .offerNumber {
-  color: #d4c294;
+  color: #fff;
   font-size: 10px;
   letter-spacing: 1.8px;
 }
@@ -466,7 +467,7 @@
   letter-spacing: -0.6px;
 }
 .rsvpOffers p {
-  color: #c6d2c7;
+  color: #fff;
   font-size: 13px;
   min-height: 65px;
   max-width: 430px;
@@ -496,7 +497,7 @@
   padding-top: 22px;
   border-top: 1px solid #ffffff25;
   font-size: 11px;
-  color: #c3cfc2;
+  color: #fff;
   line-height: 1.8;
 }
 .eventGrid {
@@ -523,7 +524,7 @@
 .eventGrid span {
   font-size: 10px;
   letter-spacing: 1px;
-  color: #4f6256;
+  color: #59615f;
 }
 .eventGrid h3 {
   font-size: 25px;
@@ -538,7 +539,7 @@
   margin: -12px 0 22px;
 }
 .filmstripControls p {
-  color: #4f6256;
+  color: #59615f;
   font-size: 12px;
   max-width: 430px;
 }
@@ -553,7 +554,7 @@
   height: 44px;
   flex-shrink: 0;
   background: transparent;
-  color: #173b36;
+  color: #202423;
 }
 .filmstripControls button:hover {
   background: #e8dfc6;
@@ -564,12 +565,12 @@
 }
 .imageNote {
   font-size: 10px;
-  color: #4f6256;
+  color: #59615f;
   margin-top: 20px !important;
 }
 .gallery {
-  border-top: 1px solid #173b362b;
-  border-bottom: 1px solid #173b362b;
+  border-top: 1px solid #2024232b;
+  border-bottom: 1px solid #2024232b;
   margin-top: 30px;
 }
 .gallery summary {
@@ -590,7 +591,7 @@
   align-items: center;
   gap: 18px;
   font-size: 11px;
-  color: #4f6256;
+  color: #59615f;
 }
 .gallery[open] summary svg {
   transform: rotate(45deg);
@@ -739,7 +740,7 @@
   align-items: center;
   gap: 5px;
   font-size: 9px;
-  color: #4f6256;
+  color: #59615f;
 }
 .process {
   text-align: center;
@@ -759,7 +760,7 @@
 .journeyTrack {
   height: 1px;
   position: relative;
-  background: #173b3620;
+  background: #20242320;
   margin: -22px 0 38px;
 }
 .journeyTrack > span {
@@ -825,14 +826,14 @@
   font:
     italic 24px Georgia,
     serif;
-  color: #7a7b5b;
+  color: #746b55;
 }
 .process h3 {
   font-size: 28px;
   margin: 18px 0 12px;
 }
 .process li p {
-  color: #4f6256;
+  color: #59615f;
   font-size: 13px;
   max-width: 325px;
 }
@@ -853,7 +854,7 @@
   margin: 18px 0 7px;
 }
 .peopleGrid p {
-  color: #4f6256;
+  color: #59615f;
   font-size: 12px;
   max-width: 245px;
 }
@@ -862,8 +863,8 @@
   text-align: center;
   padding: 100px 6%;
   isolation: isolate;
-  color: #f5f1e7;
-  background: #062b29;
+  color: #fff;
+  background: #008080;
 }
 .finalCta > img {
   position: absolute;
@@ -876,7 +877,7 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: #052b29d9;
+  background: rgb(0 0 0 / 60%);
   z-index: -1;
 }
 .finalCta h2 {
@@ -884,11 +885,11 @@
   font-size: clamp(35px, 4.5vw, 65px);
 }
 .finalCta h2 em {
-  color: #d6c89e;
+  color: #fff;
 }
 .finalCta > div > p:last-child {
   font-size: 11px;
-  color: #d2dccc;
+  color: #fff;
   margin-top: 20px;
 }
 .footer {
@@ -897,8 +898,8 @@
   align-items: center;
   gap: 30px;
   padding: 40px 6% 125px;
-  background: #062b29;
-  color: #c9d3c4;
+  background: #008080;
+  color: #fff;
 }
 .footer > span {
   font:

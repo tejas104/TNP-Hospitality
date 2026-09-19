@@ -1,6 +1,6 @@
 .plannerRoot {
   background: #f5f1e7;
-  color: #062b29;
+  color: #202423;
   padding-bottom: 64px;
 }
 
@@ -33,7 +33,7 @@
   left: 16px;
   padding: 14px;
   background: #fff;
-  color: #062b29;
+  color: #202423;
   transform: translateY(-180%);
 }
 .skip:focus {
@@ -45,14 +45,17 @@
   gap: clamp(24px, 5vw, 80px);
   align-items: center;
   padding: 70px clamp(24px, 6vw, 90px) 56px;
-  background: #062b29;
-  color: #f5f1e7;
+  background: #008080;
+  color: #fff;
+}
+.plannerRoot .workspaceHero :is(a, button):focus-visible {
+  outline-color: #fff;
 }
 .eyebrow {
   font-size: 0.7rem;
   font-weight: 800;
   letter-spacing: 0.15em;
-  color: #d6c79f;
+  color: #fff;
 }
 .workspaceHero h1 {
   margin: 26px 0;
@@ -62,18 +65,18 @@
   letter-spacing: -0.055em;
 }
 .workspaceHero h1 em {
-  color: #d6c79f;
+  color: #fff;
   font-weight: 400;
 }
 .workspaceHero p:not(.eyebrow) {
   max-width: 560px;
-  color: #e0e6df;
+  color: #fff;
   line-height: 1.75;
 }
 .workspaceHero small {
   display: block;
   max-width: 560px;
-  color: #c4d2cb;
+  color: #fff;
   line-height: 1.6;
 }
 .contextImage {
@@ -96,8 +99,8 @@
   display: grid;
   place-items: center;
   padding: 30px;
-  background: #153f3b;
-  color: #f5f1e7;
+  background: #008080;
+  color: #fff;
   font:
     1.8rem/1.3 Georgia,
     serif;
@@ -106,11 +109,11 @@
   padding-top: 13px;
   font-size: 0.72rem;
   line-height: 1.6;
-  color: #eee5d0;
+  color: #fff;
 }
 .contextImage figcaption small {
   font-size: 0.65rem;
-  color: #c4d2cb;
+  color: #fff;
 }
 .localNav {
   display: flex;
@@ -125,14 +128,14 @@
   font-size: 0.65rem;
   letter-spacing: 0.14em;
   font-weight: 800;
-  color: #586761;
+  color: #59615f;
 }
 .localNav a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
   font-size: 0.8rem;
-  color: #062b29;
+  color: #202423;
   text-underline-offset: 6px;
 }
 .formFields {
@@ -170,7 +173,7 @@
   display: block;
   margin: -10px 0 24px;
   font-size: 0.78rem;
-  color: #52615b;
+  color: #59615f;
 }
 .contextNote {
   padding: 12px 0;
@@ -178,18 +181,18 @@
   font-size: 0.78rem;
   line-height: 1.6;
   border-block: 1px solid #d9d2c4;
-  color: #52615b;
+  color: #59615f;
 }
 .linkedContext {
   padding: 16px;
-  background: #e8eee7;
+  background: rgb(0 128 128 / 8%);
   border-left: 3px solid #008080;
 }
 .linkedContext span {
   display: block;
   font-size: 0.65rem;
   letter-spacing: 0.1em;
-  color: #52615b;
+  color: #59615f;
   font-weight: 800;
   margin-bottom: 8px;
 }
@@ -219,7 +222,7 @@
   width: 100%;
   margin: 0;
   line-height: 1.7;
-  color: #52615b;
+  color: #59615f;
 }
 .journeyStage {
   display: flex;
@@ -227,11 +230,11 @@
   gap: 8px;
   padding: 12px 0;
   border-bottom: 1px solid #bba879;
-  color: #062b29;
+  color: #202423;
   font-size: 0.8rem;
 }
 .journeyStage small {
-  color: #59695f;
+  color: #59615f;
 }
 @media (prefers-reduced-motion: no-preference) {
   .workspaceHero > div,
@@ -281,7 +284,7 @@
   grid-row: 1 / span 2;
 }
 .sectionHeader h2 {
-  color: #173321;
+  color: #202423;
   font-family: Georgia, serif;
   font-size: clamp(2.8rem, 5.5vw, 5.8rem);
   font-weight: 400;
@@ -290,7 +293,7 @@
   margin: 0;
 }
 .sectionHeader > p:last-child {
-  color: #66716d;
+  color: #59615f;
   line-height: 1.7;
   margin: 0;
   max-width: 680px;
@@ -298,8 +301,8 @@
 
 .referenceState {
   align-items: center;
-  background: #e8eadf;
-  color: #4e5b57;
+  background: rgb(0 128 128 / 8%);
+  color: #59615f;
   display: flex;
   gap: 10px;
   margin: 0 0 22px auto;
@@ -308,7 +311,7 @@
   padding: 10px 14px;
 }
 .referenceState i {
-  background: #0f6b68;
+  background: #008080;
   border-radius: 50%;
   height: 9px;
   width: 9px;
@@ -331,7 +334,7 @@
 .retry {
   background: transparent;
   border: 0;
-  color: #084c49;
+  color: #006b6b;
   font-weight: 900;
   text-decoration: underline;
 }
@@ -346,7 +349,7 @@
   min-width: 0;
 }
 .formCopy {
-  color: #66716d;
+  color: #59615f;
   line-height: 1.6;
   margin: 0 0 8px;
 }
@@ -373,8 +376,8 @@
   padding: 13px;
 }
 .success {
-  background: rgb(15 107 104 / 11%);
-  color: #173321;
+  background: rgb(0 128 128 / 11%);
+  color: #006b6b;
 }
 .failure {
   background: rgb(154 61 53 / 10%);

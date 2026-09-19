@@ -72,7 +72,7 @@ export function PavilionFallback() {
         cy="363"
         rx="120"
         ry="30"
-        fill="#13483f"
+        fill="#008080"
         stroke="#c7b481"
       />
       <ellipse
@@ -142,7 +142,7 @@ export function PavilionFallback() {
         [402, 361],
       ].map(([x, y], i) => (
         <g key={x}>
-          <circle cx={x} cy={y} r="22" fill="#103e36" stroke="#d7be85" />
+          <circle cx={x} cy={y} r="22" fill="#008080" stroke="#d7be85" />
           {i === 0 ? (
             <g fill="#eee1bf">
               <circle cx={x - 7} cy={y + 2} r="3" />
@@ -156,7 +156,7 @@ export function PavilionFallback() {
               width="12"
               height="18"
               rx="1"
-              fill="#a8c4ac"
+              fill="#ffffff"
             />
           ) : i === 2 ? (
             <path d={`m${x} ${y - 11} 9 11-9 11-9-11Z`} fill="#e5bc83" />

@@ -147,8 +147,8 @@ export function PreviewControls() {
           gap: 0.5rem;
           max-width: min(32rem, calc(100vw - 2rem));
           padding: 0.45rem;
-          color: #f3ebd7;
-          background: rgba(4, 32, 29, 0.96);
+          color: #fff;
+          background: #008080;
           border: 1px solid rgba(210, 188, 133, 0.55);
           font-size: 0.7rem;
         }
@@ -158,6 +158,10 @@ export function PreviewControls() {
         }
         .preview-control-panel output {
           line-height: 1.25;
+        }
+        .preview-control-panel :is(button, select):focus-visible {
+          outline: 3px solid #fff;
+          outline-offset: 2px;
         }
         @media (max-width: 700px) {
           body {

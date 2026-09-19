@@ -1,6 +1,6 @@
 .page {
   background: var(--ivory);
-  color: #173b36;
+  color: #202423;
   min-height: 100vh;
   line-height: 1.65;
 }
@@ -26,10 +26,10 @@
   align-items: center;
   padding: 155px 8% 76px;
   background: var(--dark);
-  color: var(--ivory);
+  color: #fff;
 }
 .heading :is(a, button):focus-visible {
-  outline-color: #e8dfc6;
+  outline-color: #fff;
 }
 .homeLink {
   display: inline-flex;
@@ -38,7 +38,7 @@
   font-size: 10px;
   letter-spacing: 2px;
   margin-bottom: 25px;
-  color: #dbc897;
+  color: #fff;
 }
 .eyebrow {
   font-size: 10px;
@@ -46,7 +46,7 @@
   letter-spacing: 2px;
 }
 .heading .eyebrow {
-  color: #dbc897;
+  color: #fff;
 }
 .heading h1 {
   font-size: clamp(45px, 5vw, 73px);
@@ -54,11 +54,11 @@
   margin: 18px 0 26px;
 }
 .heading h1 em {
-  color: #d5c595;
+  color: #fff;
 }
 .heading > div > p:last-child {
   max-width: 530px;
-  color: #c4d0c6;
+  color: #fff;
   font-size: 15px;
 }
 .heading figure {
@@ -72,7 +72,7 @@
 .heading figcaption {
   margin-top: 12px;
   font-size: 10px;
-  color: #c4d0c6;
+  color: #fff;
 }
 .access {
   display: grid;
@@ -90,7 +90,7 @@
 }
 .intro > p:not(.eyebrow) {
   font-size: 14px;
-  color: #4f6256;
+  color: #59615f;
 }
 .notice {
   border-left: 2px solid var(--primary);
@@ -103,7 +103,7 @@
   margin-bottom: 8px;
 }
 .notice p {
-  color: #4f6256;
+  color: #59615f;
 }
 .choices {
   display: grid;
@@ -128,7 +128,7 @@
   font-size: 9px;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: #4f6256;
+  color: #59615f;
 }
 .choices h3 {
   font-size: 31px;
@@ -136,7 +136,7 @@
 }
 .choices p {
   font-size: 13px;
-  color: #4f6256;
+  color: #59615f;
   margin-bottom: 24px;
 }
 .action {
@@ -163,7 +163,7 @@
   gap: 30px;
   margin: 0 8%;
   padding: 35px 0;
-  border-block: 1px solid #173b3630;
+  border-block: 1px solid #20242330;
 }
 .staff h2 {
   font-size: 27px;
@@ -171,7 +171,7 @@
 .staff p {
   max-width: 560px;
   font-size: 12px;
-  color: #4f6256;
+  color: #59615f;
 }
 .staff a {
   display: inline-flex;

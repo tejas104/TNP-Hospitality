@@ -45,7 +45,7 @@ export default function EventOrbit() {
             <pointLight position={[3, 4, 4]} color="#BBA879" intensity={1.3} />
             <pointLight
               position={[-4, -2, 3]}
-              color="#0F6B68"
+              color="#008080"
               intensity={1.1}
             />
             <OrbitGroup />
