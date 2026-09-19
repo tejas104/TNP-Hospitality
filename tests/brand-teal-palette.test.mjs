@@ -95,6 +95,13 @@ test('corrected solid surface text and focus colors retain AA contrast', () => {
   const teal = property(block('app/globals.css', '.admin-shell'), 'background');
   const focus = property(block('components/tnp/portals/planner/PlannerRequirements.module.css', '.section .state button:focus-visible'), 'outline');
   assert.ok(ratio(focus, teal) >= 3, 'retry focus on teal');
+  const clientHubFile = 'components/tnp/portals/client/ClientStatusHub.module.css';
+  const hub = block(clientHubFile, '.hub');
+  assert.match(hub, /background:\s*var\(--dark\);/);
+  const darkToken = read('app/globals.css').match(/--dark:\s*(#[\da-f]+);/i)?.[1];
+  assert.ok(darkToken, 'Client hub background token must resolve');
+  const kicker = property(block(clientHubFile, '.header :global(.section-kicker)'), 'color');
+  assert.ok(ratio(kicker, colors(darkToken)[0].rgb) >= 4.5, 'Client event and finance status kicker on hub background');
 });
 
 test('palette detection rejects alternate syntax and unlisted green while accepting brand and neutral ink', () => {

@@ -21,6 +21,9 @@
 .header h2 em {
   color: #fff;
 }
+.header :global(.section-kicker) {
+  color: #fff;
+}
 .recordCount {
   color: #fff;
   font-size: 12px;
