@@ -71,10 +71,10 @@ test('staffing counts join by exact IDs, keep same-named functions distinct and 
   const report = buildStaffingReport(source(), noFilters);
   assert.deepEqual(report.rows.map((row) => row.eventId), ['event-a', 'event-b'], 'same-named functions stay separate, ordered by start then ID');
   const a = report.rows[0];
-  assert.deepEqual(a.positions.map((p) => [p.positionId, p.quantity, p.activeAllocations, p.notComing, p.holdingCapacity, p.openCapacity]), [
-    ['pos-a1', 6, 3, 1, 2, 4],
-    ['pos-a2', 1, 0, 0, 0, 1],
-  ], 'replaced allocations are excluded; not-coming is active but does not hold capacity');
+  assert.deepEqual(a.positions.map((p) => [p.positionId, p.quantity, p.activeAllocations, p.notComing, p.holdingCapacity, p.unfilled, p.openCapacity]), [
+    ['pos-a1', 6, 3, 1, 2, 4, 4],
+    ['pos-a2', 1, 0, 0, 0, 1, 0],
+  ], 'replaced allocations are excluded; not-coming does not hold capacity; a full/unavailable position has no open capacity');
   assert.equal(report.rows[1].openCapacity, 39);
   assert.deepEqual(buildStaffingReport(reversed(source()), noFilters), report, 'reordered source arrays give an identical report');
 
@@ -91,7 +91,8 @@ test('overview splits attendance evidence and counts decisions separately from t
   assert.deepEqual(overview.eventsByStatus, { planned: 1, staffing: 1, complete: 0 });
   assert.equal(overview.requiredHeadcount, 47);
   assert.equal(overview.activeAllocations, 4);
-  assert.equal(overview.openCapacity, 4 + 1 + 39);
+  assert.equal(overview.unfilled, 4 + 1 + 39);
+  assert.equal(overview.openCapacity, 4 + 0 + 39, 'the unfilled slot on the full position is not claimable');
   assert.equal(overview.pendingApplications, 1);
   assert.equal(overview.auditCount, 3);
   assert.equal(overview.latestAudit, '2026-09-14T09:00:00.000+05:30');

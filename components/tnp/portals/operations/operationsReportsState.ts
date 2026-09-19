@@ -78,6 +78,7 @@ export function buildReportOverview(source: ReportSource) {
     positionTypes: source.positions.length,
     requiredHeadcount: source.positions.reduce((total, position) => total + position.quantity, 0),
     activeAllocations: source.assignments.filter((assignment) => assignment.allocationState === 'active').length,
+    unfilled: staffing.reduce((total, row) => total + row.unfilled, 0),
     openCapacity: staffing.reduce((total, row) => total + row.openCapacity, 0),
     pendingApplications: source.applications.filter((application) => application.status === 'pending').length,
     evidence,
@@ -97,6 +98,7 @@ export type PositionRow = {
   activeAllocations: number;
   notComing: number;
   holdingCapacity: number;
+  unfilled: number;
   openCapacity: number;
 };
 
@@ -107,6 +109,7 @@ function positionRows(source: ReportSource, eventId?: string): PositionRow[] {
     .map((position) => {
       const active = source.assignments.filter((item) => item.positionId === position.id && item.allocationState === 'active');
       const holding = active.filter(holdsCapacity).length;
+      const unfilled = Math.max(0, position.quantity - holding);
       return {
         eventId: position.eventId,
         positionId: position.id,
@@ -116,7 +119,9 @@ function positionRows(source: ReportSource, eventId?: string): PositionRow[] {
         activeAllocations: active.length,
         notComing: active.length - holding,
         holdingCapacity: holding,
-        openCapacity: Math.max(0, position.quantity - holding),
+        unfilled,
+        // Claimable only while the position itself is open, matching the preview allocation rule.
+        openCapacity: position.status === 'open' ? unfilled : 0,
       };
     });
 }
@@ -131,6 +136,7 @@ export type FunctionRow = {
   positions: PositionRow[];
   requiredHeadcount: number;
   activeAllocations: number;
+  unfilled: number;
   openCapacity: number;
 };
 
@@ -151,6 +157,7 @@ export function buildStaffingReport(source: ReportSource, filters: StaffingFilte
         positions,
         requiredHeadcount: positions.reduce((total, row) => total + row.quantity, 0),
         activeAllocations: positions.reduce((total, row) => total + row.activeAllocations, 0),
+        unfilled: positions.reduce((total, row) => total + row.unfilled, 0),
         openCapacity: positions.reduce((total, row) => total + row.openCapacity, 0),
       };
     });
@@ -180,6 +187,7 @@ export function buildStaffingReport(source: ReportSource, filters: StaffingFilte
     active_allocations: position?.activeAllocations ?? '',
     not_coming: position?.notComing ?? '',
     holding_capacity: position?.holdingCapacity ?? '',
+    unfilled: position?.unfilled ?? '',
     open_capacity: position?.openCapacity ?? '',
   })));
   return {
@@ -196,7 +204,7 @@ export function buildStaffingReport(source: ReportSource, filters: StaffingFilte
   };
 }
 
-const STAFFING_COLUMNS = ['event_id', 'event_name', 'event_status', 'position_id', 'role', 'position_status', 'required_quantity', 'active_allocations', 'not_coming', 'holding_capacity', 'open_capacity'] as const;
+const STAFFING_COLUMNS = ['event_id', 'event_name', 'event_status', 'position_id', 'role', 'position_status', 'required_quantity', 'active_allocations', 'not_coming', 'holding_capacity', 'unfilled', 'open_capacity'] as const;
 
 // ---------- Attendance & verification exceptions ----------
 

@@ -119,7 +119,7 @@ export function OperationsReports({ generation, metadata, events, positions, ass
   return (
     <div className={styles.reportReveal}>
       <div className={styles.panelHeading}>
-        <div><p className="section-kicker">REPORTS &amp; AUDIT · IN-BROWSER PREVIEW SNAPSHOT</p><h2>Staffing, exceptions and audit from one snapshot.</h2></div>
+        <div><p className={`section-kicker ${styles.reportKicker}`}>REPORTS &amp; AUDIT · IN-BROWSER PREVIEW SNAPSHOT</p><h2>Staffing, exceptions and audit from one snapshot.</h2></div>
         <p>Every figure is derived in this browser from the current synthetic preview records each time this page renders. Nothing here is stored, scheduled or sent.</p>
       </div>
 
@@ -145,7 +145,7 @@ export function OperationsReports({ generation, metadata, events, positions, ass
         <div className={styles.reportTiles}>
           <Tile label="Functions" value={overview.eventCount} note={`${overview.eventsByStatus.planned} planned · ${overview.eventsByStatus.staffing} staffing · ${overview.eventsByStatus.complete} complete`} />
           <Tile label="Required headcount" value={overview.requiredHeadcount} note={`${overview.positionTypes} position types`} />
-          <Tile label="Active allocations" value={overview.activeAllocations} note={`${overview.openCapacity} open capacity`} />
+          <Tile label="Active allocations" value={overview.activeAllocations} note={`${overview.unfilled} unfilled · ${overview.openCapacity} open for claims`} />
           <Tile label="Pending applications" value={overview.pendingApplications} note="Awaiting a human decision" />
           <Tile label="Attendance evidence" value={EVIDENCE_ORDER.reduce((total, { state }) => total + overview.evidence[state], 0)} note={EVIDENCE_ORDER.map(({ state, label }) => `${label}: ${overview.evidence[state]}`).join(' · ')} />
           <Tile label="Audit entries" value={overview.auditCount} note={overview.latestAudit ? `Latest recorded ${formatTime(overview.latestAudit)}` : 'No audit entries recorded'} />
@@ -210,16 +210,16 @@ function StaffingView({ report, filters, hiddenSelectionId, formatTime, onChange
       <label><span>Function status</span><select value={filters.status} onChange={(event) => onChange({ ...filters, status: event.target.value as StaffingFilters['status'] })}><option value="all">All statuses</option><option value="planned">Planned</option><option value="staffing">Staffing</option><option value="complete">Complete</option></select></label>
       <ClearButton active={Boolean(filters.text || filters.status !== 'all' || filters.selectedEventId || hiddenSelectionId)} onClear={onClear} />
     </div>
-    <p className={styles.reportCount}>{report.rows.length} of {report.totalCount} functions shown · open capacity = position quantity minus active allocations not marked “not coming” (the preview allocation rule).</p>
+    <p className={styles.reportCount}>{report.rows.length} of {report.totalCount} functions shown · unfilled = quantity minus active allocations not marked “not coming”; open = unfilled on positions whose status is open (the preview allocation rule).</p>
     {hiddenSelectionId && <p className={styles.reportNotice}>Function <code>{hiddenSelectionId}</code> is hidden by the current filters, so its detail was cleared.</p>}
     <EmptyState reason={report.empty} noun="functions" onClear={onClear} />
     {report.rows.length > 0 && <div className={styles.reportMasterDetail}>
       <fieldset className={styles.reportFunctionList}>
         <legend className={styles.srOnly}>Select a function</legend>
         {report.rows.map((row) => (
-          <button key={row.eventId} type="button" className={styles.reportRow} aria-label={`${row.name}, ${row.eventId}, ${row.status}: ${row.requiredHeadcount} required, ${row.activeAllocations} active, ${row.openCapacity} open`} aria-pressed={report.selected?.eventId === row.eventId} onClick={() => onChange({ ...filters, selectedEventId: report.selected?.eventId === row.eventId ? '' : row.eventId })}>
+          <button key={row.eventId} type="button" className={styles.reportRow} aria-label={`${row.name}, ${row.eventId}, ${row.status}: ${row.requiredHeadcount} required, ${row.activeAllocations} active, ${row.unfilled} unfilled, ${row.openCapacity} open`} aria-pressed={report.selected?.eventId === row.eventId} onClick={() => onChange({ ...filters, selectedEventId: report.selected?.eventId === row.eventId ? '' : row.eventId })}>
             <span className={styles.reportRowTitle}><strong>{row.name}</strong><small>{row.eventId} · {row.status}</small></span>
-            <span className={styles.reportRowStats}><span><b>{row.requiredHeadcount}</b> required</span><span><b>{row.activeAllocations}</b> active</span><span><b>{row.openCapacity}</b> open</span></span>
+            <span className={styles.reportRowStats}><span><b>{row.requiredHeadcount}</b> required</span><span><b>{row.activeAllocations}</b> active</span><span><b>{row.unfilled}</b> unfilled</span><span><b>{row.openCapacity}</b> open</span></span>
           </button>
         ))}
       </fieldset>
@@ -238,6 +238,7 @@ function StaffingView({ report, filters, hiddenSelectionId, formatTime, onChange
                   <div><dt>Quantity</dt><dd>{position.quantity}</dd></div>
                   <div><dt>Active</dt><dd>{position.activeAllocations}</dd></div>
                   <div><dt>Not coming</dt><dd>{position.notComing}</dd></div>
+                  <div><dt>Unfilled</dt><dd>{position.unfilled}</dd></div>
                   <div><dt>Open</dt><dd>{position.openCapacity}</dd></div>
                   <div><dt>Position status</dt><dd>{position.positionStatus}</dd></div>
                 </dl>

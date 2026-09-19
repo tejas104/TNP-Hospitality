@@ -112,6 +112,8 @@
 /* Reports & audit: Operations-local; reuses the dark rail, cream heading and beige evidence-card language. */
 .srOnly { clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; position: absolute; white-space: nowrap; width: 1px; }
 .reportReveal { animation: reportReveal 180ms ease-out both; }
+/* Champagne on the dark workspace keeps the kicker above WCAG AA (teal measured 2.79:1 here). */
+.panelHeading .reportKicker { color: var(--champagne); }
 .reportContextGrid { display: grid; gap: 18px; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); }
 .reportCard, .reportDetail, .reportEmpty, .exportBar { background: var(--beige); color: var(--ink); min-width: 0; padding: clamp(18px, 3vw, 28px); }
 .reportCard h3, .exportBar h3 { font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.2rem); font-weight: 400; line-height: 1.05; margin: 0 0 14px; }
@@ -163,7 +165,7 @@
 .reportItem p { margin: 0; }
 .reportItem code, .reportGroupLabel code, .reportIds code, .exportBar code, .reportNotice code { font-size: .8rem; overflow-wrap: anywhere; }
 .reportIds { color: rgb(23 35 33 / 74%); font-size: .84rem; overflow-wrap: anywhere; }
-.reportNumbers { display: grid; gap: 8px; grid-template-columns: repeat(5, minmax(0, 1fr)); margin: 0; }
+.reportNumbers { display: grid; gap: 8px; grid-template-columns: repeat(6, minmax(0, 1fr)); margin: 0; }
 .exportBar { align-items: center; display: grid; gap: 12px 24px; grid-template-columns: minmax(0, 1fr) auto; margin-top: 24px; }
 .exportBar p { margin: 0 0 6px; overflow-wrap: anywhere; }
 .exportBar button:disabled { cursor: not-allowed; opacity: .6; }
