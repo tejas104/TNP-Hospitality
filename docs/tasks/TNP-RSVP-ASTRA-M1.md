@@ -1,6 +1,15 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: ROUND-5 FIXED-SHA HANDOFF — PAUSED FOR FRESH SOL/HIGH RE-REVIEW. Same `/root/rsvp_astra_refiner`, actual `gpt-6-astra` / medium, returned its lease at clean pushed remote-equal `4ce52f1885e6fd326257c530b7a49d7aee051efc`.
+Status: ROUND-6 CHANGES REQUESTED — MINIMAL ADAPTER CORRECTION READY. Fresh Sol/high returned `CHANGES REQUESTED` on clean remote-equal Round-5 candidate `4ce52f1885e6fd326257c530b7a49d7aee051efc`. Same `/root/rsvp_astra_refiner`, actual `gpt-6-astra` / medium, may reopen only RSVP adapter/tests/browser evidence beside the disjoint brand-color builder.
+
+## Round-6 current-intent and identity findings
+
+Preserve all cleared import, history, active-guard, UI, CSS, design and motion behavior. Correct only:
+
+1. When restored travel details create a new current pickup/drop after a retained `guest-met` or `completed` historical transfer, allocate a collision-free fresh transfer ID. Never reuse `${party.id}-${kind}` when any retained record already owns it. The new ID must remain stable for exact request replay but distinct from every historical/current record; subsequent ID-based mutations must target the intended active record. Cover pickup and drop, multiple clear/restore cycles and exact replay.
+2. `InvitationView.pickup/drop` represents current guest intent, not historical movement evidence. Exclude `guest-met`, `completed` and cancelled history from the current boolean projection. After the guest clears pickup/drop, reload must return false even though immutable history remains visible in manifests/audit; resubmitting the unchanged projected value must not resurrect a cancelled transfer. Preserve active requested/awaiting-details/planned/assigned/dispatched intent and history display.
+
+Writable Round-6 source is only `adapter.ts` plus focused RSVP-local tests/browser/evidence. No `logic.ts`, TSX, CSS, UI/design/motion or unrelated adapter refactor.
 
 Round-5 delta is exactly six RSVP-local files: modified `adapter.ts` and approved minimal `logic.ts`; added `round5.test.mjs`, `round5-scenarios.mjs`, `round5-browser.mjs`, `ROUND5-EVIDENCE.md`. UI/CSS/design/motion are unchanged. Builder reports 153/153 full tests, 81/81 RSVP tests, lint, explicit TypeScript, diff and focused Chrome PASS. Initial build failed with its leading error omitted; one explicitly authorized unchanged diagnostic rerun passed. P confirmed live remote equality, one-commit exact scope, clean worktree and free port3107. Fresh Sol/high exact-SHA re-review and Kartik acceptance remain mandatory.
 
