@@ -94,9 +94,9 @@ function colors(source) {
     return rgb ? [{ literal, rgb }] : [];
   });
   const names = [...namedColors.keys()].join('|');
-  const namedPattern = new RegExp(`(?:^|[;{]\\s*)(?:color|background(?:-color)?|border(?:-[a-z]+)?-color|outline-color|fill|stroke)\\s*:\\s*(${names})\\b|(?:color|emissive)\\s*=\\s*["'](${names})["']|(?:new\\s+Color|setStyle)\\(\\s*["'](${names})["']\\s*\\)`, 'gi');
+  const namedPattern = new RegExp(`(?:^|[;{]\\s*)(?:color|background(?:-color)?|border(?:-[a-z]+)?-color|outline-color|fill|stroke)\\s*:\\s*(${names})\\b|(?:^|[,{]\\s*)(?:color|backgroundColor|borderColor|outlineColor|fill|stroke)\\s*:\\s*["'](${names})["']|(?:color|emissive|fill|stroke)\\s*=\\s*["'](${names})["']|(?:new\\s+Color|setStyle)\\(\\s*["'](${names})["']\\s*\\)`, 'gi');
   const named = [...source.matchAll(namedPattern)].map((match) => {
-    const literal = match[1] ?? match[2] ?? match[3];
+    const literal = match.slice(1).find(Boolean);
     return { literal, rgb: namedColors.get(literal.toLowerCase()) };
   });
   const numeric = [...source.matchAll(/(?:color|emissive)\s*=\s*\{\s*(0x[\da-f]{6}|\d{5,})\s*\}|(?:new\s+Color|setHex)\(\s*(0x[\da-f]{6}|\d{5,})\s*\)/gi)].map((match) => {
@@ -107,7 +107,13 @@ function colors(source) {
     const channels = (match[1] ? match.slice(1, 4) : match.slice(4, 7)).map(Number);
     return { literal: match[0], rgb: channels.map((channel) => channel <= 1 ? byte(channel) : Math.round(channel)) };
   });
-  return [...cssColors, ...named, ...numeric, ...arrays];
+  const constructorColors = [...source.matchAll(/new\s+(?:AmbientLight|DirectionalLight|HemisphereLight|PointLight|RectAreaLight|SpotLight)\s*\(([^)]*)\)/gi)].flatMap((match) =>
+    [...match[1].matchAll(/0x[\da-f]{6}\b/gi)].map(([literal]) => {
+      const value = Number(literal);
+      return { literal, rgb: [value >> 16 & 255, value >> 8 & 255, value & 255] };
+    }),
+  );
+  return [...cssColors, ...named, ...numeric, ...arrays, ...constructorColors];
 }
 
 function unapprovedGreen(rgb) {
@@ -181,7 +187,7 @@ test('corrected solid surface text and focus colors retain AA contrast', () => {
   const kicker = property(block(clientHubFile, '.header :global(.section-kicker)'), 'color');
   assert.ok(ratio(kicker, colors(darkToken)[0].rgb) >= 4.5, 'Client event and finance status kicker on hub background');
   const operationsFile = 'components/tnp/portals/operations/AdminOperations.module.css';
-  const beige = colors('#f5f1e7')[0].rgb;
+  const beige = colors('#e5e1cd')[0].rgb;
   const cardKicker = property(block(operationsFile, '.decisionCard :global(.section-kicker), .controlForm :global(.section-kicker), .evidenceCard :global(.section-kicker), .auditPanel :global(.section-kicker)'), 'color');
   assert.ok(ratio(cardKicker, beige) >= 4.5, 'Operations beige-card kickers');
   const secondary = property(block(operationsFile, '.queueRow span, .queueRow small, .mutedDark'), 'color');
@@ -193,7 +199,7 @@ test('corrected solid surface text and focus colors retain AA contrast', () => {
 });
 
 test('palette detection rejects alternate syntax and unlisted green while accepting brand and neutral ink', () => {
-  for (const source of ['#062b29', '#0c3c38', '#13483f', '#a8c4ac', 'rgba(6, 43, 41, .9)', 'rgb(8 61 54)', 'rgb(3.137% 23.922% 21.176% / 50%)', 'hsl(170 74% 13%)', 'oklch(32% .06 175)', 'color: darkgreen;', 'color={0x062b29}', 'color={[0.024, 0.169, 0.161]}']) {
+  for (const source of ['#062b29', '#0c3c38', '#13483f', '#a8c4ac', 'rgba(6, 43, 41, .9)', 'rgb(8 61 54)', 'rgb(3.137% 23.922% 21.176% / 50%)', 'hsl(170 74% 13%)', 'oklch(32% .06 175)', 'color: darkgreen;', '{ color: "darkgreen" }', '<path fill="forestgreen" />', 'new HemisphereLight(0xffffff, 0x154f44)', 'color={0x062b29}', 'color={[0.024, 0.169, 0.161]}']) {
     assert.ok(colors(source).some(({ rgb }) => unapprovedGreen(rgb)), source);
   }
   for (const source of ['#008080', '#006b6b', 'color: teal;', 'hsl(180 100% 25%)', 'rgba(0,128,128,.1)', '#202423', '#59615f', '#f5f1e7']) {

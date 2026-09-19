@@ -1,10 +1,11 @@
 .workspace {
   --teal: #008080;
-  --deep: #062b29;
+  --deep: #008080;
+  --ink: #202423;
   --ivory: #f5f1e7;
   --gold: #bba879;
   --muted: #596762;
-  color: var(--deep);
+  color: var(--ink);
   background: var(--ivory);
   padding: 40px clamp(18px, 4.7vw, 80px) 130px;
   min-height: 100vh;
@@ -147,7 +148,7 @@
   width: 320px;
   min-height: 46px;
   border: 1px solid #bac5bb;
-  color: var(--deep);
+  color: var(--ink);
   background: #fffdf7;
   padding: 8px 12px;
 }
@@ -180,7 +181,7 @@
 .primary,
 .secondary {
   min-height: 46px;
-  border: 1px solid var(--deep);
+  border: 1px solid var(--ink);
   padding: 10px 19px;
   display: inline-flex;
   align-items: center;
@@ -200,7 +201,7 @@
 }
 .secondary {
   background: transparent;
-  color: var(--deep);
+  color: var(--ink);
 }
 .secondary:hover:not(:disabled) {
   background: #e4e9df;
@@ -215,7 +216,7 @@
   min-height: 44px;
   padding: 9px 2px;
   font-size: 12px !important;
-  color: var(--deep);
+  color: var(--ink);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -271,7 +272,7 @@
 }
 .journey li[aria-current] > span {
   background: var(--ivory);
-  color: var(--deep);
+  color: var(--ink);
   border-color: var(--ivory);
 }
 .journey li small {
@@ -336,7 +337,7 @@
 }
 .field select,
 .field input {
-  color: var(--deep);
+  color: var(--ink);
   background: #fffefb;
   border: 1px solid #aab8ae;
   min-height: 47px;
@@ -631,7 +632,7 @@
   transition: transform 0.22s;
 }
 .workspaceNav button[aria-current] {
-  color: var(--deep);
+  color: var(--ink);
   font-weight: 700;
 }
 .workspaceNav button[aria-current]::after {
@@ -693,7 +694,7 @@
   min-height: 46px;
   border: 1px solid #b4c0b3;
   background: #fffdf7;
-  color: var(--deep);
+  color: var(--ink);
   font-size: 12px;
   padding: 10px;
   width: 100%;
@@ -725,7 +726,7 @@
   border: 0;
   min-width: 38px;
   min-height: 44px;
-  color: var(--deep);
+  color: var(--ink);
 }
 .srOnly {
   position: absolute;
@@ -763,7 +764,7 @@
   padding: 8px 10px;
   font-size: 11px;
   background: #e8eee3;
-  color: var(--deep);
+  color: var(--ink);
   animation: enter 0.18s ease;
 }
 .filterChips svg {
@@ -874,7 +875,7 @@
   min-height: 44px;
   padding: 10px 12px;
   font-size: 11px;
-  color: var(--deep);
+  color: var(--ink);
 }
 .detailButton:hover {
   background: #dde7d9;
@@ -989,7 +990,7 @@
 .opportunityDetail > .primary {
   width: 100%;
   background: #f5f1e7;
-  color: var(--deep);
+  color: var(--ink);
   border-color: #f5f1e7;
 }
 .opportunityDetail > .primary:hover:not(:disabled) {
@@ -1002,7 +1003,7 @@
 .updated {
   padding: 12px;
   font-size: 11px;
-  background: #26493c;
+  background: rgb(0 0 0 / 18%);
   border-left: 2px solid #d0c190;
   margin-top: 20px !important;
 }
