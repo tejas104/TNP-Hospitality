@@ -10,8 +10,12 @@ Give authorized Admin/Operations users one auditable work queue for Client and T
 
 ## Proposed exact ownership
 
-- `components/tnp/portals/operations/**` excluding frozen report files unless an explicit serialized adoption delta is recorded
-- an Operations-local order/quotation/grant view model, styles and tests
+- new `components/tnp/portals/operations/commercial/orders/**`
+- new `components/tnp/portals/operations/commercial/quotations/**`
+- new `components/tnp/portals/operations/commercial/grants/**`
+- feature-local order/quotation/grant view models, styles and tests inside those directories
+
+`AdminOperations.tsx`, `operationsState.ts`, the existing Operations shell CSS, `OperationsDecisionPanels.tsx`, `operations/finance/**`, `operations/commercial/documents/**` and Reports/Audit remain frozen. The integrated Admin shell must expose a documented slot/navigation seam before this task launches; any shell adoption is a later serialized handoff, not blanket ownership.
 
 Shared domain/API contracts, Client/Planner/Freelancer/RSVP components, public shell, packages, providers and production data are frozen unless separately leased.
 

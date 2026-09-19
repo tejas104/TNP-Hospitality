@@ -14,10 +14,12 @@ Transform the reviewed RSVP predecessor into the current product: WhatsApp messa
 - Organization `Today` dashboard across active events with event cards, reply progress, failed messages, ambiguity, missing information, ownership and latest change.
 - All-events list/switcher with date/status/search, keyboard support and separate event URLs.
 - Event workspace: overview, guests/parties, WhatsApp inbox, campaigns/templates, collected information, reports, team/settings.
+- Distinguish vendor owner, event manager/operator, explicitly shared Client viewer/approver and guest invitation. Owner-level team/entitlement authority is never implied by event membership, and a Client viewer does not inherit vendor inbox or guest-export access.
 - Reply interpretation: original message, structured answers, suggested categories, clear versus ambiguous/conflicting state and human confirmation.
 - Information-only travel/stay/pickup views and exports. No booking, inventory, allocation, dispatch or payment action.
 - Cross-event navigation clears guest/inbox/report selection and cannot leak counts or records.
 - Explicit provider-disabled, loading, empty, filtered-empty, error, retry, suspended, expired and no-entitlement states.
+- Entitlement presentation separates `pending_conditions`, `scheduled`, `active`, `suspended`, `grace_read_only`, `completed/expired` and `revoked`; quotation/payment/grant/provider readiness remain separate evidence. Every mutation and export rechecks organization, event, date window and named capability.
 
 ## Removed from acceptance
 

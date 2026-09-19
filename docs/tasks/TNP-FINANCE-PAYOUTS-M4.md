@@ -11,7 +11,7 @@ Give Freelancers a safe masked payout-profile and statement experience, and give
 ## Proposed ownership
 
 - new `components/tnp/portals/operations/finance/**`
-- new `components/tnp/portals/operations/commercial/**` for Admin document views
+- new `components/tnp/portals/operations/commercial/documents/**` for Admin document views
 - exact Freelancer-local payout-profile/statement adoption only under a separate serialized lease
 - feature-local synthetic adapters, fixtures, print styles and tests
 

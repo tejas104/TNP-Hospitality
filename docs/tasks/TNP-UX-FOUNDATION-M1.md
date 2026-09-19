@@ -25,6 +25,8 @@ Provide one predictable shared workspace shell in which every role has obvious n
 - `components/tnp/public/WorkspaceDrawer.tsx`
 - `components/tnp/public/access-content.ts`
 - `components/tnp/shared/PreviewControls.tsx`
+- new shared evidence component `components/tnp/shared/PartnerCard.tsx`
+- new shared evidence styles `components/tnp/shared/PartnerCard.module.css`
 - new shared access/navigation primitives under `components/tnp/access/**`
 - focused tests beside those paths or under `tests/`
 
@@ -43,6 +45,7 @@ All portal-local feature directories, public homepage sections/3D, shared servic
 9. Canonicalize `/operations` while keeping `/admin` as a compatibility redirect until all references and browser tests are migrated.
 10. Preserve all existing retry/generation/reset/domain behavior and truthful preview limitations.
 11. Workspace access cards must group role name, truthful access state, outcome copy and action into one raised composition with resting affordance, responsive hover/focus/active feedback and reduced-motion parity. Shared dashboard primitives must support orientation, one dominant next action and compact attention queues without forcing every metric into a card.
+12. The shared `PartnerCard` must support evidence-safe Venue and approved TNP Planner presentation: attributable or explicitly illustrative image metadata, robust missing-image fallback, name, location/specialty evidence, qualified capacity/price/availability/rating fields only when supplied, one selection action, loading/error/unavailable/selected states, keyboard/touch parity and reduced-motion behavior. It must not define domain eligibility, fabricate verification or own feature queries.
 
 ## Required checks
 

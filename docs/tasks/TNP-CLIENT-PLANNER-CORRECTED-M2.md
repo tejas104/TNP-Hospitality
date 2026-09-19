@@ -35,6 +35,8 @@ Freeze AppShell/global CSS, shared contracts/services/fixtures, Operations, Free
 - Present each workforce role separately: Event Coordinator, Event Executive, Hostess, Volunteer and Porter. Never hide them behind a generic `freelancers` card.
 - Present TNP Planner, Venue and RSVP as distinct products with clear inclusions, exclusions, current state and one primary action.
 - Let the client explicitly choose `I have my own planner` or `I need a TNP Planner`; explain the permission and service difference before submission.
+- Permit every product family alone or in combination. Provide explicit `Not needed`, `I already have a venue` and `I have my own planner` paths; Venue and TNP Planner must never be mandatory merely to submit a request.
+- Preserve requester and billing organization as separate identities so an invited client-appointed planner may prepare the request without becoming the buyer or a TNP Planner.
 
 ### Order, quotation and grant states
 
@@ -58,6 +60,7 @@ Freeze AppShell/global CSS, shared contracts/services/fixtures, Operations, Free
 - Provide clear `Apply to become a TNP Planner` and `Sign in to Planner workspace` actions.
 - Application covers professional experience, cities, event categories, leadership evidence, availability and consent. It must support saved draft, submitted, under review, revision requested, approved, declined and suspended states.
 - Approval remains an Admin decision. The UI must never self-upgrade an applicant or imply that form submission grants Planner authority.
+- An approved but unassigned TNP Planner receives a truthful no-assignment workspace and no Client event data. Suspension or revocation removes event actions without erasing historical status evidence.
 
 ### Approved Planner dashboard
 
@@ -66,6 +69,7 @@ Freeze AppShell/global CSS, shared contracts/services/fixtures, Operations, Free
 - Resource planning lets the Planner browse eligible venue/workforce evidence, build a proposal and submit an assignment request inside the active grant.
 - Selection does not become assignment until the authoritative service succeeds. Surface capacity, overlap, eligibility, changed-grant, stale-data and rejected-assignment states.
 - Show workforce applicants/eligible workers with role, verified skills, assignment history, relevant rating count, availability and event-scoped reviews. Keep private KYC/contact/payment data hidden.
+- Provide event-scoped Team, Instructions, Reconfirmation, attendance-scan evidence and RSVP status destinations only when the assigned grant and named capability allow them. Internal staff notes remain inaccessible.
 - Rating actions are event/assignment scoped. A TNP Planner may rate assigned workforce only under the reviewed hierarchy; no self-rating or unrelated-event rating.
 
 ## Interaction, density and motion
