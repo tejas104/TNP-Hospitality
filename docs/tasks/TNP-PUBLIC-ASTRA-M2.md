@@ -2,6 +2,8 @@
 
 Status: DRAFT — no writer lease. This runs only after Client/Planner, RSVP and Freelancer UI milestones.
 
+The 2026-09-19 UX direction moves shared demo identity, route classification, portal navigation, cursor isolation and shared preview chrome into the serialized prerequisite `TNP-UX-FOUNDATION-M1`. This task consumes that reviewed foundation; it must not recreate or fork those contracts. Production login/recovery remains separate from frontend-only demo access and still requires reviewed auth contracts.
+
 ## Result
 
 Complete remaining public/service/access surfaces and integrated responsive polish before the separately deferred final 3D milestone.

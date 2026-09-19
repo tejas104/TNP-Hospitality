@@ -1,5 +1,23 @@
 # Client and owner decision log
 
+## Platform UX completion, demo access and partner discovery direction (2026-09-19)
+
+The user directs a platform-wide frontend usability and completion pass, with the public homepage deliberately handled last. Preserve the approved editorial TNP style, but prioritize first-visit comprehension, predictable navigation, obvious actions and compact task completion over decorative whitespace.
+
+The multicolour circular custom cursor is a homepage-only storytelling treatment. Every access and workspace route must use the native cursor. All links, buttons, selectable cards and expandable controls must be identifiable without hover through shape, contrast, label, icon/chevron or a consistent boundary. A user entering a role workspace must immediately understand the current state, the most important next action and where to find the remaining tasks.
+
+Portal task names—not slogans or step numerals—carry the primary hierarchy. In Planner, `Planner registration` and `Workforce requirement` become dominant task headings; supporting explanation becomes smaller secondary copy. Desktop portals must reduce excess vertical space, keep the first useful action within the initial viewport where practical and prevent demo/preview overlays from covering real task controls.
+
+Replace exaggerated display/monospace dashboard numerals with the body type stack and tabular numerals across operational metrics, money, counts, dates and percentages. Keep Georgia for restrained editorial headings, not dense data. Preserve textual labels and non-colour meaning.
+
+Navigation must use destination-accurate labels, visible active states and one predictable route model across desktop and mobile. Portal `Login` must not hard-link to Planner, and portal `Let's Talk` must not impersonate a Client navigation action. The public shell has one prominent Workspaces entry; the workspace shell exposes Home, Workspaces, the complete portal switcher, current demo identity and clear switch/exit actions. Homepage navigation/content refinement remains last.
+
+Provide truthful demo access for Client, Planner, Freelancer, Operations and RSVP using named synthetic profiles and explicit one-click entry. This is a tab-scoped demo context, not production authentication. It must never request or store a password, impersonate server authorization or call browser-local state a real account. Switching identity must not reset scenario records; exiting clears only demo identity. Guest invitations remain separate from staff/customer workspace login.
+
+Where external partners are genuinely presented for comparison, use image-led cards with a prominent name, location/service area, truthful social proof, explicit price qualifier and one clear action. Ratings, review counts, verification and partner photographs render only with attributable evidence. Current synthetic Planner match scores are not star ratings; destination-context images are not partner photographs; sample venue budget bands are not commercial starting prices. The first proven consumers are Client venue and planner selection. Other portals retain their domain-specific rows until reviewed provider/partner contracts exist.
+
+Use the interaction principles—not copied layouts or assets—of Airbnb, Notion, ChatGPT and Apple: task-first entry, scannable evidence, one dominant action and predictable action vocabulary. Preserve accessibility, keyboard operation, reduced motion, truthful loading/empty/error/retry/reset states and the fixed-SHA review gates.
+
 ## Primary colour, public navigation and workforce notification clarification (2026-09-18)
 
 The user confirms `#008080` as the client-selected primary brand colour. As of 2026-09-19, this direction is expanded and supersedes the earlier allowance for dark teal as a supporting brand surface: replace visible dark-green/dark-teal treatments, including the homepage hero and platform workspace surfaces, with `#008080`. Do not substitute another green. Ivory `#f5f1e7` and champagne `#bba879` remain supporting surfaces. Use neutral charcoal/black only where text, shadows or overlays require contrast, and `#006b6b` only as the accessible interactive hover/text variant of the same teal family. Apply the change through reviewed semantic tokens, an audited literal migration and a regression guard; semantic success states must also use text/icon meaning rather than relying on green alone.

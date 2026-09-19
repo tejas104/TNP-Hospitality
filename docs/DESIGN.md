@@ -1,5 +1,34 @@
 # Preserve the approved TNP design
 
+## Platform usability direction (2026-09-19)
+
+The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage remains the last frontend refinement milestone.
+
+### Shared interaction hierarchy
+
+- Primary actions are visibly filled and labelled with a concrete verb. On ivory use teal; on teal use ivory with teal/neutral text. Secondary actions use a clear border; tertiary actions remain text links. Do not rely on hover alone.
+- Interactive cards use either one card-wide button/link or an article with one explicit action; never create ambiguous nested click targets. Minimum target size is 44px with visible focus.
+- Workspace task titles are 24–32px and visually outrank step numbers/kickers. Supporting copy is 14–16px. Reserve very large Georgia display type for short introductions, never routine forms or dense tables.
+- Operational numerals use the body type stack with `font-variant-numeric: tabular-nums`, normal tracking and readable labels. Avoid oversized serif, monospace or digital-dashboard treatments for counts, money, dates, ratings and percentages.
+- Portal sections normally use 24–48px vertical rhythm on desktop and 16–32px on mobile. Do not force empty full-height panels. Keep the first useful task/action visible within the initial workspace view where practical.
+- Every workspace begins with a compact role orientation: current demo identity/state, one recommended next action and the remaining task destinations.
+
+### Navigation and demo surfaces
+
+- The multicolour circular custom cursor mounts only on `/`; all other routes keep the native cursor.
+- Classify routes explicitly as `marketing`, `access`, `workspace` or `guest-invitation`. RSVP staff/customer workspaces must not receive marketing navigation; guest invitation routes must not expose staff switching.
+- Derive desktop navigation, mobile navigation, active states and portal switching from one typed route manifest. No duplicated portal links or misleading destinations.
+- Demo access is one tab-scoped synthetic identity catalogue for Client, Planner, Freelancer, Operations and RSVP. It is visibly labelled as demo access and remains separate from production authentication.
+- Consolidate synthetic warning, preview state and reset controls into non-obscuring demo chrome. Scenario controls must never cover a primary action. Reset copy must state its real scope.
+
+### Partner discovery pattern
+
+- Image first, then prominent partner/venue/planner name, location or service area, verified evidence, price qualifier and primary action.
+- Show a star rating only when value, scale, review count, source and verifier exist. Otherwise show truthful recommendation/match language or no rating.
+- `Sample budget band`, `sample rate`, `starting at`, `per event/day/hour/guest/room-night` are distinct labels and cannot be interchanged.
+- Illustrative/destination images retain a visible provenance caption and cannot masquerade as partner photography. Provide stable aspect ratio, accessible alt text and a branded fallback.
+- First adoption is Client venue/planner selection. Freelancer opportunities, RSVP organizations, operational hotel inventory, requirements and worker rows keep separate semantics.
+
 ## Latest user homepage direction (2026-09-17)
 The user now requests homepage reorganization, retaining approximately75% of current images/removing25%, and a prominent3Danimated visual. This supersedes the older public-homepage composition/gallery preservation instructions below. Preserve brand colours/type identity and the separate Operations layout. Use a clear service hierarchy, one primary scene, measured performance, responsive layout, reduced-motion and WebGL fallbacks. See HOMEPAGE-REDESIGN-BRIEF.md for the proposed bounded milestone; no writer lease is granted by this note.
 
