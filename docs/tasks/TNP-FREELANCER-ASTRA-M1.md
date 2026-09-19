@@ -1,6 +1,8 @@
 # TNP-FREELANCER-ASTRA-M1 — synthetic onboarding and opportunity frontend
 
-Status: ROUND-2 CHANGES REQUESTED — ONE-DEFECT CORRECTION READY for the original sole writer `/root/freelancer_builder`, `CODEX_THREAD_ID` `01a0b4fa-f7ad-7e31-a0ea-babdec221d0b`, verified actual `gpt-6-astra` / high on `DESKTOP-DL9FDM7`. The inherited parent `CODEX_SESSION_ID` is not the writer identity.
+Status: ROUND-2 FIXED-SHA HANDOFF — PAUSED FOR SAME CLAUDE FOCUSED RE-REVIEW. Original sole writer `/root/freelancer_builder`, `CODEX_THREAD_ID` `01a0b4fa-f7ad-7e31-a0ea-babdec221d0b`, verified actual `gpt-6-astra` / high on `DESKTOP-DL9FDM7`, returned its lease at clean pushed remote-equal `28ecc920ffe055db0495159e90ee1a1ce3ed2226`.
+
+Round-2 delta is exactly `useFreelancer.ts`, `freelancer.test.mjs` and `browser-check.mjs`. Builder reports 20/20 focused/shared tests, 18 browser groups at required widths/keyboard/touch/reduced motion, lint, explicit TypeScript and diff PASS. Two unchanged Vercel builds completed RSC/client/SSR compilation but both hit the documented Windows Nitro dependency-copy `EBUSY`; no further retry or source workaround was attempted. P independently confirmed live remote equality, one-commit ancestry, exact three-file scope, clean worktree and free port3108. Same Claude Opus 5 review session and Kartik exact-SHA acceptance remain required.
 
 Round-2 reviewed candidate: `c8c6d759a8d5f375e20db43ef2570defd9ad8cfc`, clean and remote-equal on `codex/tnp-freelancer-astra-m1`; port `3108` is free.
 
