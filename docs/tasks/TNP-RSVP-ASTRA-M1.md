@@ -1,6 +1,8 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: ROUND-5 CHANGES REQUESTED — MINIMAL COMPATIBILITY CORRECTION READY. Fresh independent Sol/high returned `CHANGES REQUESTED` on Round-4 candidate `e142cf2713df8ced51c5ce67334a4a2f93e0a5e9`. Claude Operations Reports returned its writer lease, so the same `/root/rsvp_astra_refiner`, actual `gpt-6-astra` / medium, may reopen the clean remote-equal RSVP worktree as the second active builder. Scope remains adapter/tests/browser evidence only.
+Status: ROUND-5 FIXED-SHA HANDOFF — PAUSED FOR FRESH SOL/HIGH RE-REVIEW. Same `/root/rsvp_astra_refiner`, actual `gpt-6-astra` / medium, returned its lease at clean pushed remote-equal `4ce52f1885e6fd326257c530b7a49d7aee051efc`.
+
+Round-5 delta is exactly six RSVP-local files: modified `adapter.ts` and approved minimal `logic.ts`; added `round5.test.mjs`, `round5-scenarios.mjs`, `round5-browser.mjs`, `ROUND5-EVIDENCE.md`. UI/CSS/design/motion are unchanged. Builder reports 153/153 full tests, 81/81 RSVP tests, lint, explicit TypeScript, diff and focused Chrome PASS. Initial build failed with its leading error omitted; one explicitly authorized unchanged diagnostic rerun passed. P confirmed live remote equality, one-commit exact scope, clean worktree and free port3107. Fresh Sol/high exact-SHA re-review and Kartik acceptance remain mandatory.
 
 ## Round-5 compatibility findings
 
