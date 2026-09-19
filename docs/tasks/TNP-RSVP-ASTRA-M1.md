@@ -1,6 +1,8 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: ROUND-6 CHANGES REQUESTED — MINIMAL ADAPTER CORRECTION READY. Fresh Sol/high returned `CHANGES REQUESTED` on clean remote-equal Round-5 candidate `4ce52f1885e6fd326257c530b7a49d7aee051efc`. Same `/root/rsvp_astra_refiner`, actual `gpt-6-astra` / medium, may reopen only RSVP adapter/tests/browser evidence beside the disjoint brand-color builder.
+Status: ROUND-6 FIXED-SHA PASS — AWAITING KARTIK ACCEPTANCE. Clean pushed remote-equal final `0c562341cb97b1a3e1ecc6638677850a6692552f` passed fresh independent Sol/high review with no findings. Writer and reviewer leases are closed; port 3107 is free. No integration, main push, deployment or provider mutation is authorized until Kartik accepts this exact SHA.
+
+Fresh review confirmed the exact five-file RSVP-local adapter/test/browser/evidence delta over `4ce52f1885e6fd326257c530b7a49d7aee051efc`; logic, TSX, CSS, design and motion remain unchanged. Independent checks passed: Round 6 4/4, RSVP 85/85, full suite 157/157, lint with three inherited warnings, explicit non-incremental TypeScript, diff, first-attempt Vercel build, desktop/mobile keyboard and reduced-motion browser matrices, both pickup/drop three-cycle collision-free replay-stable identity, current-intent reload/no-resurrection, historical manifest visibility, clean checkout and free port. This is synthetic frontend evidence, not production persistence, authorization, provider or concurrency proof.
 
 ## Round-6 current-intent and identity findings
 
