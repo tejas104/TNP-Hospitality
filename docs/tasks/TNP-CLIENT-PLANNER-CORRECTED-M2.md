@@ -4,6 +4,8 @@ Status: DRAFT — no writer, branch, worktree, port or lease. This is the clean 
 
 Responsible product/visual owner: Anjaneya. Sole human fixed-SHA acceptance reviewer: Kartik. Proposed UI author: fresh verified `gpt-6-astra` / medium. Fresh external Claude fixed-SHA review follows Astra authorship. Any shared contract, authorization, allocation, quotation or rating change requires a separate owner and specialist review.
 
+Client visual direction: `docs/CLIENT-WISPR-INSPIRED-REDESIGN-BRIEF.md`. Kartik rejects the current full-teal poster hero and fixed side dial. The replacement uses a calm ivory product-led first view, concise outcome copy and an interactive four-product brief preview while preserving TNP's own identity. The shared switcher is supplied by the integrated UX foundation; this task must not reimplement it locally.
+
 ## Result
 
 Deliver a responsive, task-first Client workspace and TNP Planner experience that implement the corrected product model without confusing a client's own representative with a TNP Planner or granting authority in the browser.
@@ -31,6 +33,7 @@ Freeze AppShell/global CSS, shared contracts/services/fixtures, Operations, Free
 ### Entry and guidance
 
 - Open with the client's event goal, current order/quotation state and one dominant next action.
+- Replace the current palace-led full-teal hero with the compact product-led composition in `CLIENT-WISPR-INSPIRED-REDESIGN-BRIEF`: promise, primary action and truthful interactive four-product brief preview in the first viewport. Move supporting photography into evidence/story contexts with provenance.
 - Offer a guided event builder for event basics, service selection and review. Avoid asking users to understand internal TNP terminology before selecting a need.
 - Present each workforce role separately: Event Coordinator, Event Executive, Hostess, Volunteer and Porter. Never hide them behind a generic `freelancers` card.
 - Present TNP Planner, Venue and RSVP as distinct products with clear inclusions, exclusions, current state and one primary action.

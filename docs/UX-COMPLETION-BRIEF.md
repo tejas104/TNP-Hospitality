@@ -8,6 +8,8 @@ Complete the responsive frontend so a first-time visitor can identify their role
 
 Preserve TNP's editorial hospitality character. Improve usability through hierarchy, density, evidence, predictable interaction and a deliberate modern surface/elevation system. Use raised interactive cards and dashboard command surfaces where they communicate destination, selection, attention or action; avoid a generic wall of equal cards or copied competitor layouts.
 
+The 2026-09-20 Client direction uses the official Wispr Flow site only as a product-design benchmark: calm ivory canvas, compact framed navigation, concise outcome promise, one obvious primary action, immediate interactive product demonstration and purposeful motion. Do not copy its trade dress, assets, lavender palette, content or exact layout. The binding Client/switcher delta is `CLIENT-WISPR-INSPIRED-REDESIGN-BRIEF.md`.
+
 ## Observed problems
 
 1. The multicolour custom cursor is mounted by the shared shell on portal routes and hides the native pointer.
@@ -21,6 +23,7 @@ Preserve TNP's editorial hospitality character. Improve usability through hierar
 9. Current workspace navigation omits RSVP/Operations demo entry, duplicates some mobile links and has no typed route/surface model.
 10. Partner/venue/planner discovery lacks a consistent evidence-rich listing pattern; current contracts cannot truthfully support marketplace stars or verified partner photos.
 11. Workspace access cards and several portal action groups are visually flat: their name, status, explanation and call to action do not read as one confident interactive surface, and hover/focus feedback is too weak for the desired modern product quality.
+12. The current Client first view is a full-teal slogan/image poster that delays the actual product and visually assumes Venue/Planner before the corrected four-product choice model. The fixed white semicircle portal dial is visually detached, oversized when open and competes with the page.
 
 ## Role entry model
 

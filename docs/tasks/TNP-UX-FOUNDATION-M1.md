@@ -6,7 +6,7 @@ Responsible product/visual owner and sole human fixed-SHA acceptance reviewer: K
 
 Mode: responsive synthetic frontend foundation. This task does not implement production authentication, authorization, persistence, providers, finance rules, database changes or the homepage redesign.
 
-Canonical requirements: `docs/UX-COMPLETION-BRIEF.md`, `docs/DESIGN.md`, `docs/PRODUCT.md`, `docs/decisions/CLIENT-DECISIONS.md`.
+Canonical requirements: `docs/UX-COMPLETION-BRIEF.md`, `docs/CLIENT-WISPR-INSPIRED-REDESIGN-BRIEF.md`, `docs/DESIGN.md`, `docs/PRODUCT.md`, `docs/decisions/CLIENT-DECISIONS.md`.
 
 ## Result
 
@@ -46,6 +46,7 @@ All portal-local feature directories, public homepage sections/3D, shared servic
 10. Preserve all existing retry/generation/reset/domain behavior and truthful preview limitations.
 11. Workspace access cards must group role name, truthful access state, outcome copy and action into one raised composition with resting affordance, responsive hover/focus/active feedback and reduced-motion parity. Shared dashboard primitives must support orientation, one dominant next action and compact attention queues without forcing every metric into a card.
 12. The shared `PartnerCard` must support evidence-safe Venue and approved TNP Planner presentation: attributable or explicitly illustrative image metadata, robust missing-image fallback, name, location/specialty evidence, qualified capacity/price/availability/rating fields only when supplied, one selection action, loading/error/unavailable/selected states, keyboard/touch parity and reduced-motion behavior. It must not define domain eligibility, fabricate verification or own feature queries.
+13. Remove the fixed right-edge semicircle portal dial on every workspace route. Replace it with an explicit header-level current-workspace pill and compact click/keyboard-opened popover on desktop plus safe-area-aware mobile sheet/menu treatment. No hover auto-open, content overlap, duplicate route list or preview controls inside the switcher. Escape closes and returns focus; all destinations come from the typed route manifest.
 
 ## Required checks
 

@@ -4,6 +4,10 @@
 
 The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage remains the last frontend refinement milestone.
 
+## Client product-led redesign direction (2026-09-20)
+
+Kartik rejects the current `/client` full-teal poster composition and fixed right-edge semicircle portal dial. The approved direction uses Wispr Flow only as an interaction benchmark: calm ivory canvas, compact framed workspace chrome, concise outcome-led hero, one dominant action and an immediate interactive product preview. Preserve TNP's own palette, typography and content; do not copy competitor trade dress or assets. The shared UX foundation replaces the dial across workspaces with an explicit header-level switcher, while the Client milestone owns the local four-product brief experience. See `CLIENT-WISPR-INSPIRED-REDESIGN-BRIEF.md`.
+
 ### Android, iOS, performance and print
 
 - Treat current Android Chrome and iOS Safari as first-class responsive-web targets. Respect safe areas, dynamic viewport height, touch/virtual-keyboard behavior, 44px targets and reduced-motion/low-capability fallbacks.
