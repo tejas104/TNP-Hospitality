@@ -163,6 +163,7 @@ type State = {
   fixtures: Fixtures;
   receipts: Record<string, { fingerprint: string; result: Result<unknown> }>;
   rowReceipts: Record<string, { fingerprint: string; outcome: ImportRowOutcome }>;
+  historicalLegIds?: string[];
   importParties: Record<string, string>;
   seq: number;
 };
@@ -499,6 +500,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
       }
       case 'change-leg': {
         const leg = data.legs.find((l) => l.id === cmd.legId);
+        if (state.historicalLegIds?.includes(cmd.legId)) return fail('validation', 'Historical travel evidence cannot be edited.');
         if (!leg) return fail('not-found', 'This travel leg no longer exists.');
         const p = partyFor(data, leg.partyId, cmd.baseVersion);
         if (!p.ok) return p;
@@ -524,7 +526,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
         if (cmd.state === 'dispatched' && !t.vehicleId) return fail('validation', 'Assign a vehicle and driver before dispatch.');
         if (cmd.state === 'dispatched' && leg?.at !== t.planBasedOn) return fail('conflict', 'Travel changed after planning. Replan before dispatch.');
         if (cmd.state === 'dispatched') {
-          const conflict = buildManifests(data).find((m) => m.vehicleId === t.vehicleId && m.capacityIssue);
+          const conflict = buildManifests(data, false).find((m) => m.vehicleId === t.vehicleId && m.capacityIssue);
           if (conflict) return fail('conflict', conflict.capacityIssue as string);
         }
         const before = t.state;
@@ -554,7 +556,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
         // without touching live state. One failure rejects the whole batch.
         const prospective = { ...data, transfers: data.transfers.map((t) => ids.has(t.id) ? { ...t, vehicleId: cmd.vehicleId } : t) };
         if (v) {
-          const conflict = buildManifests(prospective).find((m) => m.vehicleId === v.id && m.capacityIssue);
+          const conflict = buildManifests(prospective, false).find((m) => m.vehicleId === v.id && m.capacityIssue);
           if (conflict) return fail('conflict', conflict.capacityIssue as string);
         }
         for (const t of selected) {
@@ -704,6 +706,10 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
       const material = materialFingerprint(row);
       const stable = stableMaterial(material);
       const prior = state.rowReceipts[identity];
+      // Retained pre-guard batches may have accepted/rejected duplicate material
+      // at separate slots. Exact receipts replay their own outcome, not another
+      // slot's outcome. Failed operational receipts still retry below.
+      if (prior && prior.fingerprint === material && prior.outcome.key === row.key) continue;
       if ((knownMaterials.has(stable) && knownMaterials.get(stable) !== row.rowNumber) || (knownKeys.has(row.key) && knownKeys.get(row.key) !== row.rowNumber) || (prior && prior.fingerprint !== material) || (incoming.has(identity) && incoming.get(identity) !== material)) {
         return fail('conflict', `Import row ${row.rowNumber} changed under the same batch identity. Start a new batch; no rows were changed.`);
       }
@@ -826,7 +832,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
   function invitationView(data: EventData, party: Party): InvitationView {
     const members = data.members.filter((m) => m.partyId === party.id && !m.removed);
     const invited = new Set(members.flatMap((m) => m.invitedFunctionIds));
-    const legs = data.legs.filter((l) => l.partyId === party.id);
+    const legs = data.legs.filter((l) => l.partyId === party.id && !state.historicalLegIds?.includes(l.id));
     const arr = legs.find((l) => l.direction === 'arrival');
     const dep = legs.find((l) => l.direction === 'departure');
     const stay = data.stays.find((s) => s.partyId === party.id);
@@ -900,7 +906,7 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
     }
     const attending = members.some((m) => Object.values(m.responses).some((v) => v === 'confirmed' || v === 'tentative'));
     const upsertLeg = (direction: 'arrival' | 'departure', ans: GuestAnswers['arrival'] | GuestAnswers['departure']) => {
-      const existing = data.legs.find((l) => l.partyId === party.id && l.direction === direction);
+      const existing = data.legs.find((l) => l.partyId === party.id && l.direction === direction && !state.historicalLegIds?.includes(l.id));
       if (!ans) {
         if (existing) {
           change(party, actor, `${direction === 'arrival' ? 'Arrival' : 'Departure'} details`, `${existing.from} → ${existing.to}`, 'Details later', 'guest-form');
@@ -911,7 +917,9 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
               transfer.state = 'awaiting-details';
             }
           }
-          data.legs = data.legs.filter((l) => l.id !== existing.id);
+          if (data.transfers.some((t) => t.legId === existing.id)) {
+            state.historicalLegIds = [...new Set([...(state.historicalLegIds ?? []), existing.id])];
+          } else data.legs = data.legs.filter((l) => l.id !== existing.id);
         }
         return;
       }
@@ -937,8 +945,10 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
         existing.from = from;
         existing.to = to;
       } else {
+        const baseId = `${party.id}-${direction === 'arrival' ? 'arr' : 'dep'}`;
+        const id = data.legs.some((l) => l.id === baseId) ? `${baseId}-${++state.seq}` : baseId;
         data.legs.push({
-          id: `${party.id}-${direction === 'arrival' ? 'arr' : 'dep'}`,
+          id,
           partyId: party.id,
           direction,
           mode: ans.mode,
@@ -956,12 +966,12 @@ export function createRsvpAdapter(options: AdapterOptions = {}) {
     upsertLeg('arrival', answers.arrival);
     upsertLeg('departure', answers.departure);
     const setTransfer = (kind: 'pickup' | 'drop', wanted: boolean) => {
-      const leg = data.legs.find((l) => l.partyId === party.id && l.direction === (kind === 'pickup' ? 'arrival' : 'departure'));
-      const t = data.transfers.find((x) => x.partyId === party.id && x.kind === kind);
+      const leg = data.legs.find((l) => l.partyId === party.id && l.direction === (kind === 'pickup' ? 'arrival' : 'departure') && !state.historicalLegIds?.includes(l.id));
+      const t = data.transfers.find((x) => x.partyId === party.id && x.kind === kind && !['guest-met', 'completed'].includes(x.state));
       const want = attending && wanted;
       // Reconnect every active dependency after details-later creates a new leg.
       for (const transfer of data.transfers) {
-        if (transfer.partyId === party.id && transfer.kind === kind && transfer.state === 'awaiting-details') transfer.legId = leg?.id ?? null;
+        if (transfer.partyId === party.id && transfer.kind === kind && (transfer.state === 'awaiting-details' || (want && ['cancelled', 'not-required'].includes(transfer.state)))) transfer.legId = leg?.id ?? null;
       }
       if (t) {
         if (!want && t.state !== 'not-required') t.state = 'cancelled';

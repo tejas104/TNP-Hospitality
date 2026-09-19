@@ -501,11 +501,11 @@ export function transferPassengers(t: Transfer, data: Pick<EventData, 'legs' | '
   return ids.filter((id) => active.has(id)).length;
 }
 
-export function buildManifests(data: EventData): Manifest[] {
+export function buildManifests(data: EventData, includeCompleted = true): Manifest[] {
   const groups = new Map<string, Manifest>();
   const tz = data.event.timezone;
   for (const t of data.transfers) {
-    if (!['planned', 'assigned', 'dispatched', 'guest-met'].includes(t.state)) continue;
+    if (!['planned', 'assigned', 'dispatched', 'guest-met'].includes(t.state) && !(includeCompleted && t.state === 'completed')) continue;
     const leg = data.legs.find((l) => l.id === t.legId);
     if (!leg?.at) continue;
     const date = localDate(leg.at, tz);
