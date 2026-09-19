@@ -32,6 +32,9 @@
 .skip:focus {
   top: 85px;
 }
+.clientRoot .skip:focus-visible {
+  outline-color: #000;
+}
 .editorialHero {
   display: grid;
   grid-template-columns: 1fr 1fr;

@@ -152,11 +152,7 @@ function CelebrationConstellation() {
         </mesh>
         <mesh position={[0, -1.06, 0]}>
           <cylinderGeometry args={[1.28, 1.36, 0.07, 64]} />
-          <meshStandardMaterial
-            color="#008080"
-            metalness={0.45}
-            roughness={0.32}
-          />
+          <meshBasicMaterial color="#008080" />
         </mesh>
         <mesh position={[0, -1.02, 0]} rotation={[Math.PI / 2, 0, 0]}>
           <torusGeometry args={[1.28, 0.012, 6, 72]} />
@@ -188,11 +184,7 @@ function CelebrationConstellation() {
             >
               <mesh rotation={[Math.PI / 2, 0, 0]}>
                 <cylinderGeometry args={[0.24, 0.24, 0.025, 32]} />
-                <meshStandardMaterial
-                  color="#008080"
-                  metalness={0.5}
-                  roughness={0.35}
-                />
+                <meshBasicMaterial color="#008080" />
               </mesh>
               <mesh rotation={[0, 0, 0]}>
                 <torusGeometry args={[0.24, 0.012, 6, 32]} />
