@@ -31,22 +31,32 @@ export type WorkspaceData = {
   metadata: ScenarioMetadata;
   worker: Worker | null;
 };
+type RetainedRegistrationRequest = FreelancerRequest & {
+  registrationOrigin?: 'worker-absent';
+};
 // This is a replay admission check, not a success receipt. Only the service
 // ledger can decide whether the retained key/payload replays or conflicts.
 export function isRetainedRegistration(
   request: FreelancerRequest,
   retained: FreelancerRequest | undefined,
+  worker: Worker,
   applications: Application[],
   profile: string,
   generation: number,
 ) {
+  const candidate = request as RetainedRegistrationRequest;
+  const saved = retained as RetainedRegistrationRequest | undefined;
   return (
     request.operation === 'registerApplicant' &&
     retained?.operation === 'registerApplicant' &&
+    candidate.registrationOrigin === 'worker-absent' &&
+    saved?.registrationOrigin === 'worker-absent' &&
     request.actorId === profile &&
     request.payload.applicantId === profile &&
     request.expectedGeneration === generation &&
     samePayload(request, retained) &&
+    worker.id === profile &&
+    !worker.approved &&
     applications.some((application) => application.applicantId === profile)
   );
 }
@@ -269,6 +279,7 @@ export function useFreelancer(profile: string) {
             !isRetainedRegistration(
               request as FreelancerRequest,
               saved,
+              worker.value,
               applications.value.items,
               profile,
               applications.generation,
@@ -287,6 +298,14 @@ export function useFreelancer(profile: string) {
           throw new Error(
             'The current worker profile could not be checked. No application was submitted.',
           );
+        if (!worker.ok) {
+          const registrationRequest = {
+            ...request,
+            registrationOrigin: 'worker-absent',
+          } as RetainedRegistrationRequest;
+          requests.current[slot] = registrationRequest;
+          persist();
+        }
       }
       // The frozen service owns validation, allocation and idempotency.
       const result = await s.mutate(request);

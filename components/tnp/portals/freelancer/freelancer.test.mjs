@@ -53,8 +53,12 @@ test('lost application response replays one exact request after journal reload',
     0,
     'sample-register',
   );
+  const markedRequest = {
+    ...request,
+    registrationOrigin: 'worker-absent',
+  };
   const journal = JSON.stringify({
-    [actionSlot(request.operation, request.payload)]: request,
+    [actionSlot(request.operation, request.payload)]: markedRequest,
   });
   const first = await service.mutate(request);
   assert.equal(first.ok, true);
@@ -63,17 +67,32 @@ test('lost application response replays one exact request after journal reload',
   assert.equal(workerBeforeRetry.ok, true);
   const beforeRetry = (await service.listApplications()).value.items;
   assert.equal(
-    isRetainedRegistration(restored, restored, beforeRetry, actor, 0),
+    isRetainedRegistration(
+      restored,
+      restored,
+      workerBeforeRetry.value,
+      beforeRetry,
+      actor,
+      0,
+    ),
     true,
   );
   assert.equal(
-    isRetainedRegistration(restored, undefined, beforeRetry, actor, 0),
+    isRetainedRegistration(
+      restored,
+      undefined,
+      workerBeforeRetry.value,
+      beforeRetry,
+      actor,
+      0,
+    ),
     false,
   );
   assert.equal(
     isRetainedRegistration(
       restored,
       restored,
+      workerBeforeRetry.value,
       beforeRetry,
       'different-profile',
       0,
@@ -81,7 +100,14 @@ test('lost application response replays one exact request after journal reload',
     false,
   );
   assert.equal(
-    isRetainedRegistration(restored, restored, beforeRetry, actor, 1),
+    isRetainedRegistration(
+      restored,
+      restored,
+      workerBeforeRetry.value,
+      beforeRetry,
+      actor,
+      1,
+    ),
     false,
   );
   const replay = await service.mutate(restored);
@@ -96,14 +122,29 @@ test('lost application response replays one exact request after journal reload',
     payload: { ...restored.payload, role: 'Hostess' },
   };
   assert.equal(
-    isRetainedRegistration(changed, restored, beforeRetry, actor, 0),
+    isRetainedRegistration(
+      changed,
+      restored,
+      workerBeforeRetry.value,
+      beforeRetry,
+      actor,
+      0,
+    ),
     false,
   );
-  // Even if the retained journal was changed, the ledger remains authoritative.
   assert.equal(
-    isRetainedRegistration(changed, changed, beforeRetry, actor, 0),
+    isRetainedRegistration(
+      changed,
+      changed,
+      workerBeforeRetry.value,
+      beforeRetry,
+      actor,
+      0,
+    ),
     true,
   );
+  // The client marker admits this retained key; the service ledger remains
+  // authoritative about the changed payload conflict.
   const conflict = await service.mutate(changed);
   assert.equal(conflict.ok, false);
   assert.equal(conflict.error.code, 'IDEMPOTENCY_CONFLICT');
@@ -127,6 +168,7 @@ test('lost application response replays one exact request after journal reload',
     isRetainedRegistration(
       restored,
       restored,
+      workerBeforeRetry.value,
       (await service.listApplications()).value.items,
       actor,
       1,
@@ -140,19 +182,28 @@ test('seeded worker journals and fresh registrations do not qualify as applicati
   const apps = (await service.listApplications()).value.items;
   for (const actor of [
     'tnp-demo-worker-003',
+    'tnp-demo-worker-004',
+    'tnp-demo-worker-005',
     'tnp-demo-worker-006',
     'tnp-demo-worker-007',
   ]) {
+    const worker = await service.getStanding(actor);
+    assert.equal(worker.ok, true);
+    const plantedRole =
+      worker.value.role === 'Volunteer' ? 'Hostess' : 'Volunteer';
     const request = createRequest(
       'registerApplicant',
-      { applicantId: actor, displayName: 'Sample Alex', role: 'Volunteer' },
+      {
+        applicantId: actor,
+        displayName: 'Sample Morgan',
+        role: plantedRole,
+      },
       actor,
       0,
       `seeded-${actor}`,
     );
-    assert.equal((await service.getStanding(actor)).ok, true);
     assert.equal(
-      isRetainedRegistration(request, request, apps, actor, 0),
+      isRetainedRegistration(request, request, worker.value, apps, actor, 0),
       false,
     );
   }

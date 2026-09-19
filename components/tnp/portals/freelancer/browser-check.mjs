@@ -18,7 +18,7 @@ const page = await context.newPage();
 const problems = [];
 page.on('pageerror', (e) => problems.push(e.message));
 const checks = [];
-const origin = 'http://127.0.0.1:3108';
+const origin = process.env.TNP_BROWSER_ORIGIN ?? 'http://127.0.0.1:3108';
 async function check(name, fn) {
   await fn();
   checks.push(name);
@@ -248,7 +248,9 @@ try {
       await button('Retry same action');
       await page.getByText(/Recovered the same sample action/).waitFor();
       const recovered = await page.evaluate(() => window.__registrationReplay);
-      assert.deepEqual(recovered.request, accepted.request);
+      const { registrationOrigin, ...recoveredRequest } = recovered.request;
+      assert.equal(registrationOrigin, 'worker-absent');
+      assert.deepEqual(recoveredRequest, accepted.request);
       assert.equal(recovered.result.replayed, true);
       assert.equal(recovered.result.value.id, accepted.result.value.id);
       const workerCount = await page.evaluate(async () => {
@@ -726,15 +728,12 @@ try {
     async () => {
       for (const id of [
         'tnp-demo-worker-003',
+        'tnp-demo-worker-004',
+        'tnp-demo-worker-005',
         'tnp-demo-worker-006',
         'tnp-demo-worker-007',
       ]) {
         await profile(id);
-        await page
-          .getByRole('heading', {
-            name: 'Your worker profile is already on record.',
-          })
-          .waitFor();
         assert.equal(await page.locator('#sample-name').count(), 0);
         assert.equal(
           await page
@@ -746,6 +745,8 @@ try {
           workers: await Promise.all(
             [
               'tnp-demo-worker-003',
+              'tnp-demo-worker-004',
+              'tnp-demo-worker-005',
               'tnp-demo-worker-006',
               'tnp-demo-worker-007',
             ].map((id) => s.getStanding(id)),
@@ -754,6 +755,9 @@ try {
         }));
         await page.evaluate((id) => {
           const envelope = JSON.parse(localStorage.getItem('tnp-preview-v1'));
+          const existing = envelope.records.workers.find(
+            (worker) => worker.id === id,
+          );
           const request = {
             actorId: id,
             expectedGeneration: envelope.generation,
@@ -761,8 +765,8 @@ try {
             operation: 'registerApplicant',
             payload: {
               applicantId: id,
-              displayName: 'Sample Alex',
-              role: 'Volunteer',
+              displayName: 'Sample Morgan',
+              role: existing.role === 'Volunteer' ? 'Hostess' : 'Volunteer',
             },
           };
           localStorage.setItem(
@@ -780,6 +784,8 @@ try {
           workers: await Promise.all(
             [
               'tnp-demo-worker-003',
+              'tnp-demo-worker-004',
+              'tnp-demo-worker-005',
               'tnp-demo-worker-006',
               'tnp-demo-worker-007',
             ].map((id) => s.getStanding(id)),
@@ -792,13 +798,14 @@ try {
           0,
         );
         const current = before.workers.find((w) => w.value.id === id).value;
+        const mainText = await page.locator('main').innerText();
         assert.match(
-          await page
-            .getByRole('region', {
-              name: 'Your worker profile is already on record.',
-            })
-            .innerText(),
+          mainText,
           new RegExp(current.displayName),
+        );
+        assert.doesNotMatch(
+          mainText,
+          /Sample action saved\.|Recovered the same sample action\./,
         );
       }
     },
