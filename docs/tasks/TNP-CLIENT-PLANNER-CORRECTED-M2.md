@@ -72,6 +72,7 @@ Freeze AppShell/global CSS, shared contracts/services/fixtures, Operations, Free
 
 - At 1440px, keep the role/task title, current state and primary action in the first viewport; avoid oversized empty panels.
 - Make every interactive item recognizable without hover through label, shape, contrast, icon support where useful and visible focus.
+- Adopt `docs/contracts/UX-SURFACE-ELEVATION.md`: use raised interactive cards for product choices, Venue/TNP Planner evidence, assigned-event next actions and grant/resource attention queues; keep routine forms, history and dense records flatter.
 - Use the body/interface font with tabular numerals for quantities, dates and money; reserve display typography for headings.
 - Use motion for route continuity, step progress, saved/submitted state, list-detail selection and successful server-confirmed actions. No looping decoration in dense workspaces.
 - Respect reduced motion, keyboard order, focus return, 200% zoom, touch targets and non-obscuring preview chrome.

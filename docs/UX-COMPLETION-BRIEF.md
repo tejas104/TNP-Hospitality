@@ -6,7 +6,7 @@ Status: canonical product/design direction recorded 2026-09-19. This brief defin
 
 Complete the responsive frontend so a first-time visitor can identify their role, enter a truthful demo, understand the current state, see the next action, complete a task and move to another task without guessing what is clickable or where navigation leads.
 
-Preserve TNP's editorial hospitality character. Improve usability through hierarchy, density, evidence and predictable interaction—not generic dashboard styling, excessive cards or copied competitor layouts.
+Preserve TNP's editorial hospitality character. Improve usability through hierarchy, density, evidence, predictable interaction and a deliberate modern surface/elevation system. Use raised interactive cards and dashboard command surfaces where they communicate destination, selection, attention or action; avoid a generic wall of equal cards or copied competitor layouts.
 
 ## Observed problems
 
@@ -20,6 +20,7 @@ Preserve TNP's editorial hospitality character. Improve usability through hierar
 8. `/login` is a truthful workspace directory, but not a coherent named demo-identity/session experience.
 9. Current workspace navigation omits RSVP/Operations demo entry, duplicates some mobile links and has no typed route/surface model.
 10. Partner/venue/planner discovery lacks a consistent evidence-rich listing pattern; current contracts cannot truthfully support marketplace stars or verified partner photos.
+11. Workspace access cards and several portal action groups are visually flat: their name, status, explanation and call to action do not read as one confident interactive surface, and hover/focus feedback is too weak for the desired modern product quality.
 
 ## Role entry model
 
@@ -65,6 +66,14 @@ All actions preserve 44px targets, visible focus, Enter/Space semantics and coar
 - Workspace hero is compact enough that a next action or task navigation is visible in the first desktop viewport.
 - Use 24–48px desktop section spacing and 16–32px mobile spacing; larger editorial spacing requires a storytelling purpose.
 - Prefer grouped rows/list-detail layouts for operational work. Do not turn every value into an equal card.
+
+### Surfaces, elevation and dashboard motion
+
+- Follow `contracts/UX-SURFACE-ELEVATION.md` for canvas, panel, raised, overlay, selected and critical surfaces.
+- Actionable role, partner, next-task and attention cards have a visible resting border/shadow, clear title/state/action grouping and fine-pointer lift without layout shift.
+- Equivalent keyboard focus, active, selected, disabled and reduced-motion feedback is mandatory; hover cannot be the only affordance.
+- Each workspace composes orientation, one next-action surface, an attention queue, an operational list/detail body and subordinate metrics instead of equal card grids.
+- Shadows remain soft and restrained. No glassmorphism, neon portal glow, perpetual floating animation or expensive blurred shadow on every list row.
 
 ### Navigation
 
@@ -119,7 +128,7 @@ Do not force this abstraction onto Freelancer opportunities, Planner requirement
 
 1. Close and integrate the fixed-SHA gates for Freelancer, corrected Operations Reports and Brand Teal. Preserve the technically reviewed RSVP predecessor frozen but do not integrate it as current product scope.
 2. Run the aggregate `#008080` adoption guard on the accepted combined platform.
-3. Execute serialized `TNP-UX-FOUNDATION-M1`: cursor isolation, surface classifier, route manifest, destination-accurate navigation, demo catalogue/session, non-obscuring preview chrome, action/numeric/density primitives.
+3. Execute serialized `TNP-UX-FOUNDATION-M1`: cursor isolation, surface classifier, route manifest, destination-accurate navigation, demo catalogue/session, non-obscuring preview chrome, action/numeric/density plus semantic surface/elevation primitives and the modern workspace-access card adoption.
 4. Execute `TNP-CLIENT-PLANNER-CORRECTED-M2`: guided Client product ordering, client-appointed planner boundary, TNP Planner application/approval/dashboard, task-first hierarchy, compact spacing, obvious actions and PartnerCard adoption. Do not reuse the paused M1 Planner WIP.
 5. Freelancer M2: attendance, pass, earnings, payout, ratings and standing using reviewed contracts, plus the shared demo/UX primitives.
 6. Execute `TNP-OPERATIONS-COMMERCIAL-M3` for Admin-only product orders, quotations and fulfillment grants; then complete bounded finance/admin/maintenance frontend and corrected Reports adoption.
@@ -136,6 +145,7 @@ Do not force this abstraction onto Freelancer opportunities, Planner requirement
 - Navigation: every manifest destination resolves; active route is visible; no duplicates; Back/Forward works; RSVP invitation never exposes staff nav.
 - Content hierarchy: role/task title, current state and next action are visible without reading machine IDs.
 - Actions: primary/secondary/tertiary remain distinguishable without hover; no fixed chrome covers a task control.
+- Surfaces: workspace role cards, next actions and attention queues are visibly interactive at rest; hover/focus/active/selected/disabled/reduced-motion states remain coherent without layout shift or clipped shadows.
 - Partner cards: long names, missing image, illustrative image, no rating, verified rating, budget range, missing price, selected/disabled/loading/empty/error states.
 - Visual/accessibility: WCAG contrast, 200% zoom, no horizontal overflow, reduced-motion parity and no unexplained console/hydration errors.
 - Truth: no demo password, production-auth claim, invented rating/review, fake verified badge, misleading partner photo or unqualified price.

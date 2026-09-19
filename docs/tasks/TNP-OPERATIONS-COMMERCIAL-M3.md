@@ -17,6 +17,7 @@ Shared domain/API contracts, Client/Planner/Freelancer/RSVP components, public s
 
 ## Required UI
 
+- Compose a modern command dashboard using the shared orientation, dominant next-action, attention-queue and semantic surface/elevation contract. Use raised interaction for pending decisions and selected work; keep dense commercial history/table regions restrained.
 - Unified request queue filtered by organization, event, requester, product family, age, owner and status.
 - Request detail with separate order lines for TNP Planner, Venue, RSVP and each workforce role/quantity.
 - Explicit requester, billing organization and client-appointed representative identities; none imply TNP Planner authority.

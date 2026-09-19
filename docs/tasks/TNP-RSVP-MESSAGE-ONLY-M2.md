@@ -10,6 +10,7 @@ Transform the reviewed RSVP predecessor into the current product: WhatsApp messa
 
 ## Required UI
 
+- Apply the shared dashboard surface/elevation contract to the all-events Today attention cards, event switcher and ambiguous/failed-message queues; do not turn travel/stay information into partner inventory cards.
 - Organization `Today` dashboard across active events with event cards, reply progress, failed messages, ambiguity, missing information, ownership and latest change.
 - All-events list/switcher with date/status/search, keyboard support and separate event URLs.
 - Event workspace: overview, guests/parties, WhatsApp inbox, campaigns/templates, collected information, reports, team/settings.

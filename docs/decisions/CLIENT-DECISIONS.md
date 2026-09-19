@@ -1,5 +1,11 @@
 # Client and owner decision log
 
+## Modern interactive cards and dashboard depth (2026-09-19)
+
+Kartik approves the architect direction and requests a materially more modern UI/frontend across the platform. The current flat workspace cards, including the supplied Client access screenshot, do not provide enough visual depth or interactive feedback. Actionable role entries, next tasks, attention queues, partner choices and selected dashboard records should use polished raised surfaces, soft shadows and purposeful hover/focus/pressed/selected motion.
+
+This is not approval to wrap every section in a floating card. Forms, passive copy, tables, history and secondary metrics remain restrained so elevation continues to signal clickability and priority. Preserve `#008080`, ivory/champagne, TNP editorial typography, accessibility, touch/reduced-motion parity and truthful demo/provider states. The reusable contract is `docs/contracts/UX-SURFACE-ELEVATION.md`; implementation remains subject to the serialized UX foundation lease and fixed-SHA review.
+
 ## RSVP WhatsApp-only, information-only and multi-event correction (2026-09-19)
 
 The user narrows RSVP to WhatsApp messaging and information collection. There is no phone/mobile calling workflow. The product collects guest replies, segregates them by event/function/party and information category, and flags ambiguous free text for human confirmation while preserving the original message.

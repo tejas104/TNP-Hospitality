@@ -13,6 +13,7 @@ Use verified `gpt-6-astra` / high for the responsive Freelancer post-assignment 
 
 ## Workflows
 
+- Use the shared surface/elevation contract for the next assignment, eligible opportunities and attention states; retain compact rows/panels for attendance-day and monthly earning history instead of equal shadow cards for every figure.
 - Event pass/QR presentation, expiry and briefing status; never treat a decorative code as production attendance proof.
 - Check-in/out history and distinct GPS recorded/missing/denied/outside-radius evidence.
 - Attendance correction/history presentation that retains original evidence and reason.

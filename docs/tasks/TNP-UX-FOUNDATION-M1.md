@@ -10,7 +10,7 @@ Canonical requirements: `docs/UX-COMPLETION-BRIEF.md`, `docs/DESIGN.md`, `docs/P
 
 ## Result
 
-Provide one predictable shared workspace shell in which every role has obvious navigation, a truthful named demo identity, visible action hierarchy, native cursor, compact non-obscuring demo chrome and reusable interaction/numeric/density primitives. Homepage behavior and design remain frozen except for proving the custom cursor still works there.
+Provide one predictable shared workspace shell in which every role has obvious navigation, a truthful named demo identity, visible action hierarchy, native cursor, compact non-obscuring demo chrome and reusable interaction/numeric/density/surface primitives. Redesign the flat workspace-access choices into modern raised interactive role cards and establish the orientation/next-action/attention composition consumed by later dashboards. Homepage behavior and design remain frozen except for proving the custom cursor still works there.
 
 ## Proposed exact ownership
 
@@ -39,9 +39,10 @@ All portal-local feature directories, public homepage sections/3D, shared servic
 5. Implement truthful named synthetic profile selection using tab-scoped session storage plus memory fallback. Do not request passwords or imply production auth. Direct workspace entry without a profile returns to the relevant chooser. Label the senior TNP Planner demo separately from a client-appointed planner, which remains a scoped Client-organization persona.
 6. Provide an RSVP adapter boundary for organization-level and event-scoped routes without importing the superseded Calls/booking/allocation model. Preserve the Freelancer candidate's named profile matrix through a later feature-owned adapter. Corrected RSVP persona/event behavior remains feature-owned by `TNP-RSVP-MESSAGE-ONLY-M2`.
 7. Switching/exit/reset semantics match the UX brief. Preview tools and warnings cannot cover task actions at required viewports; reset labels state their true scope.
-8. Add semantic action, numeric and density primitives with at least three proven shared consumers before abstraction. Primary/secondary/tertiary are distinguishable without hover; operational numbers use body-family tabular numerals.
+8. Add semantic action, numeric, density and elevation/surface primitives with at least three proven shared consumers before abstraction. Primary/secondary/tertiary are distinguishable without hover; operational numbers use body-family tabular numerals. Follow `docs/contracts/UX-SURFACE-ELEVATION.md`; do not turn passive sections or dense records into decorative cards.
 9. Canonicalize `/operations` while keeping `/admin` as a compatibility redirect until all references and browser tests are migrated.
 10. Preserve all existing retry/generation/reset/domain behavior and truthful preview limitations.
+11. Workspace access cards must group role name, truthful access state, outcome copy and action into one raised composition with resting affordance, responsive hover/focus/active feedback and reduced-motion parity. Shared dashboard primitives must support orientation, one dominant next action and compact attention queues without forcing every metric into a card.
 
 ## Required checks
 

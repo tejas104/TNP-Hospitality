@@ -4,10 +4,13 @@
 
 The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage remains the last frontend refinement milestone.
 
+Kartik's accepted visual refinement requires a stronger modern product-dashboard layer across workspace entry and authenticated portals. Use semantic raised surfaces, soft neutral/teal-black shadows, visible resting borders, deliberate corner radii and responsive hover/focus/pressed/selected motion for genuinely actionable cards. Do not apply shadows to every section: passive copy, dense tables, routine forms and secondary metrics stay flatter so actionable depth remains meaningful. The exact reusable contract and adoption boundaries are in `contracts/UX-SURFACE-ELEVATION.md`.
+
 ### Shared interaction hierarchy
 
 - Primary actions are visibly filled and labelled with a concrete verb. On ivory use teal; on teal use ivory with teal/neutral text. Secondary actions use a clear border; tertiary actions remain text links. Do not rely on hover alone.
 - Interactive cards use either one card-wide button/link or an article with one explicit action; never create ambiguous nested click targets. Minimum target size is 44px with visible focus.
+- Actionable cards are visibly raised at rest and may lift 3–5px on fine-pointer hover/focus without layout shift. Keyboard, touch and reduced-motion users receive equivalent state feedback without depending on transform animation.
 - Workspace task titles are 24–32px and visually outrank step numbers/kickers. Supporting copy is 14–16px. Reserve very large Georgia display type for short introductions, never routine forms or dense tables.
 - Operational numerals use the body type stack with `font-variant-numeric: tabular-nums`, normal tracking and readable labels. Avoid oversized serif, monospace or digital-dashboard treatments for counts, money, dates, ratings and percentages.
 - Portal sections normally use 24–48px vertical rhythm on desktop and 16–32px on mobile. Do not force empty full-height panels. Keep the first useful task/action visible within the initial workspace view where practical.
