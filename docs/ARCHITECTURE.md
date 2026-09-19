@@ -19,6 +19,10 @@ Prefer a modular backend rather than multiple services for two humans. Express a
 Domain boundaries: identity/permissions; demand (enquiry/booking/planner); events/positions/single allocation; attendance/ratings; finance (collections separate from payouts); guests/basic RSVP.
 H1 owns demand and presentation; H2 owns platform/workforce/finance. This is a concentrated H2 bottleneck, not four independent domain engineers.
 
+## Corrected commercial/planning boundary (Proposed 2026-09-19)
+
+The next platform slice keeps the modular monolith and separates `ServiceOrder`, immutable `QuotationVersion`, `FulfillmentGrant`, `PlannerEventAssignment`, `ResourceProposal` and authoritative allocation. Customer-owned commercial records carry both customer and serving-TNP organization identity. Access is authorized through an explicit customer/service/event/grant relationship: normal members stay tenant-scoped; TNP Operations requires the serving-organization relationship; a TNP Planner additionally requires an active event/grant assignment. There is no global cross-tenant Admin bypass and no browser-derived Planner authority. See ADR-0006 and `contracts/V1-COMMERCIAL-PLANNING-API.md`.
+
 ## Future mobile
 Reuse domain rules, server authorization and API DTOs. Use stable IDs, ISO timestamps/timezones, integer paise, structured errors/pagination and idempotent mutations. Keep provider secrets/server models off clients.
 No native UI, mobile endpoints without a current use, background geofence promise or premature framework migration.

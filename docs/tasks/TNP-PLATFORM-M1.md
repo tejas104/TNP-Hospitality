@@ -1,6 +1,6 @@
 # TNP-PLATFORM-M1 — temporary-development modular-monolith foundation
 
-Status: CHANGES REQUESTED. Reopen only the original platform writer under the bounded correction contract after P supplies the correction LAUNCH_SHA.
+Status: FRESH SOL APPROVED — PAUSED FOR EXTERNAL CLAUDE AND KARTIK EXACT-SHA ACCEPTANCE at clean pushed remote-equal `bc6b5565af1750168b10701955d131c3ec2f2dc4`. The correction writer and Sol reviewer leases are closed; do not reopen implementation unless a reviewer returns a bounded finding. Architect-controlled integration remains prohibited until both remaining dispositions are recorded.
 
 Responsible human and sole human fixed-SHA reviewer: H2 Kartik. Anjaneya supplies any product/content decision but is not a second code-review gate.
 Sole writer: fresh internal Codex subagent `/root/platform_builder`, assigned `gpt-5.6-sol` / high on DESKTOP-DL9FDM7.
