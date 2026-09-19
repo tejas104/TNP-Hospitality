@@ -1,156 +1,265 @@
 'use client';
-
-import { Bell, CalendarDays, MapPin, QrCode, ShieldCheck, Star, Users } from 'lucide-react';
-import { useState } from 'react';
-import { Metric } from '@/components/tnp/shared/Metric';
-import { PortalHero } from '@/components/tnp/shared/PortalHero';
-import { StatusPill } from '@/components/tnp/shared/StatusPill';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowUpRight, RefreshCw, Sparkles } from 'lucide-react';
+import { ApplicationFlow } from './ApplicationFlow';
+import {
+  AssignmentWorkspace,
+  OpportunityWorkspace,
+  UpdatesWorkspace,
+} from './OpportunityWorkspace';
+import { profiles } from './freelancerState.ts';
+import { useFreelancer } from './useFreelancer';
+import styles from './FreelancerPortal.module.css';
 
 export function FreelancerPortal() {
-  const [accepted, setAccepted] = useState(false);
-  const [checkedIn, setCheckedIn] = useState(false);
-  const [reminder, setReminder] = useState<'idle' | 'coming' | 'no-response'>('idle');
-  const filled = accepted ? 8 : 7;
-
+  const [profile, setProfile] = useState<string | null>(null);
+  useEffect(() => {
+    void Promise.resolve().then(() => {
+      try {
+        const saved = window.sessionStorage.getItem('tnp-freelancer-profile');
+        setProfile(
+          profiles.some((p) => p.id === saved) ? saved : profiles[0].id,
+        );
+      } catch {
+        setProfile(profiles[0].id);
+      }
+    });
+  }, []);
+  if (!profile)
+    return (
+      <main className={styles.workspace}>
+        <output className={styles.loading}>
+          Opening the freelancer workspace…
+        </output>
+      </main>
+    );
+  function changeProfile(value: string) {
+    try {
+      window.sessionStorage.setItem('tnp-freelancer-profile', value);
+    } catch {
+      /* Selection remains available in memory. */
+    }
+    setProfile(value);
+  }
   return (
-    <main className="portal-page product-page">
-      <PortalHero
-        label="FREELANCER PORTAL"
-        title="Your next opportunity starts here."
-        copy="Explore sample profile, assessment, role-match and event-work states for a TNP professional."
-        image="team-briefing"
-      />
-
-      <section className="freelancer-summary">
-        <div className="ops-card onboarding-flow">
-          {['Create Profile', 'Complete Assessment', 'Get Role Matched', 'Start Accepting Events'].map(
-            (step, index) => (
-              <span key={step}>
-                <strong>{String(index + 1).padStart(2, '0')}</strong>
-                {step}
-              </span>
-            ),
-          )}
-          <div className="assessment-result">
-            <h2>Rahul Sharma</h2>
-            <p>94% Sample Suitability</p>
-            <StatusPill tone="green" label="Sample recommended role: Event Coordinator" />
-            <small>Sample verification state | Experience: 6 Years</small>
-          </div>
+    <FreelancerWorkspace
+      key={profile}
+      profile={profile}
+      setProfile={changeProfile}
+    />
+  );
+}
+function FreelancerWorkspace({
+  profile,
+  setProfile,
+}: {
+  profile: string;
+  setProfile: (profile: string) => void;
+}) {
+  const w = useFreelancer(profile);
+  const [section, setSection] = useState('application');
+  const content = useRef<HTMLDivElement>(null);
+  function navigate(next: string) {
+    setSection(next);
+    window.setTimeout(() => {
+      content.current?.focus();
+      content.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
+    }, 0);
+  }
+  return (
+    <main className={styles.workspace}>
+      <header className={styles.hero}>
+        <div>
+          <p className={styles.eyebrow}>
+            TNP HOSPITALITY / THE FREELANCER SPACE
+          </p>
+          <h1>
+            Good people.
+            <br />
+            <em>Remarkable experiences.</em>
+          </h1>
+          <p>
+            A place to introduce yourself, find your next opportunity and show
+            up ready.
+          </p>
         </div>
-
-        <div className="ops-card profile-card">
-          <p>GOOD EVENING, RAHUL</p>
-          <h2>Sample Event Coordinator Profile</h2>
-          <div className="metric-row">
-            <Metric icon={<Star />} label="Rating" value="4.8" />
-            <Metric icon={<ShieldCheck />} label="Reliability" value="97%" />
-            <Metric icon={<CalendarDays />} label="Events" value="42" />
-            <Metric icon={<Users />} label="Upcoming Earnings" value="₹18,500" />
-          </div>
+        <div className={styles.heroMark} aria-hidden="true">
+          <Sparkles size={40} />
+          <span>CARE IN EVERY DETAIL</span>
+          <ArrowUpRight size={58} />
         </div>
-      </section>
-
-      <section className="opportunity-section">
-        <article className="opportunity-card">
-          <p className="section-kicker">SAMPLE OPPORTUNITY</p>
-          <h2>Royal Wedding Experience</h2>
-          <div className="opportunity-meta">
-            <span>Jaipur</span>
-            <span>14 September 2026</span>
-            <span>Reporting: 8:00 AM</span>
-            <span>Shift: 8:00 AM - 8:00 PM</span>
-            <span>Role: Event Coordinator</span>
-            <span>Rate: ₹2,500 / day</span>
-          </div>
-          <div className="slots" aria-label={`${filled} of 10 sample positions filled`}>
-            {Array.from({ length: 10 }, (_, index) => (
-              <i key={index} className={index < filled ? 'filled' : ''} />
-            ))}
-          </div>
-          <p>{filled} / 10 sample positions filled</p>
-          <button
-            type="button"
-            className="magnetic-btn dark"
-            disabled={accepted}
-            onClick={() => setAccepted(true)}
+      </header>
+      <div className={styles.context}>
+        <label htmlFor="freelancer-profile">
+          Sample profile
+          <select
+            id="freelancer-profile"
+            value={profile}
+            disabled={w.busy}
+            onChange={(e) => setProfile(e.target.value)}
           >
-            {accepted ? 'Sample Position Reserved' : 'Accept Sample Opportunity'}
-          </button>
-          {accepted && <StatusPill tone="green" label="Sample assignment confirmed in this preview" />}
-        </article>
-
-        <article className="ops-card reminder-card">
-          <Bell size={22} />
-          <h3>Sample Event Check-In Reminder</h3>
-          <p>Royal Wedding - Jaipur</p>
-          <strong>Reporting Time: 8:00 AM</strong>
-          <div className="reminder-actions">
-            <button type="button" onClick={() => setReminder('coming')}>
-              I&apos;m Coming
-            </button>
-            <button type="button" onClick={() => setReminder('no-response')}>
-              Show No Response
-            </button>
-          </div>
-          {reminder === 'coming' && <StatusPill tone="green" label="Sample response: Coming" />}
-          {reminder === 'no-response' && (
-            <StatusPill tone="amber" label="Sample nonresponse state; no live replacement sent" />
-          )}
-        </article>
-      </section>
-
-      <section className="freelancer-tools">
-        <div className="digital-pass ops-card">
-          <p>TNP HOSPITALITY</p>
-          <h2>Rahul Sharma</h2>
-          <span>Event Coordinator | Royal Wedding | 14 Sep 2026</span>
-          <div className="qr-box">
-            <QrCode size={116} />
-          </div>
-          <StatusPill
-            tone={checkedIn ? 'green' : 'amber'}
-            label={checkedIn ? 'Sample attendance recorded | 7:52 AM' : 'Sample attendance not recorded'}
-          />
-          <button className="magnetic-btn dark" type="button" onClick={() => setCheckedIn(true)}>
-            Show Sample Scan Result
-          </button>
-        </div>
-
-        <div className="ops-card map-mini">
-          <MapPin size={22} />
-          <h3>Sample Venue Context</h3>
-          <StatusPill tone="amber" label="Sample attendance state - location not verified" />
-          <div className="map-canvas mini">
-            <span className="venue-radius" />
-            <i className="marker green m1" />
-          </div>
-        </div>
-
-        <div className="ops-card ratings-card">
-          <p className="section-kicker">SAMPLE RATINGS</p>
-          <h2>Overall 4.8</h2>
-          {['Professionalism 4.9', 'Punctuality 4.8', 'Guest Handling 4.9', 'Teamwork 4.7'].map((item) => (
-            <span key={item}>{item}</span>
-          ))}
-          <p>Three consecutive poor sample ratings trigger human review, not automatic permanent blocking.</p>
-        </div>
-
-        <div className="ops-card earnings-card">
-          <p className="section-kicker">SAMPLE EARNINGS</p>
-          <div className="earning-stats">
-            <Metric label="Available" value="₹18,500" />
-            <Metric label="Pending" value="₹7,500" />
-            <Metric label="Lifetime" value="₹1,84,500" />
-          </div>
-          <div className="bar-chart">
-            {[45, 66, 38, 84, 72, 91].map((height, index) => (
-              <i key={index} style={{ height: `${height}%` }} />
+            {profiles.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
             ))}
-          </div>
-          <small>Preview values only. No payment or payout is processed.</small>
+          </select>
+        </label>
+        <p>
+          <span className={styles.statusDot} /> Synthetic workspace
+          <br />
+          <small>
+            Generation {w.data?.generation ?? '—'} · this browser only
+          </small>
+        </p>
+        <button
+          type="button"
+          className={styles.secondary}
+          disabled={w.busy || w.loading}
+          onClick={() => void w.refresh()}
+        >
+          <RefreshCw size={16} /> Refresh records
+        </button>
+      </div>
+      <output className={styles.feedback} aria-live="polite">
+        {w.notice ||
+          'Use sample choices only. No real identity checks, tracking or payments.'}
+        {w.storageWarning && <p>{w.storageWarning}</p>}
+      </output>
+      <nav className={styles.workspaceNav} aria-label="Freelancer workspace">
+        {['application', 'opportunities', 'assignments', 'updates'].map(
+          (item, index) => (
+            <button
+              key={item}
+              aria-current={section === item ? 'page' : undefined}
+              onClick={() => navigate(item)}
+            >
+              <span>0{index + 1}</span>
+              {item}
+              {item === 'assignments' && w.data && (
+                <small>{w.data.assignments.length}</small>
+              )}
+            </button>
+          ),
+        )}
+      </nav>
+      {w.pendingRequests.length > 0 && (
+        <section
+          className={styles.recovery}
+          aria-label="Unresolved sample actions"
+        >
+          <h2>Finish an earlier action</h2>
+          <p>
+            A saved request can be replayed safely with its original identity.
+            Inspect the current records before starting over.
+          </p>
+          {w.pendingRequests.map((r) => (
+            <div key={r.requestKey}>
+              <code>
+                {r.operation} · {r.requestKey}
+              </code>
+              <button
+                className={styles.secondary}
+                disabled={w.busy || w.loading || !w.data}
+                onClick={() => void w.run(r.operation, r.payload, r)}
+              >
+                Retry same action
+              </button>
+              <button
+                className={styles.textButton}
+                disabled={w.busy}
+                onClick={() => w.discard(r)}
+              >
+                Discard retry identity
+              </button>
+            </div>
+          ))}
+        </section>
+      )}
+      {w.loading && (
+        <output className={styles.loading}>
+          <span /> Reading your sample workspace…
+        </output>
+      )}
+      {w.error && (
+        <section className={styles.error} role="alert">
+          <h2>
+            {w.error.startsWith('PREVIEW_LOADING')
+              ? 'Sample loading state'
+              : 'The workspace could not be loaded.'}
+          </h2>
+          <p>{w.error}</p>
+          <button className={styles.secondary} onClick={() => void w.refresh()}>
+            Retry loading
+          </button>
+          <p>
+            When using the global preview controls, choose Ready to restore the
+            normal scenario.
+          </p>
+        </section>
+      )}
+      {w.data && (
+        <div
+          id="freelancer-content"
+          className={styles.workspaceContent}
+          ref={content}
+          tabIndex={-1}
+          inert={w.loading || !!w.error}
+          aria-busy={w.loading}
+        >
+          {w.error && (
+            <p className={styles.note}>
+              Last-loaded records are shown below. Actions are unavailable until
+              refresh succeeds.
+            </p>
+          )}
+          {w.data.opportunities.length === 0 &&
+          w.data.applications.length === 0 &&
+          w.data.assignments.length === 0 ? (
+            <section className={styles.result}>
+              <h2>No sample records to show.</h2>
+              <p>
+                Choose Ready in the preview controls, then refresh records to
+                begin.
+              </p>
+            </section>
+          ) : (
+            <div key={`${profile}:${w.data.generation}`}>
+              <div hidden={section !== 'application'}>
+                <ApplicationFlow profile={profile} workspace={w} />
+              </div>
+              <div hidden={section !== 'opportunities'}>
+                <OpportunityWorkspace
+                  profile={profile}
+                  workspace={w}
+                  openAssignments={() => navigate('assignments')}
+                />
+              </div>
+              <div hidden={section !== 'assignments'}>
+                <AssignmentWorkspace
+                  workspace={w}
+                  openOpportunities={() => navigate('opportunities')}
+                />
+              </div>
+              <div hidden={section !== 'updates'}>
+                <UpdatesWorkspace
+                  workspace={w}
+                  openOpportunities={() => navigate('opportunities')}
+                  openAssignments={() => navigate('assignments')}
+                />
+              </div>
+            </div>
+          )}
         </div>
-      </section>
+      )}
+      <footer className={styles.localFooter}>
+        <span>TNP / FREELANCER</span>
+        <p>Thoughtful people. Confident teams. Memorable events.</p>
+        <small>
+          Synthetic records stay in this browser. No live recruitment decision
+          is made here.
+        </small>
+      </footer>
     </main>
   );
 }
