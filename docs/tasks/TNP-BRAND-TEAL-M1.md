@@ -1,6 +1,6 @@
 # TNP-BRAND-TEAL-M1 — client-selected teal platform sweep
 
-Status: ROUND-3 CLIENT-KICKER CORRECTION READY from clean pushed remote-equal `48189e0b8783ef8abf80040997115a67275def57`. Before Claude dispatch, P independently browser-verified the fixed candidate and found one remaining Client status-hub kicker at approximately 1.33:1 on teal. Same Astra/low collaboration task may reopen only the Client status CSS and palette guard after receiving the architect contract commit. Fresh same-Claude review and Kartik exact-SHA acceptance remain separate.
+Status: ROUND-3 PAUSED FOR SAME-CLAUDE REVIEW at clean pushed remote-equal `1c5204f0894775292b633824118c58a5df9454b7`. The bounded Astra/low successor changes only the Client status CSS and palette guard, restoring the remaining kicker to white on teal at 4.773:1. P independently verified exact provenance/scope/diff and rendered desktop/mobile contrast, overflow and console evidence. Fresh same-Claude review and Kartik exact-SHA acceptance remain separate.
 
 Responsible human/product decision owner and sole fixed-SHA human acceptance reviewer: Kartik. Client decision evidence: user instruction on 2026-09-19, recorded in `docs/decisions/CLIENT-DECISIONS.md` and `docs/DESIGN.md` at Source.
 
@@ -84,3 +84,9 @@ Claude found remaining green 3D/fallback surfaces, low-contrast teal text/labels
 The bounded correction packet is `docs/dispatch/2026-09-19/BRAND-TEAL-ASTRA-ROUND2-CORRECTION.md`. It authorizes only the exact twelve visual/test files listed there from candidate `fc7746e...`. Operations Reports aggregate adoption remains separate. One immutable successor, fresh Claude focused re-review and Kartik acceptance precede P-controlled integration.
 
 Round-two final is `48189e0b8783ef8abf80040997115a67275def57`. P independently confirmed live remote equality, direct parent, clean worktree, exact twelve-file scope, diff check and all 79 discovered tests. P then rendered `/`, `/contact`, Client, Planner, Freelancer and Operations at desktop/mobile sizes and confirmed the main hero, public headings/actions, portal notices, Operations labels and Freelancer status treatment. The remaining Client status-hub kicker defect is bounded in `docs/dispatch/2026-09-19/BRAND-TEAL-ASTRA-ROUND3-CLIENT-KICKER.md`; the prior Claude re-review packet is superseded before use.
+
+## Round-three fixed-SHA handoff
+
+Round-three final is `1c5204f0894775292b633824118c58a5df9454b7`, the clean pushed live-remote-equal direct child of `48189e0...`. Its exact two-file delta is `ClientStatusHub.module.css` plus `brand-teal-palette.test.mjs`: the Client hub kicker is explicitly white, and the guard resolves the hub's `--dark` background and enforces at least 4.5:1.
+
+The writer reports all 79 tests, lint with three inherited warnings, explicit non-incremental TypeScript, first-attempt Vercel build and exact-range diff checks PASS. P independently confirmed provenance, scope, clean remote equality and diff check; rendered `/client` at 1440x900 and 390x844; measured white `rgb(255, 255, 255)` on teal `rgb(0, 128, 128)` at 4.773:1; found no horizontal overflow or browser warning/error logs; and stopped the isolated port3120 server. Same-Claude packet: `docs/dispatch/2026-09-19/BRAND-TEAL-CLAUDE-ROUND3-REREVIEW.md`. No integration, main push, deployment or provider change is authorized.
