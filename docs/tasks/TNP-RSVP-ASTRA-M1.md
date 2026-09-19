@@ -1,6 +1,6 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: ROUND-5 CHANGES REQUESTED — QUEUED, NOT ACTIVE. Fresh independent Sol/high returned `CHANGES REQUESTED` on Round-4 candidate `e142cf2713df8ced51c5ce67334a4a2f93e0a5e9`. The same Astra/medium writer remains paused until one current frontend writer returns its lease; do not exceed the two-builder cadence.
+Status: ROUND-5 CHANGES REQUESTED — MINIMAL COMPATIBILITY CORRECTION READY. Fresh independent Sol/high returned `CHANGES REQUESTED` on Round-4 candidate `e142cf2713df8ced51c5ce67334a4a2f93e0a5e9`. Claude Operations Reports returned its writer lease, so the same `/root/rsvp_astra_refiner`, actual `gpt-6-astra` / medium, may reopen the clean remote-equal RSVP worktree as the second active builder. Scope remains adapter/tests/browser evidence only.
 
 ## Round-5 compatibility findings
 
