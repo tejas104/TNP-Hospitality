@@ -1,6 +1,6 @@
 # TNP-PLATFORM-HARDENING-M1 — required-index readiness and replay regression
 
-Status: DRAFT — no writer, branch, worktree, port or lease. This begins only after exact Platform M1 `bc6b5565af1750168b10701955d131c3ec2f2dc4` receives Kartik acceptance and is integrated/verified. It is required before staging can be declared ready and before a commercial-domain writer relies on production-style idempotency guarantees.
+Status: DRAFT — prerequisite Platform M1 is now accepted and locally integrated/verified at merge `8544a2a5a9fcff7eefc35bcde2430cf9e1ea3ba6`, but no writer, branch, worktree, port, Ready launch commit or lease exists. This hardening remains required before staging can be declared ready and before a commercial-domain writer relies on production-style database idempotency guarantees.
 
 Source findings: `docs/reviews/TNP-PLATFORM-M1-CLAUDE-REVIEW.md`, all P3/non-blocking for local integration.
 

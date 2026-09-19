@@ -1,6 +1,6 @@
 # TNP-PLATFORM-M1 — temporary-development modular-monolith foundation
 
-Status: SOL AND EXTERNAL CLAUDE APPROVED — PAUSED FOR KARTIK EXACT-SHA ACCEPTANCE at clean pushed remote-equal `bc6b5565af1750168b10701955d131c3ec2f2dc4`. The writer and both reviewer leases are closed; do not reopen implementation. Claude's three P3 non-blocking follow-ups are preserved in `TNP-PLATFORM-HARDENING-M1`; architect-controlled integration remains prohibited until Kartik's exact disposition is recorded.
+Status: COMPLETE — SOL, EXTERNAL CLAUDE AND KARTIK APPROVED; ARCHITECT-CONTROLLED LOCAL INTEGRATION VERIFIED. Exact candidate `bc6b5565af1750168b10701955d131c3ec2f2dc4` was locally merged into main as `8544a2a5a9fcff7eefc35bcde2430cf9e1ea3ba6`. Writer/reviewer/integration leases are closed. Claude's three P3 non-blocking follow-ups remain preserved in Draft `TNP-PLATFORM-HARDENING-M1`, required before staging readiness. No remote-main push, provider mutation or deployment occurred.
 
 Responsible human and sole human fixed-SHA reviewer: H2 Kartik. Anjaneya supplies any product/content decision but is not a second code-review gate.
 Sole writer: fresh internal Codex subagent `/root/platform_builder`, assigned `gpt-5.6-sol` / high on DESKTOP-DL9FDM7.
