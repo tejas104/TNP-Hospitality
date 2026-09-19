@@ -19,11 +19,13 @@ import type {
   PreviewOutcome,
   PreviewService,
   Requirement,
+  ScenarioMetadata,
   Worker,
 } from '@/lib/contracts/preview';
 import { PREVIEW_OPERATIONS } from '@/lib/demo/service';
 import { getBrowserPreviewService } from '@/lib/services/preview';
 import { AttendancePanel, VerificationPanel, type ActionFeedback } from './OperationsDecisionPanels';
+import { OperationsReports } from './OperationsReports';
 import {
   canRetryFeedback,
   filterOperationsEvents,
@@ -53,14 +55,16 @@ type DashboardData = {
   assignments: Assignment[];
   attendances: Attendance[];
   audit: AuditEntry[];
+  generation: number | null;
+  metadata: ScenarioMetadata | null;
 };
 
 const emptyData: DashboardData = {
   events: [], positions: [], requirements: [], roster: [], workers: {}, metrics: {},
-  applications: [], assignments: [], attendances: [], audit: [],
+  applications: [], assignments: [], attendances: [], audit: [], generation: null, metadata: null,
 };
 
-const futureNavigation = ['Ratings', 'Finance & payouts', 'RSVP', 'Reports'];
+const futureNavigation = ['Ratings', 'Finance & payouts', 'RSVP'];
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat('en-IN', {
@@ -113,18 +117,18 @@ export function AdminOperations() {
     if (!instance) return;
     const refreshId = ++refreshEpoch.current;
     setLoadState({ kind: 'loading', message: 'Refreshing linked Operations records…' });
-    const [generation, events, positions, requirements, metrics, applications, assignments, audit] = await Promise.all([
-      instance.getGeneration(), instance.listEvents(), instance.listPositions(), instance.listRequirements(),
+    const [generation, metadata, events, positions, requirements, metrics, applications, assignments, audit] = await Promise.all([
+      instance.getGeneration(), instance.getScenarioMetadata(), instance.listEvents(), instance.listPositions(), instance.listRequirements(),
       instance.getMetrics(), instance.listApplications(), instance.listAssignments(), instance.listAudit(),
     ]);
-    if (refreshId !== refreshEpoch.current) return;
+    if (!isCurrentActionEpoch(refreshId, refreshEpoch.current)) return;
     const results = [events, positions, requirements, metrics, applications, assignments, audit];
     const failure = results.find((result) => !result.ok);
     if (failure && !failure.ok) { setLoadState(errorState(failure.error)); return; }
     if (!events.ok || !positions.ok || !requirements.ok || !metrics.ok || !applications.ok || !assignments.ok || !audit.ok) return;
     if (!events.value.items.length) {
       selectedEventRef.current = ''; setSelectedEventId(''); setRosterReadyForEventId('');
-      setData({ ...emptyData, positions: positions.value.items, requirements: requirements.value.items, metrics: metrics.value, applications: applications.value.items, assignments: assignments.value.items, audit: audit.value.items });
+      setData({ ...emptyData, generation, metadata, positions: positions.value.items, requirements: requirements.value.items, metrics: metrics.value, applications: applications.value.items, assignments: assignments.value.items, audit: audit.value.items });
       setLoadState({ kind: 'empty', message: 'No sample Operations events are available.' });
       return;
     }
@@ -157,7 +161,7 @@ export function AdminOperations() {
     setData({
       events: events.value.items, positions: positions.value.items, requirements: requirements.value.items,
       roster: roster?.ok ? roster.value.items : [], workers, metrics: metrics.value, applications: applications.value.items,
-      assignments: assignments.value.items, attendances, audit: audit.value.items,
+      assignments: assignments.value.items, attendances, audit: audit.value.items, generation, metadata,
     });
     setRosterReadyForEventId(nextSelected);
     setLoadState({ kind: 'ready', message: `Preview generation ${generation}` });
@@ -322,7 +326,7 @@ export function AdminOperations() {
       <aside className="admin-sidebar" aria-label="Operations sections">
         <strong>TNP OPERATIONS</strong>
         {sections.map((item) => (
-          <button className={`${styles.navButton} ${item.current ? styles.navButtonActive : ''}`} key={item.id} type="button" aria-current={item.current ? 'page' : undefined} onClick={() => setPanel(item.id)}>{item.label}</button>
+          <button className={`${styles.navButton} ${item.current ? styles.navButtonActive : ''}`} key={item.id} type="button" aria-current={item.current ? 'page' : undefined} aria-controls="operations-workspace" onClick={() => openSection(item.id)}>{item.label}</button>
         ))}
         <span className={styles.navLabel}>Later milestones</span>
         {futureNavigation.map((item) => <button className={styles.navButton} key={item} type="button" disabled>{item} <small>Unavailable</small></button>)}
@@ -356,6 +360,7 @@ export function AdminOperations() {
             {panel === 'events' && <EventsPanel events={filteredEvents} allEventCount={data.events.length} positions={selectedPositions} roster={data.roster} workers={data.workers} selectedEvent={selectedEvent} selectedEventId={selectedEventId} rosterReady={Boolean(selectedEvent && rosterReadyForEventId === selectedEvent.id)} filter={filter} statusFilter={statusFilter} feedback={feedback} canRetry={feedbackCanRetry} onFilter={(value) => updateFilters(value, statusFilterRef.current)} onStatusFilter={(value) => updateFilters(filterRef.current, value)} onClearFilters={() => updateFilters('', 'all')} onSelectEvent={(id) => void selectEvent(id)} onClaim={(positionId) => void beginOperation('claimOpportunity', { positionId, workerId: 'tnp-demo-worker-006' }, 'Sample worker claim')} onRetry={retryCurrentAction} />}
             {panel === 'requirements' && <RequirementsPanel events={data.events} requirements={data.requirements} positions={data.positions} onSelectEvent={(id) => void selectEvent(id)} />}
             {panel === 'verification' && <VerificationPanel applications={data.applications} workers={data.workers} feedback={feedback} canRetry={feedbackCanRetry} onReview={(payload) => void beginOperation('reviewApplication', payload, 'Application review')} onChangeRole={(payload) => void beginOperation('changeRole', payload, 'Role adjustment')} onRetry={retryCurrentAction} />}
+            {panel === 'reports' && data.generation !== null && data.metadata && <OperationsReports key={`generation-${data.generation}`} generation={data.generation} metadata={data.metadata} events={data.events} positions={data.positions} assignments={data.assignments} applications={data.applications} attendances={data.attendances} audit={data.audit} />}
             {panel === 'attendance' && <AttendancePanel attendances={data.attendances} assignments={data.assignments} positions={data.positions} workers={data.workers} audit={data.audit} feedback={feedback} canRetry={feedbackCanRetry} onCorrect={(payload) => void beginOperation('correctAttendance', payload, 'Attendance correction')} onNonresponse={(payload) => void beginOperation('markNonresponse', payload, 'Nonresponse decision')} onAdminAssign={(payload) => void beginOperation('adminAssign', payload, 'Admin assignment')} onReplace={(payload) => void beginOperation('replaceAssignment', payload, 'Assignment replacement')} onRecord={(...args) => void recordAttendance(...args)} onRetry={retryCurrentAction} />}
           </section>
         </> : <StatePanel state={loadState} onRetry={() => void refreshAll()} />}

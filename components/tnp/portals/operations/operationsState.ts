@@ -2,7 +2,7 @@ import type { Application, Assignment, Attendance, PreviewEvent, Worker } from '
 
 export type EventStatusFilter = 'all' | PreviewEvent['status'];
 
-export type OperationsSection = 'overview' | 'events' | 'requirements' | 'verification' | 'attendance';
+export type OperationsSection = 'overview' | 'events' | 'requirements' | 'verification' | 'attendance' | 'reports';
 
 // Working sections only; later-milestone modules are never listed as destinations.
 export const OPERATIONS_SECTIONS: ReadonlyArray<{ id: OperationsSection; label: string }> = [
@@ -13,8 +13,11 @@ export const OPERATIONS_SECTIONS: ReadonlyArray<{ id: OperationsSection; label: 
   { id: 'attendance', label: 'Attendance exceptions' },
 ];
 
+// Reports & audit is a working, read-only section promoted from the later-milestone list.
+export const REPORTS_SECTION: { id: OperationsSection; label: string } = { id: 'reports', label: 'Reports & audit' };
+
 export function operationsSectionItems(current: OperationsSection) {
-  return OPERATIONS_SECTIONS.map((section) => ({ ...section, current: section.id === current }));
+  return [...OPERATIONS_SECTIONS, REPORTS_SECTION].map((section) => ({ ...section, current: section.id === current }));
 }
 
 export type RetryIdentity = {
