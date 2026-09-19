@@ -213,7 +213,8 @@
 }
 .constellationKey li:nth-child(2)::before {
   border-radius: 0;
-  background: #008080;
+  background: #fff;
+  border-color: #fff;
 }
 .constellationKey li:nth-child(3)::before {
   border-radius: 0;

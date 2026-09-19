@@ -33,7 +33,7 @@
 }
 .heading > a {
   display: inline-block;
-  color: #d8c799;
+  color: #fff;
   font-size: 11px;
   letter-spacing: 2px;
   margin-bottom: 38px;
@@ -44,7 +44,7 @@
   font-weight: 650;
 }
 .heading .eyebrow {
-  color: #d8c799;
+  color: #fff;
 }
 .heading h1 {
   font-size: clamp(43px, 5.5vw, 80px);
@@ -53,7 +53,7 @@
   max-width: 900px;
 }
 .heading h1 em {
-  color: #d8c799;
+  color: #fff;
 }
 .heading > p:last-child {
   color: #fff;
@@ -379,7 +379,7 @@
   margin: 22px 0;
 }
 .detailCta h2 em {
-  color: #d8c799;
+  color: #fff;
 }
 .detailCta > p:last-child {
   color: #fff;

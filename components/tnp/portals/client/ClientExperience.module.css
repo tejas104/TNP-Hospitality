@@ -71,6 +71,7 @@
 }
 .primaryLink {
   display: inline-flex;
+  border: 1px solid #fff;
   align-items: center;
   gap: 28px;
   padding: 16px 22px;
@@ -86,7 +87,7 @@
   font-size: 11px;
   line-height: 1.7;
 }
-.editorialHero :is(a, button):focus-visible {
+.clientRoot .editorialHero :is(a, button):focus-visible {
   outline-color: #fff;
 }
 .illustration {

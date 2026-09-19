@@ -48,6 +48,9 @@
   background: #008080;
   color: #fff;
 }
+.plannerRoot .workspaceHero :is(a, button):focus-visible {
+  outline-color: #fff;
+}
 .eyebrow {
   font-size: 0.7rem;
   font-weight: 800;

@@ -153,7 +153,7 @@ function CelebrationConstellation() {
         <mesh position={[0, -1.06, 0]}>
           <cylinderGeometry args={[1.28, 1.36, 0.07, 64]} />
           <meshStandardMaterial
-            color="#154f44"
+            color="#008080"
             metalness={0.45}
             roughness={0.32}
           />
@@ -189,7 +189,7 @@ function CelebrationConstellation() {
               <mesh rotation={[Math.PI / 2, 0, 0]}>
                 <cylinderGeometry args={[0.24, 0.24, 0.025, 32]} />
                 <meshStandardMaterial
-                  color="#174b41"
+                  color="#008080"
                   metalness={0.5}
                   roughness={0.35}
                 />
@@ -217,7 +217,7 @@ function CelebrationConstellation() {
                 <mesh rotation={[0, 0, 0.25]}>
                   <boxGeometry args={[0.16, 0.22, 0.035]} />
                   <meshStandardMaterial
-                    color="#a8c4ac"
+                    color="#ffffff"
                     metalness={0.35}
                     roughness={0.3}
                   />
@@ -286,9 +286,9 @@ export default function PavilionScene({
       gl={{ alpha: true, antialias: true, powerPreference: 'low-power' }}
       fallback={fallback}
     >
-      <hemisphereLight args={['#fff4de', '#164d40', 2.5]} />
+      <hemisphereLight args={['#fff4de', '#202020', 2.5]} />
       <directionalLight position={[2, 5, 3]} intensity={3} color="#fff0d5" />
-      <directionalLight position={[-3, 2, -2]} intensity={2} color="#91c9b4" />
+      <directionalLight position={[-3, 2, -2]} intensity={2} color="#ffffff" />
       <CelebrationConstellation />
       <ContextGuard onFailure={onFailure} />
     </Canvas>
