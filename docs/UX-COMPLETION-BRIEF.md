@@ -120,9 +120,9 @@ Do not force this abstraction onto Freelancer opportunities, Planner requirement
 1. Close and integrate the fixed-SHA gates for Freelancer, corrected Operations Reports and Brand Teal. Preserve the technically reviewed RSVP predecessor frozen but do not integrate it as current product scope.
 2. Run the aggregate `#008080` adoption guard on the accepted combined platform.
 3. Execute serialized `TNP-UX-FOUNDATION-M1`: cursor isolation, surface classifier, route manifest, destination-accurate navigation, demo catalogue/session, non-obscuring preview chrome, action/numeric/density primitives.
-4. Client/Planner presentation pass: task-first hierarchy, compact spacing, obvious actions and PartnerCard adoption.
+4. Execute `TNP-CLIENT-PLANNER-CORRECTED-M2`: guided Client product ordering, client-appointed planner boundary, TNP Planner application/approval/dashboard, task-first hierarchy, compact spacing, obvious actions and PartnerCard adoption. Do not reuse the paused M1 Planner WIP.
 5. Freelancer M2: attendance, pass, earnings, payout, ratings and standing using reviewed contracts, plus the shared demo/UX primitives.
-6. Operations finance/admin/maintenance frontend and corrected Reports adoption.
+6. Execute `TNP-OPERATIONS-COMMERCIAL-M3` for Admin-only product orders, quotations and fulfillment grants; then complete bounded finance/admin/maintenance frontend and corrected Reports adoption.
 7. Execute `TNP-RSVP-MESSAGE-ONLY-M2`: shared-shell/demo/palette adoption plus WhatsApp-only multi-event/event-workspace correction without carrying forward calling, booking, inventory, allocation, dispatch or payment semantics.
 8. Public/access M2: approved content, access/recovery states, cross-portal polish and asset replacement.
 9. Integrated desktop/mobile/keyboard/touch/reduced-motion/performance regression.

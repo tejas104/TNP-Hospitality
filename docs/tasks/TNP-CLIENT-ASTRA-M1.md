@@ -1,6 +1,6 @@
 # TNP-CLIENT-ASTRA-M1 — Client and Planner visual frontend follow-up
 
-Status: PAUSED AFTER PROMPT 1 — Client checkpoint `b84f1eef0e322aa4112213d45e5b4761d79b28e2` is pushed/remote-equal; existing writer lease is closed. Same worktree retains incomplete unstaged Planner WIP. Use `docs/dispatch/2026-09-18/CLIENT-ASTRA-M1-CURSOR-HANDOFF.md` for the replacement read-only preflight before any lease transfer.
+Status: SUPERSEDED — DO NOT REACTIVATE OR REUSE WIP. Client checkpoint `b84f1eef0e322aa4112213d45e5b4761d79b28e2` remains historical evidence and the old worktree retains incomplete unstaged Planner WIP, but the corrected product model now distinguishes a client-appointed representative from an experienced Admin-approved TNP Planner. Use clean successor Draft `docs/tasks/TNP-CLIENT-PLANNER-CORRECTED-M2.md`; no lease transfer is authorized from this record.
 
 Source: `6320cfaa654432cd734bc71eef375a36101afc9e`
 

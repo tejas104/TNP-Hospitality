@@ -12,14 +12,16 @@ Status: governing model/sequence decision from 2026-09-18. This document reserve
 
 ## Delivery order
 
-| Order | Milestone | Astra-owned result | Dependency |
+| Order | Milestone | Result | Dependency |
 |---|---|---|---|
 | 1 | TNP-B-M1 public non-3D frontend | Homepage interaction corrections, public-shell/workspace discovery, service/department pages and contact/vendor enquiry; keep the earlier constellation only as a temporary preview | Integrated D + Shared Fix; current preview branch |
-| 2 | Client UI follow-up | Material Client/Planner UI creation or redesign needed to consume the production platform contracts; preserve already integrated A behavior | Platform API/auth contracts fixed; separate Ready scope |
-| 3 | RSVP UI | Managed-client and vendor workspaces, guest import/errors, function responses, follow-up, approved exports and truthful provider-disabled states | Tenant/auth/API and RSVP contract ready; retention/provider decisions |
-| 4 | Freelancer UI | Application/assessment, opportunity/claim/Coming/briefing, then attendance/earnings/payout/ratings presentation as backend contracts become ready | Platform auth plus reviewed workforce/domain services |
-| 5 | Remaining service UI | Maintenance, login/recovery/tracking/access, approved reporting presentation and final responsive polish | Corresponding server contracts and client inputs |
-| 6 | Final homepage 3D | User-selected abstract gold/red Celebration Constellation on white/ivory, motion and all fallbacks; replace the temporary scene only after the rest of the frontend is complete | Orders 1–5 complete and integrated; client imagery/content sufficiently stable |
+| 2 | Shared UX foundation | Destination-accurate navigation, truthful demo profiles, obvious action hierarchy, compact density, body-font numerals, partner-card primitive and homepage-only custom cursor | Brand/Freelancer/Operations review gates integrated; aggregate palette check |
+| 3 | Corrected Client + TNP Planner UI | Guided multi-product event builder; client-appointed planner boundary; TNP Planner application/approval/dashboard; quotation/grant truth | Integrated UX foundation; reviewed product/order/grant presentation contracts |
+| 4 | Operations commercial UI | Product-order queue, Admin-only quotation versions, fulfillment grants and audit history | Integrated UX foundation; reviewed authorization/commercial contracts |
+| 5 | Freelancer completion | Application/opportunities followed by attendance-day earnings, monthly payouts, ratings and standing as contracts become ready | Integrated UX foundation plus workforce/attendance/finance contracts |
+| 6 | Message-only RSVP UI | Multi-event command centre and event workspaces for WhatsApp messaging, information collection, assisted categories and reports; no calling/booking/dispatch/payment | Integrated UX foundation; RSVP product/tenant/provider contracts and remaining client decisions |
+| 7 | Public/access and aggregate polish | Service/access/recovery/tracking states, approved content/assets and cross-portal responsive regression | Orders 2–6 integrated; client inputs available |
+| 8 | Final homepage 3D | User-selected abstract gold/red Celebration Constellation on white/ivory, motion and all fallbacks; replace the temporary scene only after the rest of the frontend is complete | Orders 1–7 complete and integrated; client imagery/content sufficiently stable |
 
 Only one Astra writer owns overlapping shared/public paths at a time. Service-page work inside the current B lease completes before Client/RSVP/Freelancer UI leases begin. Client and Freelancer paths may later run as distinct leases only when they do not share AppShell, contracts, routes or fixtures.
 
@@ -27,9 +29,9 @@ User sequencing decision 2026-09-18: the final 3D model is last. Do not spend an
 
 Image/content implementation rule 2026-09-18: every non-3D Astra milestone includes purposeful replaceable image slots where imagery improves narrative, hierarchy or comprehension. Preview images remain local, typed, accessible and explicitly illustrative; client assets later replace the source metadata without redesigning the layout. Operational tables, forms and dense authenticated controls do not receive decorative photography without a product reason.
 
-CLIENT/PLANNER FOLLOW-UP DRAFTED 2026-09-18: `docs/tasks/TNP-CLIENT-ASTRA-M1.md` now bounds the next Astra visual/frontend milestone around the already integrated synthetic Client and Planner workflows. It preserves booking, registration, requirement, quote/status, identity and refresh/reset behavior; uses replaceable illustrative image slots only where they aid discovery/context; and freezes shared services, route glue and platform semantics. It remains Draft until the current public correction is fixed/reviewed and an exact source/launch/lease/reviewer packet is issued.
+CLIENT/PLANNER PRODUCT MODEL CORRECTED 2026-09-19: the paused `TNP-CLIENT-ASTRA-M1` branch is historical and must not be reactivated or treated as current product scope. Its combined Client/Planner journey predated the distinction between a client-appointed representative and an experienced Admin-approved TNP Planner. `docs/tasks/TNP-CLIENT-PLANNER-CORRECTED-M2.md` is the clean successor after the shared UX foundation; it has no writer lease.
 
-ALL REMAINING NON-3D FRONTEND REQUESTED 2026-09-18: The user directs completion of all remaining frontend pages and workflows. The work is serialized into `TNP-CLIENT-ASTRA-M1`, `TNP-RSVP-ASTRA-M1`, `TNP-FREELANCER-ASTRA-M1`, `TNP-FREELANCER-ASTRA-M2` and `TNP-PUBLIC-ASTRA-M2`, followed by integrated I01 verification and only then the final 3D milestone. This does not combine overlapping portals/shared files into one branch or move Operations/finance rules into Astra presentation code. Each Draft still needs reviewed dependencies, exact source/launch/lease and fixed-SHA review.
+ALL REMAINING NON-3D FRONTEND REQUESTED AND RESEQUENCED 2026-09-19: close the three current fixed-SHA gates first, then serialize `TNP-UX-FOUNDATION-M1`, `TNP-CLIENT-PLANNER-CORRECTED-M2`, `TNP-OPERATIONS-COMMERCIAL-M3`, `TNP-FREELANCER-ASTRA-M2`, `TNP-RSVP-MESSAGE-ONLY-M2` and the public/access aggregate pass. The final homepage/3D milestone stays last. This sequence does not combine overlapping shared/portal files or move authorization, quotation, allocation, attendance, rating or finance rules into presentation code. Every Draft still needs reviewed dependencies, exact source/launch/lease and fixed-SHA review.
 
 ## Shared contract boundary
 
