@@ -1,6 +1,6 @@
 # TNP-BRAND-TEAL-M1 — client-selected teal platform sweep
 
-Status: PAUSED FOR FRESH CLAUDE FIXED-SHA REVIEW at clean pushed remote-equal final `fc7746e06601ca670b09dc8dd47895c543dfec58`. The Sol/high writer lease is closed, port 3111 is free, and no source writer is active. Kartik exact-SHA acceptance remains required after Claude disposition.
+Status: ROUND-2 CORRECTION READY after fresh Claude returned `CHANGES REQUESTED` on clean pushed remote-equal `fc7746e06601ca670b09dc8dd47895c543dfec58`. Exact Astra/low collaboration task `/root/brand_teal_astra_correction` passed read-only preflight on the named worktree/branch/port and may become the sole correction writer only after receiving the architect contract commit. Fresh Claude re-review and Kartik exact-SHA acceptance remain required.
 
 Responsible human/product decision owner and sole fixed-SHA human acceptance reviewer: Kartik. Client decision evidence: user instruction on 2026-09-19, recorded in `docs/decisions/CLIENT-DECISIONS.md` and `docs/DESIGN.md` at Source.
 
@@ -76,3 +76,9 @@ Final candidate: `fc7746e06601ca670b09dc8dd47895c543dfec58` on `origin/codex/tnp
 Builder evidence reports the palette guard 3/3, affected tests 73/73, lint with three unchanged inherited warnings, TypeScript, first-attempt Vercel build, browser matrices across nine routes at 1440/1100/390, keyboard navigation, no overflow/console errors, mobile no-canvas fallback and measured contrast all pass. The visible hero and sampled portal surfaces compute to `rgb(0, 128, 128)`. Reduced-motion and WebGL-loss policy were covered by focused tests; the available browser tooling could not force those two OS/runtime conditions. This limitation must remain explicit.
 
 Fresh Claude review must use the packet at `docs/dispatch/2026-09-19/BRAND-TEAL-CLAUDE-FIXED-SHA-REVIEW.md`. Not-yet-integrated RSVP final `0c562341cb97b1a3e1ecc6638677850a6692552f`, Freelancer final `28ecc920ffe055db0495159e90ee1a1ce3ed2226`, and the pending Operations Reports CSV-cleanup successor remain outside this candidate. After their acceptance/integration, a bounded aggregate adoption delta must recolor their old literals and pass the palette guard before the platform can be called fully color-complete.
+
+## Fresh Claude disposition and round-two correction
+
+Claude found remaining green 3D/fallback surfaces, low-contrast teal text/labels/status/errors, nearly invisible Operations focus, cascade-dependent action boundaries, an unreadable Freelancer success pill, dark-green `PreviewControls`, a mismatched Planner legend and an incomplete palette guard. Layout, data/state and behavior are otherwise frozen.
+
+The bounded correction packet is `docs/dispatch/2026-09-19/BRAND-TEAL-ASTRA-ROUND2-CORRECTION.md`. It authorizes only the exact twelve visual/test files listed there from candidate `fc7746e...`. Operations Reports aggregate adoption remains separate. One immutable successor, fresh Claude focused re-review and Kartik acceptance precede P-controlled integration.

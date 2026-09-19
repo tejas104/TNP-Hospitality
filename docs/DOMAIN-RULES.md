@@ -23,6 +23,20 @@
 - RSVP communication is WhatsApp message only; no phone/mobile calling workflow is part of the product.
 - RSVP travel, pickup/drop and stay values are collected information, not evidence of a ticket/room/vehicle booking, dispatch or payment. The original guest message remains evidence; categorization never overwrites it.
 - RSVP organization dashboards may aggregate attention counts across events, but guest/message/information reads and writes remain explicitly event scoped. Event switching cannot retain or expose another event's selected guest or report.
+- One designated Main Admin manages co-admin capability assignments. Co-admin membership never implicitly grants finance, provider, bank-data, security or cross-organization authority; sensitive requests re-check server-side capability and scope.
+- Public catalogue publication is revisioned. Editing a service, venue, partner, image or displayed price cannot rewrite an issued quotation, fulfillment grant, assignment rate or historical receipt.
+- Anonymous enquiries may contain several Hospitality role lines and do not require login or a TNP Planner. Submission creates a request reference only, not a booking, quotation, entitlement or assignment.
+- External planner-business intake and TNP Planner application are separate journeys and authority records.
+- Applications do not reserve a worker. Successful allocation flags only overlapping applications and leaves non-overlapping future applications active.
+- Worker-facing instructions, team announcements and internal staff notes use explicit audiences and immutable revision/audit history.
+- Attendance location is foreground, point-in-time scan evidence. Missing, denied, low-accuracy and outside-radius stay distinct; the product must not claim continuous or background monitoring.
+- Pre-event reconfirmation jobs are schedule-versioned and idempotent. Notification delivery, read and sound never count as confirmation; expiry/replacement races use one authoritative assignment revision.
+- Profile images and payout destinations use separate reviewed upload/provider boundaries. Planners and ordinary co-admins cannot read bank details.
+- Payout batches freeze before provider processing; browser clients never call the provider directly. Lost-response retries reuse one provider-attempt idempotency identity and webhook/reconciliation state never overwrites ledger history.
+- RSVP collection, entitlement, event grant and provider readiness remain separate. A TNP-managed sender can remove customer Meta-account friction without implying provider approval.
+- Export means authorized business data only. Every export reapplies tenant/event/role/column scope, redacts secrets and sensitive exact data, neutralizes spreadsheet injection and uses audited expiring downloads.
+- Official invoices and receipts are versioned documents with print/PDF presentation. A draft or synthetic preview cannot issue an official financial document.
+- Responsive web is first-class on current Android Chrome and iOS Safari. Representative production-like mobile routes require a repeatable Lighthouse performance score above 80; Lighthouse emulation does not replace real iOS/Android behavior checks.
 
 ## Pending decision register
 No entry below is approved merely because a source proposed a default. H1 collects client decisions; H2 supplies operational implications. Dates use relative days until kickoff is agreed.
@@ -49,6 +63,14 @@ No entry below is approved merely because a source proposed a default. H1 collec
 | DEC-21 | Payable-day definition, same-date multiple assignments, partial/overnight/overtime/cancellation, cutoff timezone and payout date | Kartik + client | Before production monthly earnings |
 | DEC-22 | RSVP structured reply categories, auto-suggestion versus mandatory human confirmation, ambiguous/free-text handling and original-message retention | Kartik + client | Before reply interpretation |
 | DEC-23 | RSVP all-events daily metrics, per-event workspace lifecycle, archive/retention and expected concurrent event/message volume | Kartik + client | Before multi-event production scale |
+| DEC-24 | Co-admin capability presets/scopes, last-Main-Admin protection and account recovery/transfer | Kartik + client | Before production administration |
+| DEC-25 | Catalogue publication approval, media rights and indicative-versus-fixed displayed-price policy | Anjaneya + Kartik + client | Before catalogue publishing |
+| DEC-26 | Exact T−3/T−2 reconfirmation/reminder/cutoff meaning, fallback channels, quiet hours and exception authority | Kartik + client | Before notification/jobs implementation |
+| DEC-27 | Attendance location precision, consent, operational visibility window, exact-coordinate retention and privileged export | Kartik + client | Before production location evidence |
+| DEC-28 | Razorpay beneficiary onboarding method, validation, destination-change cooling, maker/checker, retry/reversal and provider fee policy | Kartik + client | Before payout provider integration |
+| DEC-29 | RSVP service/grace dates, limits, shared sender versus branded onboarding and late-reply handling | Anjaneya + Kartik + client | Before entitlement/provider activation |
+| DEC-30 | Export formats, columns, recipients, retention, branding and privileged JSON/bulk access per module | Anjaneya + Kartik + client | Before production exports |
+| DEC-31 | Minimum Android/iOS browser versions, representative devices/routes, Lighthouse profile, invoice/receipt numbering/tax/signature/correction rules | Anjaneya + Kartik + client | Before mobile performance and official document release gates |
 
 Record actual decisions with evidence in decisions/CLIENT-DECISIONS.md. Pending policy may be represented as labelled scenario assumptions in preview fixtures, never silently used as production authority.
 

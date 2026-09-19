@@ -4,6 +4,14 @@
 
 The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage remains the last frontend refinement milestone.
 
+### Android, iOS, performance and print
+
+- Treat current Android Chrome and iOS Safari as first-class responsive-web targets. Respect safe areas, dynamic viewport height, touch/virtual-keyboard behavior, 44px targets and reduced-motion/low-capability fallbacks.
+- Representative production-like mobile routes must record Lighthouse performance above 80 (minimum passing integer score 81). Target accessibility and best practices >=90 where the category applies; public routes also retain useful SEO. Record the median of three comparable cold production-build runs with route/build/tool/profile evidence rather than one unrepeatable run.
+- Keep Admin dense but not desktop-only: tables collapse into labelled records or horizontal regions with explicit affordances; primary task actions remain visible without covering content; filters use drawers/sheets with focus return.
+- Invoice and payment-receipt views need dedicated A4 print CSS. Remove application chrome, preserve document identity/version and line-item readability, repeat table headers, control page breaks and show truthful draft/sample/void marks.
+- Admin UI implementation is assigned to a verified `gpt-6-astra` / medium frontend writer only after the relevant Ready contract and shared prerequisites; this design decision is not itself a writer lease.
+
 Kartik's accepted visual refinement requires a stronger modern product-dashboard layer across workspace entry and authenticated portals. Use semantic raised surfaces, soft neutral/teal-black shadows, visible resting borders, deliberate corner radii and responsive hover/focus/pressed/selected motion for genuinely actionable cards. Do not apply shadows to every section: passive copy, dense tables, routine forms and secondary metrics stay flatter so actionable depth remains meaningful. The exact reusable contract and adoption boundaries are in `contracts/UX-SURFACE-ELEVATION.md`.
 
 ### Shared interaction hierarchy

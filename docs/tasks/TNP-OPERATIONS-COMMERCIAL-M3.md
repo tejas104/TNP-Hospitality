@@ -2,7 +2,7 @@
 
 Status: DRAFT — no writer, branch, worktree, port or lease. This follows accepted/integrated Operations Reports, Brand Teal and `TNP-UX-FOUNDATION-M1`, plus a reviewed product/order/quotation/grant contract. It must not be folded into the one-defect Operations Reports correction.
 
-Responsible domain owner and sole human fixed-SHA acceptance reviewer: Kartik. Proposed frontend author: verified `gpt-5.6-sol` / high because the surface exposes commercial and authorization-sensitive state. Fresh independent Claude review is required; contract, money or authorization changes also require the specialist review named by the eventual Ready record.
+Responsible domain owner and sole human fixed-SHA acceptance reviewer: Kartik. Required frontend/UI author: verified `gpt-6-astra` / medium per the latest user direction for careful Admin design. Fresh independent Claude review is required; contract, money or authorization changes also require an independent `gpt-5.6-sol` / high-or-higher specialist review named by the eventual Ready record. Astra owns presentation, not unilateral financial or authorization policy.
 
 ## Result
 

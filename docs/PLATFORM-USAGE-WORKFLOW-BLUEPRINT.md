@@ -334,6 +334,10 @@ flowchart TD
     A --> RT[Ratings and disputes]
     A --> F[Monthly earnings and payouts]
     A --> RP[Reports and audit]
+    A --> C[Catalogue and publishing]
+    A --> CA[Client access and co-admin capabilities]
+    A --> N[Confirmation jobs and notification failures]
+    A --> EX[Export centre]
 
     O --> Q
     Q --> G
@@ -348,6 +352,12 @@ flowchart TD
 
 The Admin landing view prioritizes queues: orders awaiting review, quotations awaiting action, expiring grants, staffing shortages, attendance exceptions, rating disputes, RSVP provider failures and payout reconciliation. Summary metrics come after actionable risk.
 
+One designated Main Admin manages named co-admins through explicit capabilities and organization/event scope. Catalogue publishing, Client-access approval, workforce allocation, attendance-location viewing, quotation issue, payout release, exports, provider settings and security administration remain separable permissions. The last active Main Admin cannot be silently removed.
+
+The public catalogue is revisioned and Admin-managed: four product families, Hospitality roles, venues, TNP Planner/partner profiles, images and qualified price presentation. Public edits never rewrite historical quotation, grant, assignment-rate, invoice or receipt snapshots.
+
+The confirmation command centre shows the assignment deadline, durable reminder/delivery history, explicit Coming/Not Coming result, overdue queue and replacement approval. Sound is an opt-in local enhancement; provider failure and blocked sound never create a false confirmation.
+
 ## 13. Core status models
 
 - **Product order:** `draft → submitted → under review → information requested → quoted → revision requested / accepted / declined / expired → payment pending where required → granted → in delivery → completed / cancelled`.
@@ -355,6 +365,10 @@ The Admin landing view prioritizes queues: orders awaiting review, quotations aw
 - **Grant/entitlement:** `pending → active → changed → suspended → expired → completed → revoked`.
 - **Assignment:** `available → applied/claimed → assigned → accepted → reconfirming → confirmed → declined/nonresponse/replaced → attended/exception → completed`.
 - **Monthly earning:** `estimated → attendance pending → calculated → Operations reviewed → Finance approved → batched → processing → paid / failed / uncertain / reversed`.
+- **Application:** `applied → shortlisted → allocation pending → selected / not selected / withdrawn / expired / conflict flagged`; only allocation reserves a worker.
+- **Reconfirmation:** `scheduled → response required → confirmed / declined / expired nonresponse → replacement required`.
+- **RSVP entitlement:** `pending conditions → scheduled → active → suspended / grace read-only → expired / completed / revoked`.
+- **Export:** `requested → authorizing → queued → generating → ready / failed / expired / revoked`.
 
 ## 14. Data relationship map
 
@@ -387,6 +401,8 @@ erDiagram
 - Buttons use concrete verbs: `Request quotation`, `Add workforce role`, `Submit to Admin`, `Assign worker`, `Approve quotation`, `Activate RSVP`.
 - Product names and task names visually outrank step numbers and marketing slogans.
 - Use compact desktop density, body-family tabular numerals and visible click targets.
+- Provide equally complete responsive-web behavior in current Android Chrome and iOS Safari. Safe areas, dynamic viewport height, touch/virtual-keyboard behavior and device permission failures cannot hide the primary task.
+- Record a mobile Lighthouse performance score above 80 on representative production-like routes; use repeated comparable runs and keep the exact build/tool/profile evidence. Lighthouse does not replace real mobile browser verification.
 - Show process steppers where they explain order → quotation → grant → delivery.
 - Prefer list-detail and work queues over walls of equal statistic cards.
 - Provide loading, empty, filtered-empty, error, retry, permission-denied, expired, suspended and revision-requested states.
@@ -409,6 +425,9 @@ Planner talent cards show professional evidence, consented imagery, skills, rele
 - RSVP travel/stay/pickup data remains information-only and cannot claim a booking, room allocation, vehicle dispatch or payment.
 - WhatsApp submitted/sent/delivered/read/replied and RSVP confirmed remain separate states.
 - Failed, uncertain and reversed collections/payouts require reconciliation.
+- Planner/Admin location surfaces show only event-scoped attendance-scan evidence and timestamp, never claim continuous live tracking, and exclude exact coordinates from ordinary exports.
+- Provider payout attempts are server-side, idempotent and reconciled. Browser code never contains provider secrets or directly releases money.
+- Invoice/receipt print views preserve authoritative document number/version and remove app chrome; draft/sample/void status stays visible in print/PDF.
 
 ## 17. Recommended delivery sequence
 
@@ -421,8 +440,9 @@ Planner talent cards show professional evidence, consented imagery, skills, rele
 7. Venue/workforce resource planning and Planner assignment within grant.
 8. Freelancer opportunities, attendance, rating hierarchy and monthly statement UI.
 9. RSVP order/entitlement integration plus message-only multi-event, reply-categorization and information-reporting batches.
-10. Aggregate responsive, keyboard, privacy, permission, error, security, finance and UAT verification.
-11. Homepage final refinement last.
+10. Astra/medium Admin catalogue/access, staffing/confirmation, finance/reconciliation and print-document surfaces in bounded reviewed milestones.
+11. Aggregate Android/iOS responsive behavior, mobile Lighthouse >80, keyboard, privacy, permission, error, security, finance, print and UAT verification.
+12. Homepage final refinement last.
 
 ## 18. Client decisions still required
 

@@ -1,5 +1,13 @@
 # Client and owner decision log
 
+## Admin, mobile-web, workforce, payout and printable-document expansion (2026-09-19)
+
+The user confirms one designated Main Admin plus multiple named co-admins; Admin-editable services, workforce roles, venues, planners, partners, images and displayed prices; direct anonymous four-product enquiries with mixed Hospitality roles; short external planner registration with optional GST and no login friction; Admin-approved Client access; event-scoped instructions and attendance-scan location visibility for authorized Admin/Planner users; multiple Freelancer applications until authoritative allocation; pre-event reconfirmation/reminder/replacement; profile images; Razorpay-backed Freelancer payout processing; timed RSVP vendor access without requiring customers to operate Meta; and authorized multi-format data export.
+
+The responsive web platform must support current Android and iOS browsers and achieve mobile Lighthouse performance above 80 on representative production-like routes. Payment invoices and receipts must be printable through dedicated document/print layouts. The Admin frontend must be carefully designed by a verified Astra/medium writer after Ready dispatch.
+
+Architecture interprets “location monitoring” as point-in-time attendance-scan evidence, not hidden continuous tracking, and treats sound as optional notification feedback rather than a guaranteed delivery channel. Exact timing, retention, permission bundles, payout/provider policy, tax/invoice fields and mobile measurement profile remain recorded decisions before production. ADR-0007 and `docs/ADMIN-WORKFORCE-PAYOUTS-EXPANSION.md` are canonical.
+
 ## Modern interactive cards and dashboard depth (2026-09-19)
 
 Kartik approves the architect direction and requests a materially more modern UI/frontend across the platform. The current flat workspace cards, including the supplied Client access screenshot, do not provide enough visual depth or interactive feedback. Actionable role entries, next tasks, attention queues, partner choices and selected dashboard records should use polished raised surfaces, soft shadows and purposeful hover/focus/pressed/selected motion.
