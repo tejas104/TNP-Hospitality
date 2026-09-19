@@ -1,0 +1,70 @@
+# TNP-BRAND-TEAL-M1 — client-selected teal platform sweep
+
+Status: READY for fresh internal `/root/brand_teal_builder`, requested `gpt-5.6-sol` / high on `DESKTOP-DL9FDM7`. Actual runtime/model/effort must be verified in the agent startup report before the first source edit.
+
+Responsible human/product decision owner and sole fixed-SHA human acceptance reviewer: Kartik. Client decision evidence: user instruction on 2026-09-19, recorded in `docs/decisions/CLIENT-DECISIONS.md` and `docs/DESIGN.md` at Source.
+
+Source SHA: `4859b2e63246eb7aae83a36ba1863b9b250ea326`.
+
+Launch SHA: the commit carrying this Ready task and matching `docs/STATUS.md` / `docs/LANES.md` entries, supplied externally after commit creation. Initial worktree HEAD must equal Launch and Source must be its ancestor. `SOURCE_SHA..LAUNCH_SHA` may contain only those three files.
+
+Branch/worktree/port:
+
+- `codex/tnp-brand-teal-m1`
+- `D:\TNP-worktrees\TNP-BRAND-TEAL-M1`
+- `3111` / `http://localhost:3111`
+
+Preflight: branch/worktree were absent and port3111 had no listener before Ready. Exclusive writer lease is reserved for `/root/brand_teal_builder` after exact startup verification and ends at fixed-SHA handoff or P revocation. Ordinary non-force push only to the named feature branch is authorized. No main push/merge, deployment, provider action or force-push.
+
+Review appointment: fresh external Claude fixed-SHA source/browser review after Sol authorship, plus Kartik exact-SHA acceptance. Any later adoption needed for not-yet-integrated RSVP, Freelancer correction or Operations Reports code must be a separately reviewed integration delta; this task must not edit their frozen branches or pretend they are already on Source.
+
+Mode/risk: shared visual design-system correction across the currently integrated responsive frontend. No domain, service, state, contract, routing, copy meaning, data, provider or production behavior change.
+
+## Superseding visual decision
+
+Client-selected `#008080` now replaces visible dark-green/dark-teal brand surfaces across the homepage and platform. The former surface family—including `#062b29`, `#061c1b`, `#084c49`, `#0f6b68`, `#083d36`, `#073f3d`, `#052b29`, `#071c1b` and `#061615`—must not remain in active production presentation source or be replaced by another green.
+
+Use:
+
+- `#008080` for visible brand surfaces, primary actions, rails, hero sections and teal accents;
+- `#006b6b` only for same-family hover/pressed states or small text where the primary teal misses contrast;
+- neutral charcoal/black, not dark green, for body text, shadows and image overlays where contrast requires it;
+- ivory `#f5f1e7`, champagne `#bba879`, white and existing neutral soft surfaces as supporting colors.
+
+Semantic success must use teal plus text/icon/state wording rather than a separate green surface or color-only meaning.
+
+## Writable paths
+
+- `app/globals.css`
+- `components/tnp/public/**`
+- current integrated portal style files under `components/tnp/portals/{client,planner,operations}/**/*.module.css`
+- `components/three/EventOrbit.tsx`
+- `data/tnp.ts`
+- a new focused guard such as `tests/brand-teal-palette.test.mjs`
+
+Do not edit TSX/logic outside `EventOrbit.tsx`, except a source-only test/fixture helper strictly needed for the palette guard. Do not edit active RSVP/Freelancer/Operations-Reports feature branches, shared contracts/services/fixtures, packages/lockfiles, route behavior, providers, server code or docs/registers from the builder branch.
+
+If an in-scope page needs a non-color structural or behavior change to meet this request, stop and escalate rather than widening the task.
+
+## Implementation requirements
+
+1. Refactor the existing global semantic color block so legacy aliases used by current screens resolve to the new client teal rather than dark green. Add/use a neutral ink/overlay token where the old black-teal was serving text/shadow contrast rather than brand color.
+2. Replace literal former dark-green/dark-teal surfaces in the homepage hero, public content, login/access surfaces, current Client/Planner/Operations styles, data tints and legacy 3D accent with `#008080` or a documented neutral/hover exception.
+3. The homepage hero must visibly read as `#008080`, including desktop, phone, reduced-motion/mobile fallback and non-WebGL fallback. Remove the current green cast; do not hide it behind an almost-identical gradient.
+4. Preserve hierarchy through opacity, ivory/champagne/white, borders, elevation and neutral overlays—not by reintroducing another green. Preserve all layout, imagery, motion and interaction behavior.
+5. Update status/success styling so no separate green surface remains and meaning is retained by label/icon/text.
+6. Add a focused palette regression test that scans the active production presentation sources in scope for the forbidden former green literals/aliases and asserts the hero/current semantic tokens use `#008080`. Exclude the guard file's own forbidden-list constants from self-matching.
+7. Inventory not-yet-integrated feature candidates in the handoff: RSVP, Freelancer Round 2 and Operations Reports. Identify every future adoption file/literal by fixed SHA without editing those reviewed branches. Their later integration cannot be called platform-color complete until the guard passes on the aggregate SHA.
+
+## Accessibility and visual acceptance
+
+- Verify WCAG AA for normal text, 3:1 for large text/UI/focus and visible keyboard focus on every changed surface. White or ivory on `#008080` must be measured rather than assumed; use white/neutral or the accessible teal variant as needed without another green surface.
+- No text, icon, boundary or focus indicator may disappear after removing deep contrast. Preserve non-color status meaning.
+- Browser-verify `/`, `/contact`, representative service and department detail, `/login`, `/client`, `/planner`, `/freelancer` if present at Source, and `/admin` at 1440x900, 1100x900 and 390x844. Check desktop/mobile navigation, drawers, forms, cards, hover/pressed/focus, loading/error/success samples, reduced motion, no horizontal overflow and no console/hydration errors.
+- Inspect the homepage hero/fallback visually, not only by source. Report computed background colors for hero, public navigation/drawer and portal rail/surface.
+
+## Required checks and handoff
+
+Run the focused palette guard plus all existing public/shared/portal tests affected by the source range, lint, explicit non-incremental TypeScript, Vercel build and `git diff --check`. Use the one unchanged Nitro `EBUSY` retry rule only after stopping task-owned processes.
+
+Create one immutable final commit, ordinary non-force push, stop browser/server, prove port3111 free and clean remote equality. Report exact changed files, literal/token inventory before/after, commands/results, viewport/keyboard/contrast/computed-color evidence, remaining candidate-branch adoption list and limitations. Then pause for fresh Claude and Kartik review. No self-certification, integration, deployment or provider mutation.
