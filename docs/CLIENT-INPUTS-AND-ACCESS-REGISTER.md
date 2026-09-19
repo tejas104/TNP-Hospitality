@@ -106,6 +106,37 @@ For every supplied asset provide the original file, photographer/source, usage r
 - Client dashboard metrics, reports, exports and notification preferences.
 - Exact meaning of `submitted`, `accepted`, `confirmed`, `cancelled`, `completed` and other domain statuses.
 
+### Planner access, approval and organization package
+
+- Confirm whether an individual Planner, a registered planning company, or both may apply.
+- Supply public `For Planners` copy: eligibility, benefits, supported cities/services, onboarding steps, review time, support contact and reasons an application may be rejected or returned.
+- Define mandatory Planner profile fields, portfolio/reference evidence, declarations and any documents. For every document specify purpose, reviewer, storage, retention and deletion; do not send real documents until protected production intake exists.
+- Define Planner account states and who may approve, request changes, reject, suspend, restore and close an account. Confirm whether rejection may be appealed or resubmitted.
+- Define Planner-organization roles such as owner, event manager, finance viewer and read-only member; state who may invite/remove members and whether one user may belong to several Planner organizations.
+- Approve login method, MFA/session/recovery rules and support escalation. Grant provider access through named invitations; never provide passwords in this register.
+
+### Planner event and multi-role workforce package
+
+- Confirm whether Planners create new bookings/events, are invited to existing Client/TNP bookings, or both.
+- Approve the event/function schema: names, event types, dates/timezones, setup/travel buffers, guest scale, on-site contacts, reporting point, dress code, languages, accessibility and briefing fields.
+- Approve the venue model: TNP-listed venues, Planner-supplied custom venues, or both; define address/map evidence, verification, image rights, pricing display and who may edit after approval.
+- Supply the canonical workforce role catalogue and aliases—for example Hostess, Event Executive, Team Leader—with role descriptions, required skills, experience, uniform, language, shift limits and minimum/maximum quantities.
+- Confirm that one requirement may contain several role/quantity lines, for example `3 Hostesses`, `5 Event Executives` and `1 Team Leader`, and define whether lines can have different shifts/reporting points.
+- Define requirement states, mandatory approval checks, change-request reasons, rejection reasons, SLA and who may cancel/reopen after approval.
+- Confirm whether quote approval or deposit is required before Operations publishes positions.
+- Define cancellation, replacement, overtime, late-change and shortage handling, including which changes require a new quote.
+
+### Planner applicant and team visibility package
+
+- Decide whether the Planner may shortlist/rank preferences only, or make final assignments. Recommended v1: Planner preference with Operations final allocation.
+- Approve every worker field visible to a Planner: display name, consented profile image, role, skills, city, experience, verified badges, availability, aggregate rating, review count and performance summary period.
+- Explicitly identify fields that remain private: KYC files, bank/payment data, home address, internal notes, unrelated-client/event records, exact payout and unrestricted contact details.
+- Define the rating scale, categories, eligible raters, minimum evidence, aggregation period, review-count display, dispute/correction process and whether a low score affects opportunity eligibility.
+- Define what “previous performance” means: completed assignments, attendance/reliability, client/Planner feedback, role relevance, date window and how corrected/disputed events are handled.
+- Approve when direct contact is revealed, whether communication stays inside TNP, and what is visible before shortlist, after assignment and after event closure.
+- Define what the Planner sees for accepted, reconfirming, declined, replaced, checked-in, attendance-exception and completed team members.
+- Supply synthetic UAT Planner organizations, events, multi-role requests, applicants, ratings/reviews and edge cases. Do not provide real worker personal data for development fixtures.
+
 ## 10. Freelancer/workforce inputs
 
 - Application fields, minimum age, supported cities, roles, experience bands and eligibility rules.

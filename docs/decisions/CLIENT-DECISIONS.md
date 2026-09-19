@@ -1,5 +1,15 @@
 # Client and owner decision log
 
+## Planner public entry, approval and full workspace direction (2026-09-19)
+
+The user confirms that a website visitor selecting `For Planners` must first receive a clear public explanation of the Planner offering. The public page then provides `Become a Planner` and `Planner sign in`; it must not place an unauthenticated visitor directly inside the editable Planner workspace.
+
+The target Planner product includes Planner onboarding/application, authenticated access, Operations/Admin account review, multi-line workforce demand for one event (for example three Hostesses and five Event Executives), venue/event details, per-requirement Operations approval and an approval/status trail visible to the Planner. Account approval and requirement approval are separate gates.
+
+After a requirement is approved and staffing begins, the Planner dashboard should expose event-scoped applicant/team comparison with truthful ratings, prior performance/review evidence and assignment progress. Private KYC, banking, internal notes, unrelated-event information and unrestricted personal contact data remain outside Planner visibility. Recommended v1 authority is Planner shortlist/preference plus Operations final allocation; changing final-selection authority remains an explicit client/domain decision because allocation, capacity and schedule overlap must be enforced centrally.
+
+The complete role/platform flow and open refinements are canonical in `docs/PLATFORM-USAGE-WORKFLOW-BLUEPRINT.md`; the required client package is in `docs/CLIENT-INPUTS-AND-ACCESS-REGISTER.md`. This direction does not claim the current synthetic `/planner` route has production authentication or backend enforcement.
+
 ## Platform UX completion, demo access and partner discovery direction (2026-09-19)
 
 The user directs a platform-wide frontend usability and completion pass, with the public homepage deliberately handled last. Preserve the approved editorial TNP style, but prioritize first-visit comprehension, predictable navigation, obvious actions and compact task completion over decorative whitespace.
