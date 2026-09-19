@@ -1,428 +1,441 @@
-# TNP full-platform usage and workflow blueprint
+# TNP full-platform product and usage blueprint
 
-Status: product-flow blueprint for client refinement, recorded 2026-09-19. It defines the intended responsive-web experience and trust boundaries. It does not claim that production authentication, database persistence, notifications, allocation, payments or provider integrations are already implemented.
+Status: corrected canonical product-flow direction recorded 2026-09-19. This replaces the earlier model that treated a Planner primarily as an external customer. It describes the intended responsive web platform; it does not claim the current frontend preview has production authentication, persistence, WhatsApp, allocation or payment enforcement.
 
-## 1. Platform in one view
+## 1. What TNP sells
 
-```mermaid
-flowchart LR
-    V[Public visitor] --> H[Public website]
-    H --> C0[For Clients]
-    H --> P0[For Planners]
-    H --> F0[For Freelancers]
-    H --> R0[RSVP services]
-    H --> E[General enquiry]
-
-    C0 --> C1[Client explanation and enquiry]
-    C1 --> C2[Client sign in or access invitation]
-    C2 --> CD[Client workspace]
-
-    P0 --> P1[What a TNP Planner can do]
-    P1 --> P2[Become a Planner]
-    P1 --> P3[Planner sign in]
-    P2 --> PA[Planner application and organization profile]
-    PA --> AR{Operations review}
-    AR -->|Changes needed| PA
-    AR -->|Approved| PD[Planner dashboard]
-    AR -->|Rejected or suspended| PX[Decision and support path]
-    P3 --> PD
-
-    F0 --> F1[Role and opportunity explanation]
-    F1 --> F2[Apply as Freelancer]
-    F2 --> FA[Application and assessment]
-    FA --> FR{Operations review}
-    FR -->|Approved| FD[Freelancer workspace]
-    FR -->|Changes or rejected| FX[Decision and support path]
-
-    R0 --> R1[TNP-managed RSVP enquiry]
-    R0 --> R2[Vendor RSVP access]
-    R1 --> RW[Customer RSVP workspace]
-    R2 --> RV[Vendor organization workspace]
-
-    E --> OQ[Operations enquiry queue]
-    CD --> OD[Operations and Admin]
-    PD --> OD
-    FD --> OD
-    RW --> OD
-    RV --> OD
-    OQ --> OD
-
-    OD --> FI[Finance and reporting]
-    OD --> AU[Audit and support]
-```
-
-The public website explains and converts. The authenticated workspaces execute. Operations/Admin coordinates the shared record, approvals and exceptions. Finance owns financial effects. RSVP has its own event/guest permissions but shares the platform identity boundary.
-
-## 2. Entry and access model
-
-| Audience | Public experience | Access action | Authenticated destination | What must never happen |
-|---|---|---|---|---|
-| Client | Services, venues/planners, process, enquiry | Sign in or use invitation | Client workspace | Public page exposing private quote, booking or guest data |
-| Planner | Clear explanation of benefits, requirements and process | `Become a Planner` or `Planner sign in` | Planner application/status/dashboard | Sending every visitor directly into an editable planner workspace |
-| Freelancer | Roles, eligibility, process and expectations | `Apply as Freelancer` or `Freelancer sign in` | Application/status/opportunity workspace | Showing restricted event details before eligibility |
-| RSVP customer | Managed-service explanation | Enquire or open customer invitation | Customer RSVP workspace | Treating a guest invitation as staff access |
-| RSVP vendor | Vendor product, limits and onboarding | Request access or sign in | Vendor organization workspace | Cross-vendor guest/event visibility |
-| TNP staff | No public operational controls | Staff sign in with stronger security | Operations/Admin/Finance | Publishing synthetic Operations records as public content |
-
-Demo profiles may reproduce these journeys using clearly labelled synthetic data. Demo selection is not production authentication.
-
-## 3. Complete event lifecycle
+TNP is one hospitality platform with four connected product families.
 
 ```mermaid
 flowchart TD
-    A[Enquiry or existing client/planner] --> B[Create booking or event brief]
-    B --> C[Event functions, venue, schedule and contacts]
-    C --> D[Add workforce requirement lines]
-    D --> D1[Example: 3 Hostesses]
-    D --> D2[Example: 5 Event Executives]
-    D --> D3[Example: 1 Team Leader]
-    D --> E[Save draft and estimate]
-    E --> F[Submit requirement]
-    F --> G{Operations review}
-    G -->|Needs changes| H[Planner or client revises]
-    H --> F
-    G -->|Rejected| I[Reason, support and resubmit policy]
-    G -->|Approved| J[Approved event and position records]
-    J --> K[Publish only to eligible freelancers]
-    K --> L[Applications or claims]
-    L --> M[Planner event-scoped comparison]
-    L --> N[Operations eligibility and conflict review]
-    M --> O[Planner shortlist or preference]
-    N --> P{Final allocation}
-    O --> P
-    P -->|Full, overlap or ineligible| Q[Reject, waitlist or replacement path]
-    P -->|Assigned| R[Worker accepts assignment]
-    R --> S[Pre-event briefing and reconfirmation]
-    S --> T[Attendance and exception evidence]
-    T --> U[Planner or authorized event rating]
-    T --> V[Verified earning calculation]
-    U --> W[Performance history and human review]
-    V --> X[Operations and Finance approvals]
-    X --> Y[Payout reconciliation]
-    C --> Z[Quote, invoice and client collection]
-    Z --> FI[Finance ledger and reporting]
-    Y --> FI
-    FI --> CL[Event closure, reports and audit]
+    T[TNP Hospitality] --> PEOPLE[People and hospitality workforce]
+    T --> PLAN[TNP Planner service]
+    T --> PLACE[Venue service]
+    T --> RSVP[RSVP product]
+
+    PEOPLE --> EC[Event Coordinator]
+    PEOPLE --> EE[Event Executive]
+    PEOPLE --> HO[Hostess]
+    PEOPLE --> VO[Volunteer]
+    PEOPLE --> PO[Porter]
+
+    PLAN --> TP[Vetted senior TNP Planner]
+    PLACE --> VC[Approved venue catalogue and custom sourcing]
+    RSVP --> RM[TNP-managed RSVP]
+    RSVP --> RV[Vendor-team RSVP workspace]
 ```
 
-The Planner's demand, Operations staffing records, Freelancer assignments, attendance, ratings and finance records remain connected by stable booking/event/position IDs. A dashboard is a view of this record; it is not a separate copy of the truth.
+These products may be ordered independently or combined for one event. A client can ask TNP to plan the entire event, provide only a venue, provide one or more workforce roles, add RSVP, or combine all of them.
 
-## 4. Planner journey in detail
+## 2. People and role definitions
 
-### 4.1 Before login
+| Actor | Relationship to TNP | Primary purpose | Important distinction |
+|---|---|---|---|
+| Client owner/team | Customer organization | Buys services and manages its events/orders | Receives quotations for its purchases |
+| Client-appointed planner | Client employee/representative or external planner authorized by the client | Orders TNP venue/workforce/RSVP for the client's event | Uses scoped Client workspace permissions; is not a TNP Planner |
+| TNP Planner candidate | Experienced applicant seeking the senior TNP Planner role | Submits experience/profile for Admin review | Cannot plan TNP events until approved |
+| TNP Planner | Vetted senior TNP member | Owns assigned client events, chooses approved venues and assigns approved workforce | Acts for TNP within an Admin-granted event scope |
+| Freelancer/workforce member | Approved TNP worker | Performs Event Coordinator, Event Executive, Hostess, Volunteer, Porter or other approved role | Sees only eligible opportunities and own work/payment |
+| Event Coordinator | Senior event-scoped workforce role | Coordinates assigned lower-level event workforce | May rate assigned lower-level workers after the event |
+| RSVP vendor owner/team | Paying RSVP customer organization | Runs its own guest communication and reporting workspace | Is isolated from every other RSVP organization |
+| Operations/Admin | TNP control function | Reviews accounts/orders, creates quotations, grants scope, manages exceptions and audit | Admin alone issues official quotations |
+| Finance | Restricted TNP function | Reviews collections, monthly earnings and payouts | Client collections and freelancer payouts remain separate |
 
-`/planner` is a public Planner landing page, not the private dashboard. It should answer:
-
-1. Who qualifies as a Planner or planning company?
-2. What can they request from TNP?
-3. How approval works and what documents/details are needed.
-4. What they can see after approval.
-5. What TNP Operations still controls.
-
-Primary actions: `Become a Planner` and `Planner sign in`. A third, lower-priority action may be `Talk to TNP`.
-
-### 4.2 Planner account lifecycle
-
-```mermaid
-stateDiagram-v2
-    [*] --> DraftApplication
-    DraftApplication --> Submitted
-    Submitted --> UnderReview
-    UnderReview --> ChangesRequested
-    ChangesRequested --> Submitted
-    UnderReview --> Approved
-    UnderReview --> Rejected
-    Approved --> Suspended
-    Suspended --> Approved: restored by authorized admin
-    Approved --> Closed: approved offboarding
-    Rejected --> DraftApplication: resubmission allowed
-```
-
-Account approval and requirement approval are intentionally separate. An approved Planner may create requests, but each submitted event/workforce request still receives operational review.
-
-### 4.3 Planner onboarding fields
-
-- Planner/company name, legal/operating type and cities served.
-- Primary contact and organization members.
-- Experience, event categories, portfolio/reference evidence and service areas.
-- Billing identity and address when commercial flow begins.
-- Required declarations/terms acceptance.
-- Documents only after client-approved purpose, storage, access and retention rules exist.
-
-### 4.4 Planner event and workforce composer
-
-One event brief contains:
-
-- event name, client/reference and one or more functions;
-- venue selection or custom venue request, city, address/reporting point and map instructions;
-- date, timezone, start/end, setup/travel buffers and guest scale;
-- on-site contacts, dress code, languages, briefing and accessibility needs;
-- multiple workforce lines, each with role, quantity, shift, skill/experience, language, gender only if lawful and explicitly approved, uniform and notes;
-- attachments/briefs only through approved private storage;
-- estimate/quote state, acknowledgement and change history.
-
-The interface supports adding, duplicating, editing and removing several workforce lines before one submission. It must not force the Planner to submit `3 Hostesses` and `5 Event Executives` as unrelated event requests.
-
-### 4.5 Requirement lifecycle
-
-```mermaid
-stateDiagram-v2
-    [*] --> Draft
-    Draft --> Submitted
-    Submitted --> UnderReview
-    UnderReview --> ChangesRequested
-    ChangesRequested --> Submitted
-    UnderReview --> Rejected
-    UnderReview --> Approved
-    Approved --> PositionsPublished
-    PositionsPublished --> Staffing
-    Staffing --> PartiallyStaffed
-    PartiallyStaffed --> Staffed
-    Staffing --> Staffed
-    Staffed --> InProgress
-    InProgress --> Completed
-    Completed --> Closed
-    Draft --> Cancelled
-    Submitted --> Cancelled
-    Approved --> Cancelled: authorized cancellation
-```
-
-### 4.6 Planner dashboard
-
-The approved Planner dashboard is a substantial workspace with:
-
-- **Overview:** next action, account state, pending approvals, upcoming events and staffing risk.
-- **Events:** draft, submitted, approved, staffing, live, completed and cancelled events.
-- **Workforce requests:** multi-line demand, change requests, approval history and fill progress.
-- **Applicants:** event-scoped applicants/eligible candidates with comparison and shortlist tools.
-- **Assigned team:** confirmed/reconfirming/declined/replacement states and briefing acknowledgement.
-- **Venues:** approved catalogue or custom venue record, evidence-rich cards and selected event venue.
-- **Quotes and invoices:** versions, approval/revision, deposits/collections and downloadable approved documents.
-- **Messages/notifications:** request decisions, staffing changes, reconfirmation risk and event updates.
-- **Reviews:** submit event-specific worker feedback and view allowed history.
-- **Reports:** event staffing, attendance summary, ratings and closure report.
-- **Organization settings:** team members, permissions, contact/billing profile and audit-visible changes.
-
-### 4.7 What a Planner can see about applicants
-
-Recommended event-scoped comparison card:
-
-- approved display name and profile image if consented;
-- role/skills, city/service area and relevant experience;
-- aggregate rating with count and scale;
-- recent relevant event-performance summaries;
-- attendance/reliability indicators with defined calculation period;
-- verified badges only when issuer and verification state exist;
-- availability/overlap result and application state;
-- Planner's shortlist/preference action.
-
-Never expose private KYC documents, bank details, home address, internal disciplinary notes, unrelated-event client names, exact payout data or unrestricted phone/email. Operations can see the additional information required for legitimate administration under role and audit controls.
-
-### 4.8 Who selects the final worker
-
-Recommended v1 decision: the Planner can shortlist, rank or approve preferences; Operations performs final allocation. This preserves capacity, eligibility, overlapping-event and replacement integrity. If the client wants the Planner to make final assignments, that requires a separately approved permission and server-side allocation design—the UI alone cannot make it safe.
-
-## 5. Client workflow
+## 3. Public website and workspace entry
 
 ```mermaid
 flowchart LR
-    A[Public client page] --> B[Enquiry or access invitation]
-    B --> C[Client workspace]
-    C --> D[Create or review booking]
-    D --> E[Choose venue/planner or provide own]
-    E --> F[Functions and service requirements]
-    F --> G[Quote issued]
-    G -->|Revision requested| F
-    G -->|Approved| H[Collection and delivery milestones]
-    H --> I[Event progress and approved reports]
-    I --> J[Closure and feedback]
+    V[Public visitor] --> H[Homepage]
+    H --> S[Hospitality products]
+    H --> C[For Clients]
+    H --> P[Become a TNP Planner]
+    H --> F[Work with TNP]
+    H --> R[RSVP product]
+    H --> VE[Venues]
+
+    C --> CL[Client sign in or create enquiry]
+    P --> PA[TNP Planner application or sign in]
+    F --> FA[Freelancer application or sign in]
+    R --> RA[RSVP vendor registration or sign in]
+
+    CL --> CW[Client workspace]
+    PA --> PW[TNP Planner workspace after approval]
+    FA --> FW[Freelancer workspace after approval]
+    RA --> RW[RSVP workspace after quote, payment and activation]
 ```
 
-Clients see their own bookings, quotes, collections, approved staffing summaries and reports. They do not automatically receive worker KYC, payroll or other clients' data.
+Public pages explain products. Private workspaces execute work. Every public product page has one clear primary action and a secondary `Talk to TNP` option; visitors are never dropped into an editable operational preview.
 
-## 6. Freelancer workflow
+## 4. Universal product-order and quotation flow
 
-```mermaid
-flowchart LR
-    A[Public freelancer page] --> B[Application]
-    B --> C[Assessment and review]
-    C -->|Approved| D[Opportunity workspace]
-    C -->|Changes/rejected| E[Decision and support]
-    D --> F[Eligible opportunities only]
-    F --> G[Apply or claim]
-    G --> H[Assigned]
-    H --> I[Accept and reconfirm]
-    I --> J[Briefing and event pass]
-    J --> K[Attendance and corrections]
-    K --> L[Rating and standing]
-    K --> M[Earning and payout status]
-```
-
-Opportunity visibility is filtered by active status, role, availability, rating/location policy and event scope. Application does not guarantee assignment.
-
-## 7. Operations and Admin workflow
-
-Operations is not one unlimited super-screen. Permissions should separate platform administration, operations, workforce review, event coordination and finance.
+Every paid service begins as an order/request. Price is not silently generated by a browser form.
 
 ```mermaid
 flowchart TD
-    A[Operations dashboard] --> B[Planner account reviews]
-    A --> C[Freelancer application reviews]
-    A --> D[Bookings and event briefs]
-    A --> E[Requirement approval]
-    A --> F[Position publishing]
-    A --> G[Allocation and replacements]
-    A --> H[Attendance exceptions]
-    A --> I[Ratings and standing review]
-    A --> J[RSVP organizations and support]
-    A --> K[Reports and audit]
-    D --> L[Quotes and collections]
-    G --> M[Briefing and reconfirmation]
-    H --> N[Earnings]
-    L --> O[Finance]
-    N --> O
+    A[Client or authorized representative] --> B[Create event brief]
+    B --> C[Choose one or more products]
+    C --> C1[TNP Planner]
+    C --> C2[Venue]
+    C --> C3[Workforce roles and quantities]
+    C --> C4[RSVP]
+    C1 --> D[Submit product order]
+    C2 --> D
+    C3 --> D
+    C4 --> D
+    D --> E{Admin review}
+    E -->|More information| F[Requester revises]
+    F --> D
+    E -->|Cannot fulfil| G[Rejected with reason and support path]
+    E -->|Serviceable| Q[Admin creates versioned quotation]
+    Q --> R[Quotation sent to ordering client or vendor]
+    R -->|Revision requested| Q
+    R -->|Declined or expired| X[Order closed or revised]
+    R -->|Accepted| PAY[Deposit or payment state if required]
+    PAY --> GRANT[Admin grants product scope or entitlement]
+    GRANT --> EXEC[Delivery workspace becomes actionable]
 ```
 
-Every sensitive decision records actor, time, reason, before/after state and related event/account IDs. Admin override cannot silently bypass capacity or overlap rules.
+Rules:
 
-## 8. RSVP usage structure
+- Only authorized Admin/Operations users create or revise official quotations.
+- `requestedBy` and `billingParty` are separate. A TNP Planner may request an add-on for an assigned client event, but the authorized client/billing party receives and approves the quotation.
+- One order may contain several product lines; each line has its own quantity/scope, quotation lines, approval and fulfillment state.
+- A service is not granted merely because a form was submitted or a quotation was viewed.
+- Admin grant states what the Planner/Operations team may allocate: event, dates, venue scope, roles, quantities, RSVP entitlement, commercial version and expiry/change rules.
+
+## 5. Client workspace
+
+The Client workspace is a guided event builder and commercial control centre, not a blank dashboard.
+
+### Main navigation
+
+- Overview and `Next best action`
+- Create/continue event
+- Product catalogue
+- My events
+- Orders and quotations
+- TNP Planner
+- Venue
+- Workforce
+- RSVP
+- Documents and reports
+- Organization/team
+- Support
+
+### Guided event builder
 
 ```mermaid
 flowchart LR
-    A[TNP Admin] --> B[Provision vendor/customer organization]
-    B --> C[Organization owner/coordinator]
-    C --> D[Create engagement and events]
-    D --> E[Import guests and parties]
-    E --> F[Function-wise invitations and RSVP]
-    F --> G[Calling and message queues]
-    G --> H[Travel and pickup/drop]
-    G --> I[Stay and rooming]
-    G --> J[Approved document workflow]
-    H --> K[Event-day operations]
+    A[Describe event] --> B[Dates, functions, city, guests and budget context]
+    B --> C{Need a TNP Planner?}
+    C -->|Yes| D[Add TNP Planner product]
+    C -->|No, own planner| E[Invite or name client representative]
+    D --> F{Need venue?}
+    E --> F
+    F -->|Yes| G[Add venue sourcing or select venue]
+    F -->|No| H[Provide existing venue]
+    G --> I[Choose workforce roles and quantities]
+    H --> I
+    I --> J{Need RSVP product?}
+    J -->|Yes| K[Add RSVP mode and expected guest scale]
+    J -->|No| L[Review order]
+    K --> L
+    L --> M[Submit to Admin for quotation]
+```
+
+Recommendations explain what each product solves and why it may help; nothing is preselected or added through a dark pattern. The Client can explicitly choose `Not needed` and change a draft before submission.
+
+The first viewport shows event status, product coverage, quotation/payment action, requested changes and the next deadline. Cards use direct names such as `TNP Planner requested`, `Venue awaiting quote`, `5 Event Executives approved`, and `RSVP access active`—not vague slogans.
+
+## 6. Two different Planner concepts
+
+### Client-appointed planner
+
+A client may invite its own planner as an organization member or authorized event representative. That person can prepare event details and order TNP workforce, venue or RSVP for the client, subject to Client organization permissions. The client organization remains the buyer/billing party unless an explicitly approved commercial arrangement says otherwise.
+
+The client-appointed planner does not enter the TNP Planner talent pool, does not receive TNP Planner assignments and cannot use internal TNP allocation privileges.
+
+### TNP Planner
+
+A TNP Planner is a senior TNP role and sellable service. Candidates register with experience evidence and are approved by Admin. Approved TNP Planners receive client-event assignments and a dedicated operational dashboard.
+
+```mermaid
+stateDiagram-v2
+    [*] --> CandidateDraft
+    CandidateDraft --> Submitted
+    Submitted --> ExperienceReview
+    ExperienceReview --> ChangesRequested
+    ChangesRequested --> Submitted
+    ExperienceReview --> ApprovedTNPPlanner
+    ExperienceReview --> Rejected
+    ApprovedTNPPlanner --> Suspended
+    Suspended --> ApprovedTNPPlanner: restored by Admin
+    ApprovedTNPPlanner --> Offboarded
+```
+
+Approval considers client-defined experience, references, cities, specialties, performance and any approved evidence. Registration does not automatically create a TNP staff role.
+
+## 7. TNP Planner assignment and dashboard
+
+```mermaid
+flowchart TD
+    A[Client orders TNP Planner] --> B[Admin reviews and issues quotation]
+    B --> C[Client accepts required commercial terms]
+    C --> D[Admin grants planner service]
+    D --> E[Admin assigns an approved TNP Planner]
+    E --> F[Planner receives client brief and event scope]
+    F --> G[Planner develops event plan]
+    G --> H[Select or request venue]
+    G --> I[Request workforce roles and quantities]
+    G --> J[Request RSVP if client wants it]
+    H --> K[Admin reviews add-on scope and quotation impact]
     I --> K
     J --> K
-    K --> L[Excel/PDF reports and closure]
-    M[Guest invitation] --> F
+    K -->|Granted| L[Planner executes within approved scope]
+    K -->|Changes needed| G
 ```
 
-Vendor/customer organizations are isolated. Guest invitation links are not employee logins. Hotel and transport contacts receive only the minimum assigned information.
+### TNP Planner dashboard
 
-## 9. Finance usage structure
+- **Command overview:** assigned events, risks, approvals, deadlines and next action.
+- **Client brief:** goals, functions, budget context, contacts, constraints and approved scope.
+- **Event plan:** timeline, functions, tasks, dependencies and change history.
+- **Venue:** image-led catalogue, evidence, availability state, pricing qualifier, shortlist and assigned venue.
+- **Workforce builder:** Event Coordinator, Event Executive, Hostess, Volunteer, Porter and other approved roles with quantity/shift/skills.
+- **Approval centre:** submitted resource plan, quotation impact, Admin questions, approved quantities and change requests.
+- **Talent board:** eligible applicants/available workers, rating evidence, performance and assignment controls after Admin grant.
+- **Assigned team:** accepted, reconfirming, declined, replaced, checked-in and completed states.
+- **RSVP:** request/entitlement status and link to the authorized RSVP event/workspace.
+- **Client updates:** shareable milestones and decisions without exposing internal/private data.
+- **Ratings and closure:** rate assigned workers, review coordinator feedback and produce event closure.
+- **Reports:** staffing, attendance summary, resource changes, ratings and final delivery evidence.
+
+The Admin grants scope first. After grant, the assigned TNP Planner may select/assign a venue and freelancers inside that scope. Every assignment still passes the server allocation service for eligibility, quantity, schedule overlap, replacement and audit checks. Admin manages exceptions and may revoke/change scope with a reason; approval is not an unrestricted override.
+
+## 8. Workforce products and hierarchy
 
 ```mermaid
 flowchart TD
-    A[Booking and approved scope] --> B[Versioned quote]
-    B --> C[Client approval or revision]
-    C --> D[Invoice and collection ledger]
-    E[Assignment rate snapshot] --> F[Verified attendance]
-    F --> G[Calculated earning]
-    G --> H[Operations approval]
-    H --> I[Finance approval]
-    I --> J[Monthly payable]
-    J --> K[Provider attempt]
-    K -->|Paid| L[Reconciled success]
-    K -->|Failed, uncertain or reversed| M[Reconciliation queue]
-    D --> N[Financial reporting]
-    L --> N
-    M --> N
+    P[TNP Planner] --> EC[Event Coordinator]
+    P --> EE[Event Executive]
+    P --> H[Hostess]
+    P --> V[Volunteer]
+    P --> PO[Porter]
+    EC --> EE
+    EC --> H
+    EC --> V
+    EC --> PO
 ```
 
-Client collections and freelancer payouts are separate ledgers. Money uses integer paise. No ambiguous provider response becomes a successful payment without reconciliation.
+This is operational supervision and rating authority within an assigned event, not a universal account hierarchy. A person can hold only roles explicitly approved for that assignment.
 
-## 10. Responsibility and visibility matrix
+One event/resource plan supports multiple lines:
 
-| Capability | Client | Planner | Freelancer | Operations | Finance | RSVP vendor/customer |
-|---|---:|---:|---:|---:|---:|---:|
-| Public information/enquiry | Yes | Yes | Yes | Staff contact only | No | Yes |
-| Own organization/profile | Own | Own | Own person | Scoped administration | Scoped | Own organization |
-| Create booking/event brief | Own | Own | No | On behalf with audit | Read as needed | RSVP events only |
-| Add multi-role workforce demand | Own if enabled | Yes | No | Yes | No | No unless separately sold |
-| Approve Planner/Freelancer accounts | No | No | No | Authorized reviewer | No | Vendor members only within scope |
-| Publish positions/final allocation | No | Preference only | Apply/accept | Yes | No | No |
-| View applicant comparison | Approved scope | Event scope | Self only | Authorized scope | No | No |
-| View KYC/private workforce data | No | No | Own only | Restricted authorized role | Minimum needed | No |
-| Record attendance | No | Optional event evidence only | Self evidence if allowed | Authorized event actor | Read approved | RSVP check-in is separate |
-| Rate worker/event | Own event if approved | Own event | View own | Review/correct with audit | No | Guest-service feedback only |
-| Approve earnings/payouts | No | No | View own | First approval if policy confirms | Final approval/provider | No |
-| Guest/document operations | Own engagement scope | No by default | No | Audited support scope | Commercial summary only | Own organization/event scope |
+| Role | Quantity | Shift | Example need |
+|---|---:|---|---|
+| Event Coordinator | 1 | Full event | Team coordination and escalation |
+| Event Executive | 5 | 10:00–20:00 | Guest flow and execution |
+| Hostess | 3 | 16:00–22:00 | Welcome/registration |
+| Volunteer | 8 | 08:00–18:00 | General event support |
+| Porter | 4 | 07:00–15:00 | Luggage/material movement |
 
-## 11. Main records and relationships
+The role catalogue, allowed supervision graph, day/shift definition, skills, uniform and service rates require client approval.
+
+```mermaid
+flowchart LR
+    A[Admin-granted positions] --> B[Eligible freelancers notified]
+    B --> C[Apply or claim]
+    C --> D[Planner reviews available talent]
+    D --> E[Planner assigns within grant]
+    E --> F{Allocation validation}
+    F -->|Conflict, full or ineligible| G[Reject with exact reason]
+    F -->|Valid| H[Assignment offered]
+    H --> I[Freelancer accepts]
+    I --> J[Pre-event reconfirmation]
+    J --> K[Briefing and event pass]
+    K --> L[Attendance days and exceptions]
+    L --> M[Ratings and monthly earning]
+```
+
+## 9. Rating and review model
+
+- The assigned TNP Planner may rate workforce assigned to that Planner's event.
+- The assigned Event Coordinator may rate assigned lower-level roles: Event Executive, Hostess, Volunteer, Porter and other client-approved subordinate roles.
+- A rating is event/assignment scoped; no cross-event or unrelated-person rating is permitted.
+- Only completed/eligible attendance can open a rating action unless Admin records a reasoned exception.
+- Show rating average, count, dimensions and relevant written reviews only with source and status.
+- Corrections/disputes preserve the original and append reviewer, reason and time.
+- Poor ratings trigger human review; they do not silently create permanent deactivation.
+
+Still required from the client: rating scale, dimensions, weighting between Planner and Coordinator, publication rules, dispute period, minimum counts and eligibility impact.
+
+## 10. Freelancer workspace and monthly payment
+
+The Freelancer workspace contains application/approval, eligible opportunities, assignments, briefing/pass, attendance calendar, ratings/standing, monthly statements, payout history and support.
+
+```mermaid
+flowchart TD
+    A[Accepted assignment] --> B[Attendance recorded per event day]
+    B --> C{Attendance verified or corrected}
+    C -->|Pending or exception| D[Admin review queue]
+    C -->|Verified| E[Payable attendance day]
+    D --> E
+    E --> F[Apply assignment day-rate snapshot]
+    F --> G[Calendar-month earning ledger]
+    G --> H[Example: 1 Jan to 31 Jan]
+    H --> I[Operations/Admin reviews days and adjustments]
+    I --> J[Finance approval]
+    J --> K[End-of-month payout batch]
+    K --> L[Paid, failed, uncertain or reversed]
+    L --> M[Reconciliation and freelancer statement]
+```
+
+If a freelancer works five events covering twenty verified payable days in January, the January statement uses those twenty approved day entries and their captured day rates. The platform must not infer pay from event count alone.
+
+Pending policy: whether two separate assignments on the same calendar date create one payable day, two shifts or overtime; partial days; overnight events; cancellation pay; overtime; allowances; deductions; cutoff timezone; and late corrections.
+
+## 11. RSVP as a separate paid product
+
+RSVP is a detailed WhatsApp-connected product, not a small add-on screen. It supports two activation paths.
+
+```mermaid
+flowchart TD
+    A[Vendor requests RSVP product] --> B[Vendor organization registration]
+    B --> C[Admin identity and scope review]
+    C --> D[Admin creates RSVP quotation]
+    D --> E[Vendor accepts and pays required amount]
+    E --> F[Admin activates entitlement, limits and service dates]
+    F --> G[Vendor owner invites team]
+    G --> H[Create events and import guests]
+    H --> I[WhatsApp campaigns and guest replies]
+    I --> J[Calling, documents, travel, pickup, stay and rooming]
+    J --> K[Event-day operations]
+    K --> L[Versioned Excel/PDF reports and closure]
+```
+
+A Client, client-appointed planner or assigned TNP Planner may request RSVP for an existing event. Admin creates/revises the quotation for the event's billing party, then grants the RSVP engagement. TNP staff or the authorized customer/vendor team operates it according to the selected mode.
+
+The detailed workspace includes event/functions, guest/household directory, function-wise responses, WhatsApp inbox, calling queue, conditional forms, approved document desk, travel/pickup/drop, hotels/rooming, campaigns, attention queues, exports, team permissions, subscription/usage and support.
+
+The full operational specification remains in [RSVP-SERVICE-BLUEPRINT.md](RSVP-SERVICE-BLUEPRINT.md). Real WhatsApp, documents and guest data require provider approval, consent, private storage, tenant isolation, durable jobs and audit.
+
+## 12. Operations/Admin workspace
+
+```mermaid
+flowchart TD
+    A[Admin command centre] --> O[Product orders]
+    A --> Q[Quotation builder and versions]
+    A --> G[Grants and entitlements]
+    A --> P[TNP Planner candidates and assignments]
+    A --> W[Freelancer applications and workforce]
+    A --> V[Venues and availability]
+    A --> R[RSVP organizations and usage]
+    A --> AT[Attendance and corrections]
+    A --> RT[Ratings and disputes]
+    A --> F[Monthly earnings and payouts]
+    A --> RP[Reports and audit]
+
+    O --> Q
+    Q --> G
+    G --> P
+    G --> V
+    G --> W
+    G --> R
+    W --> AT
+    AT --> F
+    RT --> W
+```
+
+The Admin landing view prioritizes queues: orders awaiting review, quotations awaiting action, expiring grants, staffing shortages, attendance exceptions, rating disputes, RSVP provider failures and payout reconciliation. Summary metrics come after actionable risk.
+
+## 13. Core status models
+
+- **Product order:** `draft → submitted → under review → information requested → quoted → revision requested / accepted / declined / expired → payment pending where required → granted → in delivery → completed / cancelled`.
+- **Quotation:** `draft by Admin → issued version → client/vendor viewed → revision requested / accepted / declined / expired → superseded`.
+- **Grant/entitlement:** `pending → active → changed → suspended → expired → completed → revoked`.
+- **Assignment:** `available → applied/claimed → assigned → accepted → reconfirming → confirmed → declined/nonresponse/replaced → attended/exception → completed`.
+- **Monthly earning:** `estimated → attendance pending → calculated → Operations reviewed → Finance approved → batched → processing → paid / failed / uncertain / reversed`.
+
+## 14. Data relationship map
 
 ```mermaid
 erDiagram
     ORGANIZATION ||--o{ MEMBERSHIP : has
-    USER ||--o{ MEMBERSHIP : receives
-    ORGANIZATION ||--o{ PLANNER_PROFILE : owns
-    ORGANIZATION ||--o{ BOOKING : creates
-    BOOKING ||--o{ EVENT : contains
-    EVENT }o--|| VENUE : uses
-    EVENT ||--o{ REQUIREMENT : requests
-    REQUIREMENT ||--o{ POSITION : creates
-    WORKER ||--o{ APPLICATION : submits
-    POSITION ||--o{ APPLICATION : receives
-    POSITION ||--o{ ASSIGNMENT : fills
-    WORKER ||--o{ ASSIGNMENT : accepts
-    ASSIGNMENT ||--o{ ATTENDANCE : evidences
-    ASSIGNMENT ||--o{ RATING : receives
-    ATTENDANCE ||--o| EARNING : derives
-    WORKER ||--o{ PAYABLE : receives
-    BOOKING ||--o{ QUOTE : versions
-    BOOKING ||--o{ COLLECTION : records
-    ORGANIZATION ||--o{ RSVP_ENGAGEMENT : owns
-    RSVP_ENGAGEMENT ||--o{ GUEST_PARTY : contains
-    GUEST_PARTY ||--o{ GUEST_MEMBER : contains
+    ORGANIZATION ||--o{ EVENT : owns
+    EVENT ||--o{ PRODUCT_ORDER : requests
+    PRODUCT_ORDER ||--o{ ORDER_LINE : contains
+    PRODUCT_ORDER ||--o{ QUOTATION : receives
+    ORDER_LINE ||--o| GRANT : authorizes
+    EVENT }o--o| TNP_PLANNER_ASSIGNMENT : managed_by
+    EVENT }o--o| VENUE_ASSIGNMENT : held_at
+    EVENT ||--o{ POSITION : needs
+    POSITION ||--o{ WORKFORCE_ASSIGNMENT : fills
+    FREELANCER ||--o{ WORKFORCE_ASSIGNMENT : performs
+    WORKFORCE_ASSIGNMENT ||--o{ ATTENDANCE_DAY : records
+    WORKFORCE_ASSIGNMENT ||--o{ RATING : receives
+    ATTENDANCE_DAY ||--o| EARNING_ENTRY : derives
+    FREELANCER ||--o{ MONTHLY_STATEMENT : receives
+    ORDER_LINE ||--o| RSVP_ENTITLEMENT : activates
+    RSVP_ENTITLEMENT ||--o{ RSVP_EVENT : contains
+    RSVP_EVENT ||--o{ GUEST_PARTY : contains
 ```
 
-## 12. Failure and exception paths that must remain visible
+## 15. Frontend information architecture and polish
 
-- Unauthenticated, wrong-role and wrong-organization access fails closed.
-- Planner account approval and requirement approval can be pending, changed, rejected, suspended or restored.
-- A requirement may be partly staffed; the dashboard must not call it complete.
-- Full capacity, schedule overlap, ineligibility and expired reconfirmation are different outcomes.
-- Applicant withdrawal, worker decline and Operations replacement preserve history.
-- Missing GPS, outside-radius evidence and no attendance are different states.
-- Rating dispute and human review do not automatically erase a worker.
-- Quote revision and approval operate on explicit versions.
-- Payment/payout failed, uncertain, reversed and paid are distinct.
-- RSVP sent, delivered, read, replied and confirmed are distinct.
-- Every list needs loading, empty, error, retry, filtered-empty and permission-denied states.
+- Use `#008080` as the brand primary with ivory/champagne support; native cursor outside the homepage.
+- Each workspace opens with identity, current event/organization, status and one dominant next action.
+- Buttons use concrete verbs: `Request quotation`, `Add workforce role`, `Submit to Admin`, `Assign worker`, `Approve quotation`, `Activate RSVP`.
+- Product names and task names visually outrank step numbers and marketing slogans.
+- Use compact desktop density, body-family tabular numerals and visible click targets.
+- Show process steppers where they explain order → quotation → grant → delivery.
+- Prefer list-detail and work queues over walls of equal statistic cards.
+- Provide loading, empty, filtered-empty, error, retry, permission-denied, expired, suspended and revision-requested states.
+- Motion explains state changes and spatial transitions; it never hides an action or implies a server save/send.
 
-## 13. Delivery boundaries
+Client product cards show TNP Planner, Venue, each workforce product and RSVP with image/illustration, use case, inclusions, current order state and one action. Workforce products are never collapsed into a vague `freelancers` product.
 
-### Current frontend preview
+Planner talent cards show professional evidence, consented imagery, skills, relevant rating count and event availability without private documents or financial data. Venue cards use provenance-labelled imagery, location, capacity, pricing qualifier and availability evidence. RSVP is an entitlement/product card, not a partner card.
 
-Can demonstrate labelled synthetic profiles, forms, statuses, connected IDs and responsive dashboards. It cannot prove production login, authorization, concurrency-safe staffing, real notifications, private files or money movement.
+## 16. Production boundaries and failure rules
 
-### Production platform
+- Server derives user, organization, role, event and grant scope; client IDs never grant access.
+- Only Admin quotation actions create official quotation versions.
+- Planner assignment stays inside the Admin grant and uses the single allocation service.
+- Venue/workforce cannot appear assigned until persistence succeeds.
+- Rating authority is event/assignment scoped and auditable.
+- Attendance correction preserves original evidence and recalculates only unfinalized earnings; later corrections create review/adjustment.
+- Calendar-month payout cannot pay the same payable entry twice.
+- RSVP organizations, guests, documents, messages and exports remain tenant isolated.
+- WhatsApp submitted/sent/delivered/read/replied and RSVP confirmed remain separate states.
+- Failed, uncertain and reversed collections/payouts require reconciliation.
 
-Requires server-derived identity and organization scope, versioned APIs, MongoDB persistence, allocation transactions/conflict controls, private storage, durable jobs, provider adapters, audit, backup/restore, monitoring and UAT.
+## 17. Recommended delivery sequence
 
-### Recommended implementation order
+1. Integrate already completed/reviewing frontend candidates without rewriting them in place.
+2. Shared UX/access foundation: public versus workspace routes, demo identities, navigation, cursor, buttons, number type and non-obscuring preview chrome.
+3. Product catalogue and Client guided event builder with order/quotation/grant states.
+4. Distinguish client-appointed planner permissions from TNP Planner candidate/approved role.
+5. TNP Planner application, assignment and large dashboard shell.
+6. Multi-product order lines, Admin-only quotation UI and grant centre.
+7. Venue/workforce resource planning and Planner assignment within grant.
+8. Freelancer opportunities, attendance, rating hierarchy and monthly statement UI.
+9. RSVP order/entitlement integration plus detailed RSVP product batches.
+10. Aggregate responsive, keyboard, privacy, permission, error, security, finance and UAT verification.
+11. Homepage final refinement last.
 
-1. Public role pages and truthful demo access foundation.
-2. Production identity, organizations, memberships and permissions.
-3. Planner public page, application/status and approved dashboard shell.
-4. Booking/event/venue and multi-line workforce requirement contracts.
-5. Operations account/request review and position publishing.
-6. Freelancer eligibility/application/allocation and Planner comparison view.
-7. Briefing, reconfirmation, attendance, ratings and event closure.
-8. Quotes/collections and attendance-derived earnings/payouts.
-9. RSVP provider/document/logistics batches.
-10. Aggregate security, accessibility, performance, restore, UAT and release gates.
+## 18. Client decisions still required
 
-## 14. Client decisions needed to refine this blueprint
+1. Exact public names/descriptions for the four product families and each workforce role.
+2. TNP Planner experience threshold, evidence, review/reapplication and suspension policy.
+3. Client-appointed planner invitation/permissions and who becomes the billing party.
+4. Which products may be ordered independently and which require prerequisites.
+5. Admin quotation approvers, quote expiry, deposits and grant conditions.
+6. Venue catalogue/custom sourcing, availability and commercial evidence rules.
+7. Planner assignment limits within a grant and Admin exception policy.
+8. Workforce supervision graph, rating scale/weighting/dispute/publication rules.
+9. Day/shift/overtime/overnight/cancellation and same-date multiple-assignment payment rules.
+10. Monthly cutoff timezone, late attendance/correction and payout release date.
+11. RSVP packages, limits, vendor payment/activation, sender mode, WhatsApp provider and guest-document policy.
+12. Client product recommendations, approved copy, imagery and UAT scenarios.
 
-1. Can an individual Planner register, or only a planning company/organization?
-2. What evidence is mandatory before Planner approval, and may rejected applicants reapply?
-3. Can approved Planners create new events directly, or only work on Client/TNP-created bookings?
-4. Can a Planner enter a custom venue, select only TNP-listed venues, or both?
-5. Does a workforce request require a quote/deposit before positions are published?
-6. Does the Planner only shortlist, or may the Planner make final worker assignments?
-7. Which worker fields and performance periods may a Planner see?
-8. Who may rate workers: Planner, Client, Team Leader, Operations, or a combination?
-9. How are disputed ratings corrected, and what rating affects eligibility?
-10. Who may invite additional users into a Planner organization, and which roles exist there?
-11. Which notifications use email, WhatsApp, in-app or manual follow-up?
-12. What is the approved cancellation/replacement policy and timing?
-
-The collection package for these decisions and all assets/accounts is [CLIENT-INPUTS-AND-ACCESS-REGISTER.md](CLIENT-INPUTS-AND-ACCESS-REGISTER.md).
+The full collection list is [CLIENT-INPUTS-AND-ACCESS-REGISTER.md](CLIENT-INPUTS-AND-ACCESS-REGISTER.md).

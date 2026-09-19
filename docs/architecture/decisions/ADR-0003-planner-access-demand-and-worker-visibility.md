@@ -1,6 +1,8 @@
 # ADR-0003 — Planner access, demand approval and worker visibility
 
-Status: Accepted as product direction on 2026-09-19; production identity, privacy, selection authority and data contracts remain gated decisions.
+Status: Superseded on 2026-09-19 by ADR-0004. It incorrectly centered Planner as an external customer role and left final allocation with Operations rather than modelling the distinct TNP Planner product and client-appointed planner representative.
+
+This file is retained as decision history. Do not implement it as the current product model.
 
 ## Context
 

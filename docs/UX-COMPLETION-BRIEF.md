@@ -33,8 +33,8 @@ Each workspace starts with a compact orientation block:
 
 Recommended first actions:
 
-- Client: start/resume brief, or review an existing booking.
-- Planner: register studio, create workforce requirement, or review submitted requirements.
+- Client: start/resume the guided event builder, review an Admin quotation, or manage an existing event/product order.
+- TNP Planner candidate: complete experience evidence or review the Admin decision. Approved TNP Planner: open the assigned event's next approval/resource action.
 - Freelancer: finish application/assessment, browse eligible opportunities, or respond to the next assignment.
 - RSVP: open needs-attention/today queue before summary metrics.
 - Operations: open pending reviews/attendance exceptions before aggregate metrics.
@@ -78,7 +78,7 @@ All actions preserve 44px targets, visible focus, Enter/Space semantics and coar
 
 Use tab-scoped `sessionStorage` key `tnp-demo-session-v1` containing only non-secret fixture IDs. Storage denial falls back to memory with a visible reload-warning.
 
-Workspaces: `client`, `planner`, `freelancer`, `operations`, `rsvp`.
+Workspaces: `client`, `tnp-planner`, `freelancer`, `operations`, `rsvp`. A client-appointed planner is a scoped Client-organization identity, not a second TNP Planner profile.
 
 States: `active`, `invited`, `suspended`, `expired`, `revoked`, `forbidden`.
 
@@ -111,7 +111,7 @@ Required model categories:
 First consumers:
 
 - Client venue selection: display name, city, capacity, sample budget range, recommendation, TNP-owned/sample-partner distinction and explicitly illustrative destination context.
-- Client planner selection: display name, city, `Preview match`, and sample approval/pending state. No stars, price or partner photo until supplied by a reviewed contract.
+- Client TNP Planner selection: approved senior TNP member, specialties/cities, `Preview match`, and sample availability/approval state. A client-appointed planner is managed through organization membership, not this talent card. No stars, price or portrait until supplied by a reviewed contract.
 
 Do not force this abstraction onto Freelancer opportunities, Planner requirements, RSVP organization access, hotel inventory, Operations workers/rosters or reports.
 

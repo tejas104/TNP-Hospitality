@@ -1,12 +1,28 @@
 # Client and owner decision log
 
-## Planner public entry, approval and full workspace direction (2026-09-19)
+## Corrected TNP product, Planner, RSVP, quotation and monthly-pay model (2026-09-19)
+
+This supersedes the earlier interpretation of Planner as primarily an external customer organization. TNP sells four connected product families: hospitality People/workforce (including Event Coordinator, Event Executive, Hostess, Volunteer and Porter), TNP Planner, Venue and detailed RSVP.
+
+A client's own planner is an authorized representative within the Client workspace and may order TNP workforce/venue/RSVP for that client. A TNP Planner is a vetted senior TNP member approved based on experience and sold/assigned as a TNP service. After Admin grants event scope, the TNP Planner may select/assign the approved venue and workforce; the allocation service still enforces capacity, eligibility, overlap, replacement and audit.
+
+Every product request reaches Admin. Admin alone creates/revises the official quotation, which goes to the authorized ordering/billing party. Acceptance/payment requirements and Admin grant precede fulfillment. A TNP Planner requesting an event add-on does not personally become the billing party unless an explicit contract says so.
+
+RSVP is a separately paid, WhatsApp-based product with a detailed isolated vendor-team workspace. Vendor registration, Admin quotation, required acceptance/payment and entitlement activation are separate. A Client or TNP Planner may also request RSVP for a TNP-managed event, but Admin must grant it.
+
+The assigned TNP Planner may rate event workforce; Event Coordinators may rate approved lower-level assigned roles. Freelancer monthly payment derives from verified attendance days and captured day rates during the calendar month, followed by Admin/Finance review and month-end payout/reconciliation. Event count alone is not the payment basis. Detailed unresolved policy remains in `docs/DOMAIN-RULES.md` and the client-input register.
+
+The corrected canonical diagram is `docs/PLATFORM-USAGE-WORKFLOW-BLUEPRINT.md`; ADR-0004 supersedes ADR-0003.
+
+## Planner public entry, approval and full workspace direction (2026-09-19 — superseded in part)
+
+The public-entry, experience approval, multi-role request, applicant evidence and privacy requirements below remain valid. The statement giving Operations normal final allocation is superseded by the corrected model above: after Admin grant, the assigned TNP Planner may assign within scope while the allocation service validates safety.
 
 The user confirms that a website visitor selecting `For Planners` must first receive a clear public explanation of the Planner offering. The public page then provides `Become a Planner` and `Planner sign in`; it must not place an unauthenticated visitor directly inside the editable Planner workspace.
 
 The target Planner product includes Planner onboarding/application, authenticated access, Operations/Admin account review, multi-line workforce demand for one event (for example three Hostesses and five Event Executives), venue/event details, per-requirement Operations approval and an approval/status trail visible to the Planner. Account approval and requirement approval are separate gates.
 
-After a requirement is approved and staffing begins, the Planner dashboard should expose event-scoped applicant/team comparison with truthful ratings, prior performance/review evidence and assignment progress. Private KYC, banking, internal notes, unrelated-event information and unrestricted personal contact data remain outside Planner visibility. Recommended v1 authority is Planner shortlist/preference plus Operations final allocation; changing final-selection authority remains an explicit client/domain decision because allocation, capacity and schedule overlap must be enforced centrally.
+After a requirement is approved and staffing begins, the Planner dashboard should expose event-scoped applicant/team comparison with truthful ratings, prior performance/review evidence and assignment progress. Private KYC, banking, internal notes, unrelated-event information and unrestricted personal contact data remain outside Planner visibility. Under the corrected model, the assigned TNP Planner can assign approved resources after Admin grant; server-side allocation still enforces capacity, eligibility and schedule overlap.
 
 The complete role/platform flow and open refinements are canonical in `docs/PLATFORM-USAGE-WORKFLOW-BLUEPRINT.md`; the required client package is in `docs/CLIENT-INPUTS-AND-ACCESS-REGISTER.md`. This direction does not claim the current synthetic `/planner` route has production authentication or backend enforcement.
 
@@ -22,9 +38,9 @@ Replace exaggerated display/monospace dashboard numerals with the body type stac
 
 Navigation must use destination-accurate labels, visible active states and one predictable route model across desktop and mobile. Portal `Login` must not hard-link to Planner, and portal `Let's Talk` must not impersonate a Client navigation action. The public shell has one prominent Workspaces entry; the workspace shell exposes Home, Workspaces, the complete portal switcher, current demo identity and clear switch/exit actions. Homepage navigation/content refinement remains last.
 
-Provide truthful demo access for Client, Planner, Freelancer, Operations and RSVP using named synthetic profiles and explicit one-click entry. This is a tab-scoped demo context, not production authentication. It must never request or store a password, impersonate server authorization or call browser-local state a real account. Switching identity must not reset scenario records; exiting clears only demo identity. Guest invitations remain separate from staff/customer workspace login.
+Provide truthful demo access for Client, TNP Planner, Freelancer, Operations and RSVP using named synthetic profiles and explicit one-click entry. A client-appointed planner is represented as a scoped Client persona, not another TNP Planner. This is a tab-scoped demo context, not production authentication. It must never request or store a password, impersonate server authorization or call browser-local state a real account. Switching identity must not reset scenario records; exiting clears only demo identity. Guest invitations remain separate from staff/customer workspace login.
 
-Where external partners are genuinely presented for comparison, use image-led cards with a prominent name, location/service area, truthful social proof, explicit price qualifier and one clear action. Ratings, review counts, verification and partner photographs render only with attributable evidence. Current synthetic Planner match scores are not star ratings; destination-context images are not partner photographs; sample venue budget bands are not commercial starting prices. The first proven consumers are Client venue and planner selection. Other portals retain their domain-specific rows until reviewed provider/partner contracts exist.
+Where external partners or TNP talent are genuinely presented for comparison, use image-led cards with a prominent name, location/service area, truthful social proof, explicit price qualifier and one clear action. Ratings, review counts, verification and photographs render only with attributable evidence. Current synthetic Planner match scores are not star ratings; destination-context images are not partner photographs; sample venue budget bands are not commercial starting prices. The first proven consumers are Client venue and TNP Planner selection. Other portals retain their domain-specific rows until reviewed provider/partner contracts exist.
 
 Use the interaction principles—not copied layouts or assets—of Airbnb, Notion, ChatGPT and Apple: task-first entry, scannable evidence, one dominant action and predictable action vocabulary. Preserve accessibility, keyboard operation, reduced motion, truthful loading/empty/error/retry/reset states and the fixed-SHA review gates.
 

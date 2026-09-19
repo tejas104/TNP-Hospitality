@@ -2,6 +2,15 @@
 
 Status: product and architecture proposal, 2026-09-17. Based on the user's explicit requirement and supplied TNP 30-day operating brief. This is a dedicated sellable service; it is not implemented, launched, priced or scheduled by this document. Existing A/D milestones are unchanged. Real guest-document collection requires the proposed private backend and access controls before activation.
 
+## 0. Product order and activation boundary (corrected 2026-09-19)
+
+RSVP is one of TNP's four product families alongside People/workforce, TNP Planner and Venue. It has two activation paths:
+
+1. A vendor/customer organization registers for the RSVP product. Admin reviews the organization and requested package, creates the official quotation, records required acceptance/payment state, then activates a time/usage-scoped organization entitlement. Only after activation can the vendor owner invite a team and operate events.
+2. A Client, authorized client-appointed planner or assigned TNP Planner requests RSVP for an existing TNP event. Admin creates or revises the quotation for the event's billing party, then grants an RSVP engagement to that event. The authorized customer team or TNP service team operates it according to the purchased mode.
+
+Submitting a request, accepting a quotation and receiving workspace entitlement are separate states. A Planner cannot activate RSVP merely by selecting it. RSVP remains detailed: WhatsApp communication/reconciliation, guest/party/function responses, calling, documents where approved, travel, pickup/drop, rooming, reports, tenant isolation, team permissions and audit.
+
 ## 1. Product and commercial model
 
 TNP can sell RSVP/hospitality management independently of staffing, venue booking or event planning. Create an RSVP service engagement for a customer with its own events/functions, guest list, assigned TNP team, package/scope, service dates, agreed guest allowance, communication usage and operational reports. Link an existing TNP booking when relevant; never require one to buy RSVP.
