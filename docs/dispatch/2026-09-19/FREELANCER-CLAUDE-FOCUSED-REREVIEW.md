@@ -1,3 +1,5 @@
+> **SUPERSEDED — DO NOT USE. Use FREELANCER-CLAUDE-ROUND2-REREVIEW.md for exact candidate 28ecc920ffe055db0495159e90ee1a1ce3ed2226.**
+
 SESSION TYPE: OLD SESSION `96dfef2e-af39-4af1-a619-26ed81ca128a`
 
 DO NOT OPEN A NEW SESSION. Continue only the existing independent Claude review session named above.
