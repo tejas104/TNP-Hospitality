@@ -1,6 +1,6 @@
 # TNP-PLATFORM-COMMERCIAL-M2 — orders, quotations, grants and Planner authority
 
-Status: DRAFT — no writer, branch, worktree, port or lease. Do not implement before `TNP-PLATFORM-M1` receives fresh external Claude approval, Kartik's exact-SHA acceptance and architect-controlled integration/verification. ADR-0006 remains Proposed and DEC-17 through DEC-20 must be resolved or explicitly bounded as non-production scenarios in the eventual Ready contract.
+Status: DRAFT — no writer, branch, worktree, port or lease. Do not implement before `TNP-PLATFORM-M1` receives Kartik's exact-SHA acceptance and architect-controlled integration/verification. `TNP-PLATFORM-HARDENING-M1` must also close before staging or any milestone relies on production-style database idempotency readiness. ADR-0006 remains Proposed and DEC-17 through DEC-20 must be resolved or explicitly bounded as non-production scenarios in the eventual Ready contract.
 
 Responsible domain owner and sole human fixed-SHA acceptance reviewer: Kartik. Anjaneya supplies product/catalogue/commercial decisions. Proposed author: fresh verified `gpt-5.6-sol` / high. Mandatory review: fresh independent Sol/high for authorization/concurrency, separate external Claude, and Kartik exact-SHA acceptance; author self-review satisfies none of these gates.
 
