@@ -1,6 +1,8 @@
 # TNP-OPERATIONS-REPORTS-CLAUDE-M2 — Operations Reports & Audit frontend
 
-Status: FIXED-SHA HANDOFF — PAUSED FOR FRESH SOL/HIGH REVIEW. Sole NEW Claude Code desktop session `7785999d-ff07-40fe-b2ae-86893368bf5b`, actual reported `claude-opus-5` on `DESKTOP-DL9FDM7` under `desktop-dl9fdm7\dell`, returned its writer lease at clean pushed remote-equal final `89fec9df168a49b9621ea4adda6c4312dbd5b8dc`. The effort field was unavailable inside the session; no effort value is inferred.
+Status: CHANGES REQUESTED — ONE-DEFECT CORRECTION READY for the same Claude Code desktop session `7785999d-ff07-40fe-b2ae-86893368bf5b`, actual reported `claude-opus-5` on `DESKTOP-DL9FDM7` under `desktop-dl9fdm7\dell`. Fresh independent Sol/high reviewed exact `89fec9df168a49b9621ea4adda6c4312dbd5b8dc` and cleared every requirement except one P2 CSV failure-path resource leak.
+
+Correction scope: `prepareCsvDownload` must remove the created hidden anchor in guarded `finally` cleanup whether click succeeds or throws, while still revoking the object URL and surfacing failure without false success. Add focused success and click-throw assertions that both prove `remove()` and URL revocation. Writable only `operationsReportsState.ts` and `operationsReports.test.mjs` unless the author proves `OperationsReports.tsx` is strictly required to pass the anchor handle; no CSS/navigation/reporting/view-model redesign. Return one immutable fixed SHA for fresh Sol focused re-review and Kartik acceptance.
 
 Checkpoint: `0745f339ff70f410190e40adb3b4490c30c441c1`.
 
