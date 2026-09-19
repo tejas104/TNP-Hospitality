@@ -2,7 +2,7 @@
 
 ## Primary colour, public navigation and workforce notification clarification (2026-09-18)
 
-The user confirms `#008080` as the client-selected primary brand colour. Treat it as the semantic primary/teal action colour across future frontend work while retaining dark teal `#062b29`, ivory `#f5f1e7` and champagne `#bba879` as supporting surfaces. Apply it through reviewed shared tokens and feature adoption rather than uncontrolled global search-and-replace.
+The user confirms `#008080` as the client-selected primary brand colour. As of 2026-09-19, this direction is expanded and supersedes the earlier allowance for dark teal as a supporting brand surface: replace visible dark-green/dark-teal treatments, including the homepage hero and platform workspace surfaces, with `#008080`. Do not substitute another green. Ivory `#f5f1e7` and champagne `#bba879` remain supporting surfaces. Use neutral charcoal/black only where text, shadows or overlays require contrast, and `#006b6b` only as the accessible interactive hover/text variant of the same teal family. Apply the change through reviewed semantic tokens, an audited literal migration and a regression guard; semantic success states must also use text/icon meaning rather than relying on green alone.
 
 The public navbar must expose enough of the platform for visitors to understand its breadth, with clear routes to services, events, destinations, RSVP, people/work opportunities and company information, plus visible workspace/login and enquiry actions. The homepage role drawer remains a quick audience finder, not a second unrelated navigation system. Operations preview is not a public marketing destination.
 
