@@ -1,3 +1,5 @@
+> **COMPLETED — DO NOT REUSE.** Same Claude session returned `CHANGES REQUESTED` on exact `28ecc920ffe055db0495159e90ee1a1ce3ed2226`. Resume the original Astra writer with `FREELANCER-ASTRA-ROUND3-CORRECTION.md`; a new exact-SHA Claude packet will be issued only after that writer returns an immutable successor.
+
 SESSION TYPE: OLD SESSION `96dfef2e-af39-4af1-a619-26ed81ca128a`
 
 DO NOT OPEN A NEW SESSION. Continue only the same independent Claude review session that returned the earlier Freelancer dispositions.
