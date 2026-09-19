@@ -1,6 +1,6 @@
 # TNP-BRAND-TEAL-M1 — client-selected teal platform sweep
 
-Status: ROUND-3 PAUSED FOR SAME-CLAUDE REVIEW at clean pushed remote-equal `1c5204f0894775292b633824118c58a5df9454b7`. The bounded Astra/low successor changes only the Client status CSS and palette guard, restoring the remaining kicker to white on teal at 4.773:1. P independently verified exact provenance/scope/diff and rendered desktop/mobile contrast, overflow and console evidence. Fresh same-Claude review and Kartik exact-SHA acceptance remain separate.
+Status: ROUND-4 CORRECTION READY — NO ACTIVE WRITER LEASE. Same Claude Opus 5/xhigh session `local_caafefbd-0c4e-46b4-a5e8-a9a989d8b7bf` returned `CHANGES REQUESTED` on exact clean live-remote-equal `1c5204f0894775292b633824118c58a5df9454b7`. The Client kicker correction passes at 4.773:1, but cumulative round-two changes retain one P1 and two P2 visual defects. Kartik explicitly gives full acceptance to exact `1c5204f...`; that closes the human gate for this candidate but cannot waive the failed independent-review gate. No integration occurred. The same Astra/low author may receive the round-four packet only after exact preflight and architect lease activation.
 
 Responsible human/product decision owner and sole fixed-SHA human acceptance reviewer: Kartik. Client decision evidence: user instruction on 2026-09-19, recorded in `docs/decisions/CLIENT-DECISIONS.md` and `docs/DESIGN.md` at Source.
 
@@ -90,3 +90,14 @@ Round-two final is `48189e0b8783ef8abf80040997115a67275def57`. P independently c
 Round-three final is `1c5204f0894775292b633824118c58a5df9454b7`, the clean pushed live-remote-equal direct child of `48189e0...`. Its exact two-file delta is `ClientStatusHub.module.css` plus `brand-teal-palette.test.mjs`: the Client hub kicker is explicitly white, and the guard resolves the hub's `--dark` background and enforces at least 4.5:1.
 
 The writer reports all 79 tests, lint with three inherited warnings, explicit non-incremental TypeScript, first-attempt Vercel build and exact-range diff checks PASS. P independently confirmed provenance, scope, clean remote equality and diff check; rendered `/client` at 1440x900 and 390x844; measured white `rgb(255, 255, 255)` on teal `rgb(0, 128, 128)` at 4.773:1; found no horizontal overflow or browser warning/error logs; and stopped the isolated port3120 server. Same-Claude packet: `docs/dispatch/2026-09-19/BRAND-TEAL-CLAUDE-ROUND3-REREVIEW.md`. No integration, main push, deployment or provider change is authorized.
+
+## Round-three review disposition and round-four correction
+
+Same Claude Opus 5/xhigh session independently returned `CHANGES REQUESTED` after reproducing the cumulative correction in a clean detached worktree. The specific blockers at `1c5204f...` are:
+
+- P1: fourteen Operations `.section-kicker` instances render white on beige at approximately 1.31:1 because the global white rule is broader than its teal-surface exception.
+- P2: `RUN SAMPLE WORKER CLAIM` receives a white focus ring on the beige live Operations panel at approximately 1.31:1.
+- P2: the live WebGL hero still renders an approximately `#004137` dark-green cast over 11.3% of opaque scene pixels even though source material literals are teal; metalness/lighting interaction is the likely cause.
+- P3: palette guard misses `hsl()`, `oklch()`, named CSS colors and Three.js numeric/array color forms; bounded inherited Client skip-link focus, beige secondary text, pressed-state and disabled-nav distinctions remain weak.
+
+The exact correction packet is `docs/dispatch/2026-09-20/BRAND-TEAL-ASTRA-ROUND4-OPERATIONS-HERO-CORRECTION.md`. It limits the same Astra/low author to five files and requires rendered Operations/WebGL evidence plus guard mutation probes. One immutable successor returns to the same Claude session for focused fixed-SHA review. Kartik's acceptance of `1c5204f...` does not automatically transfer to a successor SHA; exact-successor acceptance remains separate unless Kartik explicitly states otherwise.
