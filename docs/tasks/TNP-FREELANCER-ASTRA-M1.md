@@ -1,6 +1,10 @@
 # TNP-FREELANCER-ASTRA-M1 — synthetic onboarding and opportunity frontend
 
-Status: CHANGES REQUESTED — CORRECTION READY for the original sole writer `/root/freelancer_builder`, `CODEX_THREAD_ID` `01a0b4fa-f7ad-7e31-a0ea-babdec221d0b`, verified actual `gpt-6-astra` / high on `DESKTOP-DL9FDM7`. The inherited parent `CODEX_SESSION_ID` is not the writer identity.
+Status: ROUND-2 CHANGES REQUESTED — ONE-DEFECT CORRECTION READY for the original sole writer `/root/freelancer_builder`, `CODEX_THREAD_ID` `01a0b4fa-f7ad-7e31-a0ea-babdec221d0b`, verified actual `gpt-6-astra` / high on `DESKTOP-DL9FDM7`. The inherited parent `CODEX_SESSION_ID` is not the writer identity.
+
+Round-2 reviewed candidate: `c8c6d759a8d5f375e20db43ef2570defd9ad8cfc`, clean and remote-equal on `codex/tnp-freelancer-astra-m1`; port `3108` is free.
+
+Same external Claude Opus 5 review session disposition: `CHANGES REQUESTED` for one introduced P2 only. Preserve the cleared seeded-worker, storage-fallback and AA-contrast corrections. Fix lost-response recovery for a genuinely new applicant after successful `registerApplicant` has created its worker record: an exact retained request/retry for the same logical action must reach the service ledger and replay the original success, rather than being misclassified as a pre-existing-worker attempt and discarded. Keep blocking a fresh application from a worker that existed before any application for that profile. Add focused hook/browser regression for success -> lost response -> worker now exists -> exact retry -> one application/worker and recovered receipt; also prove seeded existing-worker blocking, different-payload conflict and other-profile isolation remain intact. Writable paths are only `useFreelancer.ts` and Freelancer-local focused tests/browser evidence unless the original writer demonstrates another already-owned file is strictly required. Return one immutable clean pushed final for focused same-session Claude re-review and Kartik acceptance.
 
 Reviewed candidate: `eab038055b620165ea3e1e2ef5f100db4946ff91`
 

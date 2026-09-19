@@ -1,6 +1,10 @@
 # TNP-RSVP-CLAUDE-M1 — RSVP synthetic customer and partner frontend
 
-Status: ROUND-4 CHANGES REQUESTED — MINIMAL ADAPTER CORRECTION READY for the same sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`. Shell model/effort variables are unavailable and are not separate runtime evidence.
+Status: ROUND-4 FIXED-SHA HANDOFF — PAUSED FOR FRESH SOL/HIGH REVIEW. The same sole writer `/root/rsvp_astra_refiner`, process `CODEX_THREAD_ID` `01a0b5da-a640-7d92-b88e-519d07dbe96f`, verified orchestrator configuration `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`, returned its lease.
+
+Round-4 candidate: `e142cf2713df8ced51c5ce67334a4a2f93e0a5e9`, clean, pushed and live remote-equal on `codex/tnp-rsvp-claude-m1`; exact delta is `adapter.ts`, `round4.test.mjs`, `round4-browser.mjs` and `ROUND4-EVIDENCE.md`. Builder reports 149/149 full tests, 77/77 RSVP tests, lint, explicit non-incremental TypeScript, diff check, first-attempt build and focused real-browser checks PASS. P independently verified remote equality, exact four-file scope, clean worktree and free port `3107`; builder evidence remains subject to the fresh independent review.
+
+Fresh independent `/root/rsvp_round4_sol_review`, actual `gpt-5.6-sol` / high, is read-only reviewing the exact fixed SHA in a clean detached worktree. Kartik exact-SHA acceptance and P-controlled integration remain separate gates. No source writer lease, main push, deployment or provider mutation.
 
 Round-3 candidate: `992b00d49ee1209e0289c2167fad5408318bd2e8`, clean and remote-equal on `codex/tnp-rsvp-claude-m1` in `D:\TNP-worktrees\TNP-RSVP-CLAUDE-M1`; port `3107` is free.
 
