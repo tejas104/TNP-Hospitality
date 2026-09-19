@@ -400,19 +400,21 @@ export type DownloadOutcome = { ok: true; filename: string; rowCount: number } |
 /** Success is returned only after Blob, object URL and anchor click all complete without throwing. */
 export function prepareCsvDownload(file: { filename: string; csv: string; rowCount: number }, env: DownloadEnvironment): DownloadOutcome {
   let url = '';
+  let anchor: ReturnType<DownloadEnvironment['createAnchor']> | null = null;
   try {
     const blob = new Blob([file.csv], { type: 'text/csv;charset=utf-8' });
     url = env.createObjectURL(blob);
-    const anchor = env.createAnchor();
+    anchor = env.createAnchor();
     anchor.href = url;
     anchor.download = file.filename;
     anchor.click();
-    anchor.remove();
     return { ok: true, filename: file.filename, rowCount: file.rowCount };
   } catch (error) {
     return { ok: false, message: error instanceof Error ? error.message : 'The browser could not prepare the file.' };
   } finally {
-    // Deferred so the browser can start the download first; always runs, including after a failure.
-    if (url) env.schedule(() => env.revokeObjectURL(url));
+    // Cleanup runs after success and after any failure; a cleanup error never replaces the export outcome.
+    try { anchor?.remove(); } catch { /* the anchor is hidden and inert; the outcome above still stands */ }
+    // Revocation is deferred so the browser can start the download first.
+    try { if (url) env.schedule(() => env.revokeObjectURL(url)); } catch { /* same: outcome is preserved */ }
   }
 }

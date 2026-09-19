@@ -201,9 +201,63 @@ test('download succeeds only after the browser steps complete, and always revoke
   assert.deepEqual(prepareCsvDownload(file, env()), { ok: true, filename: 'f.csv', rowCount: 0 });
   assert.deepEqual(calls.splice(0), ['create', 'click', 'remove', 'revoke:blob:1']);
   assert.deepEqual(prepareCsvDownload(file, env('click')), { ok: false, message: 'click refused' });
-  assert.deepEqual(calls.splice(0), ['create', 'click', 'revoke:blob:1'], 'a failed click still revokes');
+  assert.deepEqual(calls.splice(0), ['create', 'click', 'remove', 'revoke:blob:1'], 'a failed click still removes the anchor and revokes');
   assert.deepEqual(prepareCsvDownload(file, env('create')), { ok: false, message: 'blocked' });
   assert.deepEqual(calls.splice(0), ['create'], 'nothing to revoke when no URL was created');
+});
+
+test('the appended download anchor is removed and its URL revoked exactly once on success and on click failure', () => {
+  // Mirrors the browser environment: createAnchor appends to the document body, remove detaches it.
+  function harness(clickThrows) {
+    const body = [];
+    const counts = { created: 0, appended: 0, clicked: 0, removed: 0, revoked: [] };
+    let anchor = null;
+    const env = {
+      createObjectURL: () => { counts.created += 1; return `blob:${counts.created}`; },
+      revokeObjectURL: (url) => counts.revoked.push(url),
+      createAnchor: () => {
+        anchor = {
+          href: '', download: '',
+          click: () => { counts.clicked += 1; if (clickThrows) throw new Error('Synthetic click failure'); },
+          remove: () => { counts.removed += 1; const index = body.indexOf(anchor); if (index >= 0) body.splice(index, 1); },
+        };
+        body.push(anchor);
+        counts.appended += 1;
+        return anchor;
+      },
+      schedule: (run) => run(),
+    };
+    const outcome = prepareCsvDownload({ filename: 'tnp-synthetic-preview-g0-audit.csv', csv: 'a\r\n', rowCount: 0 }, env);
+    return { outcome, body, counts, anchor };
+  }
+
+  const success = harness(false);
+  assert.deepEqual(success.outcome, { ok: true, filename: 'tnp-synthetic-preview-g0-audit.csv', rowCount: 0 });
+  assert.equal(success.counts.appended, 1);
+  assert.equal(success.counts.clicked, 1);
+  assert.equal(success.counts.removed, 1);
+  assert.deepEqual(success.body, [], 'no anchor remains attached after success');
+  assert.deepEqual(success.counts.revoked, ['blob:1'], 'the one created URL is revoked exactly once');
+  assert.equal(success.anchor.href, 'blob:1');
+
+  const failure = harness(true);
+  assert.equal(failure.outcome.ok, false, 'a throwing click is never reported as success');
+  assert.equal(failure.outcome.message, 'Synthetic click failure');
+  assert.equal('filename' in failure.outcome, false);
+  assert.equal(failure.counts.appended, 1);
+  assert.equal(failure.counts.clicked, 1);
+  assert.equal(failure.counts.removed, 1, 'the same anchor is removed after the click throws');
+  assert.deepEqual(failure.body, [], 'no anchor remains attached after a failed click');
+  assert.deepEqual(failure.counts.revoked, ['blob:1'], 'the URL is still revoked exactly once');
+
+  // A cleanup error cannot turn a failure into success or hide the original error.
+  const cleanupFails = prepareCsvDownload({ filename: 'f.csv', csv: 'a\r\n', rowCount: 0 }, {
+    createObjectURL: () => 'blob:x',
+    revokeObjectURL: () => { throw new Error('revoke failed'); },
+    createAnchor: () => ({ href: '', download: '', click: () => { throw new Error('click failed'); }, remove: () => { throw new Error('remove failed'); } }),
+    schedule: (run) => run(),
+  });
+  assert.deepEqual(cleanupFails, { ok: false, message: 'click failed' });
 });
 
 async function realSource(service) {
