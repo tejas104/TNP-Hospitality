@@ -251,8 +251,8 @@ export default function HomeExperience() {
               Our personal attention.
             </h3>
             <p>
-              TNP-managed guest communication and hospitality, with a dedicated
-              client portal planned for oversight of your event.
+              TNP-managed guest communication and hospitality, shaped around
+              your event through one direct conversation with our team.
             </p>
             <ul>
               <li>

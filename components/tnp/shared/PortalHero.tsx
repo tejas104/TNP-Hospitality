@@ -1,4 +1,3 @@
-import Link from 'next/link';
 import { byId } from '@/data/media';
 
 export function PortalHero({
@@ -20,9 +19,6 @@ export function PortalHero({
         <p className="eyebrow">{label}</p>
         <h1>{title}</h1>
         <p>{copy}</p>
-        <Link className="ghost-btn light" href="/admin">
-          View Operations Demo
-        </Link>
       </div>
     </section>
   );

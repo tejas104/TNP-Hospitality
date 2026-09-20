@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import {
   workspaces,
   workspaceRegistry,
@@ -43,6 +44,18 @@ test('public catalogue is exactly Planner and Freelancer; Client cannot regain i
   );
   assert.equal(routeInfo('/client').surface, 'marketing');
   assert.equal(routeInfo('/operations').surface, 'workspace');
+});
+test('public presentation contains no Client portal or Operations demo promotion', () => {
+  const home = readFileSync(
+    new URL('../components/tnp/HomeExperience.tsx', import.meta.url),
+    'utf8',
+  );
+  const sharedHero = readFileSync(
+    new URL('../components/tnp/shared/PortalHero.tsx', import.meta.url),
+    'utf8',
+  );
+  assert.doesNotMatch(home, /client portal/i);
+  assert.doesNotMatch(sharedHero, /operations demo/i);
 });
 test('launcher geometry uses the exact current source and rejects invalid dimensions', () => {
   assert.equal(
