@@ -1,6 +1,6 @@
 # TNP-HOME-CUBE-M2 — existing-hero hospitality cube
 
-Status: READY RESERVATION — no source edit until P supplies the full LAUNCH_SHA and activates the exact worktree lease. This is a bounded homepage-scene exception outside the 18/19 non-homepage completion program.
+Status: FIXED-SHA CANDIDATE WAITING FRESH CLAUDE REVIEW — verified Astra/low author delivered clean pushed remote-equal `36e5b7938df7ff79aad4905b288f0348e3a67f1d`, direct parent checkpoint `97157d5e2d0af2cccbe16c62eb1136aa961707cf`, changing exactly the amended seven-path scope. The later user video direction supersedes the rejected hollow miniature art requirement in the initial launch copy below. Writer lease is closed. Fresh Claude review, Kartik exact-SHA acceptance and P-controlled integration remain mandatory.
 
 Requested author: task/session `01a0bf1e-e769-7bb1-b30e-b2cf0f5d431a`, verified from its recorded `turn_context` as `gpt-6-astra` / low (`Astra light`) on `DESKTOP-DL9FDM7`. Sole human fixed-SHA acceptance reviewer: Kartik. Fresh external Claude Opus fixed-SHA review follows Astra authorship. The author may not self-review.
 
@@ -16,7 +16,7 @@ Reserved branch/worktree/port: `codex/tnp-home-cube-m2`, `D:\TNP-worktrees\TNP-H
 
 ## Result
 
-Replace only the existing hero's right-side 3D centerpiece with a premium interactive hollow hospitality cube. Preserve the current page and hero composition exactly: `#008080` teal surface, left copy, typography, CTA labels/actions, navbar, spacing, section transition and all non-hero content.
+Replace only the existing hero's right-side 3D centerpiece with a premium interactive solid illustrated hospitality cube. Preserve the current page and hero composition exactly: `#008080` teal surface, left copy, typography, CTA labels/actions, navbar, spacing, section transition and all non-hero content.
 
 The transparent-canvas object uses a thin champagne-gold architectural frame, a localized diffused white halo behind it, subtle atmospheric contact reflection below it and a hollow golden connection core. It presents four spatial miniature service worlds:
 
@@ -25,7 +25,7 @@ The transparent-canvas object uses a thin champagne-gold architectural frame, a 
 3. **RSVP** — a coordinator with minimal spatial glass message/status panels, visibly illustrative sample counts and messages, never a giant phone or production WhatsApp claim.
 4. **Hire Planner** — planner with tablet, staff/decorators and restrained task/path indicators showing coordination rather than live operational data.
 
-These must be genuine low-poly 3D compositions with depth and partial sightlines through the hollow frame, not flat images or textures pasted onto cube faces. No remote assets or new dependency.
+The user's later video feedback supersedes the earlier low-poly/open-frame requirement: original illustrated service scenes may texture the solid cube faces so the object matches the substantial polished rotating-cube presentation, while the cube geometry, perspective, seams, halo and motion must still read as a coherent 3D object rather than a flat slideshow. No remote runtime assets or new dependency.
 
 ## Exact ownership
 
@@ -74,3 +74,14 @@ Every other path is frozen, including `components/tnp/public/Home.module.css`, `
 - Record bundle delta, renderer draw calls/triangles and an honest frame-time sample. Do not claim physical-device 60 FPS, Android/iOS Safari, Core Web Vitals or production readiness unless actually measured.
 
 Checkpoint after the deterministic motion/controller/fallback foundation, then complete visual scene and browser evidence in the same lease. Push one immutable final candidate and stop. Fresh Claude review and Kartik exact-SHA acceptance precede P-controlled integration. No deployment.
+
+## Immutable candidate — 2026-09-20
+
+- final: `36e5b7938df7ff79aad4905b288f0348e3a67f1d`;
+- chain: source `f1952eb2...` -> launch `b80d881...` -> checkpoint `97157d5e...` -> final;
+- branch is clean, ordinarily pushed and remote-equal; cumulative delta is exactly the seven authorized paths;
+- original 1254x1254 atlas WebP is 268,216 bytes with SHA-256 `b2d799252eed9daf74f1476d2f32a7aa0af30bad92ed95ccd87a83e96ae73020`; no reference-video pixels/logos/text were used;
+- author reports 125/125 tracked tests, lint with three inherited warnings, explicit TypeScript, first-attempt build, four-viewport browser matrix and free ports3120/3220;
+- P independently verified ancestry/scope/remote/clean state and rendered desktop/mobile/service faces, then reproduced 125/125, lint, TypeScript and first-attempt Vercel build.
+
+Fresh review packet: `docs/dispatch/2026-09-20/HOME-CUBE-M2-CLAUDE-FIXED-SHA-REVIEW.md`. No integration or deployment before fresh Claude disposition and Kartik exact-SHA acceptance.
