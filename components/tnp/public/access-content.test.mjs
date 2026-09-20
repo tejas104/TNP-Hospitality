@@ -15,14 +15,14 @@ test('public navigation exposes six real homepage destinations without internal 
   );
   assert.equal(new Set(publicNavigation.map((x) => x.href)).size, 6);
 });
-test('audience access actions are truthful previews or partner enquiry, never fake authentication', () => {
+test('audience actions open the five allowlisted synthetic choosers, never fake authentication', () => {
   assert.deepEqual(
     accessAudiences.map((x) => x.name),
-    ['Client', 'Planner', 'Freelancer', 'RSVP Partner'],
+    ['Client', 'TNP Planner', 'Freelancer', 'Operations', 'RSVP'],
   );
   assert.deepEqual(
     accessAudiences.map((x) => x.href),
-    ['/client', '/planner', '/freelancer', '/contact?interest=vendor'],
+    ['/login?workspace=client', '/login?workspace=tnp-planner', '/login?workspace=freelancer', '/login?workspace=operations', '/login?workspace=rsvp'],
   );
   assert.ok(
     accessAudiences.every(

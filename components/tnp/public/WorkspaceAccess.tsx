@@ -1,111 +1,41 @@
+'use client';
+
 import Link from 'next/link';
-import {
-  ArrowUpRight,
-  BriefcaseBusiness,
-  CalendarDays,
-  HeartHandshake,
-  UserRound,
-} from 'lucide-react';
-import { byId } from '@/data/media';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ArrowUpRight } from 'lucide-react';
 import { accessAudiences } from './access-content';
+import { StorageWarning, useDemoAccess } from '../access/DemoAccess';
+import { demoProfiles, profileFor, resetScope } from '../access/session';
+import { workspaceById, workspaceHref } from '../access/routes';
 import styles from './WorkspaceAccess.module.css';
 
-const icons = [UserRound, CalendarDays, BriefcaseBusiness, HeartHandshake];
-
 export default function WorkspaceAccess() {
-  const image = byId('tablescape');
-  return (
-    <main id="main-content" tabIndex={-1} className={styles.page}>
-      <section className={styles.heading} aria-labelledby="access-title">
-        <div>
-          <Link href="/" className={styles.homeLink}>
-            TNP / HOME
-          </Link>
-          <p className={styles.eyebrow}>WORKSPACE / LOGIN ACCESS</p>
-          <h1 id="access-title">
-            One identity.
-            <br />
-            <em>Your place in TNP.</em>
-          </h1>
-          <p>
-            The production plan is one shared TNP identity, with workspace
-            access based on your role. For now, discover the experience that
-            fits you.
-          </p>
-        </div>
-        <figure>
-          <img
-            src={image.src}
-            alt={image.alt}
-            width="640"
-            height="480"
-            decoding="async"
-          />
-          <figcaption>
-            People coming together. Illustrative {image.source} preview
-            photography.
-          </figcaption>
-        </figure>
-      </section>
-      <section className={styles.access} aria-labelledby="choose-space-title">
-        <div className={styles.intro}>
-          <p className={styles.eyebrow}>CHOOSE YOUR CONTEXT</p>
-          <h2 id="choose-space-title">
-            Where would you
-            <br />
-            <em>like to begin?</em>
-          </h2>
-          <p>
-            Secure production sign-in is not enabled in this local preview. No
-            password or personal credentials are needed here.
-          </p>
-          <div className={styles.notice}>
-            <strong>A preview, not a live account</strong>
-            <p>
-              The actions alongside open synthetic workspaces or an enquiry
-              preview. No real bookings, payments or external messages are made.
-            </p>
-          </div>
-        </div>
-        <div className={styles.choices}>
-          {accessAudiences.map((audience, index) => {
-            const Icon = icons[index];
-            return (
-              <article key={audience.id}>
-                <div className={styles.cardTop}>
-                  <Icon size={23} strokeWidth={1.5} aria-hidden="true" />
-                  <span>{audience.kind}</span>
-                </div>
-                <h3>{audience.name}</h3>
-                <p>{audience.detail}</p>
-                <Link href={audience.href} className={styles.action}>
-                  {audience.action}
-                  <ArrowUpRight size={17} aria-hidden="true" />
-                </Link>
-              </article>
-            );
-          })}
-        </div>
-      </section>
-      <aside
-        className={styles.staff}
-        aria-label="Production and staff access information"
-      >
-        <h2>Already part of the team?</h2>
-        <p>
-          TNP Staff access is provisioned separately and is not enabled here.
-          Production account invitations and secure sign-in will be available
-          after the authentication rollout.
-        </p>
-        <Link href="/contact">
-          Ask about the right workspace{' '}
-          <ArrowUpRight size={17} aria-hidden="true" />
-        </Link>
-      </aside>
-      <footer className={styles.footer}>
-        <span>TNP HOSPITALITY · LOCAL PREVIEW</span>
-        <Link href="/#services">Explore our services →</Link>
-      </footer>
-    </main>
-  );
+  const params = useSearchParams();
+  const router = useRouter();
+  const access = useDemoAccess();
+  const workspace = workspaceById(params.get('workspace'));
+  const selected = profileFor(access.session);
+  return <main id="main-content" tabIndex={-1} className={styles.page}>
+    <section className={styles.heading} aria-labelledby="access-title">
+      <div><p className={styles.eyebrow}>TNP · SYNTHETIC WORKSPACES</p><h1 id="access-title">Your next step,<br /><em>in the right space.</em></h1><p>Choose a workspace, then a named sample profile. No password, real booking, payment or external message is involved.</p></div>
+    </section>
+    <StorageWarning />
+    {workspace ? <section className={styles.access} aria-labelledby="choose-space-title">
+      <div className={styles.intro}><Link href="/login">← All workspaces</Link><h2 id="choose-space-title">{workspace.label} demo</h2><p>{workspace.purpose}</p><p className={styles.notice}>{resetScope.switchProfile} Names and access states below are synthetic shell examples; existing feature records remain their own labelled samples.</p></div>
+      <div className={styles.choices}>
+        {demoProfiles.filter((profile) => profile.workspace === workspace.id).map((profile) => <article key={profile.id} data-selected={selected?.id === profile.id}>
+          <div className={styles.cardTop}><span>Synthetic · {profile.state}</span>{selected?.id === profile.id && <span>Selected</span>}</div><h3>{profile.name}</h3><p>{profile.role}</p>
+          {profile.state !== 'active' && <p>Workspace access is {profile.state} in this sample. Selecting it demonstrates a blocked state and does not open records.</p>}
+          {!workspace.available && <p>RSVP feature routes are not installed in this baseline. This chooser previews access only; no staff workspace opens.</p>}
+          <button type="button" className={styles.action} disabled={!access.ready} onClick={() => { access.select(profile.id); if (profile.state === 'active' && workspace.available) router.push(workspaceHref(workspace.id)); }}>{profile.state === 'active' && workspace.available ? `Enter as ${profile.name}` : `Preview ${profile.state} access`}<ArrowUpRight size={17} aria-hidden="true" /></button>
+        </article>)}
+        {selected?.workspace === workspace.id && (selected.state !== 'active' || !workspace.available) && <output aria-live="polite">{selected.name}: {selected.state !== 'active' ? `access ${selected.state}. Choose an active demo profile to continue.` : 'RSVP adapter pending. No workspace records opened.'}</output>}
+      </div>
+    </section> : <section className={styles.access} aria-labelledby="choose-space-title">
+      <div className={styles.intro}><p className={styles.eyebrow}>CHOOSE YOUR CONTEXT</p><h2 id="choose-space-title">Where would you<br /><em>like to begin?</em></h2><p>Demo identity stays in this browser tab. Production sign-in and recovery are not enabled by this chooser.</p></div>
+      <div className={styles.choices}>{accessAudiences.map((audience) => <article key={audience.id}><div className={styles.cardTop}><span>{audience.kind}</span></div><h3>{audience.name}</h3><p>{audience.detail}</p><Link href={audience.href} className={styles.action}>{audience.action}<ArrowUpRight size={17} aria-hidden="true" /></Link></article>)}</div>
+    </section>}
+    <aside className={styles.staff} aria-label="Production access information"><h2>A preview, not a live account</h2><p>Production access requires reviewed authentication and authorization. Shell profile selection does not grant either.</p><Link href="/contact">Ask about workspace access →</Link></aside>
+    <footer className={styles.footer}><span>TNP HOSPITALITY · SYNTHETIC PREVIEW</span><Link href="/">Return home →</Link></footer>
+  </main>;
 }
