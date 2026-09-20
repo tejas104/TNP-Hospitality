@@ -1,6 +1,6 @@
 # TNP-BRAND-AGGREGATE-M2 — integrated palette adoption and guard closure
 
-Status: ROUND-2 BOUNDED CORRECTION ACTIVE. Fresh Claude Opus 5/default-effort session `cdd20a88-eed6-465c-908d-4b7496afbff1` returned `CHANGES REQUESTED` on exact clean remote-equal `d5c15be0be3acf984206a0a29c3f16dabe522bdf`. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` is the sole inline correction writer in the existing isolated feature worktree. Runtime Codex model/effort metadata are unavailable and are not inferred. This remains a bounded post-integration correction, not a redesign and not authority for UX Foundation or Client source work.
+Status: ROUND-2 FIXED-SHA HANDOFF / SAME-CLAUDE FOCUSED RE-REVIEW. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` returned exact clean pushed remote-equal successor `497145220636ae4fe4cbda9bb984f7d9691d3e20`, direct child of Claude-reviewed `d5c15be0be3acf984206a0a29c3f16dabe522bdf`. Runtime Codex model/effort metadata are unavailable and are not inferred. The writer lease is closed. This remains a bounded post-integration correction, not a redesign and not authority for UX Foundation or Client source work.
 
 Responsible product decision owner and sole human fixed-SHA acceptance reviewer: Kartik. Round-2 writer: current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` on DESKTOP-DL9FDM7, inline only per the user's no-subagent direction. Fresh focused re-review remains assigned to the same independent Claude session above after one immutable successor is returned.
 
@@ -78,3 +78,23 @@ Round-2 baseline is exact `d5c15be0be3acf984206a0a29c3f16dabe522bdf`. Branch/wor
 The already-cleared Operations CSS and every other source, route, copy, behavior, domain/service/contract/fixture, package, shared-shell, homepage, Client/Planner/RSVP, provider, production and documentation path are frozen in the feature worktree.
 
 Return one clean ordinarily pushed immutable successor. Run the focused guard, independently discovered project tests, lint, explicit non-incremental TypeScript, Vercel build and diff check. Browser-check the corrected Freelancer panels at 1440x900, 1100x900 and 390x844 for computed text/non-text contrast, keyboard focus, overflow and console output; confirm Operations export styling remains byte-identical or smoke it without reopening its source. Stop the server and prove port3117 free. Same-Claude focused re-review and then Kartik exact-successor acceptance remain mandatory before local integration.
+
+## Round-2 immutable successor returned 2026-09-20
+
+- candidate: `497145220636ae4fe4cbda9bb984f7d9691d3e20`;
+- direct parent: reviewed `d5c15be0be3acf984206a0a29c3f16dabe522bdf`;
+- branch: `codex/tnp-brand-aggregate-m2`;
+- remote equality and clean writer checkout: verified after ordinary non-force push;
+- round-2 delta: exactly Freelancer CSS and the palette guard; cumulative launch delta remains the original three-file allowlist and Operations CSS is byte-identical to `d5c15be...`;
+- corrected live text contrast: white on exact teal, 4.77:1 across the two panels;
+- corrected live icon/border/separator contrast: ivory on exact teal, 4.23:1;
+- guard: actual `--beige` token is exact-value asserted, `data-color` / `data-fill` / `data-stroke` negative probes pass, and `light.color.set(0x154f44)` is detected;
+- focused guard: 6/6 PASS;
+- independently discovered tests: 18 files / 118 tests PASS;
+- lint: PASS with the same three inherited React-compiler warnings;
+- explicit non-incremental TypeScript: PASS;
+- Vercel build: PASS on the first attempt with the existing non-blocking chunk/dynamic-import/nf3 warnings;
+- browser: `/freelancer` at 1440x900, 1100x900 and 390x844; both corrected panels retain exact teal, measured ratios above, no horizontal overflow, visible keyboard focus and empty warn/error console;
+- cleanup: browser/server stopped and port3117 free.
+
+Focused re-review packet: `docs/dispatch/2026-09-20/BRAND-AGGREGATE-M2-CLAUDE-ROUND2-REREVIEW.md`. Same Claude session `cdd20a88-eed6-465c-908d-4b7496afbff1` must return one exact-successor disposition. Kartik acceptance remains a separate later gate.
