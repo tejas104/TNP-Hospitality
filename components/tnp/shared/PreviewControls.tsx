@@ -1,7 +1,11 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { PreviewService, PreviewVariant } from '../../../lib/contracts/preview.ts';
+import { resetScope } from '../access/session';
+import type {
+  PreviewService,
+  PreviewVariant,
+} from '../../../lib/contracts/preview.ts';
 import { PREVIEW_OPERATIONS } from '../../../lib/demo/service.ts';
 import { getBrowserPreviewService } from '../../../lib/services/preview.ts';
 import {
@@ -21,6 +25,7 @@ export function PreviewControls() {
   const [variant, setVariant] = useState<PreviewVariant>('ready');
   const [status, setStatus] = useState('Loading preview state…');
   const [busy, setBusy] = useState(false);
+  const [confirmReset, setConfirmReset] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -36,7 +41,11 @@ export function PreviewControls() {
         }
       } catch (error) {
         if (active) {
-          setStatus(error instanceof Error ? error.message : 'Preview storage is unavailable.');
+          setStatus(
+            error instanceof Error
+              ? error.message
+              : 'Preview storage is unavailable.',
+          );
         }
       }
     })();
@@ -45,12 +54,23 @@ export function PreviewControls() {
     };
   }, []);
 
-  function captureAction(operation: string, payload: unknown): CapturedPreviewActionIdentity | null {
+  function captureAction(
+    operation: string,
+    payload: unknown,
+  ): CapturedPreviewActionIdentity | null {
     if (!actionIdentities.current || generation === null) return null;
     try {
-      return actionIdentities.current.capture({ expectedGeneration: generation, operation, payload });
+      return actionIdentities.current.capture({
+        expectedGeneration: generation,
+        operation,
+        payload,
+      });
     } catch (error) {
-      setStatus(error instanceof Error ? error.message : 'Preview action identity is unavailable.');
+      setStatus(
+        error instanceof Error
+          ? error.message
+          : 'Preview action identity is unavailable.',
+      );
       return null;
     }
   }
@@ -58,7 +78,10 @@ export function PreviewControls() {
   async function changeVariant(nextVariant: PreviewVariant) {
     if (!service.current || generation === null) return;
     const payload = { key: 'global' as const, variant: nextVariant };
-    const identity = captureAction(PREVIEW_OPERATIONS.setPreviewVariant, payload);
+    const identity = captureAction(
+      PREVIEW_OPERATIONS.setPreviewVariant,
+      payload,
+    );
     if (!identity) return;
     setBusy(true);
     const result = await service.current.mutate({
@@ -76,7 +99,14 @@ export function PreviewControls() {
     actionIdentities.current?.settle(identity);
     setVariant(nextVariant);
     setStatus(`Global preview state: ${nextVariant}`);
-    window.dispatchEvent(new CustomEvent('tnp-preview-change', { detail: { generation: identity.expectedGeneration, variant: nextVariant } }));
+    window.dispatchEvent(
+      new CustomEvent('tnp-preview-change', {
+        detail: {
+          generation: identity.expectedGeneration,
+          variant: nextVariant,
+        },
+      }),
+    );
   }
 
   async function reset() {
@@ -99,85 +129,81 @@ export function PreviewControls() {
     setGeneration(result.value.toGeneration);
     setVariant('ready');
     setStatus(`Preview reset to generation ${result.value.toGeneration}`);
-    window.dispatchEvent(new CustomEvent('tnp-preview-reset', { detail: result.value }));
+    window.dispatchEvent(
+      new CustomEvent('tnp-preview-reset', { detail: result.value }),
+    );
     resetButton.current?.focus();
   }
 
   return (
-    <>
-      <div className="preview-notice" role="note">
-        {warning}
-      </div>
-      <div
-        className="preview-control-panel"
-        aria-label="Preview controls"
-      >
-        <label>
-          <span className="sr-only">Synthetic preview state</span>
-          <select
-            aria-label="Synthetic preview state"
-            value={variant}
-            disabled={busy || generation === null}
-            onChange={(event) => void changeVariant(event.target.value as PreviewVariant)}
-          >
-            <option value="ready">Ready</option>
-            <option value="loading">Loading</option>
-            <option value="empty">Empty</option>
-            <option value="error">Error</option>
-          </select>
-        </label>
-        <button
-          ref={resetButton}
-          type="button"
-          disabled={busy || generation === null}
-          onClick={() => void reset()}
+    <details className="ux-preview-tools ux-product">
+      <summary>
+        <strong>Synthetic preview</strong>
+        <span>Scenario & reset controls</span>
+      </summary>
+      <div className="ux-preview-body">
+        <p>{warning}</p>
+        <div
+          className="preview-control-panel"
+          aria-label="Connected preview controls"
         >
-          Reset preview
-        </button>
-        <output aria-live="polite">{status}</output>
+          <label>
+            Synthetic preview state
+            <select
+              aria-label="Synthetic preview state"
+              value={variant}
+              disabled={busy || generation === null}
+              onChange={(event) =>
+                void changeVariant(event.target.value as PreviewVariant)
+              }
+            >
+              <option value="ready">Ready</option>
+              <option value="loading">Loading</option>
+              <option value="empty">Empty</option>
+              <option value="error">Error</option>
+            </select>
+          </label>
+          <button
+            className="ux-action ux-action-secondary"
+            ref={resetButton}
+            type="button"
+            disabled={busy || generation === null}
+            onClick={() => setConfirmReset(true)}
+          >
+            Reset connected cross-portal preview
+          </button>
+          <output aria-live="polite">{status}</output>
+        </div>
+        {confirmReset && (
+          <div className="ux-reset-confirm">
+            <p>
+              {resetScope.connected} This replaces connected sample records with
+              their starting state.
+            </p>
+            <button
+              className="ux-action ux-action-danger"
+              type="button"
+              disabled={busy}
+              onClick={() => {
+                setConfirmReset(false);
+                void reset();
+              }}
+            >
+              Confirm cross-portal reset
+            </button>
+            <button
+              className="ux-action ux-action-tertiary"
+              type="button"
+              onClick={() => {
+                setConfirmReset(false);
+                resetButton.current?.focus();
+              }}
+            >
+              Keep preview records
+            </button>
+          </div>
+        )}
       </div>
-      <style>{`
-        .preview-control-panel {
-          position: fixed;
-          z-index: 42;
-          right: max(1rem, env(safe-area-inset-right));
-          bottom: max(1rem, env(safe-area-inset-bottom));
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-          max-width: min(32rem, calc(100vw - 2rem));
-          padding: 0.45rem;
-          color: #fff;
-          background: #008080;
-          border: 1px solid rgba(210, 188, 133, 0.55);
-          font-size: 0.7rem;
-        }
-        .preview-control-panel select,
-        .preview-control-panel button {
-          min-height: 2rem;
-        }
-        .preview-control-panel output {
-          line-height: 1.25;
-        }
-        .preview-control-panel :is(button, select):focus-visible {
-          outline: 3px solid #fff;
-          outline-offset: 2px;
-        }
-        @media (max-width: 700px) {
-          body {
-            padding-bottom: calc(12rem + env(safe-area-inset-bottom));
-          }
-          .preview-control-panel {
-            right: max(1rem, env(safe-area-inset-right));
-            bottom: max(5.25rem, calc(env(safe-area-inset-bottom) + 5.25rem));
-            left: max(1rem, env(safe-area-inset-left));
-            flex-wrap: wrap;
-          }
-          .preview-control-panel output {
-            flex-basis: 100%;
-          }
-        }
-      `}</style>
-    </>
+    </details>
   );
 }

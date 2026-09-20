@@ -175,7 +175,7 @@ test('corrected solid surface text and focus colors retain AA contrast', () => {
     ['app/globals.css', '.preview-notice'],
     ['components/tnp/portals/client/ClientStatusHub.module.css', '.viewState'],
     ['components/tnp/portals/planner/PlannerRequirements.module.css', '.state'],
-    ['components/tnp/shared/PreviewControls.tsx', '.preview-control-panel'],
+    ['app/globals.css', '.ux-preview-tools .preview-control-panel'],
     ['app/globals.css', '.assessment-result .status-pill.green'],
   ]) {
     const rule = block(file, selector);

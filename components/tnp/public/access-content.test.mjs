@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { accessAudiences, publicNavigation } from './access-content.ts';
+import { productAudiences, publicNavigation } from './access-content.ts';
 test('public navigation exposes six real homepage destinations without internal Operations promotion', () => {
   assert.deepEqual(
     publicNavigation.map((x) => x.href),
@@ -17,20 +17,26 @@ test('public navigation exposes six real homepage destinations without internal 
 });
 test('audience actions open the five allowlisted synthetic choosers, never fake authentication', () => {
   assert.deepEqual(
-    accessAudiences.map((x) => x.name),
+    productAudiences.map((x) => x.name),
     ['Client', 'TNP Planner', 'Freelancer', 'Operations', 'RSVP'],
   );
   assert.deepEqual(
-    accessAudiences.map((x) => x.href),
-    ['/login?workspace=client', '/login?workspace=tnp-planner', '/login?workspace=freelancer', '/login?workspace=operations', '/login?workspace=rsvp'],
+    productAudiences.map((x) => x.href),
+    [
+      '/login?workspace=client',
+      '/login?workspace=tnp-planner',
+      '/login?workspace=freelancer',
+      '/login?workspace=operations',
+      '/login?workspace=rsvp',
+    ],
   );
   assert.ok(
-    accessAudiences.every(
+    productAudiences.every(
       (x) => x.summary && x.detail && x.kind.startsWith('Synthetic'),
     ),
   );
   assert.ok(
-    accessAudiences.every(
+    productAudiences.every(
       (x) => !x.href.includes('admin') && !x.action.includes('Sign in'),
     ),
   );

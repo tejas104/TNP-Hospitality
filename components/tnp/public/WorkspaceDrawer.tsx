@@ -7,7 +7,6 @@ import {
   BriefcaseBusiness,
   CalendarDays,
   HeartHandshake,
-  LayoutDashboard,
   UserRound,
   Compass,
   X,
@@ -18,7 +17,7 @@ import {
 } from './workspace-interaction';
 import { accessAudiences } from './access-content';
 
-const icons = [UserRound, CalendarDays, BriefcaseBusiness, LayoutDashboard, HeartHandshake];
+const icons = [UserRound, CalendarDays, BriefcaseBusiness, HeartHandshake];
 
 // Homepage-only sibling of the existing portal switcher: non-modal navigation,
 // no authentication claim and no synthetic data controls on the public page.
