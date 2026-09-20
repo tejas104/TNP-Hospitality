@@ -200,6 +200,7 @@ try {
       await page
         .getByRole('link', { name: 'Switch demo profile', exact: true })
         .click();
+      await page.waitForURL('**/login?workspace=client');
       await page.goBack();
       await page.waitForURL('**/client');
       await page.locator('#workspace-content').waitFor();
