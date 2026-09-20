@@ -25,6 +25,11 @@ function advance(state, ms) {
   }
   return state;
 }
+test('literal timing contracts remain 4500ms hold, 1500ms turn and 6000ms resume', () => {
+  assert.equal(HOLD_MS, 4500);
+  assert.equal(TURN_MS, 1500);
+  assert.equal(RESUME_MS, 6000);
+});
 test('four services present for 4.5s and turn forward 90 degrees over 1.5s, including seamless wrap', () => {
   let state = createMotion();
   assert.deepEqual(SERVICES, [
@@ -58,6 +63,13 @@ test('intent threshold preserves taps, vertical scrolling and diagonal gestures'
   assert.equal(pointerIntent(-20, 5), 'horizontal');
   assert.equal(pointerIntent(4, 20), 'vertical');
   assert.equal(pointerIntent(20, 20), 'vertical');
+  for (const signX of [-1, 1]) {
+    for (const signY of [-1, 1]) {
+      assert.equal(pointerIntent(signX * 24.99, signY * 20), 'vertical');
+      assert.equal(pointerIntent(signX * 25, signY * 20), 'vertical');
+      assert.equal(pointerIntent(signX * 25.01, signY * 20), 'horizontal');
+    }
+  }
 });
 test('drag interrupts turn and inactivity resumes continuously from inspected angle after six seconds', () => {
   let state = advance(createMotion(), HOLD_MS + 500);
