@@ -224,6 +224,7 @@ export default function EnquiryForm({
     setReceipt(null);
     setErrors({});
     setFields({ name: '', email: '', message: '' });
+    setBrief({...brief,products:[],occasion:'',city:'',date:'',guests:'',billing:'',requester:'My event',ownVenue:false,ownPlanner:false,quantities:{}});
     setStatus(
       'New synthetic enquiry. Previous saved enquiries remain in the preview scenario.',
     );
@@ -246,7 +247,7 @@ export default function EnquiryForm({
         }}
         aria-busy={busy}
       >
-        <fieldset disabled={!ready || busy || !!action}>
+        <fieldset hidden={!!action} disabled={!ready || busy || !!action}>
           <legend className={styles.srOnly}>Sample enquiry details</legend>
           <div className={styles.requestModes} aria-label="Conversation type">
             {(['event', 'talk'] as const).map((mode) => (
@@ -468,6 +469,7 @@ export default function EnquiryForm({
         >
           {status}
         </output>
+        {action&&!receipt&&<details open><summary>Review pending request</summary><p style={{whiteSpace:'pre-wrap'}}>{action.request.payload.message}</p></details>}
         {receipt && (
           <div className={styles.receipt}>
             <p>YOUR SYNTHETIC RECEIPT</p>

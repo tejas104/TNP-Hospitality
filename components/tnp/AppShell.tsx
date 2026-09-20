@@ -102,8 +102,7 @@ function Shell({ children }: { children: ReactNode }) {
         href="#main-content"
         onClick={(event) => {
           const main =
-            document.getElementById('main-content') ??
-            document.querySelector('main') ??
+            Array.from(document.querySelectorAll('main#main-content, main')).find((element)=>element.getClientRects().length>0) ??
             document.querySelector('h1');
           if (main instanceof HTMLElement) {
             event.preventDefault();

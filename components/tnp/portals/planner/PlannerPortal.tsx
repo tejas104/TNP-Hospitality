@@ -36,6 +36,13 @@ const roles = [
   'RSVP',
 ];
 type Draft = {
+  applicationState: string;
+  experience: string;
+  cities: string;
+  categories: string;
+  leadership: string;
+  availability: string;
+  consent: string;
   displayName: string;
   city: string;
   bookingId: string;
@@ -48,7 +55,14 @@ type RegistrationRequest = MutationRequest<'registerPlanner'>;
 type RequirementRequest = MutationRequest<'submitRequirement'>;
 type ActionReceipt = { id: string; message: string };
 const initialDraft: Draft = {
-  displayName: 'Mehta Events & Experiences',
+  applicationState: 'saved draft',
+  experience: '',
+  cities: '',
+  categories: '',
+  leadership: '',
+  availability: '',
+  consent: '',
+  displayName: 'Aarav Mehta',
   city: 'Jaipur',
   bookingId: '',
   eventId: '',
@@ -582,7 +596,7 @@ export function PlannerPortal() {
     const epoch = contextEpoch.current;
     const local: Record<string, string> = {};
     if (!draft.displayName.trim())
-      local.displayName = 'Planner or company name is required.';
+      local.displayName = 'Planner name is required.';
     if (!draft.city.trim()) local.city = 'City is required.';
     if (Object.keys(local).length) {
       setRegistrationErrors(local);
@@ -862,7 +876,7 @@ export function PlannerPortal() {
   }
 
   return (
-    <main className={`portal-page product-page ${styles.plannerRoot}`}>
+    <main id="main-content" tabIndex={-1} className={`portal-page product-page ${styles.plannerRoot}`}>
       <a className={styles.skip} href="#planner-registration">
         Skip to planner entry
       </a>
@@ -871,14 +885,10 @@ export function PlannerPortal() {
           <p className={styles.eyebrow}>
             PLANNER WORKSPACE · SYNTHETIC PREVIEW
           </p>
-          <h1>
-            Good plans.
-            <br />
-            <em>Clear connections.</em>
-          </h1>
+          <h1>Your planning workspace</h1>
           <p>
-            Introduce your studio. Shape a workforce brief. Keep every
-            requirement connected to the right occasion.
+            Complete your senior planner profile, then inspect the requirements
+            connected to each sample event.
           </p>
           <small>
             No live verification, staffing or messages. Use sample information
@@ -889,7 +899,7 @@ export function PlannerPortal() {
       </section>
       <nav className={styles.localNav} aria-label="Planner workspace sections">
         <span>YOUR WORKSPACE</span>
-        <a href="#planner-registration">01 · Studio profile</a>
+        <a href="#planner-registration">01 · Planner profile</a>
         <a href="#planner-requirement">02 · Workforce brief</a>
         <a href="#planner-directory">03 · Requirement directory</a>
       </nav>
@@ -899,11 +909,7 @@ export function PlannerPortal() {
       >
         <header className={styles.sectionHeader}>
           <p className="section-kicker">PLANNER ENTRY</p>
-          <h2 id="planner-entry-title">
-            The right context.
-            <br />
-            <em>The right people.</em>
-          </h2>
+          <h2 id="planner-entry-title">Profile and workforce requirements</h2>
           <p>
             These forms persist locally in this browser and write only to the
             shared synthetic scenario.
@@ -936,9 +942,9 @@ export function PlannerPortal() {
               className={styles.formFields}
               disabled={Boolean(busy) || !draftReady}
             >
-              <legend className={styles.visuallyHidden}>Studio profile</legend>
+              <legend className={styles.visuallyHidden}>Planner profile</legend>
               <p className="section-kicker">01 · PLANNER REGISTRATION</p>
-              <h2>Introduce the studio.</h2>
+              <h2>Introduce yourself.</h2>
               <p className={styles.formCopy}>
                 A saved profile remains pending sample verification; it grants
                 no production authority.
@@ -946,10 +952,10 @@ export function PlannerPortal() {
               <p className={styles.contextNote}>
                 {registrationId
                   ? `Profile receipt: ${registrationId} · verification pending in the sample`
-                  : 'A studio profile is a sample record, not a production account.'}
+                  : 'A planner profile is a sample record, not a production account.'}
               </p>
               <label>
-                Planner or company name
+                Planner name
                 <input
                   value={draft.displayName}
                   onChange={(event) =>
@@ -984,6 +990,99 @@ export function PlannerPortal() {
                   </span>
                 )}
               </label>
+              <details className={styles.applicationEvidence}>
+                <summary>Professional profile details</summary>
+                <p>
+                  These details stay in this browser as application preparation.
+                  The connected sample registration stores name and city only;
+                  it does not approve a senior planner.
+                </p>
+                {(
+                  [
+                    ['experience', 'Relevant experience'],
+                    ['cities', 'Cities you can work in'],
+                    ['categories', 'Event categories'],
+                    ['leadership', 'Leadership experience'],
+                    ['availability', 'Availability'],
+                  ] as const
+                ).map(([field, label]) => (
+                  <label key={field}>
+                    {label}
+                    <input
+                      maxLength={300}
+                      value={draft[field]}
+                      onChange={(event) => update(field, event.target.value)}
+                    />
+                  </label>
+                ))}
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={draft.consent === 'yes'}
+                    onChange={(event) =>
+                      update('consent', event.target.checked ? 'yes' : '')
+                    }
+                  />{' '}
+                  I understand that this is a synthetic application draft.
+                </label>
+                <label>
+                  Application review scenario
+                  <select
+                    value={draft.applicationState}
+                    onChange={(event) =>
+                      update('applicationState', event.target.value)
+                    }
+                  >
+                    {[
+                      'saved draft',
+                      'submitted',
+                      'under review',
+                      'revision requested',
+                      'approved — unassigned',
+                      'declined',
+                      'suspended',
+                    ].map((state) => (
+                      <option key={state}>{state}</option>
+                    ))}
+                  </select>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (
+                      [
+                        'experience',
+                        'cities',
+                        'categories',
+                        'leadership',
+                        'availability',
+                      ].some((field) => !draft[field as keyof Draft].trim()) ||
+                      draft.consent !== 'yes'
+                    ) {
+                      setRegistrationNotice(
+                        'Complete professional details and consent before preparing the local submission.',
+                      );
+                      return;
+                    }
+                    update('applicationState', 'submitted');
+                    setRegistrationNotice(
+                      'Application prepared locally. No review service or assignment was invoked.',
+                    );
+                  }}
+                >
+                  Prepare local application submission
+                </button>
+                <p>
+                  Status: {draft.applicationState}.{' '}
+                  {draft.applicationState === 'approved — unassigned'
+                    ? 'No assigned events. Approval alone does not expose client briefs or workforce resources.'
+                    : draft.applicationState === 'revision requested'
+                      ? 'Sample revision: add specific leadership evidence before resubmitting.'
+                      : draft.applicationState === 'suspended'
+                        ? 'Coordination actions are unavailable in this review scenario.'
+                        : 'No assignment or fulfilment access is granted.'}
+                </p>
+              </details>
               <button
                 type="submit"
                 className="magnetic-btn dark"
@@ -1290,6 +1389,9 @@ function PlannerImage() {
         <img
           ref={image}
           src={plannerIllustration.src}
+          loading="lazy"
+          decoding="async"
+          fetchPriority="low"
           alt={plannerIllustration.alt}
           width={1600}
           height={1274}

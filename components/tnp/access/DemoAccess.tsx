@@ -158,8 +158,16 @@ export function WorkspaceGate({ children }: { children: ReactNode }) {
         state={`${profileFor(session)?.role}. Shell selection keeps feature-local sample records unchanged; production access is not granted.`}
       >
         <NextAction
-          title="Explore the sample workflow"
-          reason="Feature records and their labelled sample actors remain separate."
+          title={
+            info.workspace === 'tnp-planner'
+              ? 'Complete your planner profile'
+              : info.workspace === 'freelancer'
+                ? 'Review your application or assignment'
+                : info.workspace === 'rsvp'
+                  ? 'Review your event responses'
+                  : 'Review outstanding event decisions'
+          }
+          reason="Use the labelled sample records below to continue your next task."
           href="#workspace-content"
           action={`Open ${info.label} tasks`}
         />

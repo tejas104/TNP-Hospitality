@@ -61,7 +61,7 @@ export const demoProfiles: readonly DemoProfile[] = [
     id: 'rsvp-team',
     workspace: 'rsvp',
     name: 'Tara Kapoor',
-    role: 'RSVP team · adapter pending',
+    role: 'RSVP team · local message-only preview',
     state: 'active',
   },
   {

@@ -199,3 +199,89 @@
   .exportBar { grid-template-columns: 1fr; }
   .exportBar > button { justify-content: center; justify-self: stretch; }
 }
+
+.finance {
+  font: 14px/1.6 var(--font-product, sans-serif);
+}
+.financeGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: 24px;
+  margin-top: 20px;
+}
+.finance label {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0;
+  font-weight: 600;
+}
+.finance :is(input, select, textarea) {
+  font: 16px var(--font-product, sans-serif);
+  min-height: 44px;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #a39b8b;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #202423;
+}
+.finance button {
+  min-height: 44px;
+  padding: 12px 16px;
+  margin: 4px 8px 4px 0;
+  background: #008080;
+  color: #fff;
+  border: 1px solid #008080;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.finance button:hover:not(:disabled) {
+  background: #fff5df;
+  color: #202423;
+}
+.finance button:disabled {
+  background: #eae8dc;
+  color: #59615f;
+  border-color: #a39b8b;
+  cursor: not-allowed;
+}
+.finance .recordButton {
+  display: grid;
+  text-align: left;
+  width: 100%;
+  gap: 6px;
+  background: #fffdf8;
+  color: #202423;
+}
+.finance .recordButton[aria-pressed='true'] {
+  border: 2px solid #008080;
+  background: #eae8dc;
+}
+@media (max-width: 700px) {
+  .financeGrid {
+    grid-template-columns: 1fr;
+  }
+  .finance {
+    min-width: 0;
+  }
+  .finance :is(p, h3) {
+    overflow-wrap: anywhere;
+  }
+}
+@media print {
+  .finance::before {
+    content: 'SAMPLE — NOT AN OFFICIAL FINANCIAL DOCUMENT';
+    display: block;
+    font-weight: 700;
+  }
+  .finance :is(button, form) {
+    display: none;
+  }
+}
+
+.finance {background:#f5f1e7;color:#202423;padding:24px;border-radius:14px;border:1px solid #c4baab;}
+.finance .panelHeading,.finance .panelHeading p,.finance :global(.section-kicker) {color:#202423;}
+@media(max-width:700px){.finance{padding:16px;}}
+
+.printQuote{display:none;}
+@media print{.finance:has(.printQuote)>:not(.printQuote){display:none!important;}.finance:has(.printQuote)::before{display:none;}.finance .printQuote{display:block;color:#000;background:#fff;font:12pt/1.5 sans-serif;}.printQuote table{width:100%;border-collapse:collapse;}.printQuote th,.printQuote td{padding:10px;border-bottom:1px solid #777;text-align:left;}.printQuote thead{display:table-header-group;}.printQuote tr{break-inside:avoid;}.printQuote footer{display:block;margin-top:32px;}.finance{padding:0;border:0;background:#fff;}}

@@ -2358,9 +2358,7 @@ textarea {
   padding: clamp(22px, 4vw, 40px);
 }
 
-.admin-shell
-  .live-ops-panel
-  :where(a, button, input, select, textarea):focus-visible {
+.admin-shell .live-ops-panel :where(a, button, input, select, textarea):focus-visible {
   outline-color: #006b6b;
 }
 
@@ -3388,3 +3386,58 @@ body:has(.ux-header),
     padding-inline: 8px;
   }
 }
+
+/* Workspace actions remain visible at rest, with a light interactive state. */
+body:has(.ux-header) :is(main, .admin-shell, .ux-orientation) button {
+  min-height: 44px;
+  border: 1px solid #008080;
+}
+body:has(.ux-header)
+  :is(main, .admin-shell, .ux-orientation)
+  :is(button, a.ux-action, a.magnetic-btn):hover:not(:disabled) {
+  background: #fff5df;
+  color: #202423;
+  border-color: #008080;
+}
+body:has(.ux-header) :is(button, a, input, textarea, select):focus-visible {
+  outline: 3px solid #202423;
+  outline-offset: 3px;
+}
+body:has(.ux-header) .admin-header h1 {
+  font: 650 clamp(28px, 3vw, 38px)/1.15 var(--font-product);
+}
+body:has(.ux-header) .admin-main :is(h2, h3) {
+  font-family: var(--font-product);
+  line-height: 1.3;
+}
+body:has(.ux-header) .admin-main h2 {
+  font-size: 24px;
+}
+.ux-orientation {
+  padding-block: 20px;
+  gap: 20px;
+}
+.ux-orientation h2 {
+  font-size: 22px;
+}
+.ux-orientation .ux-next-action {
+  padding: 16px;
+}
+body:has(.ux-header) input,
+body:has(.ux-header) select,
+body:has(.ux-header) textarea {
+  font-size: 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  body:has(.ux-header) *,
+  body:has(.ux-header) *::before,
+  body:has(.ux-header) *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.admin-shell .admin-sidebar button {border-color:rgb(255 255 255 / 45%);margin-block:4px;border-radius:8px;}
+
+@media print{@page{size:A4;margin:15mm;}body:has([data-sample-quote]) :is(.site-nav,.public-skip,.ux-orientation,.ux-preview-tools,.ux-preview-warning,.admin-sidebar,.admin-header,.admin-stats,nav){display:none!important;}body:has([data-sample-quote]) .admin-shell{display:block;padding:0;min-height:0;background:#fff;color:#000;}body:has([data-sample-quote]) .admin-main{padding:0;}body:has([data-sample-quote]) *{box-shadow:none!important;text-shadow:none!important;}}

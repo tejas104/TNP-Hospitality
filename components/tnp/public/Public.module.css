@@ -561,3 +561,18 @@
     padding-bottom: 24px;
   }
 }
+
+.page {
+  font-family: var(--font-product, sans-serif);
+}
+.page :is(h1, h2, h3) {
+  font-family: var(--font-product, sans-serif);
+  font-weight: 600;
+}
+.page :is(button, a[class]):hover:not(:disabled) {
+  background: #fff5df;
+  color: #202423;
+}
+.page button {
+  min-height: 44px;
+}

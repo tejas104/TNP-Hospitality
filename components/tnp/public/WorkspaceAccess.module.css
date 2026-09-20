@@ -266,3 +266,8 @@
     outline: 2px solid Highlight;
   }
 }
+
+.page :is(button, a[class]):hover:not(:disabled) {
+  background: #fff5df;
+  color: #202423;
+}

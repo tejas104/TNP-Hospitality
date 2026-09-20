@@ -28,8 +28,8 @@ export const workspaceRegistry = [
     id: 'rsvp',
     label: 'RSVP',
     path: '/rsvp/workspace',
-    available: false,
-    purpose: 'WhatsApp response and information workspace; adapter pending.',
+    available: true,
+    purpose: 'Dedicated synthetic WhatsApp response and information workspace.',
   },
 ] as const satisfies readonly {
   id: WorkspaceId;

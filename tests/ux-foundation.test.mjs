@@ -33,7 +33,7 @@ test('all workspaces have unique destinations and allowlisted chooser links; RSV
   assert.equal(new Set(workspaces.map((x) => chooserHref(x.id))).size, 2);
   for (const workspace of workspaces)
     assert.equal(routeInfo(workspace.path).workspace, workspace.id);
-  assert.equal(workspaceHref('rsvp'), '/rsvp/login');
+  assert.equal(workspaceHref('rsvp'), '/rsvp/workspace');
   assert.equal(workspaceById('//evil.test'), undefined);
   assert.equal(workspaceById('planner'), undefined);
 });
@@ -104,7 +104,7 @@ test('explicit selection persists only fixture identifiers and keeps records and
   a.select('planner-suspended');
   assert.equal(canEnter(a.read().session, 'tnp-planner'), false);
   a.select('rsvp-team');
-  assert.equal(canEnter(a.read().session, 'rsvp'), false);
+  assert.equal(canEnter(a.read().session, 'rsvp'), true);
   a.exit();
   assert.equal(disk.getItem(DEMO_SESSION_KEY), null);
   assert.equal(disk.getItem('preview-records'), 'keep');

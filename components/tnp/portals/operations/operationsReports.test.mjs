@@ -301,7 +301,7 @@ test('Reports is a registered section and remounts per generation (source policy
   assert.equal(items.some((item) => item.id === 'overview'), true);
 
   const admin = readFileSync(here('./AdminOperations.tsx'), 'utf8');
-  assert.match(admin, /<OperationsReports key=\{`generation-\$\{data\.generation\}`\}/, 'a generation change discards Reports-local selection, filters and export state');
+  assert.match(admin, /<OperationsReports\s+key=\{`generation-\$\{data\.generation\}`\}/, 'a generation change discards Reports-local selection, filters and export state');
   assert.doesNotMatch(admin, /futureNavigation = \[[^\]]*'Reports'/, 'Reports is no longer a disabled future destination');
   assert.match(admin, /getScenarioMetadata\(\)/);
 });

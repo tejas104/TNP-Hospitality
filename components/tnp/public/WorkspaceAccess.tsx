@@ -189,7 +189,17 @@ export default function WorkspaceAccess() {
           Production access requires reviewed authentication and authorization.
           Shell profile selection does not grant either.
         </p>
-        <Link href="/contact">Ask about workspace access →</Link>
+        <details>
+          <summary>Cannot access your workspace?</summary>
+          <p>
+            This preview has no password or recovery email. Choose an active
+            sample profile to test the interface. For real account access,
+            contact TNP; do not share passwords or OTPs in an enquiry.
+          </p>
+          <Link href="/contact?interest=access-help">
+            Ask about workspace access →
+          </Link>
+        </details>
       </aside>
       <footer className={styles.footer}>
         <span>TNP HOSPITALITY · SYNTHETIC PREVIEW</span>

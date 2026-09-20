@@ -1,6 +1,19 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, RefreshCw, Sparkles } from 'lucide-react';
+import { RefreshCw } from 'lucide-react';
+import { getBrowserPreviewService } from '@/lib/services/preview';
+import type {
+  Attendance,
+  Earning,
+  Payout,
+  Rating,
+  EventPass,
+  Assignment,
+  Worker,
+  Paginated,
+  PreviewOutcome,
+  QueryOptions,
+} from '@/lib/contracts/preview';
 import { ApplicationFlow } from './ApplicationFlow';
 import {
   AssignmentWorkspace,
@@ -27,7 +40,7 @@ export function FreelancerPortal() {
   }, []);
   if (!profile)
     return (
-      <main className={styles.workspace}>
+      <main id="main-content" tabIndex={-1} className={styles.workspace}>
         <output className={styles.loading}>
           Opening the freelancer workspace…
         </output>
@@ -67,27 +80,36 @@ function FreelancerWorkspace({
     }, 0);
   }
   return (
-    <main className={styles.workspace}>
+    <main id="main-content" tabIndex={-1} className={styles.workspace}>
       <header className={styles.hero}>
         <div>
           <p className={styles.eyebrow}>
             TNP HOSPITALITY / THE FREELANCER SPACE
           </p>
-          <h1>
-            Good people.
-            <br />
-            <em>Remarkable experiences.</em>
-          </h1>
+          <h1>Your freelancer workspace</h1>
           <p>
             A place to introduce yourself, find your next opportunity and show
             up ready.
           </p>
         </div>
-        <div className={styles.heroMark} aria-hidden="true">
-          <Sparkles size={40} />
-          <span>CARE IN EVERY DETAIL</span>
-          <ArrowUpRight size={58} />
-        </div>
+        <button
+          className={styles.primary}
+          onClick={() =>
+            navigate(
+              w.data?.assignments.length
+                ? 'assignments'
+                : w.data?.worker?.approved
+                  ? 'opportunities'
+                  : 'application',
+            )
+          }
+        >
+          {w.data?.assignments.length
+            ? 'Review your assignments'
+            : w.data?.worker?.approved
+              ? 'Find your next opportunity'
+              : 'Complete your application'}
+        </button>
       </header>
       <div className={styles.context}>
         <label htmlFor="freelancer-profile">
@@ -127,21 +149,26 @@ function FreelancerWorkspace({
         {w.storageWarning && <p>{w.storageWarning}</p>}
       </output>
       <nav className={styles.workspaceNav} aria-label="Freelancer workspace">
-        {['application', 'opportunities', 'assignments', 'updates'].map(
-          (item, index) => (
-            <button
-              key={item}
-              aria-current={section === item ? 'page' : undefined}
-              onClick={() => navigate(item)}
-            >
-              <span>0{index + 1}</span>
-              {item}
-              {item === 'assignments' && w.data && (
-                <small>{w.data.assignments.length}</small>
-              )}
-            </button>
-          ),
-        )}
+        {[
+          'application',
+          'opportunities',
+          'assignments',
+          'pass & attendance',
+          'earnings & standing',
+          'updates',
+        ].map((item, index) => (
+          <button
+            key={item}
+            aria-current={section === item ? 'page' : undefined}
+            onClick={() => navigate(item)}
+          >
+            <span>0{index + 1}</span>
+            {item}
+            {item === 'assignments' && w.data && (
+              <small>{w.data.assignments.length}</small>
+            )}
+          </button>
+        ))}
       </nav>
       {w.pendingRequests.length > 0 && (
         <section
@@ -241,6 +268,16 @@ function FreelancerWorkspace({
                   openOpportunities={() => navigate('opportunities')}
                 />
               </div>
+              {(section === 'pass & attendance' ||
+                section === 'earnings & standing') && (
+                <FreelancerRecords
+                  key={profile + ':' + w.data.generation + ':' + section}
+                  profile={profile}
+                  section={section}
+                  assignments={w.data.assignments}
+                  worker={w.data.worker}
+                />
+              )}
               <div hidden={section !== 'updates'}>
                 <UpdatesWorkspace
                   workspace={w}
@@ -261,5 +298,266 @@ function FreelancerWorkspace({
         </small>
       </footer>
     </main>
+  );
+}
+
+const rupees = (value: number) =>
+  new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(
+    value / 100,
+  );
+async function allRecords<T>(
+  query: (options: QueryOptions) => Promise<PreviewOutcome<Paginated<T>>>,
+) {
+  const items: T[] = [];
+  let cursor: string | undefined;
+  const seen = new Set<string>();
+  do {
+    const result = await query({ cursor });
+    if (!result.ok) throw Error(result.error.message);
+    items.push(...result.value.items);
+    cursor = result.value.nextCursor ?? undefined;
+    if (cursor && seen.has(cursor))
+      throw Error('Repeated page cursor. Retry reading records.');
+    if (cursor) seen.add(cursor);
+  } while (cursor);
+  return items;
+}
+function FreelancerRecords({
+  profile,
+  section,
+  assignments,
+  worker,
+}: {
+  profile: string;
+  section: string;
+  assignments: Assignment[];
+  worker: Worker | null;
+}) {
+  const [attempt, setAttempt] = useState(0);
+  const [rows, setRows] = useState<{
+    attendance: Attendance[];
+    earnings: Earning[];
+    payouts: Payout[];
+    ratings: Rating[];
+  } | null>(null);
+  const [error, setError] = useState('');
+  const [selected, setSelected] = useState('');
+  const [pass, setPass] = useState<EventPass | null>(null);
+  const [passNotice, setPassNotice] = useState(
+    'Select a confirmed assignment to read its sample pass.',
+  );
+  const passEpoch = useRef({ value: 0 });
+  useEffect(() => {
+    const epochState = passEpoch.current;
+    let active = true;
+    void (async () => {
+      try {
+        const service = await getBrowserPreviewService();
+        const [attendance, earnings, payouts, ratings] = await Promise.all([
+          allRecords((o) => service.getAttendanceHistory(profile, o)),
+          allRecords((o) => service.listEarnings(profile, o)),
+          allRecords((o) => service.listPayouts(profile, o)),
+          allRecords((o) => service.listRatings(profile, o)),
+        ]);
+        if (active) {
+          setRows({ attendance, earnings, payouts, ratings });
+          setError('');
+        }
+      } catch (e) {
+        if (active)
+          setError(e instanceof Error ? e.message : 'Records unavailable.');
+      }
+    })();
+    return () => {
+      active = false;
+      epochState.value++;
+    };
+  }, [profile, attempt]);
+  async function readPass(id: string) {
+    const epoch = ++passEpoch.current.value;
+    setSelected(id);
+    setPass(null);
+    setPassNotice(id ? 'Reading sample pass…' : 'Select an assignment.');
+    if (!id) return;
+    try {
+      const result = await (await getBrowserPreviewService()).getEventPass(id);
+      if (epoch !== passEpoch.current.value) return;
+      if (result.ok) {
+        setPass(result.value);
+        setPassNotice(
+          'Synthetic pass only. It cannot admit anyone to a real event.',
+        );
+      } else setPassNotice(result.error.message);
+    } catch {
+      if (epoch === passEpoch.current.value)
+        setPassNotice(
+          'Pass unavailable. Select the assignment again to retry.',
+        );
+    }
+  }
+  if (error)
+    return (
+      <section className={styles.error} role="alert">
+        <h2>Records unavailable</h2>
+        <p>{error}</p>
+        <button
+          onClick={() => {
+            setError('');
+            setRows(null);
+            setAttempt((a) => a + 1);
+          }}
+        >
+          Retry reading records
+        </button>
+      </section>
+    );
+  if (!rows)
+    return (
+      <section aria-busy="true">
+        <h2>Reading your sample records…</h2>
+      </section>
+    );
+  return (
+    <section className={styles.recordPanel}>
+      <p className={styles.eyebrow}>
+        YOUR SAMPLE RECORDS / {worker?.displayName ?? 'NEW APPLICANT'}
+      </p>
+      <h2>
+        {section === 'pass & attendance'
+          ? 'Pass and attendance'
+          : 'Earnings, payouts and standing'}
+      </h2>
+      {section === 'pass & attendance' ? (
+        <>
+          <label>
+            Confirmed assignment
+            <select
+              value={selected}
+              onChange={(e) => void readPass(e.target.value)}
+            >
+              <option value="">Select an assignment</option>
+              {assignments
+                .filter(
+                  (a) =>
+                    a.response === 'coming' && a.allocationState === 'active',
+                )
+                .map((a) => (
+                  <option key={a.id} value={a.id}>
+                    {a.eventId} · {a.id}
+                  </option>
+                ))}
+            </select>
+          </label>
+          <output aria-live="polite">{passNotice}</output>
+          {pass && (
+            <article>
+              <h3>Sample event pass</h3>
+              <p>Event: {pass.eventId}</p>
+              <p>Assignment: {pass.assignmentId}</p>
+              <p>Expires: {new Date(pass.expiresAt).toLocaleString('en-IN')}</p>
+              <code>{pass.token}</code>
+              <p>No live QR admission or location tracking is available.</p>
+            </article>
+          )}
+          <h3>Attendance evidence</h3>
+          {rows.attendance.length ? (
+            rows.attendance.map((a) => (
+              <article key={a.id}>
+                <strong>
+                  {a.state} · {a.eventId}
+                </strong>
+                <p>
+                  Evidence: {a.evidence.state}. {a.evidence.note}
+                </p>
+                {a.evidence.state === 'gps-denied' && (
+                  <p>
+                    Location permission was denied. Ask the event supervisor to
+                    review the exception; denied GPS is not proof of absence.
+                  </p>
+                )}
+                <details>
+                  <summary>Correction history ({a.history.length})</summary>
+                  {a.history.map((h) => (
+                    <p key={h.id}>
+                      {h.reason} · {h.evidence.state} · {h.actorId}
+                    </p>
+                  ))}
+                </details>
+              </article>
+            ))
+          ) : (
+            <p>
+              No attendance recorded for this sample profile. Confirm an
+              assignment and use the labelled Operations attendance workflow.
+            </p>
+          )}
+        </>
+      ) : (
+        <>
+          <p>
+            Standing:{' '}
+            <strong>{worker?.standing ?? 'Application not approved'}</strong>.
+            Estimated earnings are not payable balances.
+          </p>
+          {rows.earnings.length ? (
+            rows.earnings.map((e) => (
+              <article key={e.id}>
+                <h3>
+                  {e.amountState === 'estimated' ? 'Estimate' : 'Earning'} ·{' '}
+                  {rupees(
+                    e.amountState === 'estimated'
+                      ? e.estimatedGrossPaise
+                      : e.netPaise,
+                  )}
+                </h3>
+                <p>
+                  {e.status} · {e.assignmentId}
+                </p>
+                <dl>
+                  <dt>Gross</dt>
+                  <dd>{rupees(e.grossPaise)}</dd>
+                  <dt>Deductions</dt>
+                  <dd>{rupees(e.deductionsPaise)}</dd>
+                  <dt>Net</dt>
+                  <dd>{rupees(e.netPaise)}</dd>
+                </dl>
+                <p>{e.proposedTaxLabel}</p>
+              </article>
+            ))
+          ) : (
+            <p>No earnings for this profile yet.</p>
+          )}
+          <h3>Payout history</h3>
+          {rows.payouts.length ? (
+            rows.payouts.map((p) => (
+              <article key={p.id}>
+                <strong>
+                  {p.month} · {rupees(p.totalPaise)}
+                </strong>
+                <p>
+                  {p.status} · {p.id}. This is a synthetic ledger status, not a
+                  bank transfer.
+                </p>
+              </article>
+            ))
+          ) : (
+            <p>No payout records.</p>
+          )}
+          <h3>Feedback</h3>
+          {rows.ratings.length ? (
+            rows.ratings.map((r) => (
+              <article key={r.id}>
+                <strong>
+                  {r.score} / 5 · {r.eventId}
+                </strong>
+                <p>{r.note}</p>
+              </article>
+            ))
+          ) : (
+            <p>No ratings recorded.</p>
+          )}
+        </>
+      )}
+    </section>
   );
 }

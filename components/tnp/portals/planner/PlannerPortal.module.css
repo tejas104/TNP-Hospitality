@@ -489,3 +489,71 @@
     animation: none;
   }
 }
+
+/* Task-first workspace rhythm. */
+.plannerRoot {
+  font-family: var(--font-product, sans-serif);
+  font-size: 14px;
+}
+.workspaceHero {
+  padding: 32px clamp(20px, 4vw, 60px);
+  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) 180px;
+}
+.workspaceHero h1 {
+  font: 650 clamp(28px, 3vw, 38px)/1.15 var(--font-product, sans-serif);
+  letter-spacing: -0.03em;
+  margin: 12px 0;
+}
+.workspaceHero .contextImage {
+  max-height: 170px;
+}
+.plannerRoot :is(h2, h3) {
+  font-family: var(--font-product, sans-serif);
+  font-style: normal;
+  line-height: 1.3;
+}
+.plannerRoot h2 {
+  font-size: 24px;
+}
+.entrySection {
+  padding-top: 32px;
+}
+.sectionHeader {
+  margin-bottom: 24px;
+}
+.applicationEvidence {
+  border: 1px solid #a8a18f;
+  padding: 16px;
+  border-radius: 8px;
+}
+.applicationEvidence summary {
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 44px;
+}
+.applicationEvidence input[type='checkbox'] {
+  width: 20px;
+  min-height: 20px;
+}
+.plannerRoot :is(button, a):hover:not(:disabled) {
+  background: #fff5df;
+  color: #202423;
+  border-color: #008080;
+}
+.plannerRoot :is(input, select, textarea) {
+  font-size: 16px;
+}
+@media (max-width: 600px) {
+  .workspaceHero {
+    grid-template-columns: 1fr;
+  }
+  .workspaceHero .contextImage {
+    display: none;
+  }
+}
+
+.plannerRoot {padding-top:0;}
+.workspaceHero .contextImage {max-height:none;align-self:center;}
+.workspaceHero .contextImage img,.workspaceHero .imageFallback {min-height:0;height:110px;max-height:110px;}
+.workspaceHero .contextImage figcaption {font-size:10px;line-height:1.35;padding-top:6px;}

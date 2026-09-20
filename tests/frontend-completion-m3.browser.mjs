@@ -22,7 +22,8 @@ try {
       hasTouch: width < 700,
     });
     const page = await context.newPage();
-    page.setDefaultTimeout(90000); page.setDefaultNavigationTimeout(90000);
+    page.setDefaultTimeout(90000);
+    page.setDefaultNavigationTimeout(90000);
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto(origin, { waitUntil: 'networkidle', timeout: 90000 });
@@ -180,4 +181,3 @@ try {
 } finally {
   await browser.close();
 }
-
