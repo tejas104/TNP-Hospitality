@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import {
   workspaces,
   routeInfo,
@@ -143,6 +144,40 @@ test('reset and cursor policies do not leak across surfaces', () => {
     assert.equal(shouldMountCursor(workspace.path), false);
   assert.equal(shouldMountCursor('/'), true);
   assert.equal(shouldMountCursor('/login'), false);
+});
+test('mandatory synthetic-data warning remains outside the collapsed preview disclosure exactly once', async () => {
+  const source = await readFile(
+    new URL('../components/tnp/shared/PreviewControls.tsx', import.meta.url),
+    'utf8',
+  );
+  const warning = source.indexOf(
+    'className="ux-storage-warning ux-preview-warning" role="note"',
+  );
+  const disclosure = source.indexOf(
+    '<details className="ux-preview-tools ux-product">',
+  );
+  const closedContent = source.indexOf(
+    '<div className="ux-preview-body">',
+    disclosure,
+  );
+  const closingDisclosure = source.indexOf('</details>', closedContent);
+  assert.ok(
+    warning >= 0,
+    'warning uses visible, existing warning styling and note semantics',
+  );
+  assert.ok(disclosure > warning, 'warning precedes the controls disclosure');
+  assert.ok(closedContent > disclosure && closingDisclosure > closedContent);
+  assert.ok(warning < disclosure && warning > source.indexOf('return ('));
+  assert.equal(
+    (source.match(/\{warning\}/g) ?? []).length,
+    1,
+    'the mandatory sentence has a single accessible rendering',
+  );
+  assert.doesNotMatch(
+    source.slice(closedContent, closingDisclosure),
+    /\{warning\}/,
+  );
+  assert.match(source, /<summary>[\s\S]*Scenario & reset controls/);
 });
 test('RSVP adapter separates guest and staff context and invalidates local selection on event or organization switch', () => {
   assert.deepEqual(rsvpContext('/rsvp/invite/token'), { kind: 'guest' });

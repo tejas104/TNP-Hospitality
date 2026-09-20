@@ -136,74 +136,78 @@ export function PreviewControls() {
   }
 
   return (
-    <details className="ux-preview-tools ux-product">
-      <summary>
-        <strong>Synthetic preview</strong>
-        <span>Scenario & reset controls</span>
-      </summary>
-      <div className="ux-preview-body">
-        <p>{warning}</p>
-        <div
-          className="preview-control-panel"
-          aria-label="Connected preview controls"
-        >
-          <label>
-            Synthetic preview state
-            <select
-              aria-label="Synthetic preview state"
-              value={variant}
-              disabled={busy || generation === null}
-              onChange={(event) =>
-                void changeVariant(event.target.value as PreviewVariant)
-              }
-            >
-              <option value="ready">Ready</option>
-              <option value="loading">Loading</option>
-              <option value="empty">Empty</option>
-              <option value="error">Error</option>
-            </select>
-          </label>
-          <button
-            className="ux-action ux-action-secondary"
-            ref={resetButton}
-            type="button"
-            disabled={busy || generation === null}
-            onClick={() => setConfirmReset(true)}
+    <>
+      <p className="ux-storage-warning ux-preview-warning" role="note">
+        {warning}
+      </p>
+      <details className="ux-preview-tools ux-product">
+        <summary>
+          <strong>Synthetic preview</strong>
+          <span>Scenario & reset controls</span>
+        </summary>
+        <div className="ux-preview-body">
+          <div
+            className="preview-control-panel"
+            aria-label="Connected preview controls"
           >
-            Reset connected cross-portal preview
-          </button>
-          <output aria-live="polite">{status}</output>
-        </div>
-        {confirmReset && (
-          <div className="ux-reset-confirm">
-            <p>
-              {resetScope.connected} This replaces connected sample records with
-              their starting state.
-            </p>
+            <label>
+              Synthetic preview state
+              <select
+                aria-label="Synthetic preview state"
+                value={variant}
+                disabled={busy || generation === null}
+                onChange={(event) =>
+                  void changeVariant(event.target.value as PreviewVariant)
+                }
+              >
+                <option value="ready">Ready</option>
+                <option value="loading">Loading</option>
+                <option value="empty">Empty</option>
+                <option value="error">Error</option>
+              </select>
+            </label>
             <button
-              className="ux-action ux-action-danger"
+              className="ux-action ux-action-secondary"
+              ref={resetButton}
               type="button"
-              disabled={busy}
-              onClick={() => {
-                setConfirmReset(false);
-                void reset();
-              }}
+              disabled={busy || generation === null}
+              onClick={() => setConfirmReset(true)}
             >
-              Confirm cross-portal reset
+              Reset connected cross-portal preview
             </button>
-            <button
-              className="ux-action ux-action-tertiary"
-              type="button"
-              onClick={() => {
-                setConfirmReset(false);
-                resetButton.current?.focus();
-              }}
-            >
-              Keep preview records
-            </button>
+            <output aria-live="polite">{status}</output>
           </div>
-        )}
-      </div>
-    </details>
+          {confirmReset && (
+            <div className="ux-reset-confirm">
+              <p>
+                {resetScope.connected} This replaces connected sample records
+                with their starting state.
+              </p>
+              <button
+                className="ux-action ux-action-danger"
+                type="button"
+                disabled={busy}
+                onClick={() => {
+                  setConfirmReset(false);
+                  void reset();
+                }}
+              >
+                Confirm cross-portal reset
+              </button>
+              <button
+                className="ux-action ux-action-tertiary"
+                type="button"
+                onClick={() => {
+                  setConfirmReset(false);
+                  resetButton.current?.focus();
+                }}
+              >
+                Keep preview records
+              </button>
+            </div>
+          )}
+        </div>
+      </details>
+    </>
   );
 }

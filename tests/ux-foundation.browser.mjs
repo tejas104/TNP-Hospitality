@@ -349,7 +349,7 @@ try {
       await tab.waitForURL('**/client');
       await tab.locator('#workspace-content').waitFor();
       assert.match(
-        await tab.locator('.ux-storage-warning').innerText(),
+        await tab.locator('output.ux-storage-warning').innerText(),
         /held in memory/,
       );
       await tab
@@ -416,6 +416,102 @@ try {
         fullPage: true,
       });
       await touch.close();
+    },
+  );
+  await check(
+    'mandatory synthetic-data warning stays visible while controls remain collapsed at desktop, mobile and 200% zoom',
+    async () => {
+      for (const [width, height, zoom] of [
+        [1440, 900, 1],
+        [390, 844, 1],
+        [1440, 900, 2],
+      ]) {
+        await page.setViewportSize({ width, height });
+        await page.goto(`${origin}/login?workspace=client`);
+        await page
+          .getByRole('button', { name: 'Enter as Asha Shah', exact: true })
+          .click();
+        await page.waitForURL('**/client');
+        await page.locator('#workspace-content').waitFor();
+        await page.locator('.ux-preview-warning').waitFor({ state: 'visible' });
+        await page.locator('.ux-preview-tools summary').waitFor();
+        if (zoom === 2)
+          await page.evaluate(
+            () => (document.documentElement.style.zoom = '2'),
+          );
+        const warning = page.locator('.ux-preview-warning');
+        assert.equal(
+          (await warning.innerText()).trim(),
+          'Synthetic preview data. Do not enter real personal information. No live verification, tracking or payments.',
+        );
+        assert.equal(await warning.getAttribute('role'), 'note');
+        assert.equal(await page.locator('.ux-preview-warning').count(), 1);
+        assert.equal(
+          await page.locator('.ux-preview-tools').evaluate((el) => el.open),
+          false,
+        );
+        assert.equal(
+          await page.getByLabel('Synthetic preview state').isVisible(),
+          false,
+        );
+        assert.equal(
+          await page
+            .getByRole('button', {
+              name: 'Reset connected cross-portal preview',
+              exact: true,
+            })
+            .isVisible(),
+          false,
+        );
+        const geometry = await warning.evaluate((el) => {
+          const rect = el.getBoundingClientRect();
+          return {
+            right: rect.right,
+            left: rect.left,
+            bottom: rect.bottom,
+            nextTop: el.nextElementSibling.getBoundingClientRect().top,
+            position: getComputedStyle(el).position,
+            viewport: innerWidth,
+          };
+        });
+        assert.equal(geometry.position, 'static');
+        assert.ok(
+          geometry.left >= -1 && geometry.right <= geometry.viewport + 1,
+        );
+        assert.ok(geometry.bottom <= geometry.nextTop + 1);
+        assert.equal(
+          await page.evaluate(
+            () => document.documentElement.scrollWidth > innerWidth + 1,
+          ),
+          false,
+        );
+        await page.screenshot({
+          path: `${evidence}/preview-warning-${width}-zoom-${zoom}x.png`,
+        });
+        if (zoom === 2)
+          await page.evaluate(() => (document.documentElement.style.zoom = ''));
+      }
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await page.goto(`${origin}/login?workspace=client`);
+      await page
+        .getByRole('button', { name: 'Enter as Asha Shah', exact: true })
+        .click();
+      await page.waitForURL('**/client');
+      const summary = page.locator('.ux-preview-tools summary');
+      await summary.focus();
+      await page.keyboard.press('Enter');
+      assert.equal(
+        await page.locator('.ux-preview-tools').evaluate((el) => el.open),
+        true,
+      );
+      await page.locator('.ux-preview-tools summary').press('Space');
+      assert.equal(
+        await page.locator('.ux-preview-tools').evaluate((el) => el.open),
+        false,
+      );
+      await page.emulateMedia({ reducedMotion: 'reduce' });
+      assert.equal(await page.locator('.ux-preview-warning').isVisible(), true);
+      await page.emulateMedia({ reducedMotion: 'no-preference' });
     },
   );
   await check(
