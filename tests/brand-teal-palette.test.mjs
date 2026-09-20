@@ -94,12 +94,12 @@ function colors(source) {
     return rgb ? [{ literal, rgb }] : [];
   });
   const names = [...namedColors.keys()].join('|');
-  const namedPattern = new RegExp(`(?:^|[;{]\\s*)(?:color|background(?:-color)?|border(?:-[a-z]+)?-color|outline-color|fill|stroke)\\s*:\\s*(${names})\\b|(?:color|emissive)\\s*=\\s*["'](${names})["']|(?:new\\s+Color|setStyle)\\(\\s*["'](${names})["']\\s*\\)`, 'gi');
+  const namedPattern = new RegExp(`(?:^|[;{]\\s*)(?:color|background(?:-color)?|border(?:-[a-z]+)?-color|outline-color|fill|stroke)\\s*:\\s*(${names})\\b|(?:^|[,{]\\s*)(?:color|backgroundColor|borderColor|outlineColor|fill|stroke)\\s*:\\s*["'](${names})["']|(?:^|[\\s<{])(?:color|emissive|fill|stroke)\\s*=\\s*["'](${names})["']|(?:new\\s+Color|setStyle)\\(\\s*["'](${names})["']\\s*\\)`, 'gi');
   const named = [...source.matchAll(namedPattern)].map((match) => {
-    const literal = match[1] ?? match[2] ?? match[3];
+    const literal = match.slice(1).find(Boolean);
     return { literal, rgb: namedColors.get(literal.toLowerCase()) };
   });
-  const numeric = [...source.matchAll(/(?:color|emissive)\s*=\s*\{\s*(0x[\da-f]{6}|\d{5,})\s*\}|(?:new\s+Color|setHex)\(\s*(0x[\da-f]{6}|\d{5,})\s*\)/gi)].map((match) => {
+  const numeric = [...source.matchAll(/(?:color|emissive)\s*=\s*\{\s*(0x[\da-f]{6}|\d{5,})\s*\}|(?:new\s+Color|setHex|\b[\w$]*light[\w$]*\.color\.set)\(\s*(0x[\da-f]{6}|\d{5,})\s*\)/gi)].map((match) => {
     const value = Number(match[1] ?? match[2]);
     return { literal: match[0], rgb: [value >> 16 & 255, value >> 8 & 255, value & 255] };
   });
@@ -107,7 +107,13 @@ function colors(source) {
     const channels = (match[1] ? match.slice(1, 4) : match.slice(4, 7)).map(Number);
     return { literal: match[0], rgb: channels.map((channel) => channel <= 1 ? byte(channel) : Math.round(channel)) };
   });
-  return [...cssColors, ...named, ...numeric, ...arrays];
+  const constructorColors = [...source.matchAll(/new\s+(?:AmbientLight|DirectionalLight|HemisphereLight|PointLight|RectAreaLight|SpotLight)\s*\(([^)]*)\)/gi)].flatMap((match) =>
+    [...match[1].matchAll(/0x[\da-f]{6}\b/gi)].map(([literal]) => {
+      const value = Number(literal);
+      return { literal, rgb: [value >> 16 & 255, value >> 8 & 255, value & 255] };
+    }),
+  );
+  return [...cssColors, ...named, ...numeric, ...arrays, ...constructorColors];
 }
 
 function unapprovedGreen(rgb) {
@@ -145,16 +151,21 @@ test('semantic primary and legacy brand aliases resolve to exact client teal', (
 
 test('corrected solid surface text and focus colors retain AA contrast', () => {
   const read = (file) => readFileSync(path.join(projectRoot, file), 'utf8');
-  const block = (file, selector) => {
-    const source = read(file);
-    const start = source.indexOf(`${selector} {`);
+  const blockFromSource = (source, selector) => {
+    const normalizedSource = source.replace(/\r\n?/g, '\n');
+    const start = normalizedSource.indexOf(`${selector} {`);
     assert.ok(start >= 0, selector);
-    return source.slice(start, source.indexOf('}', start) + 1);
+    return normalizedSource.slice(start, normalizedSource.indexOf('}', start) + 1);
   };
+  const block = (file, selector) => blockFromSource(read(file), selector);
   const property = (rule, name) => {
     const value = rule.match(new RegExp(`(?:^|[;{])\\s*${name}:\\s*([^;]+)`))?.[1];
     assert.ok(value, `${name}: ${rule}`);
-    const color = colors(value)[0];
+    const token = value.match(/var\(--([^)]+)\)/)?.[1];
+    const tokenValue = token
+      ? read('app/globals.css').match(new RegExp(`--${token}:\\s*([^;]+);`, 'i'))?.[1]
+      : null;
+    const color = colors(value)[0] ?? (tokenValue ? colors(tokenValue)[0] : null);
     assert.ok(color, `${name} must use a measurable solid color`);
     return color.rgb;
   };
@@ -181,7 +192,9 @@ test('corrected solid surface text and focus colors retain AA contrast', () => {
   const kicker = property(block(clientHubFile, '.header :global(.section-kicker)'), 'color');
   assert.ok(ratio(kicker, colors(darkToken)[0].rgb) >= 4.5, 'Client event and finance status kicker on hub background');
   const operationsFile = 'components/tnp/portals/operations/AdminOperations.module.css';
-  const beige = colors('#f5f1e7')[0].rgb;
+  const beigeToken = read('app/globals.css').match(/--beige:\s*(#[\da-f]+);/i)?.[1];
+  assert.equal(beigeToken?.toLowerCase(), '#e5e1cd', 'Operations beige-card substrate');
+  const beige = colors(beigeToken)[0].rgb;
   const cardKicker = property(block(operationsFile, '.decisionCard :global(.section-kicker), .controlForm :global(.section-kicker), .evidenceCard :global(.section-kicker), .auditPanel :global(.section-kicker)'), 'color');
   assert.ok(ratio(cardKicker, beige) >= 4.5, 'Operations beige-card kickers');
   const secondary = property(block(operationsFile, '.queueRow span, .queueRow small, .mutedDark'), 'color');
@@ -190,14 +203,55 @@ test('corrected solid surface text and focus colors retain AA contrast', () => {
   assert.ok(ratio(skipFocus, teal) >= 3, 'Client skip-link focus on teal');
   const livePanelFocus = property(block('app/globals.css', '.admin-shell .live-ops-panel :where(a, button, input, select, textarea):focus-visible'), 'outline-color');
   assert.ok(ratio(livePanelFocus, beige) >= 3, 'Operations live-panel focus on beige');
+  const freelancerFile = 'components/tnp/portals/freelancer/FreelancerPortal.module.css';
+  const ivory = colors('#f5f1e7')[0].rgb;
+  const workspaceFocus = property(block(freelancerFile, '.workspace :is(button, a, input, select):focus-visible'), 'outline');
+  assert.ok(ratio(workspaceFocus, ivory) >= 3, 'Freelancer workspace focus on ivory');
+  const panelFocusSelector = '.journey :is(button, a, input, select):focus-visible,\n.opportunityDetail :is(button, a, input, select):focus-visible';
+  const crlfPanelRule = `${panelFocusSelector} {\n  outline-color: var(--ivory);\n}`.replaceAll('\n', '\r\n');
+  assert.match(blockFromSource(crlfPanelRule, panelFocusSelector), /outline-color:\s*var\(--ivory\)/);
+  const panelFocus = property(block(freelancerFile, panelFocusSelector), 'outline-color');
+  assert.ok(ratio(panelFocus, teal) >= 3, 'Freelancer panel focus on teal');
+  for (const selector of [
+    '.journey',
+    '.journey .eyebrow',
+    '.journey > p:not(.eyebrow)',
+    '.journey li',
+    '.journey li small',
+    '.journeyNote',
+    '.opportunityDetail',
+    '.detailEmpty p',
+    '.detailEmpty > span',
+    '.detailHeader .eyebrow',
+    '.detailVenue',
+    '.detailFacts dt',
+    '.detailFacts small',
+    '.opportunityDetail > .note',
+  ]) {
+    assert.ok(ratio(property(block(freelancerFile, selector), 'color'), teal) >= 4.5, `${selector} text on teal`);
+  }
+  for (const [selector, name] of [
+    ['.journey li > span', 'border'],
+    ['.journeyNote', 'border-top'],
+    ['.detailEmpty > svg', 'color'],
+    ['.iconButton', 'border'],
+    ['.detailFacts > div', 'border-top'],
+    ['.detailEligibility svg', 'color'],
+    ['.updated', 'border-left'],
+  ]) {
+    assert.ok(ratio(property(block(freelancerFile, selector), name), teal) >= 3, `${selector} ${name} on teal`);
+  }
 });
 
 test('palette detection rejects alternate syntax and unlisted green while accepting brand and neutral ink', () => {
-  for (const source of ['#062b29', '#0c3c38', '#13483f', '#a8c4ac', 'rgba(6, 43, 41, .9)', 'rgb(8 61 54)', 'rgb(3.137% 23.922% 21.176% / 50%)', 'hsl(170 74% 13%)', 'oklch(32% .06 175)', 'color: darkgreen;', 'color={0x062b29}', 'color={[0.024, 0.169, 0.161]}']) {
+  for (const source of ['#062b29', '#0c3c38', '#13483f', '#a8c4ac', 'rgba(6, 43, 41, .9)', 'rgb(8 61 54)', 'rgb(3.137% 23.922% 21.176% / 50%)', 'hsl(170 74% 13%)', 'oklch(32% .06 175)', 'color: darkgreen;', '{ color: "darkgreen" }', '<path fill="forestgreen" />', 'new HemisphereLight(0xffffff, 0x154f44)', 'light.color.set(0x154f44)', 'color={0x062b29}', 'color={[0.024, 0.169, 0.161]}']) {
     assert.ok(colors(source).some(({ rgb }) => unapprovedGreen(rgb)), source);
   }
   for (const source of ['#008080', '#006b6b', 'color: teal;', 'hsl(180 100% 25%)', 'rgba(0,128,128,.1)', '#202423', '#59615f', '#f5f1e7']) {
     assert.ok(colors(source).every(({ rgb }) => !unapprovedGreen(rgb)), source);
+  }
+  for (const source of ['data-color="limegreen"', 'data-fill="forestgreen"', 'data-stroke="darkgreen"', 'material.color.set(0x13483f)']) {
+    assert.deepEqual(colors(source), [], source);
   }
 });
 

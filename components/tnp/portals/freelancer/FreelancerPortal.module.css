@@ -1,10 +1,11 @@
 .workspace {
   --teal: #008080;
-  --deep: #062b29;
+  --deep: #008080;
+  --ink: #202423;
   --ivory: #f5f1e7;
   --gold: #bba879;
   --muted: #596762;
-  color: var(--deep);
+  color: var(--ink);
   background: var(--ivory);
   padding: 40px clamp(18px, 4.7vw, 80px) 130px;
   min-height: 100vh;
@@ -147,7 +148,7 @@
   width: 320px;
   min-height: 46px;
   border: 1px solid #bac5bb;
-  color: var(--deep);
+  color: var(--ink);
   background: #fffdf7;
   padding: 8px 12px;
 }
@@ -180,7 +181,7 @@
 .primary,
 .secondary {
   min-height: 46px;
-  border: 1px solid var(--deep);
+  border: 1px solid var(--ink);
   padding: 10px 19px;
   display: inline-flex;
   align-items: center;
@@ -200,7 +201,7 @@
 }
 .secondary {
   background: transparent;
-  color: var(--deep);
+  color: var(--ink);
 }
 .secondary:hover:not(:disabled) {
   background: #e4e9df;
@@ -215,7 +216,7 @@
   min-height: 44px;
   padding: 9px 2px;
   font-size: 12px !important;
-  color: var(--deep);
+  color: var(--ink);
   text-decoration: underline;
   text-underline-offset: 4px;
 }
@@ -228,11 +229,11 @@
 }
 .journey {
   background: var(--deep);
-  color: var(--ivory);
+  color: #fff;
   padding: 36px 28px;
 }
 .journey .eyebrow {
-  color: #c7c6a3;
+  color: #fff;
   font-size: 9px;
 }
 .journey h2 {
@@ -240,7 +241,7 @@
   font-size: 34px;
 }
 .journey > p:not(.eyebrow) {
-  color: #d0dad0;
+  color: #fff;
   font-size: 13px;
 }
 .journey ol {
@@ -254,14 +255,14 @@
   display: flex;
   gap: 15px;
   align-items: center;
-  color: #c9d3c9;
+  color: #fff;
   font-size: 13px;
 }
 .journey li > span {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid #8eaaa0;
+  border: 1px solid var(--ivory);
   width: 34px;
   height: 34px;
   font-size: 11px;
@@ -271,21 +272,21 @@
 }
 .journey li[aria-current] > span {
   background: var(--ivory);
-  color: var(--deep);
+  color: var(--ink);
   border-color: var(--ivory);
 }
 .journey li small {
   display: block;
   font-size: 10px;
-  color: #bccac1;
+  color: #fff;
   margin-top: 2px;
 }
 .journeyNote {
   display: flex;
   gap: 13px;
-  border-top: 1px solid #476159;
+  border-top: 1px solid var(--ivory);
   padding-top: 23px;
-  color: #d1dacf;
+  color: #fff;
   font-size: 11px;
 }
 .journeyNote svg {
@@ -336,7 +337,7 @@
 }
 .field select,
 .field input {
-  color: var(--deep);
+  color: var(--ink);
   background: #fffefb;
   border: 1px solid #aab8ae;
   min-height: 47px;
@@ -631,7 +632,7 @@
   transition: transform 0.22s;
 }
 .workspaceNav button[aria-current] {
-  color: var(--deep);
+  color: var(--ink);
   font-weight: 700;
 }
 .workspaceNav button[aria-current]::after {
@@ -693,7 +694,7 @@
   min-height: 46px;
   border: 1px solid #b4c0b3;
   background: #fffdf7;
-  color: var(--deep);
+  color: var(--ink);
   font-size: 12px;
   padding: 10px;
   width: 100%;
@@ -725,7 +726,7 @@
   border: 0;
   min-width: 38px;
   min-height: 44px;
-  color: var(--deep);
+  color: var(--ink);
 }
 .srOnly {
   position: absolute;
@@ -763,7 +764,7 @@
   padding: 8px 10px;
   font-size: 11px;
   background: #e8eee3;
-  color: var(--deep);
+  color: var(--ink);
   animation: enter 0.18s ease;
 }
 .filterChips svg {
@@ -874,7 +875,7 @@
   min-height: 44px;
   padding: 10px 12px;
   font-size: 11px;
-  color: var(--deep);
+  color: var(--ink);
 }
 .detailButton:hover {
   background: #dde7d9;
@@ -889,23 +890,27 @@
 .opportunityDetail {
   outline: none;
   background: var(--deep);
-  color: var(--ivory);
+  color: #fff;
   padding: 29px;
   min-width: 0;
   scroll-margin-top: 110px;
+}
+.journey :is(button, a, input, select):focus-visible,
+.opportunityDetail :is(button, a, input, select):focus-visible {
+  outline-color: var(--ivory);
 }
 .detailEmpty {
   padding: 25px 4px 35px;
 }
 .detailEmpty > svg {
-  color: #d0c190;
+  color: var(--ivory);
 }
 .detailEmpty h2 {
   font-size: 38px;
   margin: 35px 0 20px;
 }
 .detailEmpty p {
-  color: #d2ddd2;
+  color: #fff;
   font-size: 13px;
 }
 .detailEmpty > span {
@@ -915,7 +920,7 @@
   gap: 12px;
   align-items: center;
   margin-top: 35px;
-  color: #d0c190;
+  color: #fff;
 }
 .detailHeader {
   display: flex;
@@ -926,7 +931,7 @@
 }
 .detailHeader .eyebrow {
   font-size: 9px;
-  color: #d6c993;
+  color: #fff;
 }
 .iconButton {
   display: flex;
@@ -935,14 +940,14 @@
   min-width: 44px;
   min-height: 44px;
   background: none;
-  border: 1px solid #819b8d;
+  border: 1px solid var(--ivory);
   color: inherit;
 }
 .opportunityDetail > h2 {
   font-size: 34px;
 }
 .detailVenue {
-  color: #d1ddcf;
+  color: #fff;
   font-size: 13px;
   margin-top: 10px !important;
 }
@@ -950,14 +955,14 @@
   margin: 25px 0;
 }
 .detailFacts > div {
-  border-top: 1px solid #466258;
+  border-top: 1px solid var(--ivory);
   padding: 14px 0;
 }
 .detailFacts dt {
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.13em;
-  color: #becfbe;
+  color: #fff;
   margin-bottom: 5px;
 }
 .detailFacts dd {
@@ -968,7 +973,7 @@
 .detailFacts small {
   display: block;
   font-size: 10px;
-  color: #b9cbbb;
+  color: #fff;
   margin-top: 3px;
 }
 .detailFacts code {
@@ -984,26 +989,26 @@
 }
 .detailEligibility svg {
   flex-shrink: 0;
-  color: #d0c190;
+  color: var(--ivory);
 }
 .opportunityDetail > .primary {
   width: 100%;
   background: #f5f1e7;
-  color: var(--deep);
+  color: var(--ink);
   border-color: #f5f1e7;
 }
 .opportunityDetail > .primary:hover:not(:disabled) {
   background: #e6ddc4;
 }
 .opportunityDetail > .note {
-  color: #c5d4c4;
+  color: #fff;
   margin-top: 17px;
 }
 .updated {
   padding: 12px;
   font-size: 11px;
-  background: #26493c;
-  border-left: 2px solid #d0c190;
+  background: rgb(0 0 0 / 18%);
+  border-left: 2px solid var(--ivory);
   margin-top: 20px !important;
 }
 .empty {

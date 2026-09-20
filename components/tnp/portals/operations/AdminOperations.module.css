@@ -181,7 +181,7 @@
 .exportNote { color: rgb(23 35 33 / 74%); font-size: .84rem; line-height: 1.5; }
 .exportStatus { grid-column: 1 / -1; }
 .exportStatus:empty { display: none; }
-.exportStatus:not(:empty) { background: rgb(8 76 73 / 9%); border-left: 3px solid var(--teal); padding: 10px 12px; }
+.exportStatus:not(:empty) { background: rgb(0 128 128 / 9%); border-left: 3px solid var(--teal); padding: 10px 12px; }
 .exportStatus.exportError { background: rgb(179 62 47 / 10%); border-left-color: #b33e2f; }
 @keyframes reportReveal { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes reportRow { from { opacity: 0; } to { opacity: 1; } }
