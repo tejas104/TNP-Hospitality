@@ -104,6 +104,7 @@ export const findPublicDetail = (
     (item) => item.slug === slug,
   );
 export function enquiryInterest(value?: string) {
+  if (value === 'talk') return 'General conversation';
   if (value === 'vendor') return 'Vendor platform interest';
   if (value === 'managed-rsvp') return 'Managed RSVP enquiry';
   const item = [...publicServices, ...publicDepartments].find(

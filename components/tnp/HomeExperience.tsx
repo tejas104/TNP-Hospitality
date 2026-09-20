@@ -463,8 +463,11 @@ export default function HomeExperience() {
               <em>takes you.</em>
             </h2>
           </div>
-          <Link href="/client" className={styles.textLink}>
-            Explore venues in the client preview <ArrowUpRight size={17} />
+          <Link
+            href="/contact?interest=event-request"
+            className={styles.textLink}
+          >
+            Discuss venues for your event <ArrowUpRight size={17} />
           </Link>
         </div>
         <div className={styles.destinationItinerary} aria-hidden="true">
@@ -633,3 +636,4 @@ export default function HomeExperience() {
     </main>
   );
 }
+

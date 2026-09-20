@@ -1,0 +1,175 @@
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid currentColor;
+  border-radius: 24px;
+  color: inherit;
+  background: transparent;
+  font: 600 12px var(--font-product, sans-serif);
+  cursor: pointer;
+}
+.trigger:hover,
+.trigger:focus-visible {
+  background: #fff5df;
+  color: #202423;
+}
+.trigger:focus-visible {
+  outline: 3px solid #202423;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 6px #fff5df;
+}
+.window {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  padding: 0;
+  width: min(560px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px - env(safe-area-inset-bottom, 0px));
+  border: 1px solid #bba879;
+  border-radius: 24px;
+  background: #f5f1e7;
+  color: #202423;
+  box-shadow: 0 24px 80px rgb(0 0 0 / 28%);
+  transform-origin: top left;
+  overflow: auto;
+  font-family: var(--font-product, sans-serif);
+}
+.window::backdrop {
+  background: rgb(0 0 0 / 38%);
+}
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #d2ccbf;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+}
+.bar button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #746b55;
+  border-radius: 50%;
+  background: #fffdf8;
+  color: #202423;
+  cursor: pointer;
+}
+.content {
+  padding: 28px;
+  animation: reveal 180ms 100ms both;
+}
+.kicker {
+  color: #006b6b;
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  font-weight: 700;
+}
+.content h2 {
+  font: 600 clamp(25px, 4vw, 34px)/1.1 var(--font-product, sans-serif);
+  letter-spacing: -1px;
+  margin: 14px 0;
+}
+.content p {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.content nav {
+  margin: 24px 0;
+  display: grid;
+  gap: 10px;
+}
+.content nav a {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 16px;
+  border: 1px solid #8b897f;
+  border-radius: 16px;
+  background: #fffdf8;
+  box-shadow: 0 3px 8px rgb(32 36 35 / 7%);
+  text-decoration: none;
+}
+.index {
+  font-size: 12px;
+  color: #006b6b;
+}
+.content strong {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 7px;
+}
+.content small {
+  display: block;
+  font-size: 12px;
+  line-height: 1.6;
+  color: #505854;
+}
+.notice {
+  border-left: 3px solid #008080;
+  padding-left: 12px;
+  color: #505854;
+}
+.contact {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 13px;
+}
+.window :is(a, button):hover {
+  background: #fff5df;
+  color: #202423;
+}
+.window :is(a, button):focus-visible {
+  outline: 3px solid #008080;
+  outline-offset: 3px;
+}
+@keyframes reveal {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@media (max-width: 700px) {
+  .trigger {
+    padding: 8px;
+    font-size: 10px;
+    gap: 4px;
+  }
+  .trigger svg {
+    width: 15px;
+  }
+  .content {
+    padding: 20px;
+  }
+}
+@media (hover: hover) and (pointer: fine) {
+  .trigger {
+    transition:
+      background-color 150ms,
+      color 150ms,
+      transform 150ms;
+  }
+  .trigger:hover {
+    transform: translateY(-1px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    animation: none;
+  }
+  .trigger {
+    transition: none;
+  }
+}

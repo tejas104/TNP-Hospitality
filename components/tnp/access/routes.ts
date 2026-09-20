@@ -1,20 +1,8 @@
-export type WorkspaceId =
-  | 'client'
-  | 'tnp-planner'
-  | 'freelancer'
-  | 'operations'
-  | 'rsvp';
+export type WorkspaceId = 'tnp-planner' | 'freelancer' | 'operations' | 'rsvp';
 export type Surface = 'marketing' | 'access' | 'workspace' | 'guest-invitation';
 
 // One catalogue feeds navigation, access, active labels and adapter destinations.
-export const workspaces = [
-  {
-    id: 'client',
-    label: 'Client',
-    path: '/client',
-    available: true,
-    purpose: 'Explore an event brief and sample requests.',
-  },
+export const workspaceRegistry = [
   {
     id: 'tnp-planner',
     label: 'TNP Planner',
@@ -51,6 +39,10 @@ export const workspaces = [
   purpose: string;
 }[];
 
+export const workspaces = workspaceRegistry.filter(
+  (item) => item.id === 'tnp-planner' || item.id === 'freelancer',
+);
+
 export const publicNavigation = [
   { label: 'Services', href: '/#services' },
   { label: 'Events', href: '/#events' },
@@ -65,10 +57,14 @@ export const workspaceNavigation = [
 ] as const;
 
 export function workspaceById(id: unknown) {
-  return workspaces.find((workspace) => workspace.id === id);
+  return workspaceRegistry.find((workspace) => workspace.id === id);
 }
 export function chooserHref(id: WorkspaceId) {
-  return `/login?workspace=${id}`;
+  return id === 'operations'
+    ? '/operations'
+    : id === 'rsvp'
+      ? '/rsvp/login'
+      : `/login?workspace=${id}`;
 }
 export function workspaceHref(id: WorkspaceId) {
   const workspace = workspaceById(id)!;
@@ -94,7 +90,7 @@ export function routeInfo(path: string): {
       workspace: 'operations',
       label: 'Operations',
     };
-  for (const workspace of workspaces) {
+  for (const workspace of workspaceRegistry) {
     const root = workspace.id === 'rsvp' ? '/rsvp' : workspace.path;
     if (pathname === root || pathname.startsWith(`${root}/`))
       return {

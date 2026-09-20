@@ -10,6 +10,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
+  demoProfiles,
   canEnter,
   createDemoSessionStore,
   profileFor,
@@ -83,14 +84,57 @@ export function StorageWarning() {
 export function WorkspaceGate({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
-  const { session, ready } = useDemoAccess();
+  const { session, ready, select } = useDemoAccess();
   const info = routeInfo(pathname);
   const allowed = !!info.workspace && canEnter(session, info.workspace);
   useEffect(() => {
-    if (ready && info.surface === 'workspace' && info.workspace && !allowed)
+    if (
+      ready &&
+      info.surface === 'workspace' &&
+      info.workspace &&
+      !['operations', 'rsvp'].includes(info.workspace) &&
+      !allowed
+    )
       router.replace(chooserHref(info.workspace));
   }, [ready, allowed, info.surface, info.workspace, router]);
   if (info.surface !== 'workspace') return children;
+  if (
+    ready &&
+    !allowed &&
+    (info.workspace === 'operations' || info.workspace === 'rsvp')
+  )
+    return (
+      <main id="main-content" className="ux-access-pending">
+        <p className="ux-eyebrow">INTERNAL / DEDICATED SYNTHETIC PREVIEW</p>
+        <h1>{info.label} access preview</h1>
+        <p>
+          No production authentication or authorization is provided. Use only
+          named sample identities; no real personal information.
+        </p>
+        <StorageWarning />
+        <div className="ux-actions">
+          {demoProfiles
+            .filter((p) => p.workspace === info.workspace)
+            .map((p) => (
+              <button
+                key={p.id}
+                className="ux-action"
+                onClick={() => select(p.id)}
+              >
+                {p.state === 'active' ? 'Enter as' : 'Preview ' + p.state + ':'}{' '}
+                {p.name}
+              </button>
+            ))}
+        </div>
+        {session?.workspace === info.workspace && (
+          <output aria-live="polite">
+            Sample access: {profileFor(session)?.state}. Only an active sample
+            identity can open this preview.
+          </output>
+        )}
+        <Link href="/">Return to public website</Link>
+      </main>
+    );
   if (!ready || !allowed)
     return (
       <main id="main-content" tabIndex={-1} className="ux-access-pending">

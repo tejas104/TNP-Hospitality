@@ -5,6 +5,11 @@ import type { Enquiry, PreviewService } from '@/lib/contracts/preview';
 import { getBrowserPreviewService } from '@/lib/services/preview';
 import {
   ENQUIRY_JOURNAL,
+  ENQUIRY_PRODUCTS,
+  WORKFORCE_ROLES,
+  briefMessage,
+  validateBrief,
+  type RequestBrief,
   matchesEnquiry,
   readEnquiryAction,
   validateEnquiry,
@@ -20,7 +25,20 @@ export default function EnquiryForm({
   const [fields, setFields] = useState({
     name: '',
     email: '',
-    message: `${interest}: `,
+    message: '',
+  });
+  const [brief, setBrief] = useState<RequestBrief>({
+    mode: interest === 'General conversation' ? 'talk' : 'event',
+    products: [],
+    occasion: '',
+    date: '',
+    city: '',
+    guests: '',
+    requester: 'My event',
+    billing: '',
+    ownVenue: false,
+    ownPlanner: false,
+    quantities: {},
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState('Loading your synthetic enquiry…');
@@ -112,9 +130,16 @@ export default function EnquiryForm({
     const payload = {
       name: fields.name.trim(),
       email: fields.email.trim(),
-      message: fields.message.trim(),
+      message: action
+        ? fields.message.trim()
+        : briefMessage(brief, fields.message),
     };
-    const invalid = validateEnquiry(payload);
+    const invalid = {
+      ...validateEnquiry(payload),
+      ...(!action ? validateBrief(brief) : {}),
+    };
+    if (!action && !fields.message.trim())
+      invalid.message = 'Tell us a little about your request.';
     if (!action && payload.message === `${interest}:`)
       invalid.message = 'Add a sample description of your plans.';
     setErrors(invalid);
@@ -198,7 +223,7 @@ export default function EnquiryForm({
     setAction(null);
     setReceipt(null);
     setErrors({});
-    setFields({ name: '', email: '', message: `${interest}: ` });
+    setFields({ name: '', email: '', message: '' });
     setStatus(
       'New synthetic enquiry. Previous saved enquiries remain in the preview scenario.',
     );
@@ -223,6 +248,165 @@ export default function EnquiryForm({
       >
         <fieldset disabled={!ready || busy || !!action}>
           <legend className={styles.srOnly}>Sample enquiry details</legend>
+          <div className={styles.requestModes} aria-label="Conversation type">
+            {(['event', 'talk'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                aria-pressed={brief.mode === mode}
+                onClick={() => setBrief({ ...brief, mode })}
+              >
+                {mode === 'event' ? 'Plan an event' : 'Just talk to TNP'}
+              </button>
+            ))}
+          </div>
+          {brief.mode === 'event' && (
+            <>
+              <h2 className={styles.formTitle}>What are you imagining?</h2>
+              <div className={styles.formGrid}>
+                {(
+                  ['occasion', 'city', 'date', 'guests', 'billing'] as const
+                ).map((key) => (
+                  <div className={styles.field} key={key}>
+                    <label htmlFor={'enquiry-' + key}>
+                      {
+                        {
+                          occasion: 'Sample occasion',
+                          city: 'Sample city',
+                          date: 'Preferred date (optional)',
+                          guests: 'Guest estimate (optional)',
+                          billing: 'Billing organization (optional)',
+                        }[key]
+                      }
+                    </label>
+                    <input
+                      id={'enquiry-' + key}
+                      type={
+                        key === 'date'
+                          ? 'date'
+                          : key === 'guests'
+                            ? 'number'
+                            : 'text'
+                      }
+                      min={key === 'guests' ? 1 : undefined}
+                      maxLength={100}
+                      value={brief[key]}
+                      onChange={(e) =>
+                        setBrief({ ...brief, [key]: e.target.value })
+                      }
+                      aria-invalid={!!errors[key]}
+                      aria-describedby={
+                        errors[key] ? key + '-error' : undefined
+                      }
+                    />
+                    {errors[key] && (
+                      <p className={styles.error} id={key + '-error'}>
+                        {errors[key]}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="requester">Who are you planning for?</label>
+                <select
+                  id="requester"
+                  value={brief.requester}
+                  onChange={(e) =>
+                    setBrief({ ...brief, requester: e.target.value })
+                  }
+                >
+                  <option>My event</option>
+                  <option>My organization</option>
+                  <option>A client I represent</option>
+                </select>
+              </div>
+              <h3 className={styles.formTitle}>Choose any support you need</h3>
+              <p>
+                No product is mandatory. Leave these unchecked if you would like
+                guidance.
+              </p>
+              <div className={styles.productChoices}>
+                {ENQUIRY_PRODUCTS.map((product) => (
+                  <label key={product}>
+                    <input
+                      type="checkbox"
+                      checked={brief.products.includes(product)}
+                      onChange={(e) =>
+                        setBrief({
+                          ...brief,
+                          products: e.target.checked
+                            ? [...brief.products, product]
+                            : brief.products.filter((p) => p !== product),
+                        })
+                      }
+                    />
+                    <span>{product}</span>
+                  </label>
+                ))}
+              </div>
+              <div className={styles.productChoices}>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={brief.ownVenue}
+                    onChange={(e) =>
+                      setBrief({ ...brief, ownVenue: e.target.checked })
+                    }
+                  />
+                  I already have a venue
+                </label>
+                <label>
+                  <input
+                    type="checkbox"
+                    checked={brief.ownPlanner}
+                    onChange={(e) =>
+                      setBrief({ ...brief, ownPlanner: e.target.checked })
+                    }
+                  />
+                  I have my own planner
+                </label>
+              </div>
+              {brief.products.includes('Hospitality workforce') && (
+                <div className={styles.formGrid}>
+                  {WORKFORCE_ROLES.map((role) => (
+                    <div className={styles.field} key={role}>
+                      <label htmlFor={'role-' + role}>
+                        {role} quantity (optional)
+                      </label>
+                      <input
+                        id={'role-' + role}
+                        type="number"
+                        min="0"
+                        max="10000"
+                        step="1"
+                        value={brief.quantities[role] ?? ''}
+                        onChange={(e) =>
+                          setBrief({
+                            ...brief,
+                            quantities: {
+                              ...brief.quantities,
+                              [role]: e.target.value,
+                            },
+                          })
+                        }
+                      />
+                    </div>
+                  ))}
+                  {errors.quantities && (
+                    <p id="quantities-error" className={styles.error}>
+                      {errors.quantities}
+                    </p>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+          <h2 className={styles.formTitle}>
+            {brief.mode === 'talk'
+              ? 'Let’s start a conversation.'
+              : 'Your contact details'}
+          </h2>
           {(['name', 'email', 'message'] as const).map((field) => (
             <div className={styles.field} key={field}>
               <label htmlFor={`enquiry-${field}`}>
@@ -237,7 +421,7 @@ export default function EnquiryForm({
                 <textarea
                   id={`enquiry-${field}`}
                   rows={5}
-                  maxLength={2000}
+                  maxLength={1000}
                   required
                   value={fields[field]}
                   onChange={(event) =>
@@ -291,6 +475,14 @@ export default function EnquiryForm({
             <p>
               Saved for {receipt.name}. Stored only in this browser’s preview
               scenario; not a confirmed booking or delivered message.
+            </p>
+            <details>
+              <summary>Review saved request</summary>
+              <p style={{ whiteSpace: 'pre-wrap' }}>{receipt.message}</p>
+            </details>
+            <p>
+              No follow-up is sent in this preview. A reference does not grant
+              access to private records.
             </p>
           </div>
         )}

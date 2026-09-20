@@ -16,27 +16,6 @@ export type DemoProfile = {
 };
 export const demoProfiles: readonly DemoProfile[] = [
   {
-    id: 'client-asha',
-    workspace: 'client',
-    name: 'Asha Shah',
-    role: 'Client · sample organization',
-    state: 'active',
-  },
-  {
-    id: 'client-representative',
-    workspace: 'client',
-    name: 'Mira Rao',
-    role: 'Client-appointed planner · sample Client representative',
-    state: 'active',
-  },
-  {
-    id: 'client-invited',
-    workspace: 'client',
-    name: 'Dev Shah',
-    role: 'Client invitation preview',
-    state: 'invited',
-  },
-  {
     id: 'planner-senior',
     workspace: 'tnp-planner',
     name: 'Riya Mehta',

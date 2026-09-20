@@ -11,7 +11,11 @@ export default async function ContactPage({
   const query = await searchParams;
   const interest = enquiryInterest(query.interest);
   return (
-    <main id="main-content" tabIndex={-1} className={styles.page}>
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className={`${styles.page} ${styles.contactPage}`}
+    >
       <section className={styles.heading}>
         <Link href="/">TNP / HOME</Link>
         <p className={styles.eyebrow}>A CONVERSATION, THOUGHTFULLY STARTED</p>
@@ -20,7 +24,7 @@ export default async function ContactPage({
           <br />
           <em>you have in mind.</em>
         </h1>
-        <p>{interest}. Shape your ideas with a sample enquiry.</p>
+        <p>An event to plan or a conversation to start. No account needed.</p>
       </section>
       <section className={styles.contactLayout} aria-label="Enquiry preview">
         <aside>

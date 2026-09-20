@@ -67,3 +67,73 @@ export function matchesEnquiry(action: EnquiryAction, record: Enquiry) {
     record.message === action.request.payload.message
   );
 }
+
+export const ENQUIRY_PRODUCTS = [
+  'Hospitality workforce',
+  'Venue',
+  'TNP Planner',
+  'RSVP',
+] as const;
+export const WORKFORCE_ROLES = [
+  'Event Coordinator',
+  'Event Executive',
+  'Hostess',
+  'Volunteer',
+  'Porter',
+] as const;
+export type RequestBrief = {
+  mode: 'event' | 'talk';
+  products: string[];
+  occasion: string;
+  date: string;
+  city: string;
+  guests: string;
+  requester: string;
+  billing: string;
+  ownVenue: boolean;
+  ownPlanner: boolean;
+  quantities: Record<string, string>;
+};
+export function briefMessage(brief: RequestBrief, message: string) {
+  if (brief.mode === 'talk') return 'General conversation\n' + message.trim();
+  const roles = brief.products.includes('Hospitality workforce')
+    ? WORKFORCE_ROLES.filter((r) => Number(brief.quantities[r]) > 0)
+        .map((r) => r + ': ' + brief.quantities[r])
+        .join(', ')
+    : '';
+  return [
+    'Event request',
+    'Products: ' + (brief.products.join(', ') || 'Discuss with TNP'),
+    'Occasion: ' + brief.occasion,
+    'Date: ' + (brief.date || 'To discuss'),
+    'City: ' + brief.city,
+    'Guests: ' + (brief.guests || 'To discuss'),
+    'Requesting for: ' + brief.requester,
+    'Billing organization (proposed): ' + (brief.billing || 'To discuss'),
+    brief.ownVenue ? 'I already have a venue' : '',
+    brief.ownPlanner ? 'I have my own planner' : '',
+    roles,
+    message.trim(),
+  ]
+    .filter(Boolean)
+    .join('\n');
+}
+export function validateBrief(brief: RequestBrief) {
+  const errors: Record<string, string> = {};
+  if (brief.mode === 'talk') return errors;
+  if (!brief.occasion.trim()) errors.occasion = 'Add a sample occasion.';
+  if (!brief.city.trim()) errors.city = 'Add a sample city.';
+  if (
+    brief.guests &&
+    (!/^\d+$/.test(brief.guests) || +brief.guests < 1 || +brief.guests > 100000)
+  )
+    errors.guests = 'Use a guest estimate from 1 to 100,000.';
+  if (brief.products.includes('Hospitality workforce'))
+    for (const role of WORKFORCE_ROLES) {
+      const n = brief.quantities[role];
+      if (n && (!/^\d+$/.test(n) || +n > 10000))
+        errors.quantities =
+          'Role quantities must be whole numbers from 0 to 10,000.';
+    }
+  return errors;
+}

@@ -1,5 +1,4 @@
-import { ClientExperience } from '@/components/tnp/portals/client/ClientExperience';
-
+import { redirect } from 'next/navigation';
 export default function ClientPage() {
-  return <ClientExperience />;
+  redirect('/contact?interest=event-request');
 }

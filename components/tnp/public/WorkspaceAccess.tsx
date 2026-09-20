@@ -13,7 +13,7 @@ import {
 import { productAudiences } from './access-content';
 import { StorageWarning, useDemoAccess } from '../access/DemoAccess';
 import { demoProfiles, profileFor, resetScope } from '../access/session';
-import { workspaceById, workspaceHref } from '../access/routes';
+import { workspaceById, workspaceHref, workspaces } from '../access/routes';
 import {
   ActionLink,
   AttentionQueue,
@@ -26,7 +26,9 @@ export default function WorkspaceAccess() {
   const params = useSearchParams();
   const router = useRouter();
   const access = useDemoAccess();
-  const workspace = workspaceById(params.get('workspace'));
+  const workspace = workspaces.find(
+    (item) => item.id === params.get('workspace'),
+  );
   const selected = profileFor(access.session);
   const icons = [
     UserRound,
@@ -54,7 +56,7 @@ export default function WorkspaceAccess() {
       <StorageWarning />
       {!workspace &&
         selected?.state === 'active' &&
-        workspaceById(selected.workspace)?.available && (
+        workspaces.some((item) => item.id === selected.workspace) && (
           <div className={styles.resume}>
             <NextAction
               title={`Continue as ${selected.name}`}

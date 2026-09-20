@@ -29,11 +29,11 @@ function storage() {
   };
 }
 test('all workspaces have unique destinations and allowlisted chooser links; RSVP never links to missing pages', () => {
-  assert.equal(new Set(workspaces.map((x) => x.id)).size, 5);
-  assert.equal(new Set(workspaces.map((x) => chooserHref(x.id))).size, 5);
+  assert.equal(new Set(workspaces.map((x) => x.id)).size, 2);
+  assert.equal(new Set(workspaces.map((x) => chooserHref(x.id))).size, 2);
   for (const workspace of workspaces)
     assert.equal(routeInfo(workspace.path).workspace, workspace.id);
-  assert.equal(workspaceHref('rsvp'), '/login?workspace=rsvp');
+  assert.equal(workspaceHref('rsvp'), '/rsvp/login');
   assert.equal(workspaceById('//evil.test'), undefined);
   assert.equal(workspaceById('planner'), undefined);
 });
@@ -65,13 +65,13 @@ test('parser rejects untrusted shape, mismatched workspace, unknown IDs, injecte
     '{"version":2}',
     JSON.stringify({
       version: 1,
-      profileId: 'client-asha',
+      profileId: 'planner-senior',
       workspace: 'operations',
     }),
     JSON.stringify({
       version: 1,
-      profileId: 'client-asha',
-      workspace: 'client',
+      profileId: 'planner-senior',
+      workspace: 'tnp-planner',
       state: 'active',
     }),
   ])
@@ -94,15 +94,15 @@ test('explicit selection persists only fixture identifiers and keeps records and
   const a = createDemoSessionStore(() => disk);
   const b = createDemoSessionStore(() => storage());
   assert.equal(a.read().session, null);
-  a.select('client-asha');
-  assert.equal(canEnter(a.read().session, 'client'), true);
+  a.select('planner-senior');
+  assert.equal(canEnter(a.read().session, 'tnp-planner'), true);
   assert.equal(canEnter(a.read().session, 'operations'), false);
   assert.equal(
     createDemoSessionStore(() => disk).read().session.profileId,
-    'client-asha',
+    'planner-senior',
   );
-  a.select('client-invited');
-  assert.equal(canEnter(a.read().session, 'client'), false);
+  a.select('planner-suspended');
+  assert.equal(canEnter(a.read().session, 'tnp-planner'), false);
   a.select('rsvp-team');
   assert.equal(canEnter(a.read().session, 'rsvp'), false);
   a.exit();
@@ -114,17 +114,17 @@ test('read, write and removal failures retain latest memory selection, including
   for (const operation of ['getItem', 'setItem', 'removeItem']) {
     const disk = storage();
     const store = createDemoSessionStore(() => disk);
-    store.select('client-asha');
+    store.select('planner-senior');
     disk[operation] = () => {
       throw new Error('denied');
     };
     if (operation === 'getItem') store.read();
     if (operation === 'removeItem') store.exit();
-    else store.select('client-representative');
+    else store.select('freelancer-explorer');
     assert.equal(store.read().memoryOnly, true);
     assert.equal(
       store.read().session?.profileId ?? null,
-      operation === 'removeItem' ? null : 'client-representative',
+      operation === 'removeItem' ? null : 'freelancer-explorer',
     );
     store.exit();
     assert.equal(store.read().session, null);

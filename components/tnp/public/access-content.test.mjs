@@ -15,20 +15,14 @@ test('public navigation exposes six real homepage destinations without internal 
   );
   assert.equal(new Set(publicNavigation.map((x) => x.href)).size, 6);
 });
-test('audience actions open the five allowlisted synthetic choosers, never fake authentication', () => {
+test('audience actions open the two public allowlisted synthetic choosers, never fake authentication', () => {
   assert.deepEqual(
     productAudiences.map((x) => x.name),
-    ['Client', 'TNP Planner', 'Freelancer', 'Operations', 'RSVP'],
+    ['TNP Planner', 'Freelancer'],
   );
   assert.deepEqual(
     productAudiences.map((x) => x.href),
-    [
-      '/login?workspace=client',
-      '/login?workspace=tnp-planner',
-      '/login?workspace=freelancer',
-      '/login?workspace=operations',
-      '/login?workspace=rsvp',
-    ],
+    ['/login?workspace=tnp-planner', '/login?workspace=freelancer'],
   );
   assert.ok(
     productAudiences.every(

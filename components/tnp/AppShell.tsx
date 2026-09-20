@@ -119,7 +119,6 @@ function Shell({ children }: { children: ReactNode }) {
       {pathname === '/' && (
         <>
           <Preloader active={showPreloader} />
-          <WorkspaceDrawer />
         </>
       )}
       {guest ? (
@@ -149,9 +148,7 @@ function Shell({ children }: { children: ReactNode }) {
           <div className="nav-actions">
             {publicPage ? (
               <>
-                <Link className="public-access-link" href="/login">
-                  Workspaces
-                </Link>
+                <WorkspaceDrawer />
                 <Link className="magnetic-btn small" href="/contact">
                   Let&apos;s Talk
                 </Link>
