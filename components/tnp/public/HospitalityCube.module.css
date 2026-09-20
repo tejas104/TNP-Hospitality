@@ -1,0 +1,22 @@
+.art { background: none; isolation: isolate; }
+.stage { position: absolute; inset: 48px -12px 74px; touch-action: pan-y; cursor: grab; user-select: none; }
+.stage[data-dragging='true'] { cursor: grabbing; }
+.stage::before { content: ''; position: absolute; inset: 7% 2% 0; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at 53% 43%, rgb(255 255 255 / 68%) 0%, rgb(255 253 244 / 35%) 22%, rgb(255 255 255 / 10%) 44%, transparent 68%); }
+.stage::after { content: ''; position: absolute; left: 25%; right: 21%; bottom: 2%; height: 7%; z-index: -1; pointer-events: none; background: radial-gradient(ellipse, rgb(246 230 192 / 26%), rgb(25 25 25 / 10%) 40%, transparent 70%); }
+.stage canvas { display: block; }
+.heading { position: absolute; top: 4px; left: 0; right: 0; text-align: center; pointer-events: none; }
+.number { display: block; color: #fff; font-size: 9px; letter-spacing: 2.4px; opacity: .8; margin-bottom: 8px; }
+.title { display: block; color: #fff6e5; font-size: clamp(14px, 1.4vw, 19px); font-weight: 500; letter-spacing: 3px; text-transform: uppercase; transition: opacity 240ms, transform 240ms; text-shadow: 0 0 18px rgb(250 226 179 / 18%); }
+.heading[data-turning='true'] .title { opacity: 0; transform: translateY(-5px); }
+.footer { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; }
+.hint { margin: 0 !important; color: #fff; font-size: 10px; line-height: 1.5; }
+.selectors { padding: 0; border: 0; display: flex; align-items: center; justify-content: center; gap: 3px; margin: 5px 0; }
+.selector { width: 44px; height: 44px; display: grid; place-items: center; border: 0; background: transparent; color: #fff; cursor: pointer; }
+.selector::after { content: ''; width: 19px; height: 2px; background: currentColor; opacity: .42; transition: opacity 180ms, height 180ms; }
+.selector[aria-pressed='true']::after { opacity: 1; height: 4px; background: #f1dfb8; }
+.selector:focus-visible, .pause:focus-visible { outline: 2px solid #fff !important; outline-offset: 0 !important; }
+.pause { height: 44px; min-width: 44px; display: grid; place-items: center; color: #fff; background: transparent; border: 0; cursor: pointer; }
+.sample { margin: 0 !important; font-size: 9px; line-height: 1.4; color: #fff; opacity: .85; }
+@media (max-width: 700px) { .stage { inset: 35px -4px 68px; } .heading { top: -2px; } .number { display: none; } .title { font-size: 12px; letter-spacing: 2px; } .hint { font-size: 9px; } .selectors { margin: 0; } .sample { font-size: 8px; } }
+@media (prefers-reduced-motion: reduce) { .title, .selector::after { transition: none; } }
+

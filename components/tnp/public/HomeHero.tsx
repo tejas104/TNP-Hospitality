@@ -1,196 +1,60 @@
 'use client';
 
-import {
-  Component,
-  lazy,
-  Suspense,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-  type ReactNode,
-} from 'react';
+import { Component, lazy, Suspense, useCallback, useEffect, useRef, useState, useSyncExternalStore, type ReactNode, type PointerEvent } from 'react';
 import { Pause, Play } from 'lucide-react';
 import styles from './Home.module.css';
+import cube from './HospitalityCube.module.css';
+import HospitalityCubeFallback from './HospitalityCubeFallback';
+import { SERVICES, advanceMotion, beginDrag, createMotion, cubePolicy, dragTo, endDrag, pointerIntent, selectService, serviceAt } from './hospitality-cube-motion';
 
 const PavilionScene = lazy(() => import('./PavilionScene'));
 const motionQuery = '(prefers-reduced-motion: reduce)';
-function subscribeMotion(callback: () => void) {
-  const query = window.matchMedia(motionQuery);
-  query.addEventListener('change', callback);
-  return () => query.removeEventListener('change', callback);
+const mobileQuery = '(max-width: 700px)';
+function subscribeQuery(query: string, callback: () => void) {
+  const media = window.matchMedia(query);
+  media.addEventListener('change', callback);
+  return () => media.removeEventListener('change', callback);
 }
+const subscribeMotion = (callback: () => void) => subscribeQuery(motionQuery, callback);
+const subscribeMobile = (callback: () => void) => subscribeQuery(mobileQuery, callback);
 function subscribeVisibility(callback: () => void) {
   document.addEventListener('visibilitychange', callback);
   return () => document.removeEventListener('visibilitychange', callback);
 }
 const readMotion = () => window.matchMedia(motionQuery).matches;
+const readMobile = () => window.matchMedia(mobileQuery).matches;
 const readVisibility = () => document.visibilityState === 'visible';
 const serverFalse = () => false;
-const mobileQuery = '(max-width: 700px)';
-function subscribeMobile(callback: () => void) {
-  const query = window.matchMedia(mobileQuery);
-  query.addEventListener('change', callback);
-  return () => query.removeEventListener('change', callback);
-}
-const readMobile = () => window.matchMedia(mobileQuery).matches;
 
-class SceneBoundary extends Component<
-  { children: ReactNode; onFailure: () => void },
-  { failed: boolean }
-> {
+class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void; fallback: ReactNode }, { failed: boolean }> {
   state = { failed: false };
-  static getDerivedStateFromError() {
-    return { failed: true };
-  }
-  componentDidCatch() {
-    this.props.onFailure();
-  }
-  render() {
-    return this.state.failed ? <PavilionFallback /> : this.props.children;
-  }
+  static getDerivedStateFromError() { return { failed: true }; }
+  componentDidCatch() { this.props.onFailure(); }
+  render() { return this.state.failed ? this.props.fallback : this.props.children; }
 }
 
-export function PavilionFallback() {
-  return (
-    <svg
-      className={styles.pavilion}
-      viewBox="0 0 600 500"
-      fill="none"
-      aria-hidden="true"
-    >
-      <defs>
-        <radialGradient id="canopy-glow">
-          <stop stopColor="#ead5a0" stopOpacity=".18" />
-          <stop offset="1" stopColor="#ead5a0" stopOpacity="0" />
-        </radialGradient>
-      </defs>
-      <ellipse cx="300" cy="250" rx="165" ry="175" fill="url(#canopy-glow)" />
-      <ellipse
-        cx="300"
-        cy="363"
-        rx="120"
-        ry="30"
-        fill="#008080"
-        stroke="#c7b481"
-      />
-      <ellipse
-        cx="300"
-        cy="355"
-        rx="103"
-        ry="24"
-        stroke="#d9c795"
-        strokeOpacity=".45"
-      />
-      <path d="M300 81v252" stroke="#dfc690" strokeOpacity=".6" />
-      {[-1, -0.66, -0.33, 0, 0.33, 0.66, 1].map((offset) => (
-        <path
-          key={offset}
-          d={`M300 93C${300 + offset * 35} 144 ${300 + offset * 165} 156 ${300 + offset * 142} 225Q${300 + offset * 140} 252 ${300 + offset * 105} 267`}
-          stroke="#ddc48d"
-          strokeWidth={Math.abs(offset) === 1 ? 2 : 1.3}
-        />
-      ))}
-      <ellipse
-        cx="300"
-        cy="225"
-        rx="142"
-        ry="33"
-        stroke="#efdab0"
-        strokeWidth="2"
-      />
-      <ellipse cx="300" cy="267" rx="105" ry="23" stroke="#c9b17d" />
-      <ellipse
-        cx="300"
-        cy="95"
-        rx="21"
-        ry="6"
-        stroke="#efdab0"
-        strokeWidth="2"
-      />
-      {Array.from({ length: 13 }, (_, i) => {
-        const angle = (i * Math.PI) / 6;
-        const x = 300 + Math.cos(angle) * 107;
-        const y = 237 + Math.sin(angle) * 22;
-        const end = y + 42 + (i % 2) * 25;
-        return (
-          <g key={i}>
-            <path
-              d={`M${x} ${y}v${end - y}`}
-              stroke="#ccb884"
-              strokeOpacity=".7"
-            />
-            <ellipse cx={x} cy={end} rx="3.4" ry="11" fill="#f3e4bd" />
-          </g>
-        );
-      })}
-      <path d="m300 304 12 17-12 18-12-18Z" fill="#f2dfad" />
-      <ellipse
-        cx="300"
-        cy="300"
-        rx="245"
-        ry="69"
-        transform="rotate(-12 300 300)"
-        stroke="#baa575"
-        strokeOpacity=".6"
-      />
-      {[
-        [70, 344],
-        [211, 244],
-        [531, 252],
-        [402, 361],
-      ].map(([x, y], i) => (
-        <g key={x}>
-          <circle cx={x} cy={y} r="22" fill="#008080" stroke="#d7be85" />
-          {i === 0 ? (
-            <g fill="#eee1bf">
-              <circle cx={x - 7} cy={y + 2} r="3" />
-              <circle cx={x} cy={y - 5} r="4" />
-              <circle cx={x + 7} cy={y + 2} r="3" />
-            </g>
-          ) : i === 1 ? (
-            <rect
-              x={x - 6}
-              y={y - 9}
-              width="12"
-              height="18"
-              rx="1"
-              fill="#ffffff"
-            />
-          ) : i === 2 ? (
-            <path d={`m${x} ${y - 11} 9 11-9 11-9-11Z`} fill="#e5bc83" />
-          ) : (
-            <circle cx={x} cy={y} r="8" stroke="#eadfc3" strokeWidth="4" />
-          )}
-        </g>
-      ))}
-    </svg>
-  );
-}
-
-export default function HomeHero({
-  paused,
-  onPauseChange,
-}: {
-  paused: boolean;
-  onPauseChange: (paused: boolean) => void;
-}) {
+export default function HomeHero({ paused, onPauseChange }: { paused: boolean; onPauseChange: (paused: boolean) => void }) {
   const container = useRef<HTMLDivElement>(null);
-  const reducedMotion = useSyncExternalStore(
-    subscribeMotion,
-    readMotion,
-    serverFalse,
-  );
-  const visible = useSyncExternalStore(
-    subscribeVisibility,
-    readVisibility,
-    serverFalse,
-  );
+  const motion = useRef(createMotion());
+  const clock = useRef(0);
+  const gesture = useRef<{ id: number; x: number; y: number; angle: number; intent: string } | null>(null);
+  const reduced = useSyncExternalStore(subscribeMotion, readMotion, serverFalse);
+  const mobile = useSyncExternalStore(subscribeMobile, readMobile, serverFalse);
+  const visible = useSyncExternalStore(subscribeVisibility, readVisibility, serverFalse);
   const [inView, setInView] = useState(false);
   const [visited, setVisited] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [capability, setCapability] = useState<{ saveData: boolean; cores?: number; memory?: number }>({ saveData: false });
+  const [presentation, setPresentation] = useState({ service: 0, turning: false, angle: 0 });
+  const [dragging, setDragging] = useState(false);
   const handleFailure = useCallback(() => setFailed(true), []);
+  const policy = cubePolicy({ reduced, mobile, ...capability, failed, paused, visible, inView });
+  const publish = useCallback(() => {
+    const current = motion.current;
+    const service = serviceAt(current.angle);
+    const turning = current.phase === 'turn';
+    setPresentation(previous => previous.service === service && previous.turning === turning && previous.angle === current.angle ? previous : { service, turning, angle: current.angle });
+  }, []);
   useEffect(() => {
     const target = container.current;
     if (!target) return;
@@ -199,63 +63,76 @@ export default function HomeHero({
       if (entry.isIntersecting) setVisited(true);
     });
     observer.observe(target);
-    return () => observer.disconnect();
+    const nav = navigator as Navigator & { deviceMemory?: number; connection?: EventTarget & { saveData?: boolean } };
+    const update = () => setCapability({ saveData: Boolean(nav.connection?.saveData), cores: nav.hardwareConcurrency, memory: nav.deviceMemory });
+    update();
+    nav.connection?.addEventListener('change', update);
+    return () => { observer.disconnect(); nav.connection?.removeEventListener('change', update); };
   }, []);
-  const mobile = useSyncExternalStore(subscribeMobile, readMobile, serverFalse);
-  const still = reducedMotion || mobile || paused || failed;
-  const active = inView && visible && !still;
-  return (
-    <div ref={container} className={styles.heroArt} data-hero-art>
-      <div
-        className={styles.scene}
-        aria-hidden="true"
-        data-scene-state={still ? 'still' : active ? 'running' : 'suspended'}
-      >
-        {visited && !still ? (
-          <SceneBoundary onFailure={handleFailure}>
-            <Suspense fallback={<PavilionFallback />}>
-              <PavilionScene
-                active={active}
-                fallback={<PavilionFallback />}
-                onFailure={handleFailure}
-              />
-            </Suspense>
-          </SceneBoundary>
-        ) : (
-          <PavilionFallback />
-        )}
-      </div>
-      <div className={styles.artCaption}>
-        <span>THE ART OF COMING TOGETHER</span>
-        <p>Celebration, beautifully coordinated.</p>
-        <ul
-          className={styles.constellationKey}
-          aria-label="Illustrative event coordination roles"
-        >
-          <li>Guests</li>
-          <li>Planners</li>
-          <li>Vendors</li>
-          <li>Operations</li>
-        </ul>
-      </div>
-      <button
-        type="button"
-        className={styles.motionControl}
-        aria-pressed={still}
-        disabled={reducedMotion || mobile || failed}
-        onClick={() => onPauseChange(!paused)}
-      >
-        {still ? <Play size={12} /> : <Pause size={12} />}
-        {failed
-          ? 'Still illustration'
-          : mobile
-            ? 'Still illustration · mobile'
-            : reducedMotion
-              ? 'Reduced motion'
-              : paused
-                ? 'Play animation'
-                : 'Pause animation'}
-      </button>
+  useEffect(() => {
+    if (!policy.animate) return;
+    let frame = 0;
+    let previous: number | undefined;
+    let lastPublish = 0;
+    const tick = (now: number) => {
+      const delta = previous === undefined ? 0 : Math.min(now - previous, 50);
+      previous = now;
+      motion.current = advanceMotion(motion.current, delta);
+      clock.current += delta / 1000;
+      // Render transforms live in refs; React only receives sparse UI evidence.
+      if (now - lastPublish >= 100) { publish(); lastPublish = now; }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [policy.animate, publish]);
+  const choose = (index: number) => {
+    motion.current = selectService(motion.current, index, !policy.animate);
+    publish();
+  };
+  const start = (event: PointerEvent<HTMLDivElement>) => {
+    if (policy.tier === 'static' || !event.isPrimary || event.button !== 0) return;
+    gesture.current = { id: event.pointerId, x: event.clientX, y: event.clientY, angle: motion.current.angle, intent: 'pending' };
+  };
+  const move = (event: PointerEvent<HTMLDivElement>) => {
+    const current = gesture.current;
+    if (!current || current.id !== event.pointerId) return;
+    const dx = event.clientX - current.x, dy = event.clientY - current.y;
+    if (current.intent === 'pending') {
+      current.intent = pointerIntent(dx, dy);
+      if (current.intent === 'horizontal') { event.currentTarget.setPointerCapture(event.pointerId); motion.current = beginDrag(motion.current); setDragging(true); }
+    }
+    if (current.intent !== 'horizontal') return;
+    motion.current = dragTo(motion.current, current.angle, dx, event.currentTarget.clientWidth);
+    publish();
+  };
+  const end = (event: PointerEvent<HTMLDivElement>) => {
+    if (gesture.current?.id !== event.pointerId) return;
+    if (gesture.current.intent === 'horizontal') motion.current = endDrag(motion.current);
+    gesture.current = null;
+    setDragging(false);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+    publish();
+  };
+  const fallback = <HospitalityCubeFallback service={presentation.service} />;
+  const still = policy.tier === 'static';
+  return <div ref={container} className={`${styles.heroArt} ${cube.art}`} data-hero-art data-cube-tier={policy.tier} data-cube-angle={presentation.angle.toFixed(4)}>
+    <div className={cube.heading} data-turning={presentation.turning && policy.animate}>
+      <span className={cube.number}>FOUR WORLDS. ONE CELEBRATION.</span>
+      <span className={cube.title}>{SERVICES[presentation.service]}</span>
     </div>
-  );
+    <div className={cube.stage} aria-hidden="true" data-scene-state={still ? 'still' : policy.animate ? 'running' : 'suspended'} data-dragging={dragging} onPointerDown={start} onPointerMove={move} onPointerUp={end} onPointerCancel={end} onLostPointerCapture={end}>
+      {visited && !still ? <SceneBoundary onFailure={handleFailure} fallback={fallback}><Suspense fallback={fallback}>
+        <PavilionScene active={policy.animate} fallback={fallback} onFailure={handleFailure} />
+      </Suspense></SceneBoundary> : fallback}
+    </div>
+    <div className={cube.footer}>
+      <p className={cube.hint}>{still ? 'Explore our four hospitality services' : 'Drag to explore · a different world on every side'}</p>
+      <fieldset className={cube.selectors} aria-label="Choose a hospitality service">
+        {SERVICES.map((name, index) => <button key={name} type="button" className={cube.selector} aria-label={`Show ${name}`} aria-pressed={presentation.service === index} onClick={() => choose(index)} />)}
+        {!still && <button type="button" className={cube.pause} aria-label={paused ? 'Play cube animation' : 'Pause cube animation'} aria-pressed={paused} onClick={() => onPauseChange(!paused)}>{paused ? <Play size={14}/> : <Pause size={14}/>}</button>}
+      </fieldset>
+      <p className={cube.sample}>Illustrative service worlds · no live event data</p>
+    </div>
+  </div>;
 }
