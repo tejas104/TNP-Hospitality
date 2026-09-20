@@ -1,6 +1,6 @@
 # TNP-BRAND-AGGREGATE-M2 — integrated palette adoption and guard closure
 
-Status: ROUND-2 FIXED-SHA HANDOFF / SAME-CLAUDE FOCUSED RE-REVIEW. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` returned exact clean pushed remote-equal successor `497145220636ae4fe4cbda9bb984f7d9691d3e20`, direct child of Claude-reviewed `d5c15be0be3acf984206a0a29c3f16dabe522bdf`. Runtime Codex model/effort metadata are unavailable and are not inferred. The writer lease is closed. This remains a bounded post-integration correction, not a redesign and not authority for UX Foundation or Client source work.
+Status: ROUND-3 BOUNDED FOCUS CORRECTION ACTIVE. Same Claude Opus 5/default-effort session `cdd20a88-eed6-465c-908d-4b7496afbff1` returned `CHANGES REQUESTED` on exact clean remote-equal `497145220636ae4fe4cbda9bb984f7d9691d3e20` for one remaining P1: the inherited teal focus ring is 1.00:1 on controls inside the exact-teal panels. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` holds the sole inline two-file correction lease. Runtime Codex model/effort metadata are unavailable and are not inferred. This remains a bounded post-integration correction, not a redesign and not authority for UX Foundation or Client source work.
 
 Responsible product decision owner and sole human fixed-SHA acceptance reviewer: Kartik. Round-2 writer: current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` on DESKTOP-DL9FDM7, inline only per the user's no-subagent direction. Fresh focused re-review remains assigned to the same independent Claude session above after one immutable successor is returned.
 
@@ -98,3 +98,20 @@ Return one clean ordinarily pushed immutable successor. Run the focused guard, i
 - cleanup: browser/server stopped and port3117 free.
 
 Focused re-review packet: `docs/dispatch/2026-09-20/BRAND-AGGREGATE-M2-CLAUDE-ROUND2-REREVIEW.md`. Same Claude session `cdd20a88-eed6-465c-908d-4b7496afbff1` must return one exact-successor disposition. Kartik acceptance remains a separate later gate.
+
+## Round-2 Claude disposition and round-3 lease — 2026-09-20
+
+Review record: `docs/reviews/TNP-BRAND-AGGREGATE-M2-CLAUDE-ROUND2-REREVIEW.md`.
+
+Claude independently cleared the round-2 provenance/scope, text contrast, static non-text contrast, neutral overlay, beige-token mutation, `data-*` false-positive and `.color.set(...)` requirements; all automated/build/viewport evidence was reproduced. One P1 remains: `.workspace :is(button, a, input, select):focus-visible` uses exact teal, so genuine Tab focus on the close-detail button is 1.00:1 against the newly exact-teal panel at all required viewports.
+
+Round-3 baseline is exact `497145220636ae4fe4cbda9bb984f7d9691d3e20`. Branch/worktree/port remain `codex/tnp-brand-aggregate-m2`, `D:\TNP-worktrees\TNP-BRAND-AGGREGATE-M2`, and 3117. The checkout and live remote were verified equal and clean and port3117 free before activation.
+
+Writable paths remain only:
+
+- `components/tnp/portals/freelancer/FreelancerPortal.module.css`
+- `tests/brand-teal-palette.test.mjs`
+
+Add a panel-local focus-visible colour override with at least 3:1 contrast on exact teal while preserving the existing teal focus ring on ivory workspace surfaces. Add a load-bearing regression assertion for both contexts. Tighten the round-2 `.color.set(...)` matcher to the demonstrated light-variable case and add a material negative probe; do not edit any material/3D source. The flattened-but-compliant colour hierarchy is accepted for this bounded correction because type, weight, spacing and letter-spacing preserve semantic hierarchy; broader visual nuance belongs to a later explicitly owned Freelancer refinement.
+
+All other findings and all other paths are frozen. Run focused/full tests, lint, explicit non-incremental TypeScript, Vercel build and diff check. In a real browser use genuine Tab input to verify the close-detail focus ring at 1440x900, 1100x900 and 390x844, plus the existing teal-on-ivory workspace focus, overflow and console output. Return one clean ordinarily pushed immutable successor for the same-Claude focused re-review and then Kartik exact-successor acceptance.
