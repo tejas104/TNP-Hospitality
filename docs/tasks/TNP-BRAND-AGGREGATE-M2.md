@@ -1,6 +1,6 @@
 # TNP-BRAND-AGGREGATE-M2 — integrated palette adoption and guard closure
 
-Status: ROUND-4 CRLF GUARD CORRECTION ACTIVE. Same Claude Opus 5/default-effort session `cdd20a88-eed6-465c-908d-4b7496afbff1` returned `CHANGES REQUESTED` on exact clean remote-equal `71212ea57ada4447ff34a6ffebd14e439e2dc0da`. The rendered focus correction and every other requirement pass; the sole P1 is an LF-only multiline selector lookup that makes the guard fail 5/6 in a standard Windows CRLF checkout. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` holds the sole inline one-file test lease. Runtime Codex model/effort metadata are unavailable and are not inferred. This is a test-portability correction only and does not authorize source/UI changes, UX Foundation or Client work.
+Status: ROUND-4 FIXED-SHA HANDOFF / SAME-CLAUDE PORTABILITY RE-REVIEW. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` returned exact clean pushed remote-equal successor `d70d2e2315ab56e6b248879354aef2a6d4ea3067`, direct child of Claude-reviewed `71212ea57ada4447ff34a6ffebd14e439e2dc0da`. The exact delta is the palette test only; all production source is byte-identical. Runtime Codex model/effort metadata are unavailable and are not inferred. The writer lease is closed. UX Foundation and Client work remain unauthorized.
 
 Responsible product decision owner and sole human fixed-SHA acceptance reviewer: Kartik. Round-3 writer: current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` on DESKTOP-DL9FDM7, inline only per the user's no-subagent direction. Fresh focused re-review remains assigned to the same independent Claude session above.
 
@@ -145,3 +145,20 @@ Round-4 baseline is exact `71212ea57ada4447ff34a6ffebd14e439e2dc0da`. Branch/wor
 The only writable path is `tests/brand-teal-palette.test.mjs`. Normalize line endings inside the selector-block lookup and add an in-test CRLF probe so the portability requirement is load-bearing even when the executing filesystem uses LF. Preserve both focus-contrast assertions and every cleared detector probe. Freelancer CSS, Operations CSS and every other path are frozen. Claude's equal-specificity/source-order note is recorded as non-blocking P3 and is not reopened in this test-only correction.
 
 Run the focused guard and full discovered suite in the writer checkout, then commit and ordinarily push one immutable successor. Prove the same results again from a fresh detached Windows checkout with CRLF on disk. Run lint, explicit non-incremental TypeScript, Vercel build, diff/scope checks and cleanup. Browser rerun is unnecessary because no production source may change. Return the successor to the same Claude session for a focused portability re-review; Kartik exact-successor acceptance remains a separate later gate.
+
+## Round-4 immutable successor returned — 2026-09-20
+
+- candidate: `d70d2e2315ab56e6b248879354aef2a6d4ea3067`;
+- direct parent: reviewed `71212ea57ada4447ff34a6ffebd14e439e2dc0da`;
+- live feature remote equals candidate and the writer checkout is clean;
+- exact delta: `tests/brand-teal-palette.test.mjs` only; Freelancer and Operations CSS are byte-identical to the parent;
+- correction: selector-block lookup normalizes CRLF/lone-CR to LF, while an explicit synthetic CRLF panel-rule probe pins portability independently of checkout format;
+- mutation: bypassing normalization reproduces the focused 5/6 selector-anchor failure; restoring it returns 6/6;
+- writer checkout: focused 6/6 and full 18 files / 118 tests PASS;
+- fresh detached Windows checkout with `core.autocrlf=true`: CSS has 1,492 CRLF pairs, test has 285 CRLF pairs, focused 6/6 and full 118/118 PASS;
+- lint: PASS with the same three inherited React-compiler warnings;
+- explicit non-incremental TypeScript: PASS;
+- Vercel build: PASS on the first attempt with only the existing non-blocking notices;
+- cleanup: verification worktree removed, writer checkout clean and ports 3117, 3211, 3213 and 3215 free.
+
+Focused portability re-review packet: `docs/dispatch/2026-09-20/BRAND-AGGREGATE-M2-CLAUDE-ROUND4-REREVIEW.md`. Same Claude session `cdd20a88-eed6-465c-908d-4b7496afbff1` must return one exact-candidate disposition. Kartik acceptance remains a separate later gate.
