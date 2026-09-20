@@ -1,6 +1,6 @@
 # TNP-BRAND-AGGREGATE-M2 — integrated palette adoption and guard closure
 
-Status: ROUND-4 FIXED-SHA HANDOFF / SAME-CLAUDE PORTABILITY RE-REVIEW. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` returned exact clean pushed remote-equal successor `d70d2e2315ab56e6b248879354aef2a6d4ea3067`, direct child of Claude-reviewed `71212ea57ada4447ff34a6ffebd14e439e2dc0da`. The exact delta is the palette test only; all production source is byte-identical. Runtime Codex model/effort metadata are unavailable and are not inferred. The writer lease is closed. UX Foundation and Client work remain unauthorized.
+Status: CLAUDE APPROVED / KARTIK EXACT-SHA ACCEPTANCE PENDING. Same resumed Claude Opus 5/default-effort session `cdd20a88-eed6-465c-908d-4b7496afbff1` returned `APPROVE FOR ARCHITECT-CONTROLLED INTEGRATION` with no P0-P3 findings on exact clean remote-equal `d70d2e2315ab56e6b248879354aef2a6d4ea3067`. Writer and independent-review leases are closed. Kartik must explicitly accept this exact SHA before P-controlled local integration. Runtime Codex model/effort metadata are unavailable and are not inferred. UX Foundation and Client work remain unauthorized.
 
 Responsible product decision owner and sole human fixed-SHA acceptance reviewer: Kartik. Round-3 writer: current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` on DESKTOP-DL9FDM7, inline only per the user's no-subagent direction. Fresh focused re-review remains assigned to the same independent Claude session above.
 
@@ -162,3 +162,13 @@ Run the focused guard and full discovered suite in the writer checkout, then com
 - cleanup: verification worktree removed, writer checkout clean and ports 3117, 3211, 3213 and 3215 free.
 
 Focused portability re-review packet: `docs/dispatch/2026-09-20/BRAND-AGGREGATE-M2-CLAUDE-ROUND4-REREVIEW.md`. Same Claude session `cdd20a88-eed6-465c-908d-4b7496afbff1` must return one exact-candidate disposition. Kartik acceptance remains a separate later gate.
+
+## Round-4 Claude approval — 2026-09-20
+
+Review record: `docs/reviews/TNP-BRAND-AGGREGATE-M2-CLAUDE-ROUND4-REREVIEW.md`.
+
+The same independent Claude session approved exact `d70d2e2315ab56e6b248879354aef2a6d4ea3067` for architect-controlled integration with no P0, P1, P2 or P3 findings. It independently verified live remote equality, direct-parent provenance, a whole-tree one-file blob delta, byte-identical production/CSS blobs, actual CRLF counts, focused 6/6, full 118/118, two mutation failures at the intended selector, lint with only the inherited warnings, TypeScript, first-attempt build, clean worktrees and free ports. No browser rerun was required because round four has no production change and the rendered focus behavior was independently cleared in round three.
+
+The earlier equal-specificity/source-order observation remains non-blocking carry-forward context. It does not prevent acceptance or integration and is not authority for another source correction.
+
+All AI writer/reviewer leases are closed. Kartik exact-SHA acceptance packet: `docs/dispatch/2026-09-20/BRAND-AGGREGATE-M2-KARTIK-ACCEPTANCE.md`. No integration, main push, deployment, provider/production action or UX Foundation/Client source work may begin until Kartik explicitly accepts the exact candidate.
