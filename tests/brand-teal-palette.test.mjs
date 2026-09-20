@@ -151,12 +151,13 @@ test('semantic primary and legacy brand aliases resolve to exact client teal', (
 
 test('corrected solid surface text and focus colors retain AA contrast', () => {
   const read = (file) => readFileSync(path.join(projectRoot, file), 'utf8');
-  const block = (file, selector) => {
-    const source = read(file);
-    const start = source.indexOf(`${selector} {`);
+  const blockFromSource = (source, selector) => {
+    const normalizedSource = source.replace(/\r\n?/g, '\n');
+    const start = normalizedSource.indexOf(`${selector} {`);
     assert.ok(start >= 0, selector);
-    return source.slice(start, source.indexOf('}', start) + 1);
+    return normalizedSource.slice(start, normalizedSource.indexOf('}', start) + 1);
   };
+  const block = (file, selector) => blockFromSource(read(file), selector);
   const property = (rule, name) => {
     const value = rule.match(new RegExp(`(?:^|[;{])\\s*${name}:\\s*([^;]+)`))?.[1];
     assert.ok(value, `${name}: ${rule}`);
@@ -207,6 +208,8 @@ test('corrected solid surface text and focus colors retain AA contrast', () => {
   const workspaceFocus = property(block(freelancerFile, '.workspace :is(button, a, input, select):focus-visible'), 'outline');
   assert.ok(ratio(workspaceFocus, ivory) >= 3, 'Freelancer workspace focus on ivory');
   const panelFocusSelector = '.journey :is(button, a, input, select):focus-visible,\n.opportunityDetail :is(button, a, input, select):focus-visible';
+  const crlfPanelRule = `${panelFocusSelector} {\n  outline-color: var(--ivory);\n}`.replaceAll('\n', '\r\n');
+  assert.match(blockFromSource(crlfPanelRule, panelFocusSelector), /outline-color:\s*var\(--ivory\)/);
   const panelFocus = property(block(freelancerFile, panelFocusSelector), 'outline-color');
   assert.ok(ratio(panelFocus, teal) >= 3, 'Freelancer panel focus on teal');
   for (const selector of [
