@@ -1,6 +1,6 @@
 # TNP-UX-FOUNDATION-M1 — shared portal navigation, demo access and interaction foundation
 
-Status: CANDIDATE WAITING INDEPENDENT REVIEW — writer lease closed at clean, pushed, remote-equal `653da55991363f910dbeddc3773d55ee507f7491`. Exact chain is LAUNCH `1c2b8d570a7d62f52c01710f190bdb054fdbf632` -> checkpoint `a06f1b749de22f780b203272ed64bfec410e6dbd` -> candidate. P independently reverified the 27-path allowlist, clean/remote equality, 128/128 tests, lint with one inherited warning, explicit TypeScript and first-attempt Vercel build. Fresh Claude review packet: `docs/dispatch/2026-09-20/UX-FOUNDATION-M1-CLAUDE-FIXED-SHA-REVIEW.md`. No integration or next frontend source lease until independent review and Kartik exact-SHA acceptance.
+Status: BOUNDED CORRECTION READY — Fresh Claude Opus 5 session `0959ee97-bf48-4129-962d-3eab2fdf7b62` returned `CHANGES REQUESTED` on exact clean, pushed, remote-equal `653da55991363f910dbeddc3773d55ee507f7491`. The sole blocking finding is that the mandatory synthetic-preview safety sentence is hidden in the closed `PreviewControls` disclosure. Existing task `01a0bee6-65ab-73c2-a0c6-60eb83111347` may resume with `gpt-5.6-luna` / low only after verifying the exact baseline/worktree/ports and P activation below. Same-Claude focused re-review, Kartik exact-successor acceptance and P-controlled integration remain mandatory.
 
 Responsible product/visual owner and sole human fixed-SHA acceptance reviewer: Kartik for code acceptance; Anjaneya/client direction remains required for final content/assets. Author task `01a0bee6-65ab-73c2-a0c6-60eb83111347` is verified `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`; its separate assigned profile/seat is user-operated context and is not independently exposed by runtime metadata. Fresh external Claude Opus 5/default-effort fixed-SHA review is appointed under Kartik on `DESKTOP-DL9FDM7` in a separate profile and detached clean `D:\TNP-review\TNP-UX-FOUNDATION-M1-CLAUDE` worktree; exact review session ID and runtime evidence must be recorded before review begins. Reserved branch/worktree/port are `codex/tnp-ux-foundation-m1`, `D:\TNP-worktrees\TNP-UX-FOUNDATION-M1` and `3118`.
 
@@ -71,3 +71,17 @@ All portal-local feature directories, public homepage sections/3D, shared servic
 - real-browser matrix from `docs/UX-COMPLETION-BRIEF.md`, including two-tab identity isolation, Back/Forward, keyboard/touch/reduced-motion, 200% zoom, overlay clearance and console/hydration review.
 
 One immutable final commit and fresh Claude/Kartik review precede P-controlled integration. No main push, deployment or provider mutation.
+
+## Claude finding and bounded correction lease — 2026-09-20
+
+Fresh Claude review reproduced the candidate provenance, scope, 128/128 tests, lint/TypeScript, 16/16 browser scenarios and eventual unchanged-source build. Its sole blocking P2 finding is that the mandatory synthetic-data safety sentence is nested inside the closed `<details>` disclosure in `PreviewControls` and is therefore not visible at rest on data-entry routes. The separate homepage destination-label mismatch is assigned to the later public/access milestone; dead exports/CSS, thin forced-colors assertions and a non-reproducing Suspense placeholder are non-blocking and excluded from this correction.
+
+Correction baseline is exact `653da55991363f910dbeddc3773d55ee507f7491`. Existing branch/worktree/port remain `codex/tnp-ux-foundation-m1`, `D:\TNP-worktrees\TNP-UX-FOUNDATION-M1`, and `3118` with fallback `3218`. Existing task/session `01a0bee6-65ab-73c2-a0c6-60eb83111347` is reassigned to `gpt-5.6-luna` / low for this small correction; it must report actual runtime metadata and exact clean checkout/remote/port proof before editing.
+
+Exact writable paths are only:
+
+- `components/tnp/shared/PreviewControls.tsx`
+- `tests/ux-foundation.test.mjs`
+- `tests/ux-foundation.browser.mjs`
+
+Make the warning visible outside the collapsible content while preserving the compact scenario/reset disclosure, semantics, accessible naming, focus behavior, responsive clearance and reset truth. Add focused proof for the closed state at desktop, 390px mobile and 200% zoom. All other application/test/assets/packages/docs are frozen in the feature worktree. Return one clean ordinarily pushed immutable successor with direct parent `653da559...`; same-Claude focused fixed-SHA re-review, Kartik exact-SHA acceptance and P-controlled integration follow. Dispatch: `docs/dispatch/2026-09-20/UX-FOUNDATION-M1-PREVIEW-WARNING-CORRECTION.md`.
