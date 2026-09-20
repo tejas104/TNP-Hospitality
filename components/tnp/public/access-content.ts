@@ -1,12 +1,19 @@
-export const publicNavigation = [
-  { label: 'Services', href: '/#services' },
-  { label: 'Events', href: '/#events' },
-  { label: 'Destinations', href: '/#destinations' },
-  { label: 'RSVP', href: '/#rsvp' },
-  { label: 'Work with TNP', href: '/#people' },
-  { label: 'About', href: '/#about' },
-] as const;
+import { chooserHref, workspaces } from '../access/routes.ts';
+export { publicNavigation } from '../access/routes.ts';
 
+export const productAudiences = workspaces.map((workspace) => ({
+  id: workspace.id,
+  name: workspace.label,
+  href: chooserHref(workspace.id),
+  summary: workspace.purpose,
+  detail: workspace.purpose,
+  action: `Choose ${workspace.label} demo profile`,
+  kind: workspace.available
+    ? 'Synthetic preview'
+    : 'Synthetic access preview · adapter pending',
+}));
+
+// Existing homepage drawer catalogue is frozen with the homepage program exclusion.
 export const accessAudiences = [
   {
     id: 'client',

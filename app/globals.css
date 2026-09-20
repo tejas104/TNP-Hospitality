@@ -2692,3 +2692,542 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Shared shell: normal-flow workspace chrome cannot cover feature actions. */
+.site-nav.ux-header {
+  position: relative;
+  inset: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  padding: 16px max(24px, env(safe-area-inset-left));
+  background: var(--ivory);
+  color: #202423;
+  border-bottom: 1px solid #20242330;
+}
+.ux-header .nav-actions {
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+.ux-header .desktop-nav {
+  display: flex;
+  gap: 18px;
+}
+.ux-header-identity {
+  font-size: 13px;
+}
+.ux-profile-actions {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  width: 100%;
+  justify-content: flex-end;
+  font-size: 13px;
+}
+.ux-profile-actions :is(a, button) {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.ux-switcher {
+  position: relative;
+}
+.ux-workspace-pill {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 10px 16px;
+  border: 1px solid #008080;
+  border-radius: 24px;
+  background: #fff;
+  color: #202423;
+  font-size: 14px;
+  font-weight: 600;
+}
+.ux-workspace-menu {
+  position: absolute;
+  z-index: 55;
+  right: 0;
+  top: calc(100% + 8px);
+  width: 320px;
+  max-width: calc(100vw - 48px);
+  background: #fffdf8;
+  border: 1px solid #20242340;
+  box-shadow: 0 18px 48px #20242326;
+  border-radius: 14px;
+  padding: 8px;
+}
+.ux-workspace-menu a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 44px;
+  padding: 12px;
+  border-radius: 8px;
+}
+.ux-workspace-menu small {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.ux-workspace-menu a[aria-current],
+.ux-workspace-menu a:hover {
+  background: #00808012;
+}
+.ux-mobile-navigation {
+  flex-basis: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding-block: 10px;
+}
+.ux-mobile-navigation a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 8px 12px;
+}
+.ux-public-mobile {
+  position: absolute;
+  top: 100%;
+  inset-inline: 0;
+  background: var(--ivory);
+  color: #202423;
+}
+.ux-mobile-navigation[hidden],
+.ux-workspace-menu[hidden] {
+  display: none;
+}
+.ux-identity {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  padding: 14px 24px;
+  color: #202423;
+  background: #fffdf8;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.ux-storage-warning {
+  margin: 0;
+  padding: 14px 24px;
+  color: #202423;
+  background: #f8e7b6;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.ux-access-pending {
+  padding: 48px 24px;
+  color: #202423;
+  background: var(--ivory);
+}
+.ux-guest-header {
+  padding: 16px 24px;
+  background: var(--ivory);
+  color: #202423;
+}
+.ux-header :is(a, button):focus-visible,
+.ux-access-pending a:focus-visible {
+  outline: 3px solid #73521d;
+  outline-offset: 3px;
+}
+@media (max-width: 700px) {
+  .site-nav.ux-header {
+    gap: 10px;
+    padding: 12px max(16px, env(safe-area-inset-left));
+  }
+  .ux-header .desktop-nav,
+  .ux-header-identity {
+    display: none;
+  }
+  .ux-header .nav-actions {
+    gap: 8px;
+  }
+  .ux-header .brand-mark {
+    min-width: 0;
+  }
+  .ux-workspace-pill {
+    padding: 10px;
+    font-size: 12px;
+  }
+  .ux-switcher {
+    position: static;
+  }
+  .ux-workspace-menu {
+    position: static;
+    width: 100%;
+    max-width: none;
+    margin-top: 10px;
+    box-shadow: none;
+    padding-bottom: max(8px, env(safe-area-inset-bottom));
+  }
+  .ux-header .nav-actions:has(.ux-workspace-menu:not([hidden])) {
+    flex-basis: 100%;
+  }
+  .ux-header .nav-actions:has(.ux-workspace-menu:not([hidden])) .ux-switcher {
+    flex: 1;
+  }
+  .ux-profile-actions {
+    justify-content: flex-start;
+  }
+}
+
+/* Inter 4.1, unmodified official release: https://github.com/rsms/inter/releases/tag/v4.1
+   Asset web/InterVariable.woff2; SIL OFL 1.1 is bundled at /fonts/INTER-OFL.txt.
+   Product tokens are opt-in; the homepage retains its existing typography. */
+@font-face {
+  font-family: 'TNP Inter';
+  src: url('/fonts/InterVariable.woff2') format('woff2');
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root {
+  --font-product:
+    'TNP Inter', Inter, 'Noto Sans', 'Segoe UI', system-ui, sans-serif;
+  --type-product-display: 700 clamp(2rem, 4.2vw, 3.5rem)/1.08
+    var(--font-product);
+  --type-workspace-title: 600 clamp(1.5rem, 2.4vw, 2rem)/1.18
+    var(--font-product);
+  --type-section-title: 600 clamp(1.2rem, 2vw, 1.5rem)/1.25 var(--font-product);
+  --type-body: 400 1rem/1.6 var(--font-product);
+  --type-label: 600 0.875rem/1.4 var(--font-product);
+  --type-caption: 400 0.8125rem/1.5 var(--font-product);
+  --type-button: 600 0.875rem/1.4 var(--font-product);
+  --type-numeric: 600 1.5rem/1.25 var(--font-product);
+  --surface-canvas: var(--ivory);
+  --surface-panel: #fffdf8;
+  --surface-raised: #fff;
+  --surface-border: rgb(32 36 35 / 18%);
+  --surface-border-strong: rgb(0 128 128 / 48%);
+  --elevation-1: 0 8px 24px rgb(32 36 35 / 7%);
+  --elevation-2: 0 18px 48px rgb(32 36 35 / 12%);
+  --elevation-overlay: 0 28px 80px rgb(32 36 35 / 18%);
+  --radius-panel: 18px;
+  --radius-action: 10px;
+  --product-section-gap: clamp(24px, 3vw, 44px);
+}
+body:has(.ux-header),
+.ux-product {
+  font-family: var(--font-product);
+  --font-body: var(--font-product);
+  --font-display: var(--font-product);
+}
+.ux-product {
+  font: var(--type-body);
+  color: var(--ink);
+}
+.ux-product :is(h1, h2, h3, p) {
+  margin: 0;
+}
+.ux-product :is(h1, h2, h3) {
+  letter-spacing: -0.025em;
+  font-style: normal;
+}
+.ux-caption {
+  font: var(--type-caption);
+  color: var(--muted-text);
+  text-transform: none;
+  letter-spacing: normal;
+}
+.ux-numeric {
+  font-family: var(--font-product);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: normal;
+}
+.ux-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 44px;
+  padding: 12px 16px;
+  font: var(--type-button);
+  border: 1px solid transparent;
+  border-radius: var(--radius-action);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    background 180ms,
+    box-shadow 180ms,
+    transform 180ms;
+}
+.ux-action-primary {
+  background: var(--primary);
+  color: #fff;
+}
+.ux-action-primary:hover {
+  background: var(--primary-hover);
+}
+.ux-action-secondary {
+  background: var(--surface-panel);
+  border-color: var(--surface-border-strong);
+  color: var(--ink);
+}
+.ux-action-tertiary {
+  padding-inline: 0;
+  background: transparent;
+  color: var(--ink);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.ux-action-danger {
+  background: #8f2635;
+  color: #fff;
+}
+.ux-action:disabled {
+  background: #e8e7e2;
+  border-color: #898d8b;
+  color: #515754;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+.ux-action:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.ux-product :is(a, button, input, select, summary):focus-visible,
+.ux-action:focus-visible {
+  outline: 3px solid #73521d;
+  outline-offset: 4px;
+}
+.ux-surface {
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel);
+  background: var(--surface-panel);
+  padding: 22px;
+  min-width: 0;
+}
+.ux-surface-raised,
+.ux-surface-selected {
+  background: var(--surface-raised);
+  box-shadow: var(--elevation-1);
+}
+.ux-surface-selected {
+  border: 2px solid var(--primary);
+}
+.ux-surface-critical {
+  border-left: 4px solid #8f2635;
+}
+.ux-surface:focus-within {
+  border-color: var(--primary);
+}
+.ux-orientation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 24px max(24px, calc((100% - 1280px) /2));
+  background: var(--surface-panel);
+  border-bottom: 1px solid var(--surface-border);
+}
+.ux-orientation > div {
+  flex: 1 1 300px;
+}
+.ux-orientation h2 {
+  font: var(--type-workspace-title);
+  margin: 6px 0 8px;
+}
+.ux-orientation p {
+  font: var(--type-caption);
+  max-width: 70ch;
+}
+.ux-next-action {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+}
+.ux-next-action h3 {
+  font: var(--type-section-title);
+  margin: 4px 0 8px;
+}
+.ux-next-action p {
+  font: var(--type-caption);
+}
+.ux-next-action .ux-action {
+  flex-shrink: 0;
+}
+.ux-attention h3 {
+  font: var(--type-section-title);
+  margin-bottom: 14px;
+}
+.ux-attention ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+.ux-attention p {
+  font: var(--type-caption);
+  margin: 6px 0;
+}
+.ux-attention .ux-surface {
+  padding: 18px;
+}
+.ux-feedback {
+  padding: 20px;
+  background: var(--ivory);
+  border: 1px solid var(--surface-border);
+  border-radius: var(--radius-panel);
+}
+.ux-feedback p {
+  margin: 8px 0 12px;
+}
+.ux-feedback-error {
+  border-left: 4px solid #8f2635;
+}
+.ux-storage-warning {
+  display: block;
+}
+.site-nav.ux-header {
+  transform: none;
+  width: 100%;
+  margin: 0;
+  border-radius: 0;
+  backdrop-filter: none;
+  transition: none;
+}
+.ux-header .brand-mark span {
+  font-family: var(--font-product);
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+.ux-header .brand-mark small {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+}
+.ux-header .desktop-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: var(--type-button);
+}
+.ux-header .menu-toggle {
+  min-width: 44px;
+  min-height: 44px;
+}
+.ux-profile-actions {
+  border-top: 1px solid var(--surface-border);
+  padding-top: 6px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .ux-surface-raised:has(a):hover {
+    border-color: var(--surface-border-strong);
+    box-shadow: var(--elevation-2);
+  }
+}
+@media (max-width: 700px) {
+  .ux-orientation {
+    padding: 20px 16px;
+  }
+  .ux-next-action {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px;
+  }
+  .ux-header .brand-mark small {
+    display: none;
+  }
+  .ux-orientation > .ux-next-action {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ux-action {
+    transition: none;
+  }
+  .ux-action:active:not(:disabled) {
+    transform: none;
+  }
+}
+@media (forced-colors: active) {
+  .ux-action,
+  .ux-surface {
+    border: 1px solid ButtonText;
+  }
+  .ux-surface-selected {
+    outline: 2px solid Highlight;
+  }
+}
+.ux-preview-tools {
+  margin: 0;
+  border-bottom: 1px solid var(--surface-border);
+  background: var(--ivory);
+  padding: 0 24px;
+}
+.ux-preview-tools summary {
+  min-height: 44px;
+  padding-block: 12px;
+  cursor: pointer;
+  font: var(--type-caption);
+}
+.ux-preview-tools summary strong {
+  margin-right: 12px;
+  font-weight: 600;
+}
+.ux-preview-body {
+  padding: 0 0 20px;
+  font: var(--type-caption);
+}
+.ux-preview-body > p {
+  margin-bottom: 16px;
+}
+.ux-preview-tools .preview-control-panel {
+  position: static;
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: var(--ink);
+  background: #f5f1e7;
+  font: var(--type-caption);
+}
+.preview-control-panel label {
+  display: grid;
+  gap: 6px;
+}
+.preview-control-panel select {
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--surface-border-strong);
+  border-radius: var(--radius-action);
+  background: #fff;
+}
+.preview-control-panel output {
+  padding: 12px 0;
+}
+.ux-reset-confirm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #8f2635;
+  border-radius: var(--radius-action);
+}
+.ux-reset-confirm p {
+  width: 100%;
+}
+@media (max-width: 700px) {
+  .ux-preview-tools {
+    padding-inline: 16px;
+  }
+  .preview-control-panel > * {
+    max-width: 100%;
+  }
+}
+@media (max-width: 700px) {
+  .ux-header .nav-actions:has(.ux-workspace-menu:not([hidden])) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+    align-items: start;
+  }
+}

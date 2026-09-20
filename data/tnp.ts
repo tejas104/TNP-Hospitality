@@ -131,19 +131,6 @@ export const roles = [
   },
 ];
 
-export const navLinks = [
-  { label: 'Experience', href: '/' },
-  { label: 'Services', href: '/#services' },
-  { label: 'Events', href: '/#events' },
-  { label: 'For Clients', href: '/client' },
-  { label: 'For Planners', href: '/planner' },
-  { label: 'For Freelancers', href: '/freelancer' },
-  { label: 'About', href: '/#about' },
-];
-
-export const portalLinks = [
-  { label: 'Client', href: '/client' },
-  { label: 'Planner', href: '/planner' },
-  { label: 'Freelancer', href: '/freelancer' },
-  { label: 'Operations Demo', href: '/admin' },
-];
+export { workspaceNavigation as navLinks } from '../components/tnp/access/routes';
+import { workspaces, chooserHref } from '../components/tnp/access/routes';
+export const portalLinks = workspaces.map((workspace) => ({ label: workspace.label, href: chooserHref(workspace.id) }));

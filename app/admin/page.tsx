@@ -1,5 +1,5 @@
-import { AdminOperations } from '@/components/tnp/portals/operations/AdminOperations';
+import { redirect } from 'next/navigation';
 
 export default function AdminPage() {
-  return <AdminOperations />;
+  redirect('/operations');
 }
