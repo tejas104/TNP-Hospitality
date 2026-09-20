@@ -29,6 +29,8 @@ Only one Astra writer owns overlapping shared/public paths at a time. Service-pa
 
 User scope clarification 2026-09-20: do not spend a frontend lease on the homepage or its 3D scene within this program. The active sequence ends at the non-homepage aggregate gate.
 
+Separate exception 2026-09-20: the user later authorizes `TNP-HOME-CUBE-M2` outside this non-homepage program. It owns only the existing hero's right-side scene and cannot change the approved teal hero, left content, typography, CTAs, navbar, page structure or any F02-F20 completion claim. Its isolated writer/review/integration gates remain independent of the 18/19 program metric.
+
 Image/content implementation rule 2026-09-18: every non-3D Astra milestone includes purposeful replaceable image slots where imagery improves narrative, hierarchy or comprehension. Preview images remain local, typed, accessible and explicitly illustrative; client assets later replace the source metadata without redesigning the layout. Operational tables, forms and dense authenticated controls do not receive decorative photography without a product reason.
 
 CLIENT/PLANNER PRODUCT MODEL CORRECTED 2026-09-19: the paused `TNP-CLIENT-ASTRA-M1` branch is historical and must not be reactivated or treated as current product scope. Its combined Client/Planner journey predated the distinction between a client-appointed representative and an experienced Admin-approved TNP Planner. `docs/tasks/TNP-CLIENT-PLANNER-CORRECTED-M2.md` is the clean successor after the shared UX foundation; it has no writer lease.

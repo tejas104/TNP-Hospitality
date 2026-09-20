@@ -1,5 +1,15 @@
 # TNP homepage redesign and frontend sequence
 
+## Superseding bounded hospitality-cube direction — 2026-09-20
+
+Kartik authorizes a narrowly isolated replacement of the existing hero's right-side 3D scene while keeping the current homepage composition intact. This supersedes the prior abstract-constellation/final-homepage hold only for the scene-local task `TNP-HOME-CUBE-M2`; it does not authorize a homepage redesign or add F01 to the non-homepage 90% program.
+
+Preserve the hero's exact `#008080` background, left copy, typography, buttons, navbar, spacing and surrounding page. Use one transparent R3F canvas with no visual container. Place a large right-weighted champagne-gold hollow architectural cube over a localized natural white halo. The four rotating presentations are Venue, Hire Workforce, RSVP and Hire Planner. Each is a genuine optimized miniature spatial scene, not a face texture: venue furniture/celebration, hostess-led workforce activity, coordinator plus spatial illustrative message/status panels, and planner-led staff coordination. The hollow center contains a restrained golden connection core.
+
+Use a 4–5 second presentation hold, a 1.2–1.8 second eased 90-degree turn in one direction and a seamless cycle. Horizontal drag/swipe pauses automatic motion and resumes after 5–7 seconds from the current orientation without snapping. Show only the active service title. Maintain gentle float, subtle internal life, restrained edge illumination and atmospheric contact shadow. Do not use continuous spin, cheap yellow gold, a visible white disk, postprocessing bloom, real-time shadows, remote assets or new dependencies.
+
+Preserve one canvas, transparent alpha, capped DPR, lazy loading, offscreen/background/manual suspension and WebGL failure handling. Provide keyboard-equivalent service selection and visible focus outside the aria-hidden canvas. Reduced motion shows a premium static three-quarter view. Capable mobile may use a simplified interactive tier; constrained mobile uses the same static fallback. Target desktop/mobile budgets defined by the task contract and verify actual draw calls, triangles, bundle delta, frame behavior, overflow, hydration and console results. No visual result is production evidence for venue, workforce, RSVP or planner services.
+
 Status: canonical final-homepage direction, updated 2026-09-19. The homepage is implemented last, after the full responsive frontend and integrated regression gates. No current writer, branch, worktree, port or lease is granted by this brief. Keep approximately75% of the strongest photographic placements unless final evidence supports a better bounded ratio; preserve TNP identity and the separate Operations composition.
 
 ## Design direction
