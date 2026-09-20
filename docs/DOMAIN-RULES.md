@@ -1,6 +1,7 @@
 # Domain rules and pending business decisions
 
 ## Required invariants
+- Public Clients do not authenticate into a Client portal. A public event/general enquiry may receive a reference and later human follow-up, but browser possession of that reference is not authority to read private event, quotation, payment, guest or staff data. TNP Planner/Freelancer public access, internal Operations/Admin access and RSVP vendor/guest access remain distinct entry boundaries; see ADR-0008.
 - Server derives identity and enforces role plus ownership/event scope. Reference IDs alone do not grant private access.
 - Keep client-appointed planner membership distinct from the approved TNP Planner role. A client representative cannot acquire TNP Planner allocation authority by choosing a label in the browser.
 - Every paid TNP product begins as an order line. Only authorized Admin/Operations actors issue or revise official quotation versions and grant fulfillment scope. The requesting actor and billing organization may differ, but both are explicit and auditable.

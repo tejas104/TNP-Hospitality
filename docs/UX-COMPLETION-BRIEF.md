@@ -10,7 +10,7 @@ Completion means every F02-F20 screen set passes its own functional, responsive,
 
 Preserve TNP's editorial hospitality character. Improve usability through hierarchy, density, evidence, predictable interaction and a deliberate modern surface/elevation system. Use raised interactive cards and dashboard command surfaces where they communicate destination, selection, attention or action; avoid a generic wall of equal cards or copied competitor layouts.
 
-The 2026-09-20 Client direction uses the official Wispr Flow site only as a product-design benchmark: calm ivory canvas, compact framed navigation, concise outcome promise, one obvious primary action, immediate interactive product demonstration and purposeful motion. Do not copy its trade dress, assets, lavender palette, content or exact layout. The binding Client/switcher delta is `CLIENT-WISPR-INSPIRED-REDESIGN-BRIEF.md`.
+ADR-0008 supersedes the authenticated Client workspace and five-role public switcher. Reuse the calm, concise product-design principles only for public Contact/request and service education. The public launcher contains exactly TNP Planner and Freelancer and uses an accessible source-to-window open/close transition; there is no Client login or public Operations Demo.
 
 ## Observed problems
 
@@ -92,7 +92,7 @@ All actions preserve 44px targets, visible focus, Enter/Space semantics and coar
 
 Use tab-scoped `sessionStorage` key `tnp-demo-session-v1` containing only non-secret fixture IDs. Storage denial falls back to memory with a visible reload-warning.
 
-Workspaces: `client`, `tnp-planner`, `freelancer`, `operations`, `rsvp`. A client-appointed planner is a scoped Client-organization identity, not a second TNP Planner profile.
+Public launcher workspaces: `tnp-planner`, `freelancer`. Internal/dedicated route identities may still exist for Operations/Admin and RSVP, but they are not public launcher/demo choices. `client` is not a workspace; `/client` redirects to Contact.
 
 States: `active`, `invited`, `suspended`, `expired`, `revoked`, `forbidden`.
 
@@ -134,7 +134,7 @@ Do not force this abstraction onto Freelancer opportunities, Planner requirement
 1. Close and integrate the fixed-SHA gates for Freelancer, corrected Operations Reports and Brand Teal. Preserve the technically reviewed RSVP predecessor frozen but do not integrate it as current product scope.
 2. Run the aggregate `#008080` adoption guard on the accepted combined platform.
 3. Execute serialized `TNP-UX-FOUNDATION-M1`: cursor isolation, surface classifier, route manifest, destination-accurate navigation, demo catalogue/session, non-obscuring preview chrome, action/numeric/density plus semantic surface/elevation primitives and the modern workspace-access card adoption.
-4. Execute `TNP-CLIENT-PLANNER-CORRECTED-M2`: guided Client product ordering, client-appointed planner boundary, TNP Planner application/approval/dashboard, task-first hierarchy, compact spacing, obvious actions and PartnerCard adoption. Do not reuse the paused M1 Planner WIP.
+4. Execute the superseding public-access/Planner milestone: Contact-based mixed-product/general enquiry, public product education, no Client login, TNP Planner application/approval/dashboard, macOS-inspired Planner/Freelancer launcher, task-first hierarchy, compact spacing and obvious actions. Do not revive the paused Client workspace or public Operations Demo.
 5. Freelancer M2: attendance, pass, earnings, payout, ratings and standing using reviewed contracts, plus the shared demo/UX primitives.
 6. Execute `TNP-OPERATIONS-COMMERCIAL-M3` for Admin-only product orders, quotations and fulfillment grants; then complete bounded finance/admin/maintenance frontend and corrected Reports adoption.
 7. Execute `TNP-RSVP-MESSAGE-ONLY-M2`: shared-shell/demo/palette adoption plus WhatsApp-only multi-event/event-workspace correction without carrying forward calling, booking, inventory, allocation, dispatch or payment semantics.

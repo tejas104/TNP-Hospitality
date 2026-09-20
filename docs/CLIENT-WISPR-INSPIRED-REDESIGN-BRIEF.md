@@ -1,6 +1,6 @@
 # TNP Client workspace redesign — product-led calm, TNP identity
 
-Status: canonical visual direction recorded 2026-09-20. This is a design/ownership brief, not a writer lease. Source implementation remains gated by accepted/integrated Brand Teal, the aggregate palette regression, and reviewed/integrated `TNP-UX-FOUNDATION-M1`. Homepage remains excluded and last.
+Status: SUPERSEDED BY ADR-0008 ON 2026-09-20 — do not build an authenticated Client workspace or Client login. Reuse only compatible public Contact/request hierarchy and visual research. The public launcher now contains only TNP Planner and Freelancer; Operations is not a public demo destination.
 
 ## User direction and benchmark boundary
 

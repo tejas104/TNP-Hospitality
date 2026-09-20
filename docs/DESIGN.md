@@ -4,9 +4,17 @@
 
 The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage is excluded from the 19/19 non-homepage completion metric and remains frozen outside the bounded cube task.
 
-## Client product-led redesign direction (2026-09-20)
+## Public access and launcher correction (2026-09-20)
 
-Kartik rejects the current `/client` full-teal poster composition and fixed right-edge semicircle portal dial. The approved direction uses Wispr Flow only as an interaction benchmark: calm ivory canvas, compact framed workspace chrome, concise outcome-led hero, one dominant action and an immediate interactive product preview. Preserve TNP's own palette, typography and content; do not copy competitor trade dress or assets. The shared UX foundation replaces the dial across workspaces with an explicit header-level switcher, while the Client milestone owns the local four-product brief experience. See `CLIENT-WISPR-INSPIRED-REDESIGN-BRIEF.md`.
+ADR-0008 supersedes the Client-workspace and five-role public demo-switcher direction below. There is no Client login or Client portal. Clients use public information pages and `/contact`, whether they have a defined event need or simply want to speak with TNP. The public side launcher exposes only TNP Planner and Freelancer.
+
+The launcher should feel like a refined desktop app transition adapted to the web: measure the initiating icon, expand a contained TNP window from that source, reveal content after the container establishes spatial context, and reverse to the same source on Close or Escape. Use transform and opacity, an immediate responsive start, controlled ease-out/in-out motion, focus management and an interruptible close. Desktop may use a subtle source-proximate side/dock affordance; mobile must move into normal header/layout flow so it never covers page content. Under `prefers-reduced-motion`, replace scale/travel/blur with an immediate or short opacity/state change. Do not copy Apple assets, traffic-light branding, proprietary symbols or exact macOS choreography.
+
+Operations/Admin remains visually rich but internal. Remove `Operations Demo` and Operations from public marketing/access selection without deleting the internal workspace implementation. RSVP public actions remain informational/contact-led until its dedicated vendor access milestone is accepted.
+
+## Client product-led redesign direction (2026-09-20 — superseded by ADR-0008)
+
+The earlier redesign analysis remains useful as visual research for the public Contact/request experience, but its `/client` workspace and shared five-role switcher are no longer product requirements. See ADR-0008 and the superseded-status note in `CLIENT-WISPR-INSPIRED-REDESIGN-BRIEF.md`.
 
 ## Existing-hero hospitality cube exception (2026-09-20)
 
@@ -31,7 +39,7 @@ The user now requires 100% frontend/UI completion for all non-homepage screen se
 - Representative production-like mobile routes must record Lighthouse performance above 80 (minimum passing integer score 81). Target accessibility and best practices >=90 where the category applies; public routes also retain useful SEO. Record the median of three comparable cold production-build runs with route/build/tool/profile evidence rather than one unrepeatable run.
 - Keep Admin dense but not desktop-only: tables collapse into labelled records or horizontal regions with explicit affordances; primary task actions remain visible without covering content; filters use drawers/sheets with focus return.
 - Invoice and payment-receipt views need dedicated A4 print CSS. Remove application chrome, preserve document identity/version and line-item readability, repeat table headers, control page breaks and show truthful draft/sample/void marks.
-- Admin UI implementation is assigned to a verified `gpt-6-astra` / medium frontend writer only after the relevant Ready contract and shared prerequisites; this design decision is not itself a writer lease.
+- The earlier Admin-only `gpt-6-astra` / medium assignment is superseded for the consolidated 2026-09-20 frontend tranche by Kartik's later instruction to use Astra light for complex frontend work. `TNP-FRONTEND-COMPLETION-M3` therefore uses the verified `gpt-6-astra` / low author after an exact Ready contract; this statement is not itself a writer lease and does not relax Admin security/finance truthfulness or review gates.
 
 Kartik's accepted visual refinement requires a stronger modern product-dashboard layer across workspace entry and authenticated portals. Use semantic raised surfaces, soft neutral/teal-black shadows, visible resting borders, deliberate corner radii and responsive hover/focus/pressed/selected motion for genuinely actionable cards. Do not apply shadows to every section: passive copy, dense tables, routine forms and secondary metrics stay flatter so actionable depth remains meaningful. The exact reusable contract and adoption boundaries are in `contracts/UX-SURFACE-ELEVATION.md`.
 
@@ -50,7 +58,7 @@ Kartik's accepted visual refinement requires a stronger modern product-dashboard
 - The multicolour circular custom cursor mounts only on `/`; all other routes keep the native cursor.
 - Classify routes explicitly as `marketing`, `access`, `workspace` or `guest-invitation`. RSVP staff/customer workspaces must not receive marketing navigation; guest invitation routes must not expose staff switching.
 - Derive desktop navigation, mobile navigation, active states and portal switching from one typed route manifest. No duplicated portal links or misleading destinations.
-- Demo access is one tab-scoped synthetic identity catalogue for Client, Planner, Freelancer, Operations and RSVP. It is visibly labelled as demo access and remains separate from production authentication.
+- Public demo access contains only TNP Planner and Freelancer named synthetic profiles. Internal Operations/Admin and dedicated RSVP access are not public launcher destinations; there is no Client demo identity or login. All preview state remains visibly separate from production authentication.
 - Consolidate synthetic warning, preview state and reset controls into non-obscuring demo chrome. Scenario controls must never cover a primary action. Reset copy must state its real scope.
 
 ### Partner discovery pattern

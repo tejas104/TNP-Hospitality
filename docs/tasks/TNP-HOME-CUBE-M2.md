@@ -1,6 +1,6 @@
 # TNP-HOME-CUBE-M2 — existing-hero hospitality cube
 
-Status: CORRECTED IMMUTABLE SUCCESSOR / SAME-CLAUDE WAIT — Astra/low task `01a0bf1e-e769-7bb1-b30e-b2cf0f5d431a` returned exact clean pushed remote-equal successor `0c480d73d518ba8e15ebab50ce3c43c1d2c5765a`, direct parent reviewed `36e5b7938df7ff79aad4905b288f0348e3a67f1d`, changing only cube CSS and its focused motion test. Author and P verification close the three blocking findings. The same Claude cube-review session must now perform focused fixed-SHA re-review; Kartik exact-successor acceptance and P-controlled integration remain mandatory.
+Status: ROUND-2 CHANGES REQUESTED / AGGREGATE ROOT FIX — same Claude Opus 5 session `local_ded7975d-09ff-4ae0-9da9-8c06f0a1d72a` verifies the two-file contrast/test corrections and unchanged desktop cube at exact `0c480d73d518ba8e15ebab50ce3c43c1d2c5765a`, but proves a remaining 320px P1 caused by the fixed public workspace trigger. ADR-0008 now supersedes that trigger with a mobile-safe two-role launcher. Do not add another cube offset. Keep this candidate unintegrated and verify it only in the final aggregate staging candidate after the launcher replacement.
 
 Requested author: task/session `01a0bf1e-e769-7bb1-b30e-b2cf0f5d431a`, verified from its recorded `turn_context` as `gpt-6-astra` / low (`Astra light`) on `DESKTOP-DL9FDM7`. Sole human fixed-SHA acceptance reviewer: Kartik. Fresh external Claude Opus fixed-SHA review follows Astra authorship. The author may not self-review.
 
@@ -117,3 +117,16 @@ The successor must keep all five 44px controls and the complete disclaimer point
 - separate observation outside this fixed two-file scope: the existing 320px header overlaps/clips the hero heading. It is not introduced by this correction and must be handled by a later homepage-specific task rather than silently widening this patch.
 
 Focused same-reviewer packet: `docs/dispatch/2026-09-20/HOME-CUBE-M2-CLAUDE-CORRECTION-REREVIEW.md`. No integration, next H1/B writer or deployment before the reviewer disposition and Kartik exact-SHA acceptance.
+
+## Same-Claude round-two disposition — 2026-09-20
+
+- reviewer session: `local_ded7975d-09ff-4ae0-9da9-8c06f0a1d72a`, same Claude Opus 5 session as round one;
+- exact SHA/provenance/scope: pass; all 126 tests, focused/relevant tests, lint, TypeScript, first-attempt Vercel build and diff/allowlist checks pass;
+- contrast: `.number` and `.sample` both measured 4.77:1; exact timing and 1.25 intent mutants all fail;
+- desktop/1100: one transparent canvas, 6 draw calls/20 triangles, unchanged hero/cube geometry and four illustrated faces pass;
+- blocking P1: at 320x844, the fixed `.workspace-explorer` covers Planner and Pause during scrollY 30–90; at scrollY 50 a real tap on Pause opens the workspace drawer and leaves cube motion running. The obstruction was relocated rather than removed;
+- P3 carried: cube title is about 4.45:1 at 19px/500 but unchanged from the parent; 320px header/hero overlap is unchanged and outside the cube delta; inherited warnings remain disclosed.
+
+Disposition: `CHANGES REQUESTED`.
+
+Resolution strategy: ADR-0008 removes the obsolete fixed public pill and replaces it with a two-role launcher that enters normal mobile layout rather than covering content. The cube stays unintegrated. After `TNP-FRONTEND-COMPLETION-M3` produces its final source candidate, P creates one isolated aggregate staging candidate containing both branches and requires a full independent review, including every scroll position at 320x844. No further scene-local offset correction is authorized unless the aggregate still fails without the old pill.

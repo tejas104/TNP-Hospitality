@@ -2,6 +2,8 @@
 
 Status: CANONICAL FRONTEND DIRECTION — 2026-09-19. This document refines what each person may see and do in the responsive web experience. It does not replace server authorization, create a writer lease, approve a provider, or authorize production data. `docs/PRODUCT.md`, `docs/DOMAIN-RULES.md`, `docs/ARCHITECTURE.md`, ADR-0004 and ADR-0007 remain authoritative for domain and security behavior.
 
+2026-09-20 correction: ADR-0008 supersedes the Client-workspace and public five-role demo-access portions of this document. Ordinary Clients have no login/workspace; they submit public requests or general contact. The public launcher contains only TNP Planner and Freelancer. Operations/Admin remains internal and RSVP keeps its dedicated product/guest access boundaries.
+
 ## Non-negotiable product truths
 
 - TNP sells four product families: Hospitality workforce, TNP Planner, Venue and RSVP.
@@ -37,19 +39,19 @@ Every workspace opens with the named active identity, effective role, current or
 | Finance actor | Authorized collection or payout queues and masked destination/state evidence | Perform separately granted review, maker, approval, release or reconciliation steps | Treat Admin role as release permission; conflate Client collections and worker payouts |
 | Main Admin | Co-admin lifecycle, effective capabilities/scopes and authorized catalogue/commercial/workforce/administration functions | Assign named scopes/capabilities, subject to audit and protected invariants | Shared login, last-admin removal, relationship bypass or maker/checker bypass |
 
-## Client workspace
+## Public Client request and follow-up (supersedes Client workspace)
 
 ### First viewport
 
-- Show organization, event goal/current event, access role, current commercial/fulfillment state and one next action.
+- Show a concise event/general-contact choice, event goal when supplied, the four optional product families and one next action. Do not request login credentials.
 - Present Hospitality workforce, TNP Planner, Venue and RSVP as separate product families. Each workforce role is a separate line: Event Coordinator, Event Executive, Hostess, Volunteer and Porter.
 - Let the Client select any product alone or in combination. Include explicit `Not needed`, `I already have a venue` and `I have my own planner` paths. Never require Venue or TNP Planner merely to submit a request.
 
-### Order and lifecycle
+### Request and follow-up lifecycle
 
 - Builder sequence: event basics, products, role quantities/scope, details, review.
 - Preserve requester and billing organization separately. A client-appointed planner may prepare the request while the Client remains the buyer.
-- Detail timeline: draft, submitted, clarification requested, quotation issued/revised/expired, Client response, collection status, grant issued/revoked, allocation progress.
+- Public UI stops at draft, submitted request reference and human follow-up guidance. Private quotation, collection, grant and allocation records remain internal; no unauthenticated reference reveals them.
 - Show official prices only from an issued quotation version. Do not invent availability, ratings, taxes or deposits.
 - Commercial controls appear only for the eligible version and billing authority. QA mutations belong in labelled demo controls, not business actions.
 
@@ -142,7 +144,7 @@ Production authorization remains server-side. Synthetic adapters must label prev
 1. Integrate accepted Brand Teal and run aggregate palette/regression checks.
 2. Implement and review UX Foundation, including exact shared `PartnerCard` ownership and role/access presentation seams.
 3. Review shared commercial, workforce application/allocation, instructions/reconfirmation, attendance/location, RSVP entitlement and finance contracts.
-4. Run bounded non-overlapping Astra portal milestones: Client/TNP Planner; Admin shell/catalog/access; Operations commercial; Workforce coordination; Freelancer application/offer correction; RSVP correction; Finance and post-assignment Freelancer views.
+4. Run bounded non-overlapping Astra frontend milestones: public Contact/request plus TNP Planner; Admin shell/catalog/access; Operations commercial; Workforce coordination; Freelancer application/offer correction; RSVP correction; Finance and post-assignment Freelancer views.
 5. Run role/isolation/security, browser, mobile-performance and print gates; then complete the homepage last.
 
 ## Required verification

@@ -1,5 +1,13 @@
 # Client and owner decision log
 
+## No Client login, no public Operations Demo, and Planner/Freelancer launcher (2026-09-20)
+
+Kartik explicitly removes the Client portal/login from the product-facing frontend. Clients browse the public website to understand TNP Planner, hospitality Freelancers/workforce, Venue and RSVP, then use Contact for a specific event requirement or a general conversation. `/client` becomes a compatibility redirect to Contact; it is not a workspace.
+
+The public side launcher contains only TNP Planner and Freelancer. It should use premium source-to-window open/close motion inspired by desktop spatial continuity, with reverse close, Escape/focus return, mobile-safe placement and reduced-motion parity. It must not copy Apple branding or cover content.
+
+Operations/Admin remains an internal platform workspace, but there is no public `Operations Demo` link or chooser entry. RSVP vendor/team access remains a dedicated product flow rather than a public launcher item. ADR-0008 is canonical and supersedes older Client-workspace/five-role-demo requirements.
+
 ## Admin, mobile-web, workforce, payout and printable-document expansion (2026-09-19)
 
 The user confirms one designated Main Admin plus multiple named co-admins; Admin-editable services, workforce roles, venues, planners, partners, images and displayed prices; direct anonymous four-product enquiries with mixed Hospitality roles; short external planner registration with optional GST and no login friction; Admin-approved Client access; event-scoped instructions and attendance-scan location visibility for authorized Admin/Planner users; multiple Freelancer applications until authoritative allocation; pre-event reconfirmation/reminder/replacement; profile images; Razorpay-backed Freelancer payout processing; timed RSVP vendor access without requiring customers to operate Meta; and authorized multi-format data export.

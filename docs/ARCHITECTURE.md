@@ -13,6 +13,10 @@ Existing routes -> extracted portal components -> typed feature service interfac
 S0 owns extraction/theme/route glue; S1 owns contracts, fixture schema and shared preview adapter. A/B/C/D then own disjoint views. Exact paths and transitions: contracts/S0-SHARED-UI.md and contracts/S1-PREVIEW-INTERFACES.md.
 No production rule moves into browser storage. Preview can model specified outcomes; it cannot certify allocation, KYC, attendance or finance.
 
+## Public access correction (Accepted 2026-09-20)
+
+ADR-0008 removes `client` from the workspace/authentication model. `/client` is a compatibility redirect to the public Contact request flow; ordinary Clients receive no browser-selected demo identity or private workspace. The public launcher exposes only TNP Planner and Freelancer. Operations/Admin remains an internal workspace and RSVP retains dedicated vendor/guest entry boundaries, but neither is promoted through the public launcher. This changes frontend route classification and presentation only; it does not create production auth or weaken server-side relationship/scope requirements.
+
 ## Production direction (proposal, not implemented)
 Responsive web -> versioned HTTPS API -> Node domain/application modules -> MongoDB Atlas and private object storage -> durable jobs/provider adapters.
 Prefer a modular backend rather than multiple services for two humans. Express and Mongo are the source direction; hosting, auth/session implementation, contract tooling, job persistence and deployment remain reviewed decisions.
