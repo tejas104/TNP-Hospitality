@@ -1,4 +1,9 @@
-export const SERVICES = ['Venue', 'Hire Workforce', 'RSVP', 'Hire Planner'] as const;
+export const SERVICES = [
+  'Venue',
+  'Hire Workforce',
+  'RSVP',
+  'Hire Planner',
+] as const;
 export const QUARTER = Math.PI / 2;
 export const HOLD_MS = 4500;
 export const TURN_MS = 1500;
@@ -15,16 +20,44 @@ export function pointerIntent(dx: number, dy: number) {
   if (Math.max(Math.abs(dx), Math.abs(dy)) < 8) return 'pending';
   return Math.abs(dx) > Math.abs(dy) * 1.25 ? 'horizontal' : 'vertical';
 }
-export function cubePolicy({ reduced, mobile, saveData, cores, memory, failed, paused, visible, inView }: {
-  reduced: boolean; mobile: boolean; saveData: boolean; cores?: number; memory?: number;
-  failed: boolean; paused: boolean; visible: boolean; inView: boolean;
+export function cubePolicy({
+  reduced,
+  mobile,
+  saveData,
+  cores,
+  memory,
+  failed,
+  paused,
+  visible,
+  inView,
+}: {
+  reduced: boolean;
+  mobile: boolean;
+  saveData: boolean;
+  cores?: number;
+  memory?: number;
+  failed: boolean;
+  paused: boolean;
+  visible: boolean;
+  inView: boolean;
 }) {
-  const constrained = saveData || (cores !== undefined && cores <= 2) || (memory !== undefined && memory <= 2);
-  const tier = reduced || constrained || failed ? 'static' : mobile ? 'mobile' : 'desktop';
-  return { tier, animate: tier !== 'static' && !paused && visible && inView, dpr: tier === 'desktop' ? 1.5 : 1 } as const;
+  const constrained =
+    saveData ||
+    (cores !== undefined && cores <= 2) ||
+    (memory !== undefined && memory <= 2);
+  const tier =
+    reduced || constrained || failed ? 'static' : mobile ? 'mobile' : 'desktop';
+  return {
+    tier,
+    animate: tier !== 'static' && !paused && visible && inView,
+    dpr: tier === 'desktop' ? 1.5 : 1,
+  } as const;
 }
 export type CubeMotion = {
-  angle: number; from: number; to: number; elapsed: number;
+  angle: number;
+  from: number;
+  to: number;
+  elapsed: number;
   phase: 'hold' | 'turn' | 'inspect' | 'drag';
 };
 export function createMotion(): CubeMotion {
@@ -33,26 +66,67 @@ export function createMotion(): CubeMotion {
 export function beginDrag(state: CubeMotion): CubeMotion {
   return { ...state, phase: 'drag', elapsed: 0 };
 }
-export function dragTo(state: CubeMotion, startAngle: number, dx: number, width: number): CubeMotion {
-  return { ...state, angle: startAngle - dx / Math.max(1, width) * Math.PI, phase: 'drag', elapsed: 0 };
+export function dragTo(
+  state: CubeMotion,
+  startAngle: number,
+  dx: number,
+  width: number,
+): CubeMotion {
+  return {
+    ...state,
+    angle: startAngle - (dx / Math.max(1, width)) * Math.PI,
+    phase: 'drag',
+    elapsed: 0,
+  };
 }
 export function endDrag(state: CubeMotion): CubeMotion {
   return { ...state, phase: 'inspect', elapsed: 0 };
 }
-export function selectService(state: CubeMotion, index: number, instant = false): CubeMotion {
+export function selectService(
+  state: CubeMotion,
+  index: number,
+  instant = false,
+): CubeMotion {
   const target = ((Math.trunc(index) % 4) + 4) % 4;
   const distance = normalizeAngle(target * QUARTER - state.angle);
-  if (instant || distance < 1e-8) return { ...state, angle: state.angle + distance, phase: 'inspect', elapsed: 0 };
-  return { ...state, from: state.angle, to: state.angle + distance, phase: 'turn', elapsed: 0 };
+  if (instant || distance < 1e-8)
+    return {
+      ...state,
+      angle: state.angle + distance,
+      phase: 'inspect',
+      elapsed: 0,
+    };
+  return {
+    ...state,
+    from: state.angle,
+    to: state.angle + distance,
+    phase: 'turn',
+    elapsed: 0,
+  };
 }
 // Time is supplied only while visible, on-screen and playing. Suspensions never
 // consume the hold or inactivity interval; resumed frames cannot skip services.
-export function advanceMotion(state: CubeMotion, deltaMs: number, running = true): CubeMotion {
-  if (!running || state.phase === 'drag' || !Number.isFinite(deltaMs) || deltaMs <= 0) return state;
+export function advanceMotion(
+  state: CubeMotion,
+  deltaMs: number,
+  running = true,
+): CubeMotion {
+  if (
+    !running ||
+    state.phase === 'drag' ||
+    !Number.isFinite(deltaMs) ||
+    deltaMs <= 0
+  )
+    return state;
   let next = { ...state };
   let remaining = Math.min(deltaMs, 1000);
   while (remaining > 0) {
-    const duration = next.phase === 'turn' ? TURN_MS : next.phase === 'inspect' ? RESUME_MS : HOLD_MS;
+    const duration =
+      next.phase === 'turn'
+        ? TURN_MS
+        : next.phase === 'inspect'
+          ? RESUME_MS
+          : HOLD_MS;
     const step = Math.min(remaining, duration - next.elapsed);
     next.elapsed += step;
     remaining -= step;

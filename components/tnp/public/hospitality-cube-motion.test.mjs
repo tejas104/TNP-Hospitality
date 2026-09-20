@@ -1,10 +1,38 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { SERVICES, QUARTER, HOLD_MS, TURN_MS, RESUME_MS, normalizeAngle, serviceAt, pointerIntent, cubePolicy, createMotion, advanceMotion, beginDrag, dragTo, endDrag, selectService } from './hospitality-cube-motion.ts';
-function advance(state, ms) { while (ms > 0) { const step = Math.min(ms, 100); state = advanceMotion(state, step); ms -= step; } return state; }
+import {
+  SERVICES,
+  QUARTER,
+  HOLD_MS,
+  TURN_MS,
+  RESUME_MS,
+  normalizeAngle,
+  serviceAt,
+  pointerIntent,
+  cubePolicy,
+  createMotion,
+  advanceMotion,
+  beginDrag,
+  dragTo,
+  endDrag,
+  selectService,
+} from './hospitality-cube-motion.ts';
+function advance(state, ms) {
+  while (ms > 0) {
+    const step = Math.min(ms, 100);
+    state = advanceMotion(state, step);
+    ms -= step;
+  }
+  return state;
+}
 test('four services present for 4.5s and turn forward 90 degrees over 1.5s, including seamless wrap', () => {
   let state = createMotion();
-  assert.deepEqual(SERVICES, ['Venue', 'Hire Workforce', 'RSVP', 'Hire Planner']);
+  assert.deepEqual(SERVICES, [
+    'Venue',
+    'Hire Workforce',
+    'RSVP',
+    'Hire Planner',
+  ]);
   for (let i = 0; i < 8; i++) {
     assert.equal(serviceAt(state.angle), i % 4);
     const angle = state.angle;
@@ -44,10 +72,15 @@ test('drag interrupts turn and inactivity resumes continuously from inspected an
   state = advance(state, 100);
   assert.ok(state.angle > inspected && state.angle - inspected < 0.02);
   state = advance(state, TURN_MS - 100);
-  assert.ok(Math.abs(state.angle / QUARTER - Math.round(state.angle / QUARTER)) < 1e-9);
+  assert.ok(
+    Math.abs(state.angle / QUARTER - Math.round(state.angle / QUARTER)) < 1e-9,
+  );
 });
 test('pause and suspension preserve exact partial-turn and inactivity state', () => {
-  for (const state of [advance(createMotion(), HOLD_MS + 600), endDrag(createMotion())]) {
+  for (const state of [
+    advance(createMotion(), HOLD_MS + 600),
+    endDrag(createMotion()),
+  ]) {
     assert.equal(advanceMotion(state, 60000, false), state);
     assert.equal(advanceMotion(state, NaN), state);
     assert.equal(advanceMotion(state, -1), state);
@@ -62,14 +95,40 @@ test('keyboard selection takes forward path and static selection is immediate', 
   assert.equal(serviceAt(selectService(state, 2, true).angle), 2);
 });
 test('mobile is simplified; reduced motion, save-data, constrained hardware and failure are static', () => {
-  const normal = { reduced: false, mobile: false, saveData: false, failed: false, paused: false, visible: true, inView: true };
-  assert.deepEqual(cubePolicy(normal), { tier: 'desktop', animate: true, dpr: 1.5 });
-  assert.deepEqual(cubePolicy({ ...normal, mobile: true }), { tier: 'mobile', animate: true, dpr: 1 });
-  for (const option of [{ reduced: true }, { saveData: true }, { cores: 2 }, { memory: 2 }, { failed: true }]) {
+  const normal = {
+    reduced: false,
+    mobile: false,
+    saveData: false,
+    failed: false,
+    paused: false,
+    visible: true,
+    inView: true,
+  };
+  assert.deepEqual(cubePolicy(normal), {
+    tier: 'desktop',
+    animate: true,
+    dpr: 1.5,
+  });
+  assert.deepEqual(cubePolicy({ ...normal, mobile: true }), {
+    tier: 'mobile',
+    animate: true,
+    dpr: 1,
+  });
+  for (const option of [
+    { reduced: true },
+    { saveData: true },
+    { cores: 2 },
+    { memory: 2 },
+    { failed: true },
+  ]) {
     assert.equal(cubePolicy({ ...normal, ...option }).tier, 'static');
     assert.equal(cubePolicy({ ...normal, ...option }).animate, false);
   }
-  for (const option of [{ paused: true }, { visible: false }, { inView: false }]) {
+  for (const option of [
+    { paused: true },
+    { visible: false },
+    { inView: false },
+  ]) {
     assert.equal(cubePolicy({ ...normal, ...option }).animate, false);
     assert.equal(cubePolicy({ ...normal, ...option }).tier, 'desktop');
   }
