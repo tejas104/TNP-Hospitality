@@ -23,6 +23,7 @@ The user requests a friendlier, more polished typography system and approximatel
 - Georgia remains a sparse TNP editorial accent for short hospitality/public storytelling. It must not own dashboard titles, forms, tables, metrics, navigation, buttons, login/workspace cards or routine status copy.
 - Access pages and dashboards use compact role orientation, one dominant next action, visible attention queues and polished loading/empty/error/disabled states. Typography must remain usable at 200% zoom and across current Android/iOS browsers.
 - Shared foundation establishes tokens and shared consumers. Each later portal milestone migrates its own explicit font declarations and verifies hierarchy in its real workflows; no cross-portal bulk rewrite bypasses ownership.
+- Every action must be visually identifiable before hover. Use shape, border/fill, label and spacing to distinguish controls from text. On hover-capable devices, apply a clearly visible light-colour hover surface with readable foreground contrast; provide equally strong `:focus-visible`, pressed, disabled and loading treatments, and never make hover the only affordance.
 
 ### Android, iOS, performance and print
 

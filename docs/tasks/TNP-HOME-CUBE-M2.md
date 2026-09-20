@@ -40,6 +40,9 @@ New files only:
 - `components/tnp/public/HospitalityCubeFallback.tsx`
 - `components/tnp/public/hospitality-cube-motion.ts`
 - `components/tnp/public/hospitality-cube-motion.test.mjs`
+- `public/images/hospitality-cube-worlds.webp`
+
+The single WebP is an original four-quadrant texture atlas generated after the user's direct video feedback superseded the sparse open-frame miniature art direction. Quadrant order is Venue, Workforce, RSVP, Planner; the Planner quadrant must feature a clearly male lead planner, while Workforce and RSVP retain their distinct female leads. It may be derived only from the generated source recorded by P/author, not copied from video frames; retain illustrative provenance in the consuming UI. Optimize it from the generated PNG without adding a dependency or silently degrading legibility. No second image asset is authorized.
 
 Every other path is frozen, including `components/tnp/public/Home.module.css`, `components/tnp/HomeExperience.tsx`, `components/tnp/public/useHomeMotion.ts`, `components/tnp/public/motion-policy.ts`, `components/tnp/public/webgl.ts`, AppShell/global CSS, routes, content/data/media, packages/lockfiles, all portals, server/platform/provider code and project registers. Stop and return an exact follow-up need rather than widening scope.
 

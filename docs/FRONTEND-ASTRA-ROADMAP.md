@@ -39,6 +39,8 @@ ALL REMAINING NON-HOMEPAGE FRONTEND REQUESTED AND RESEQUENCED 2026-09-20: serial
 
 TYPOGRAPHY AND 90% NON-HOMEPAGE COMPLETION 2026-09-20: UX Foundation establishes the licensed sans-first product tokens and shared access/dashboard primitives. Later portal milestones sequentially migrate their feature-owned explicit serif/mono declarations and complete their real page states. Operations completion includes the contracted commercial, catalogue/access, workforce, finance/payout, reports and maintenance presentation slices rather than stopping at one dashboard. No milestone may claim the 18/19 target until browser evidence and independent acceptance exist.
 
+BUTTON AFFORDANCE REQUIREMENT 2026-09-20: every sequential public/access/portal milestone must audit its owned buttons and button-like actions for clear resting affordance, readable light-colour hover feedback, visible keyboard focus and equivalent touch/pressed/disabled/loading states. Shared foundations may supply tokens/primitives, but portal-local migrations remain within each feature lease.
+
 ## Shared contract boundary
 
 Web UI consumes `/api/v1` and typed domain/application behavior; it does not recreate authorization, tenant filtering, capacity, attendance, quote, payout or RSVP isolation rules in components. Missing API behavior returns to the platform/domain owner. Synthetic previews stay labelled until server-backed behavior is reviewed and integrated.
