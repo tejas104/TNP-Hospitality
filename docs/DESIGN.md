@@ -2,7 +2,7 @@
 
 ## Platform usability direction (2026-09-19)
 
-The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage remains the last frontend refinement milestone.
+The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage is excluded from the current 90% frontend program.
 
 ## Client product-led redesign direction (2026-09-20)
 
