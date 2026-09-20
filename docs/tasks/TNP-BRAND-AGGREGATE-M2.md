@@ -1,6 +1,6 @@
 # TNP-BRAND-AGGREGATE-M2 — integrated palette adoption and guard closure
 
-Status: KARTIK ACCEPTED / P-CONTROLLED LOCAL INTEGRATION ACTIVE. Kartik explicitly accepted exact `d70d2e2315ab56e6b248879354aef2a6d4ea3067` for architect-controlled local integration after the same resumed Claude Opus 5/default-effort session approved it with no P0-P3 findings. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` is authorized to integrate this immutable candidate into local `main` and run post-integration verification. This does not authorize a main push, deployment, provider/production action or UX Foundation/Client source work.
+Status: INTEGRATED LOCALLY / GATE CLOSED. Kartik explicitly accepted exact `d70d2e2315ab56e6b248879354aef2a6d4ea3067`, and P integrated that immutable candidate into local `main` with merge commit `bb2297da4b72d032aac57322be0f319352a892cb`. Clean-checkout post-integration verification passed, exact candidate blob identity and ancestry were proven, and all writer/reviewer/integration leases are closed. This does not authorize a main push, deployment, provider/production action or UX Foundation/Client source work.
 
 Responsible product decision owner and sole human fixed-SHA acceptance reviewer: Kartik. Round-3 writer: current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` on DESKTOP-DL9FDM7, inline only per the user's no-subagent direction. Fresh focused re-review remains assigned to the same independent Claude session above.
 
@@ -178,3 +178,16 @@ All AI writer/reviewer leases are closed. Kartik exact-SHA acceptance packet: `d
 Kartik returned the required explicit disposition verbatim: `I, Kartik, ACCEPT TNP-BRAND-AGGREGATE-M2 at exact SHA d70d2e2315ab56e6b248879354aef2a6d4ea3067 for architect-controlled local integration.`
 
 P reverified before integration that local and live feature remote equal the accepted SHA, the writer worktree is clean, launch `99b4c98c0888ea1b3703830356386b71b7152149` is the exact merge base and ancestor of both histories, current main has no non-documentation changes since launch, and the cumulative candidate scope is exactly Freelancer CSS, Operations CSS and the palette guard. Ports 3117, 3211, 3213 and 3215 are free. Integration authority is local only and retains the latest main documentation history.
+
+## Local integration closure — 2026-09-20
+
+- accepted candidate: `d70d2e2315ab56e6b248879354aef2a6d4ea3067`;
+- local merge commit: `bb2297da4b72d032aac57322be0f319352a892cb`, with first parent `4fbb5e190b44c6fdaad7917c51bc5d81c6859f63` and accepted candidate as second parent;
+- merge scope: exactly Freelancer CSS, Operations CSS and `tests/brand-teal-palette.test.mjs`;
+- provenance: the accepted candidate is an ancestor of the merge, and each of the three merged blobs is byte-identical to the accepted candidate;
+- clean detached integration checkout: focused palette guard 6/6 PASS; complete tracked suite 118/118 PASS; lint PASS with only the same three inherited React-compiler warnings; explicit non-incremental TypeScript PASS; `npm run build:vercel` PASS with the existing chunk, dynamic-import and nf3 notices;
+- install context: `npm ci` reported 11 existing audit advisories (1 low, 2 moderate, 8 high); this task changed no dependency or lockfile;
+- base-checkout distinction: preserved untracked `tmp/` makes base-checkout lint/TypeScript non-authoritative because its home-redesign file imports an absent local module; neither `tmp/` nor `output/` was edited or removed;
+- cleanup: the detached verification worktree was removed; the writer worktree remains clean; ports 3117, 3211, 3213 and 3215 are free.
+
+The aggregate palette gate is closed locally. Local `main` may advance only through serialized documentation; `origin/main` remains unchanged. No main push, deployment, provider/production action, UX Foundation work or Client source work was performed or authorized by this acceptance.
