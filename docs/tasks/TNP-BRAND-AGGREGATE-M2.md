@@ -1,8 +1,8 @@
 # TNP-BRAND-AGGREGATE-M2 — integrated palette adoption and guard closure
 
-Status: ROUND-3 BOUNDED FOCUS CORRECTION ACTIVE. Same Claude Opus 5/default-effort session `cdd20a88-eed6-465c-908d-4b7496afbff1` returned `CHANGES REQUESTED` on exact clean remote-equal `497145220636ae4fe4cbda9bb984f7d9691d3e20` for one remaining P1: the inherited teal focus ring is 1.00:1 on controls inside the exact-teal panels. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` holds the sole inline two-file correction lease. Runtime Codex model/effort metadata are unavailable and are not inferred. This remains a bounded post-integration correction, not a redesign and not authority for UX Foundation or Client source work.
+Status: ROUND-3 FIXED-SHA HANDOFF / SAME-CLAUDE FOCUSED RE-REVIEW. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` returned exact clean pushed remote-equal successor `71212ea57ada4447ff34a6ffebd14e439e2dc0da`, direct child of Claude-reviewed `497145220636ae4fe4cbda9bb984f7d9691d3e20`. Runtime Codex model/effort metadata are unavailable and are not inferred. The writer lease is closed. This remains a bounded post-integration correction, not a redesign and not authority for UX Foundation or Client source work.
 
-Responsible product decision owner and sole human fixed-SHA acceptance reviewer: Kartik. Round-2 writer: current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` on DESKTOP-DL9FDM7, inline only per the user's no-subagent direction. Fresh focused re-review remains assigned to the same independent Claude session above after one immutable successor is returned.
+Responsible product decision owner and sole human fixed-SHA acceptance reviewer: Kartik. Round-3 writer: current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` on DESKTOP-DL9FDM7, inline only per the user's no-subagent direction. Fresh focused re-review remains assigned to the same independent Claude session above.
 
 Source SHA: `14fa826cee42612b54ffb339219eb9b6a195226c`, the current local main after accepted Brand integration `b56ad987735a8a3ad909c35ede974a2e7353f8b3` and its serialized integration record.
 
@@ -115,3 +115,21 @@ Writable paths remain only:
 Add a panel-local focus-visible colour override with at least 3:1 contrast on exact teal while preserving the existing teal focus ring on ivory workspace surfaces. Add a load-bearing regression assertion for both contexts. Tighten the round-2 `.color.set(...)` matcher to the demonstrated light-variable case and add a material negative probe; do not edit any material/3D source. The flattened-but-compliant colour hierarchy is accepted for this bounded correction because type, weight, spacing and letter-spacing preserve semantic hierarchy; broader visual nuance belongs to a later explicitly owned Freelancer refinement.
 
 All other findings and all other paths are frozen. Run focused/full tests, lint, explicit non-incremental TypeScript, Vercel build and diff check. In a real browser use genuine Tab input to verify the close-detail focus ring at 1440x900, 1100x900 and 390x844, plus the existing teal-on-ivory workspace focus, overflow and console output. Return one clean ordinarily pushed immutable successor for the same-Claude focused re-review and then Kartik exact-successor acceptance.
+
+## Round-3 immutable successor returned — 2026-09-20
+
+- candidate: `71212ea57ada4447ff34a6ffebd14e439e2dc0da`;
+- direct parent: reviewed `497145220636ae4fe4cbda9bb984f7d9691d3e20`;
+- live feature remote equals candidate and the writer checkout is clean;
+- exact delta: Freelancer CSS and palette guard only; Operations CSS remains byte-identical to the reviewed parent;
+- panel-local focus: ivory on exact teal, 4.23:1, while the unchanged workspace focus remains teal on ivory, 4.23:1;
+- guard: both focus contexts are load-bearing contrast assertions, light-named `.color.set(...)` remains detected, and `material.color.set(...)` is a negative probe;
+- focused guard: 6/6 PASS;
+- independently discovered tests: 18 files / 118 tests PASS;
+- lint: PASS with only the same three inherited React-compiler warnings;
+- explicit non-incremental TypeScript: PASS;
+- Vercel build: PASS on the first attempt with the existing non-blocking chunk/dynamic-import/nf3 warnings;
+- browser: genuine Tab lands on `Close role detail` with a 2.4px solid ivory outline and 4px offset at 1440x900, 1100x900 and 390x844; the workspace `Refresh records` control retains its teal-on-ivory outline; no horizontal overflow and no warn/error console output;
+- cleanup: browser/server stopped and port3117 free.
+
+Focused re-review packet: `docs/dispatch/2026-09-20/BRAND-AGGREGATE-M2-CLAUDE-ROUND3-REREVIEW.md`. Same Claude session `cdd20a88-eed6-465c-908d-4b7496afbff1` must return one exact-candidate disposition. Kartik acceptance remains a separate later gate.
