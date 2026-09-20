@@ -99,7 +99,7 @@ function colors(source) {
     const literal = match.slice(1).find(Boolean);
     return { literal, rgb: namedColors.get(literal.toLowerCase()) };
   });
-  const numeric = [...source.matchAll(/(?:color|emissive)\s*=\s*\{\s*(0x[\da-f]{6}|\d{5,})\s*\}|(?:new\s+Color|setHex|\.color\.set)\(\s*(0x[\da-f]{6}|\d{5,})\s*\)/gi)].map((match) => {
+  const numeric = [...source.matchAll(/(?:color|emissive)\s*=\s*\{\s*(0x[\da-f]{6}|\d{5,})\s*\}|(?:new\s+Color|setHex|\b[\w$]*light[\w$]*\.color\.set)\(\s*(0x[\da-f]{6}|\d{5,})\s*\)/gi)].map((match) => {
     const value = Number(match[1] ?? match[2]);
     return { literal: match[0], rgb: [value >> 16 & 255, value >> 8 & 255, value & 255] };
   });
@@ -203,6 +203,12 @@ test('corrected solid surface text and focus colors retain AA contrast', () => {
   const livePanelFocus = property(block('app/globals.css', '.admin-shell .live-ops-panel :where(a, button, input, select, textarea):focus-visible'), 'outline-color');
   assert.ok(ratio(livePanelFocus, beige) >= 3, 'Operations live-panel focus on beige');
   const freelancerFile = 'components/tnp/portals/freelancer/FreelancerPortal.module.css';
+  const ivory = colors('#f5f1e7')[0].rgb;
+  const workspaceFocus = property(block(freelancerFile, '.workspace :is(button, a, input, select):focus-visible'), 'outline');
+  assert.ok(ratio(workspaceFocus, ivory) >= 3, 'Freelancer workspace focus on ivory');
+  const panelFocusSelector = '.journey :is(button, a, input, select):focus-visible,\n.opportunityDetail :is(button, a, input, select):focus-visible';
+  const panelFocus = property(block(freelancerFile, panelFocusSelector), 'outline-color');
+  assert.ok(ratio(panelFocus, teal) >= 3, 'Freelancer panel focus on teal');
   for (const selector of [
     '.journey',
     '.journey .eyebrow',
@@ -241,7 +247,7 @@ test('palette detection rejects alternate syntax and unlisted green while accept
   for (const source of ['#008080', '#006b6b', 'color: teal;', 'hsl(180 100% 25%)', 'rgba(0,128,128,.1)', '#202423', '#59615f', '#f5f1e7']) {
     assert.ok(colors(source).every(({ rgb }) => !unapprovedGreen(rgb)), source);
   }
-  for (const source of ['data-color="limegreen"', 'data-fill="forestgreen"', 'data-stroke="darkgreen"']) {
+  for (const source of ['data-color="limegreen"', 'data-fill="forestgreen"', 'data-stroke="darkgreen"', 'material.color.set(0x13483f)']) {
     assert.deepEqual(colors(source), [], source);
   }
 });
