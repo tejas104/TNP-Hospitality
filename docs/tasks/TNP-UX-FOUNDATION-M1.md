@@ -1,6 +1,6 @@
 # TNP-UX-FOUNDATION-M1 — shared portal navigation, demo access and interaction foundation
 
-Status: CORRECTED IMMUTABLE CANDIDATE WAITING SAME-CLAUDE RE-REVIEW — `gpt-5.6-luna` / low produced clean pushed remote-equal direct successor `bde9e6ba19e86da4476917de7693732251124e68` from reviewed `653da55991363f910dbeddc3773d55ee507f7491`, changing exactly PreviewControls and two focused UX tests. The mandatory safety warning is now outside the closed disclosure and browser-proven visible once at desktop, mobile and 200% zoom. Author and P verification pass; writer lease is closed. Same Claude session `0959ee97-bf48-4129-962d-3eab2fdf7b62`, then Kartik exact-successor acceptance and P-controlled integration remain mandatory.
+Status: ROUND-2 BOUNDED CORRECTION READY — same Claude session `0959ee97-bf48-4129-962d-3eab2fdf7b62` returned `CHANGES REQUESTED` on exact `bde9e6ba19e86da4476917de7693732251124e68`. The original visible-warning blocker is fully closed and no application defect was found. The sole new blocker is a reproducibility race in the owned browser runner: the `Switch demo profile` click is not awaited before `goBack()`. Existing task `01a0bee6-65ab-73c2-a0c6-60eb83111347` is reserved at `gpt-5.6-luna` / low for a test-only direct successor. Same-session Claude re-review, Kartik exact-successor acceptance and P-controlled integration remain mandatory.
 
 Responsible product/visual owner and sole human fixed-SHA acceptance reviewer: Kartik for code acceptance; Anjaneya/client direction remains required for final content/assets. Author task `01a0bee6-65ab-73c2-a0c6-60eb83111347` is verified `gpt-6-astra` / medium on `DESKTOP-DL9FDM7`; its separate assigned profile/seat is user-operated context and is not independently exposed by runtime metadata. Fresh external Claude Opus 5/default-effort fixed-SHA review is appointed under Kartik on `DESKTOP-DL9FDM7` in a separate profile and detached clean `D:\TNP-review\TNP-UX-FOUNDATION-M1-CLAUDE` worktree; exact review session ID and runtime evidence must be recorded before review begins. Reserved branch/worktree/port are `codex/tnp-ux-foundation-m1`, `D:\TNP-worktrees\TNP-UX-FOUNDATION-M1` and `3118`.
 
@@ -96,3 +96,16 @@ Make the warning visible outside the collapsible content while preserving the co
 - P: remote equality, direct parent, exact scope, clean worktree, 129/129, lint, TypeScript and Vercel build PASS after one unchanged `EBUSY` retry independently reproduced.
 
 Focused re-review packet: `docs/dispatch/2026-09-20/UX-FOUNDATION-M1-CLAUDE-FOCUSED-REREVIEW.md`. Same Claude session must return an exact-successor disposition before Kartik acceptance. No integration or next overlapping frontend lease yet.
+
+## Same-Claude round-2 finding and test-only correction lease — 2026-09-20
+
+The same independent Claude Opus 5 session reproduced exact provenance and the corrected warning behavior at desktop, 390px, 320px and 200% zoom. The prior P2 warning finding is closed. It returned `CHANGES REQUESTED` only because `tests/ux-foundation.browser.mjs` starts navigation from `Switch demo profile` and calls `goBack()` before waiting for the chooser URL. Controlled runs passed 5/5 at the parent but only 2/9 at `bde9e6ba...`; the pure user journey passed 6/6, so this is a test synchronization defect rather than an application regression.
+
+Correction baseline is exact clean pushed remote-equal `bde9e6ba19e86da4476917de7693732251124e68`. Existing branch/worktree/ports remain `codex/tnp-ux-foundation-m1`, `D:\TNP-worktrees\TNP-UX-FOUNDATION-M1`, and `3118` with fallback `3218`. Existing task/session `01a0bee6-65ab-73c2-a0c6-60eb83111347` is reserved at `gpt-5.6-luna` / low and must re-prove its latest runtime context, exact clean baseline, remote equality and free ports before editing.
+
+Exact writable paths are only:
+
+- `tests/ux-foundation.browser.mjs`
+- `tests/ux-foundation.test.mjs`
+
+Await the exact `/login?workspace=client` URL after clicking `Switch demo profile` and before `goBack()`. Remove the newly added source-string/`indexOf` test for warning JSX placement because the rendered browser scenario already supplies the load-bearing behavioral coverage. Do not change `PreviewControls`, styling, application source or any other test. Reproduce the browser matrix repeatedly enough to prove the race is closed, then run the applicable focused/all-test, lint, explicit TypeScript, Vercel-build, diff-check and exact-scope gates. Return one clean ordinarily pushed immutable successor whose direct parent is `bde9e6ba...`; resume the same Claude session for a focused fixed-SHA re-review. Dispatch: `docs/dispatch/2026-09-20/UX-FOUNDATION-M1-BROWSER-RACE-CORRECTION.md`.

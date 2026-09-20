@@ -1,6 +1,6 @@
 # TNP-HOME-CUBE-M2 — existing-hero hospitality cube
 
-Status: FIXED-SHA CANDIDATE WAITING FRESH CLAUDE REVIEW — verified Astra/low author delivered clean pushed remote-equal `36e5b7938df7ff79aad4905b288f0348e3a67f1d`, direct parent checkpoint `97157d5e2d0af2cccbe16c62eb1136aa961707cf`, changing exactly the amended seven-path scope. The later user video direction supersedes the rejected hollow miniature art requirement in the initial launch copy below. Writer lease is closed. Fresh Claude review, Kartik exact-SHA acceptance and P-controlled integration remain mandatory.
+Status: CLAUDE CHANGES REQUESTED / BOUNDED CORRECTION HELD — fresh Claude Opus 5 review of exact `36e5b7938df7ff79aad4905b288f0348e3a67f1d` verified the premium cube, frozen hero, four service scenes, motion, fallback and performance, but found three blockers: mobile pointer occlusion by the fixed workspace trigger, sub-AA 9px cube text and timing assertions that are not load-bearing. A two-file Astra/low correction contract is prepared but not active while the same H1/B writer closes the higher-priority UX Foundation correction. Kartik exact-successor acceptance and P-controlled integration remain mandatory after focused same-review-session re-review.
 
 Requested author: task/session `01a0bf1e-e769-7bb1-b30e-b2cf0f5d431a`, verified from its recorded `turn_context` as `gpt-6-astra` / low (`Astra light`) on `DESKTOP-DL9FDM7`. Sole human fixed-SHA acceptance reviewer: Kartik. Fresh external Claude Opus fixed-SHA review follows Astra authorship. The author may not self-review.
 
@@ -85,3 +85,20 @@ Checkpoint after the deterministic motion/controller/fallback foundation, then c
 - P independently verified ancestry/scope/remote/clean state and rendered desktop/mobile/service faces, then reproduced 125/125, lint, TypeScript and first-attempt Vercel build.
 
 Fresh review packet: `docs/dispatch/2026-09-20/HOME-CUBE-M2-CLAUDE-FIXED-SHA-REVIEW.md`. No integration or deployment before fresh Claude disposition and Kartik exact-SHA acceptance.
+
+## Claude findings and bounded correction hold — 2026-09-20
+
+Fresh Claude Opus 5 independently reproduced provenance, 125/125 tests, lint/TypeScript/diff checks and an eventual unchanged-source build. It verified exact `#008080`, one transparent canvas, 6 draw calls, 20 triangles, all four original illustrated service faces including the male Planner lead, 90-degree motion, 6.1-second inactivity resume, drag/touch behavior and static/WebGL failure fallbacks. The candidate remains blocked on:
+
+1. At 390x844 the fixed workspace trigger intercepts the pause control; at 320x844 it intercepts the Planner selector and pause control and occludes disclaimer text.
+2. `.sample` and `.number` composite to 3.90:1 and 3.64:1 on teal, below 4.5:1 for their 9px text.
+3. The focused motion test compares behavior to imported timing constants, so mutations `4500 -> 4000`, `1500 -> 1200` and `6000 -> 5000` still pass.
+
+Correction baseline is exact clean pushed remote-equal `36e5b7938df7ff79aad4905b288f0348e3a67f1d`. The later correction reuses task/session `01a0bf1e-e769-7bb1-b30e-b2cf0f5d431a` at verified `gpt-6-astra` / low, branch/worktree `codex/tnp-home-cube-m2` / `D:\TNP-worktrees\TNP-HOME-CUBE-M2`, and ports `3120`/`3220`. It is a reservation only until P explicitly activates it after the UX Foundation author lease closes.
+
+Exact writable paths are only:
+
+- `components/tnp/public/HospitalityCube.module.css`
+- `components/tnp/public/hospitality-cube-motion.test.mjs`
+
+The successor must keep all five 44px controls and the complete disclaimer pointer-visible and unobscured at 390x844 and 320x844, including hit-testing against the fixed workspace trigger; bring all cube text to at least 4.5:1 computed contrast; and assert exact literal timing contracts so each of the three reviewer mutations fails. Within those same files, consolidate the duplicate selector/pause rules, strengthen the focus-visible indicator against both teal and ivory and add the missing 1.25 vertical-bias boundary case if this can be done without widening behavior. All other code, asset, content, hero, shared shell, package and register paths are frozen in the feature worktree. Prepared dispatch: `docs/dispatch/2026-09-20/HOME-CUBE-M2-MOBILE-CONTRAST-TEST-CORRECTION.md`.
