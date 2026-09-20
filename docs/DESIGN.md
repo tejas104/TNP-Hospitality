@@ -2,7 +2,7 @@
 
 ## Platform usability direction (2026-09-19)
 
-The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage is excluded from the current 90% frontend program.
+The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage is excluded from the 19/19 non-homepage completion metric and remains frozen outside the bounded cube task.
 
 ## Client product-led redesign direction (2026-09-20)
 
@@ -16,7 +16,7 @@ Each side must read through genuine low-poly spatial geometry, lighting, charact
 
 ## Non-homepage product typography and reference direction (2026-09-20)
 
-The user requests a friendlier, more polished typography system and approximately 90% frontend/UI completion for all non-homepage pages, using current Wise, Wispr Flow and Miro experiences as reference points. Apply principles, not trade dress: Wise contributes functional clarity and confident action hierarchy; Wispr Flow contributes concise outcome-led copy, calm whitespace and friendly bold sans hierarchy; Miro contributes inclusive legibility, recognizable navigation and consistent scalable components. Do not copy competitor colours, assets, layouts, wording, motion signatures or proprietary fonts.
+The user now requires 100% frontend/UI completion for all non-homepage screen sets, using current category-leading products as reference points. Apply principles, not trade dress: Wise contributes functional clarity and confident action hierarchy; Wispr Flow contributes concise outcome-led copy, calm whitespace and friendly bold sans hierarchy; Miro and Linear contribute dense but legible navigation and workflow hierarchy; Tripleseat contributes hospitality inquiry/booking/task ownership; Cvent and Eventbrite contribute registration, check-in and reporting clarity; Paperless Post contributes elegant guest status, reminders and event detail grouping; When I Work and Deel contribute scheduling, attendance and payroll-state presentation; Stripe contributes financial lifecycle/status clarity. Do not copy competitor colours, assets, layouts, wording, motion signatures or proprietary fonts.
 
 - Shared access/workspace UI uses a locally served, license-recorded open-source Inter variable font when verified, with `Noto Sans`, `Segoe UI`, system UI and sans-serif fallbacks. Never import or imitate proprietary Wise Sans.
 - Define semantic product typography tokens for display, workspace title, section title, body, label, caption, button and tabular numerals. Prefer 400/500/600/700 weights, comfortable body leading and tight-but-readable headings.

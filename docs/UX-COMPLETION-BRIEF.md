@@ -1,10 +1,12 @@
 # TNP platform UX completion brief
 
-Status: canonical product/design direction recorded 2026-09-19. This brief defines acceptance and sequencing; it is not a writer lease. Homepage visual/content refinement stays last.
+Status: canonical product/design direction recorded 2026-09-19 and expanded to 19/19 non-homepage frontend completion on 2026-09-20. This brief defines acceptance and sequencing; it is not a writer lease. The homepage stays frozen outside its separately authorized right-side cube replacement.
 
 ## Outcome
 
 Complete the responsive frontend so a first-time visitor can identify their role, enter a truthful demo, understand the current state, see the next action, complete a task and move to another task without guessing what is clickable or where navigation leads.
+
+Completion means every F02-F20 screen set passes its own functional, responsive, accessibility, state and truthfulness criteria. No set may be omitted to satisfy a percentage, and a route, static mock, dead control or submitted test report alone does not count.
 
 Preserve TNP's editorial hospitality character. Improve usability through hierarchy, density, evidence, predictable interaction and a deliberate modern surface/elevation system. Use raised interactive cards and dashboard command surfaces where they communicate destination, selection, attention or action; avoid a generic wall of equal cards or copied competitor layouts.
 
@@ -153,6 +155,20 @@ Do not force this abstraction onto Freelancer opportunities, Planner requirement
 - Visual/accessibility: WCAG contrast, 200% zoom, no horizontal overflow, reduced-motion parity and no unexplained console/hydration errors.
 - Truth: no demo password, production-auth claim, invented rating/review, fake verified badge, misleading partner photo or unqualified price.
 
-## Benchmark principles
+## Current benchmark principles
 
-Review official Airbnb, Notion, ChatGPT and Apple experiences only for interaction principles: explicit task entry, evidence near choices, restrained progressive disclosure, dominant action and predictable navigation. Do not copy their trade dress, layouts, proprietary assets or content.
+Use only the following official experiences as principle references, current as researched on 2026-09-20. Do not copy trade dress, layouts, proprietary assets, wording or motion signatures.
+
+- Tripleseat (`https://tripleseat.com/` and `/industries/hotels/`): put inquiries, active bookings, outstanding tasks and owner responsibility in one operational view; use this for Client/Planner and Operations hospitality workflow hierarchy.
+- Cvent (`https://www.cvent.com/en/platform`) and Eventbrite (`https://www.eventbrite.com/features/registration/`): make registration, attendee state, capacity, check-in and reports explicit; use this for event and RSVP operational flows.
+- Paperless Post (`https://www.paperlesspost.com/`): group invitation details, RSVP status, guest questions, messages and reminders without clutter; use this for the message-only RSVP guest and vendor experience.
+- When I Work (`https://www.wheniwork.com/`) and Deel (`https://www.deel.com/hr-platform/`): make schedule, attendance, worker action and payroll status easy to scan; use this for Freelancer and workforce views without implying production payroll.
+- Stripe (`https://stripe.com/products`): show money state, exceptions and next action together; use this for quotations, collections, earnings and payout presentation while keeping server-authoritative gates explicit.
+- Linear (`https://linear.app/now/how-we-redesigned-the-linear-ui`) and Miro (`https://miro.com/`): reduce visual noise while retaining navigation density and clear workflow ownership.
+- Wise (`https://wise.design/`) and Wispr Flow (`https://wisprflow.ai/`): use friendly sans-first typography, concise outcome-led copy and unmistakable action hierarchy.
+
+Every milestone records which principles it used and why. References do not authorize new domain behavior, extra data collection or copied visual identity.
+
+## 19/19 completion ledger rule
+
+Each F02-F20 set increments the completed count only after its exact candidate is reviewed, Kartik accepts the fixed SHA, P integrates it, and the aggregate ledger records: primary journey, every visible action destination, loading/empty/validation/error/retry/success/stale states as applicable, 1440x900/1100x900/390x844 browser evidence, 320px where required, keyboard/focus/Escape, touch/pressed behavior, reduced motion, 200% zoom, contrast/overflow/console results and truthful synthetic limitations. All owned buttons must have visible resting affordance, readable light-colour hover feedback and coherent focus/touch/pressed/disabled/loading states.
