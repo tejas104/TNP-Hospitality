@@ -1,6 +1,6 @@
 # TNP-HOME-CUBE-M2 — existing-hero hospitality cube
 
-Status: BOUNDED CORRECTION READY / ASTRA-LIGHT LEASE RESERVED — fresh Claude Opus 5 review of exact `36e5b7938df7ff79aad4905b288f0348e3a67f1d` verified the premium cube, frozen hero, four service scenes, motion, fallback and performance, but found three blockers: mobile pointer occlusion by the fixed workspace trigger, sub-AA 9px cube text and timing assertions that are not load-bearing. UX Foundation is accepted, integrated and published; H1/B capacity is free. Existing task `01a0bf1e-e769-7bb1-b30e-b2cf0f5d431a` is reserved at `gpt-6-astra` / low for only local cube CSS plus its focused motion test. Activation requires latest runtime context plus exact clean baseline/remote/port proof. Same cube-review session, Kartik exact-successor acceptance and P-controlled integration remain mandatory.
+Status: CORRECTED IMMUTABLE SUCCESSOR / SAME-CLAUDE WAIT — Astra/low task `01a0bf1e-e769-7bb1-b30e-b2cf0f5d431a` returned exact clean pushed remote-equal successor `0c480d73d518ba8e15ebab50ce3c43c1d2c5765a`, direct parent reviewed `36e5b7938df7ff79aad4905b288f0348e3a67f1d`, changing only cube CSS and its focused motion test. Author and P verification close the three blocking findings. The same Claude cube-review session must now perform focused fixed-SHA re-review; Kartik exact-successor acceptance and P-controlled integration remain mandatory.
 
 Requested author: task/session `01a0bf1e-e769-7bb1-b30e-b2cf0f5d431a`, verified from its recorded `turn_context` as `gpt-6-astra` / low (`Astra light`) on `DESKTOP-DL9FDM7`. Sole human fixed-SHA acceptance reviewer: Kartik. Fresh external Claude Opus fixed-SHA review follows Astra authorship. The author may not self-review.
 
@@ -102,3 +102,18 @@ Exact writable paths are only:
 - `components/tnp/public/hospitality-cube-motion.test.mjs`
 
 The successor must keep all five 44px controls and the complete disclaimer pointer-visible and unobscured at 390x844 and 320x844, including hit-testing against the fixed workspace trigger; bring all cube text to at least 4.5:1 computed contrast; and assert exact literal timing contracts so each of the three reviewer mutations fails. Within those same files, consolidate the duplicate selector/pause rules, strengthen the focus-visible indicator against both teal and ivory and add the missing 1.25 vertical-bias boundary case if this can be done without widening behavior. All other code, asset, content, hero, shared shell, package and register paths are frozen in the feature worktree. Prepared dispatch: `docs/dispatch/2026-09-20/HOME-CUBE-M2-MOBILE-CONTRAST-TEST-CORRECTION.md`.
+
+## Corrected immutable successor — 2026-09-20
+
+- final: `0c480d73d518ba8e15ebab50ce3c43c1d2c5765a`;
+- provenance: one direct-successor commit whose parent is exactly reviewed `36e5b7938df7ff79aad4905b288f0348e3a67f1d`;
+- scope: exactly `components/tnp/public/HospitalityCube.module.css` and `components/tnp/public/hospitality-cube-motion.test.mjs`; branch is clean, ordinarily pushed and remote-equal;
+- mobile evidence: at 390x844 and 320x844 all five 44px controls pass centre plus representative-edge hit testing, and the entire disclaimer passes three-point glyph hit testing without workspace-trigger interception;
+- contrast evidence: actual composited `.sample` is 4.7734:1 and `.number` is 4.5831:1;
+- regression evidence: literal `4500`, `1500` and `6000` timing mutations fail; `1.25 -> 1.0` and `1.25 -> 1.5` intent-bias mutations fail;
+- author passes 8 focused, 51 relevant and 126/126 tracked tests, lint with three inherited warnings, TypeScript, Vercel build, exact diff/scope audit and four-viewport browser evidence;
+- P independently confirms the exact ancestry/scope/remote/clean state, visually inspects 1440x900, 390x844 and 320x844 evidence, and reproduces 126/126, lint with the same three inherited warnings, TypeScript and first-attempt Vercel build;
+- preserved limitation: the prior CDP lifecycle-freeze claim is not reproducible because that harness continued delivering animation frames. The actual hidden-document handler freezes for the measured 1200ms and offscreen suspension passes; no broader motion source was changed in this two-file correction. Software-rendered frame sampling is not physical-device/GPU evidence;
+- separate observation outside this fixed two-file scope: the existing 320px header overlaps/clips the hero heading. It is not introduced by this correction and must be handled by a later homepage-specific task rather than silently widening this patch.
+
+Focused same-reviewer packet: `docs/dispatch/2026-09-20/HOME-CUBE-M2-CLAUDE-CORRECTION-REREVIEW.md`. No integration, next H1/B writer or deployment before the reviewer disposition and Kartik exact-SHA acceptance.
