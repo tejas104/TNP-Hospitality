@@ -8,6 +8,16 @@ The platform now follows a task-first hierarchy. Keep the established TNP editor
 
 Kartik rejects the current `/client` full-teal poster composition and fixed right-edge semicircle portal dial. The approved direction uses Wispr Flow only as an interaction benchmark: calm ivory canvas, compact framed workspace chrome, concise outcome-led hero, one dominant action and an immediate interactive product preview. Preserve TNP's own palette, typography and content; do not copy competitor trade dress or assets. The shared UX foundation replaces the dial across workspaces with an explicit header-level switcher, while the Client milestone owns the local four-product brief experience. See `CLIENT-WISPR-INSPIRED-REDESIGN-BRIEF.md`.
 
+## Non-homepage product typography and reference direction (2026-09-20)
+
+The user requests a friendlier, more polished typography system and approximately 90% frontend/UI completion for all non-homepage pages, using current Wise, Wispr Flow and Miro experiences as reference points. Apply principles, not trade dress: Wise contributes functional clarity and confident action hierarchy; Wispr Flow contributes concise outcome-led copy, calm whitespace and friendly bold sans hierarchy; Miro contributes inclusive legibility, recognizable navigation and consistent scalable components. Do not copy competitor colours, assets, layouts, wording, motion signatures or proprietary fonts.
+
+- Shared access/workspace UI uses a locally served, license-recorded open-source Inter variable font when verified, with `Noto Sans`, `Segoe UI`, system UI and sans-serif fallbacks. Never import or imitate proprietary Wise Sans.
+- Define semantic product typography tokens for display, workspace title, section title, body, label, caption, button and tabular numerals. Prefer 400/500/600/700 weights, comfortable body leading and tight-but-readable headings.
+- Georgia remains a sparse TNP editorial accent for short hospitality/public storytelling. It must not own dashboard titles, forms, tables, metrics, navigation, buttons, login/workspace cards or routine status copy.
+- Access pages and dashboards use compact role orientation, one dominant next action, visible attention queues and polished loading/empty/error/disabled states. Typography must remain usable at 200% zoom and across current Android/iOS browsers.
+- Shared foundation establishes tokens and shared consumers. Each later portal milestone migrates its own explicit font declarations and verifies hierarchy in its real workflows; no cross-portal bulk rewrite bypasses ownership.
+
 ### Android, iOS, performance and print
 
 - Treat current Android Chrome and iOS Safari as first-class responsive-web targets. Respect safe areas, dynamic viewport height, touch/virtual-keyboard behavior, 44px targets and reduced-motion/low-capability fallbacks.

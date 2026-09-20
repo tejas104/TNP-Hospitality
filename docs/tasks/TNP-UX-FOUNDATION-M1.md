@@ -37,6 +37,8 @@ Provide one predictable shared workspace shell in which every role has obvious n
 - `components/tnp/public/WorkspaceDrawer.tsx`
 - `components/tnp/public/access-content.ts`
 - `components/tnp/shared/PreviewControls.tsx`
+- new locally served open-source font asset `public/fonts/InterVariable.woff2`
+- font license record `public/fonts/INTER-OFL.txt`
 - new shared evidence component `components/tnp/shared/PartnerCard.tsx`
 - new shared evidence styles `components/tnp/shared/PartnerCard.module.css`
 - new shared access/navigation primitives under `components/tnp/access/**`
@@ -59,6 +61,7 @@ All portal-local feature directories, public homepage sections/3D, shared servic
 11. Workspace access cards must group role name, truthful access state, outcome copy and action into one raised composition with resting affordance, responsive hover/focus/active feedback and reduced-motion parity. Shared dashboard primitives must support orientation, one dominant next action and compact attention queues without forcing every metric into a card.
 12. The shared `PartnerCard` must support evidence-safe Venue and approved TNP Planner presentation: attributable or explicitly illustrative image metadata, robust missing-image fallback, name, location/specialty evidence, qualified capacity/price/availability/rating fields only when supplied, one selection action, loading/error/unavailable/selected states, keyboard/touch parity and reduced-motion behavior. It must not define domain eligibility, fabricate verification or own feature queries.
 13. Remove the fixed right-edge semicircle portal dial on every workspace route. Replace it with an explicit header-level current-workspace pill and compact click/keyboard-opened popover on desktop plus safe-area-aware mobile sheet/menu treatment. No hover auto-open, content overlap, duplicate route list or preview controls inside the switcher. Escape closes and returns focus; all destinations come from the typed route manifest.
+14. Establish a locally served, license-recorded Inter variable product/UI font plus semantic typography tokens for shared access/workspace surfaces. Use sans-first hierarchy for navigation, forms, actions, workspace titles, status and numerals; keep Georgia only as a sparse editorial/public accent. Do not use proprietary competitor fonts or bulk-edit frozen portal-local styles. The final handoff must enumerate remaining portal-owned Georgia/mono migrations for their next milestones.
 
 ## Required checks
 
