@@ -1,6 +1,6 @@
 # TNP-BRAND-AGGREGATE-M2 — integrated palette adoption and guard closure
 
-Status: ROUND-3 FIXED-SHA HANDOFF / SAME-CLAUDE FOCUSED RE-REVIEW. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` returned exact clean pushed remote-equal successor `71212ea57ada4447ff34a6ffebd14e439e2dc0da`, direct child of Claude-reviewed `497145220636ae4fe4cbda9bb984f7d9691d3e20`. Runtime Codex model/effort metadata are unavailable and are not inferred. The writer lease is closed. This remains a bounded post-integration correction, not a redesign and not authority for UX Foundation or Client source work.
+Status: ROUND-4 CRLF GUARD CORRECTION ACTIVE. Same Claude Opus 5/default-effort session `cdd20a88-eed6-465c-908d-4b7496afbff1` returned `CHANGES REQUESTED` on exact clean remote-equal `71212ea57ada4447ff34a6ffebd14e439e2dc0da`. The rendered focus correction and every other requirement pass; the sole P1 is an LF-only multiline selector lookup that makes the guard fail 5/6 in a standard Windows CRLF checkout. Current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` holds the sole inline one-file test lease. Runtime Codex model/effort metadata are unavailable and are not inferred. This is a test-portability correction only and does not authorize source/UI changes, UX Foundation or Client work.
 
 Responsible product decision owner and sole human fixed-SHA acceptance reviewer: Kartik. Round-3 writer: current architect task `01a0bcc2-a3c0-7750-8bd9-edcabd621d62` on DESKTOP-DL9FDM7, inline only per the user's no-subagent direction. Fresh focused re-review remains assigned to the same independent Claude session above.
 
@@ -132,4 +132,16 @@ All other findings and all other paths are frozen. Run focused/full tests, lint,
 - browser: genuine Tab lands on `Close role detail` with a 2.4px solid ivory outline and 4px offset at 1440x900, 1100x900 and 390x844; the workspace `Refresh records` control retains its teal-on-ivory outline; no horizontal overflow and no warn/error console output;
 - cleanup: browser/server stopped and port3117 free.
 
-Focused re-review packet: `docs/dispatch/2026-09-20/BRAND-AGGREGATE-M2-CLAUDE-ROUND3-REREVIEW.md`. Same Claude session `cdd20a88-eed6-465c-908d-4b7496afbff1` must return one exact-candidate disposition. Kartik acceptance remains a separate later gate.
+Focused re-review packet: `docs/dispatch/2026-09-20/BRAND-AGGREGATE-M2-CLAUDE-ROUND3-REREVIEW.md`. Same Claude session `cdd20a88-eed6-465c-908d-4b7496afbff1` returned `CHANGES REQUESTED`. Kartik acceptance remains held.
+
+## Round-3 Claude disposition and round-4 lease — 2026-09-20
+
+Review record: `docs/reviews/TNP-BRAND-AGGREGATE-M2-CLAUDE-ROUND3-REREVIEW.md`.
+
+Claude independently confirmed the exact remote/provenance/scope, unchanged Operations CSS, production focus behavior at all three viewports, preserved workspace focus, detector boundary, round-2 contrast gains, lint, TypeScript, first-attempt build, overflow, console and cleanup. The sole P1 is test portability: `block()` searches a multiline selector containing LF, while a normal Windows checkout contains CRLF, so the focused guard fails before the panel contrast assertion executes. Standard checkout evidence is 5/6 focused and 117/118 full; an LF-normalized copy passes 6/6.
+
+Round-4 baseline is exact `71212ea57ada4447ff34a6ffebd14e439e2dc0da`. Branch/worktree/port remain `codex/tnp-brand-aggregate-m2`, `D:\TNP-worktrees\TNP-BRAND-AGGREGATE-M2`, and 3117. Live remote equality, clean checkout and free relevant ports were reverified before activation.
+
+The only writable path is `tests/brand-teal-palette.test.mjs`. Normalize line endings inside the selector-block lookup and add an in-test CRLF probe so the portability requirement is load-bearing even when the executing filesystem uses LF. Preserve both focus-contrast assertions and every cleared detector probe. Freelancer CSS, Operations CSS and every other path are frozen. Claude's equal-specificity/source-order note is recorded as non-blocking P3 and is not reopened in this test-only correction.
+
+Run the focused guard and full discovered suite in the writer checkout, then commit and ordinarily push one immutable successor. Prove the same results again from a fresh detached Windows checkout with CRLF on disk. Run lint, explicit non-incremental TypeScript, Vercel build, diff/scope checks and cleanup. Browser rerun is unnecessary because no production source may change. Return the successor to the same Claude session for a focused portability re-review; Kartik exact-successor acceptance remains a separate later gate.
