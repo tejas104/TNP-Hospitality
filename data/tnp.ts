@@ -31,13 +31,20 @@ export const services = [
   },
   {
     number: '05',
+    title: 'Porters',
+    copy: 'Dependable help with luggage, equipment and venue logistics, so guests and teams move without friction. Provided by TNP.',
+    image: byId('resort'),
+    tint: '#008080',
+  },
+  {
+    number: '06',
     title: 'RSVP Services',
     copy: 'Human-led guest communication, confirmation, follow-up, documentation and final list preparation for families and planners.',
     image: byId('banquet'),
     tint: '#BBA879',
   },
   {
-    number: '06',
+    number: '07',
     title: 'Venue / Event Discovery',
     copy: 'Curated discovery support for clients searching for the right destination, venue or experience canvas.',
     image: byId('architecture'),
@@ -128,6 +135,11 @@ export const roles = [
     role: 'Hostess',
     image: byId('hostess'),
     caption: 'Leads first impressions and guest-facing grace.',
+  },
+  {
+    role: 'Porter',
+    image: byId('resort'),
+    caption: 'Handles luggage, equipment and logistics with care.',
   },
 ];
 

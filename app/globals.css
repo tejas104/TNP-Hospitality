@@ -3460,3 +3460,55 @@ body:has(.ux-header) textarea {
     transform: translateX(3px);
   }
 }
+
+/* Text-link glow: a left-to-right light sweep across the link text so it
+   reads as clickable. Use `link-glow` on every text-style link. The base
+   colour comes from --glow-base (defaults to the element's own colour
+   family: teal on light surfaces). */
+.link-glow {
+  --glow-base: #006b6b;
+  --glow-hi: #e0a100;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-image: linear-gradient(
+    100deg,
+    var(--glow-base) 0%,
+    var(--glow-base) 38%,
+    var(--glow-hi) 50%,
+    var(--glow-base) 62%,
+    var(--glow-base) 100%
+  );
+  background-position: 100% 0;
+  background-size: 260% 100%;
+  border-bottom-color: var(--glow-base) !important;
+  text-decoration-color: var(--glow-base);
+  color: transparent !important;
+  -webkit-text-fill-color: transparent;
+}
+.link-glow svg {
+  color: var(--glow-base);
+  -webkit-text-fill-color: initial;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .link-glow {
+    animation: link-glow-sweep 3.2s linear infinite;
+  }
+  .link-glow:hover,
+  .link-glow:focus-visible {
+    animation-duration: 1.1s;
+  }
+}
+@keyframes link-glow-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+@media (forced-colors: active) {
+  .link-glow {
+    -webkit-text-fill-color: LinkText;
+    color: LinkText !important;
+  }
+}

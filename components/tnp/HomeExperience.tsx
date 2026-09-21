@@ -38,9 +38,9 @@ export default function HomeExperience() {
     clearTimeout(hoverTimer.current);
     hoverTimer.current = window.setTimeout(() => {
       hoverLock.current = true;
-      window.setTimeout(() => (hoverLock.current = false), 450);
+      window.setTimeout(() => (hoverLock.current = false), 300);
       setServiceIndex(index);
-    }, 180);
+    }, 90);
   };
   const home = useRef<HTMLElement>(null);
   useHomeMotion(home, false);
@@ -75,7 +75,7 @@ export default function HomeExperience() {
             <Link href="/contact" className={styles.primary}>
               Plan with TNP <ArrowUpRight size={18} />
             </Link>
-            <a href="#rsvp" className={styles.lightLink}>
+            <a href="#rsvp" className={`${styles.lightLink} link-glow`}>
               Discover RSVP <ArrowUpRight size={17} />
             </a>
           </div>
@@ -208,7 +208,7 @@ export default function HomeExperience() {
                       <p>{service.copy}</p>
                       <Link
                         href={`/services/${serviceSlugs[index]}`}
-                        className={styles.textLink}
+                        className={`${styles.textLink} link-glow`}
                       >
                         Explore this service <ArrowUpRight size={16} />
                       </Link>
@@ -263,7 +263,7 @@ export default function HomeExperience() {
             </ul>
             <Link
               href="/contact?interest=managed-rsvp"
-              className={styles.lightLink}
+              className={`${styles.lightLink} link-glow`}
             >
               Enquire about managed RSVP <ArrowUpRight size={17} />
             </Link>
@@ -300,7 +300,7 @@ export default function HomeExperience() {
                 <Check size={16} /> Planned WhatsApp, documents & exports
               </li>
             </ul>
-            <Link href="/contact?interest=vendor" className={styles.lightLink}>
+            <Link href="/contact?interest=vendor" className={`${styles.lightLink} link-glow`}>
               Register vendor interest <ArrowUpRight size={17} />
             </Link>
             <img
@@ -389,7 +389,7 @@ export default function HomeExperience() {
           </div>
           <Link
             href="/contact?interest=event-request"
-            className={styles.textLink}
+            className={`${styles.textLink} link-glow`}
           >
             Discuss venues for your event <ArrowUpRight size={17} />
           </Link>
@@ -465,7 +465,7 @@ export default function HomeExperience() {
           </div>
           <Link
             href="/contact?interest=event-coordinators"
-            className={styles.textLink}
+            className={`${styles.textLink} link-glow`}
           >
             Enquire about event teams <ArrowUpRight size={17} />
           </Link>

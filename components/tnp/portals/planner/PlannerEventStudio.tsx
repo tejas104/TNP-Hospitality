@@ -16,6 +16,7 @@ const workforceRoles = [
   'Event Executive',
   'Volunteer',
   'Hostess',
+  'Porter',
   'RSVP Executive',
 ] as const;
 

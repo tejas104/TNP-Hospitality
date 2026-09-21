@@ -69,7 +69,7 @@ export default function WorkspaceAccess() {
       {workspace ? (
         <section className={styles.access} aria-labelledby="choose-space-title">
           <div className={styles.intro}>
-            <Link href="/login">← All workspaces</Link>
+            <Link className="link-glow" href="/login">← All workspaces</Link>
             <h2 id="choose-space-title">{workspace.label} demo</h2>
             <p>{workspace.purpose}</p>
             <p className={styles.notice}>
@@ -203,7 +203,7 @@ export default function WorkspaceAccess() {
       </aside>
       <footer className={styles.footer}>
         <span>TNP HOSPITALITY · SYNTHETIC PREVIEW</span>
-        <Link href="/">Return home →</Link>
+        <Link className="link-glow" href="/">Return home →</Link>
       </footer>
     </main>
   );

@@ -5,8 +5,15 @@ import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
   BarChart3,
+  Bot,
   Check,
   CheckCheck,
+  FileText,
+  FolderOpen,
+  ImageIcon,
+  Phone,
+  Plus,
+  ShieldAlert,
   Info,
   LayoutDashboard,
   Megaphone,
@@ -21,21 +28,29 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { StorageWarning } from '../../access/DemoAccess';
+import { GenieWindow } from '../../public/portal-launcher/PortalLauncher';
 import {
   CATEGORY_LABEL,
+  checkCompliance,
   eventStats,
   fillTemplate,
+  GROUPS,
   ORGS,
+  replaceTerm,
   seedRsvpChat,
   suggestFromMessage,
   TEMPLATES,
   type Category,
+  type Group,
   type GuestThread,
+  type MessageCategory,
   type RsvpChatState,
   type RsvpEvent,
 } from './rsvpChatData';
 import {
+  AssistantPanel,
   BroadcastsPanel,
+  FilesPanel,
   GuestsPanel,
   ReportsPanel,
   SettingsPanel,
@@ -43,14 +58,16 @@ import {
 } from './RsvpPanels';
 import styles from './RsvpChat.module.css';
 
-export type View = 'today' | 'chats' | 'broadcasts' | 'guests' | 'reports' | 'settings';
+export type View = 'today' | 'chats' | 'broadcasts' | 'guests' | 'files' | 'assistant' | 'reports' | 'settings';
 export type Save = (change: (s: RsvpChatState) => RsvpChatState, message: string) => void;
-const KEY = 'tnp-rsvp-chat-v2';
+const KEY = 'tnp-rsvp-chat-v3';
 const RAIL: [View, string, LucideIcon][] = [
   ['today', 'Today', LayoutDashboard],
   ['chats', 'Chats', MessageCircle],
   ['broadcasts', 'Broadcasts', Megaphone],
   ['guests', 'Guests', UsersRound],
+  ['files', 'Files', FolderOpen],
+  ['assistant', 'Assistant', Bot],
   ['reports', 'Reports', BarChart3],
   ['settings', 'Team & settings', Settings],
 ];
@@ -102,7 +119,7 @@ export default function RsvpWorkspace({
       if (!active) return;
       try {
         const saved = JSON.parse(localStorage.getItem(KEY) ?? 'null');
-        if (saved?.version === 2) setState(saved);
+        if (saved?.version === 3) setState(saved);
       } catch {
         /* Seed stays. */
       }
@@ -162,6 +179,7 @@ export default function RsvpWorkspace({
       </nav>
       <div className={styles.shell}>
         <header className={styles.topbar}>
+          <SenderBar state={state} save={save} />
           <div className={styles.title}>
             <strong>RSVP on WhatsApp</strong>
             <small>{ORGS[org]} · team workspace · simulated messages only</small>
@@ -206,6 +224,8 @@ export default function RsvpWorkspace({
             {view === 'today' && <TodayPanel state={state} org={org} openEvent={openEvent} />}
             {view === 'broadcasts' && <BroadcastsPanel state={state} event={event} save={save} />}
             {view === 'guests' && <GuestsPanel state={state} event={event} save={save} openChat={() => setView('chats')} />}
+            {view === 'files' && <FilesPanel state={state} event={event} />}
+            {view === 'assistant' && <AssistantPanel />}
             {view === 'reports' && <ReportsPanel state={state} event={event} />}
             {view === 'settings' && <SettingsPanel state={state} org={org} save={save} />}
           </div>
@@ -226,6 +246,10 @@ function Chats({
 }) {
   const threads = state.threads.filter((t) => t.eventId === event.id);
   const [filter, setFilter] = useState<Filter>('all');
+  const [group, setGroup] = useState<Group | 'all'>('all');
+  const [category, setCategory] = useState<MessageCategory>('utility');
+  const login = state.logins.find((l) => l.id === state.activeLogin);
+  const sender = state.senders.find((s) => s.id === login?.senderId);
   const [query, setQuery] = useState('');
   const [openId, setOpenId] = useState('');
   const [info, setInfo] = useState(true);
@@ -242,9 +266,13 @@ function Chats({
             : filter === 'travel'
               ? t.category === 'attending' && t.travel.mode === '—'
               : t.category === filter);
-        return match && t.party.toLowerCase().includes(query.toLowerCase());
+        return (
+          match &&
+          (group === 'all' || t.group === group) &&
+          `${t.party} ${t.contactName}`.toLowerCase().includes(query.toLowerCase())
+        );
       }),
-    [threads, filter, query],
+    [threads, filter, query, group],
   );
   const thread = threads.find((t) => t.id === openId);
   const messageCount = thread?.messages.length ?? 0;
@@ -260,8 +288,19 @@ function Chats({
     setInfo(window.matchMedia('(min-width: 1181px)').matches);
     if (t.unread) setThread(t.id, (x) => ({ ...x, unread: 0 }), `Opened chat with ${t.party}.`);
   };
+  const hits = category === 'utility' ? checkCompliance(draft) : [];
+  const blockedReason = !sender
+    ? 'Choose a sending number first.'
+    : sender.status !== 'verified'
+      ? `${sender.number} is still pending verification.`
+      : hits.length
+        ? 'Replace the promotional words flagged below, or switch to Marketing.'
+        : category === 'marketing' && thread && !thread.optIn
+          ? `${thread.contactName} has not opted in to marketing messages.`
+          : '';
   const send = (text: string, template?: string) => {
-    if (!thread || !text.trim()) return;
+    if (!thread || !text.trim() || !sender || sender.status !== 'verified') return;
+    if (!template && blockedReason) return;
     setThread(
       thread.id,
       (t) => ({
@@ -271,6 +310,8 @@ function Chats({
           {
             id: `m${Date.now()}`,
             from: 'team',
+            senderId: sender.id,
+            category: template ? 'utility' : category,
             text: text.trim(),
             at: now(),
             template,
@@ -279,13 +320,40 @@ function Chats({
           },
         ],
       }),
-      `Message to ${thread.party} simulated — nothing was sent to WhatsApp.`,
+      `Message to ${thread.contactName} (${thread.party}) simulated from ${sender.number} — nothing was sent to WhatsApp.`,
     );
     setDraft('');
     setTemplatesOpen(false);
   };
+  const simulateGuestFile = () => {
+    if (!thread) return;
+    const n = thread.media.length + 1;
+    const file = {
+      id: `${thread.id}-f${n}-${thread.messages.length}`,
+      kind: n % 2 ? ('photo' as const) : ('document' as const),
+      name: `${thread.contactName} · ${n % 2 ? 'guest photo' : 'ID document'} ${n} (sample${n % 2 ? '' : ', redacted'})`,
+      receivedAt: now(),
+    };
+    setThread(
+      thread.id,
+      (t) => ({
+        ...t,
+        media: [...t.media, file],
+        messages: [
+          ...t.messages,
+          { id: `g${Date.now()}`, from: 'guest', text: file.kind === 'photo' ? 'Photo' : 'Document', at: now(), attachment: file },
+          { id: `b${Date.now()}`, from: 'system', text: `Assistant saved “${file.name}” to ${t.party}'s files.`, at: now() },
+        ],
+      }),
+      `Sample ${file.kind} received from ${thread.contactName} and saved to Files.`,
+    );
+  };
   const simulateGuestReply = (text: string) => {
     if (!thread) return;
+    if (/send photos now/i.test(text)) {
+      simulateGuestFile();
+      return;
+    }
     const s = suggestFromMessage(text, event.functions);
     setThread(
       thread.id,
@@ -320,6 +388,13 @@ function Chats({
               </button>
             ))}
           </div>
+          <div className={styles.filters} aria-label="Guest category">
+            {(['all', ...GROUPS] as const).map((g) => (
+              <button key={g} type="button" data-kind="group" aria-pressed={group === g} onClick={() => setGroup(g)}>
+                {g === 'all' ? 'Every category' : g}
+              </button>
+            ))}
+          </div>
         </div>
         <ul>
           {shown.length === 0 && <li className={styles.emptyRow}>No chats match this filter.</li>}
@@ -333,7 +408,9 @@ function Chats({
                   </span>
                   <span className={styles.rowMain}>
                     <span className={styles.rowTop}>
-                      <strong>{t.party}</strong>
+                      <strong>
+                        {t.contactName} · {t.party.replace(/^Sample\s+/i, '')}
+                      </strong>
                       <small>{last.at}</small>
                     </span>
                     <span className={styles.rowBottom}>
@@ -377,9 +454,11 @@ function Chats({
                 {initials(thread.party)}
               </span>
               <div>
-                <strong>{thread.party}</strong>
+                <strong>
+                  {thread.contactName} · {thread.party}
+                </strong>
                 <small>
-                  {thread.contact} · {thread.members} in party
+                  {thread.contact} · {thread.members} in party · {thread.group}
                 </small>
               </div>
               <button type="button" className={styles.iconButton} aria-pressed={info} aria-label="Guest info" onClick={() => setInfo((v) => !v)}>
@@ -394,8 +473,21 @@ function Chats({
                     {m.template && (
                       <small className={styles.templateTag}>Template · {TEMPLATES[m.template]?.label}</small>
                     )}
-                    <p>{m.text}</p>
+                    {m.attachment ? (
+                      <div className={styles.attachment} data-kind={m.attachment.kind}>
+                        {m.attachment.kind === 'photo' ? <ImageIcon size={28} aria-hidden="true" /> : <FileText size={28} aria-hidden="true" />}
+                        <span>{m.attachment.name}</span>
+                      </div>
+                    ) : (
+                      <p>{m.text}</p>
+                    )}
                     <span className={styles.meta}>
+                      {m.from === 'team' && m.senderId && (
+                        <span className={styles.via}>
+                          via {state.senders.find((s) => s.id === m.senderId)?.displayName ?? 'unknown number'}
+                          {m.category === 'marketing' ? ' · marketing' : ''} ·{' '}
+                        </span>
+                      )}
                       {m.at}
                       {m.from === 'team' &&
                         (m.status === 'simulated' ? (
@@ -427,6 +519,38 @@ function Chats({
                 ))}
               </div>
             )}
+            <div className={styles.assistant} data-state={blockedReason && draft.trim() ? 'blocked' : 'ok'}>
+              <Bot size={18} aria-hidden="true" />
+              <div>
+                <strong>RSVP assistant</strong>
+                {!draft.trim() ? (
+                  <span>
+                    Sending from {sender ? `${sender.displayName} · ${sender.number}` : 'no number'} as{' '}
+                    {category === 'utility' ? 'Utility' : 'Marketing'}. I’ll check the wording before it can be sent.
+                  </span>
+                ) : blockedReason ? (
+                  <span role="alert">{blockedReason}</span>
+                ) : (
+                  <span>Looks good for a {category === 'utility' ? 'Utility' : 'Marketing'} message.</span>
+                )}
+                {hits.length > 0 && (
+                  <div className={styles.hits}>
+                    {hits.map((hit) => (
+                      <button key={hit.term} type="button" onClick={() => setDraft((d) => replaceTerm(d, hit))}>
+                        <ShieldAlert size={14} aria-hidden="true" /> “{hit.term}” → {hit.suggestion}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <label className={styles.categorySelect}>
+                <span className={styles.srOnly}>Message category</span>
+                <select value={category} onChange={(e) => setCategory(e.target.value as MessageCategory)}>
+                  <option value="utility">Utility</option>
+                  <option value="marketing">Marketing</option>
+                </select>
+              </label>
+            </div>
             <form
               className={styles.composer}
               onSubmit={(e) => {
@@ -443,8 +567,8 @@ function Chats({
               <label className={styles.srOnly} htmlFor="rsvp-composer">
                 Type a message
               </label>
-              <input id="rsvp-composer" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Type a message (simulated)" />
-              <button type="submit" className={styles.sendButton} aria-label="Send simulated message" disabled={!draft.trim()}>
+              <input id="rsvp-composer" value={draft} onChange={(e) => setDraft(e.target.value.replaceAll('{name}', thread.contactName))} placeholder={`Message ${thread.contactName} (simulated)`} />
+              <button type="submit" className={styles.sendButton} aria-label="Send simulated message" disabled={!draft.trim() || !!blockedReason}>
                 <SendHorizontal size={20} aria-hidden="true" />
               </button>
             </form>
@@ -452,7 +576,14 @@ function Chats({
         )}
       </section>
       {thread && info && (
-        <GuestInfo thread={thread} event={event} setThread={setThread} close={() => setInfo(false)} />
+        <GuestInfo
+          thread={thread}
+          event={event}
+          setThread={setThread}
+          close={() => setInfo(false)}
+          requestFiles={() => send(fillTemplate('documents', thread, event), 'documents')}
+          simulateFile={simulateGuestFile}
+        />
       )}
     </div>
   );
@@ -463,11 +594,15 @@ function GuestInfo({
   event,
   setThread,
   close,
+  requestFiles,
+  simulateFile,
 }: {
   thread: GuestThread;
   event: RsvpEvent;
   setThread: (id: string, change: (t: GuestThread) => GuestThread, message: string) => void;
   close: () => void;
+  requestFiles: () => void;
+  simulateFile: () => void;
 }) {
   const lastGuest = [...thread.messages].reverse().find((m) => m.from === 'guest');
   const edit = (change: (t: GuestThread) => GuestThread, message: string) =>
@@ -488,6 +623,46 @@ function GuestInfo({
           <h2>{thread.party}</h2>
           <small>{thread.contact}</small>
         </div>
+        <section className={styles.infoCard}>
+          <h3>Contact & category</h3>
+          <label>
+            First name used in messages
+            <input value={thread.contactName} onChange={(e) => edit((t) => ({ ...t, contactName: e.target.value }), 'First name updated.')} />
+          </label>
+          <label>
+            Guest category
+            <select value={thread.group} onChange={(e) => edit((t) => ({ ...t, group: e.target.value as Group }), `${thread.contactName} moved to ${e.target.value}.`)}>
+              {GROUPS.map((g) => (
+                <option key={g}>{g}</option>
+              ))}
+            </select>
+          </label>
+          <label className={styles.checkRow}>
+            <input type="checkbox" checked={thread.optIn} onChange={() => edit((t) => ({ ...t, optIn: !t.optIn }), `Marketing opt-in ${thread.optIn ? 'removed' : 'recorded'} (sample).`)} />
+            Opted in to marketing messages (sample)
+          </label>
+        </section>
+        <section className={styles.infoCard}>
+          <h3>Documents & photos</h3>
+          {thread.media.length === 0 ? (
+            <p className={styles.hint}>Nothing received yet.</p>
+          ) : (
+            <ul className={styles.fileList}>
+              {thread.media.map((m) => (
+                <li key={m.id}>
+                  {m.kind === 'photo' ? <ImageIcon size={18} aria-hidden="true" /> : <FileText size={18} aria-hidden="true" />}
+                  <span>{m.name}</span>
+                  <small>{m.receivedAt}</small>
+                </li>
+              ))}
+            </ul>
+          )}
+          <div className={styles.chipRow}>
+            <button type="button" onClick={requestFiles}>Ask for photo & ID (bot)</button>
+            <button type="button" onClick={simulateFile}>Simulate a guest upload</button>
+          </div>
+          <p className={styles.hint}>Sample files only. Real ID documents need secure storage and retention rules before launch.</p>
+        </section>
         <section className={styles.infoCard}>
           <h3>Response</h3>
           {lastGuest && (
@@ -588,5 +763,149 @@ function GuestInfo({
         </section>
       </div>
     </aside>
+  );
+}
+
+function SenderBar({ state, save }: { state: RsvpChatState; save: Save }) {
+  const login = state.logins.find((l) => l.id === state.activeLogin) ?? state.logins[0];
+  const [adding, setAdding] = useState(false);
+  const addButton = useRef<HTMLButtonElement>(null);
+  return (
+    <div className={styles.senderBar}>
+      <label>
+        <span>
+          <Phone size={13} aria-hidden="true" /> Sending from
+        </span>
+        <select
+          value={login?.senderId ?? ''}
+          onChange={(e) =>
+            save(
+              (s) => ({ ...s, logins: s.logins.map((l) => (l.id === login.id ? { ...l, senderId: e.target.value } : l)) }),
+              `${login.name} now sends from ${state.senders.find((x) => x.id === e.target.value)?.number}.`,
+            )
+          }
+        >
+          {state.senders.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.displayName} · {s.number}
+              {s.status === 'pending' ? ' · verification pending' : ''}
+            </option>
+          ))}
+        </select>
+      </label>
+      <label>
+        <span>Signed in as</span>
+        <select
+          value={login?.id ?? ''}
+          onChange={(e) => save((s) => ({ ...s, activeLogin: e.target.value }), `Switched to ${state.logins.find((l) => l.id === e.target.value)?.name} (sample login).`)}
+        >
+          {state.logins.map((l) => (
+            <option key={l.id} value={l.id}>
+              {l.name} · {l.role} · since {l.at}
+            </option>
+          ))}
+        </select>
+      </label>
+      <button ref={addButton} type="button" className={styles.addNumber} onClick={() => setAdding(true)}>
+        <Plus size={16} aria-hidden="true" /> Add number
+      </button>
+      <GenieWindow sourceRef={addButton} open={adding} onClose={() => setAdding(false)} title="Add a WhatsApp number" label="Close add number">
+        <AddNumber
+          owner={login?.name ?? 'Team member'}
+          onDone={(sender) => {
+            save(
+              (s) => ({
+                ...s,
+                senders: [...s.senders, sender],
+                logins: s.logins.map((l) => (l.id === login.id ? { ...l, senderId: sender.id } : l)),
+              }),
+              `${sender.displayName} (${sender.number}) verified in the demo and selected for ${login.name}.`,
+            );
+            setAdding(false);
+          }}
+        />
+      </GenieWindow>
+    </div>
+  );
+}
+
+const NUMBER_RULES = [
+  'The number belongs to your business and can receive an SMS or voice call for the one-time code.',
+  'It is not active on the personal WhatsApp or WhatsApp Business app (or it is migrated from it first).',
+  'The display name matches your business and follows WhatsApp display-name guidelines.',
+  'The number is added to your WhatsApp Business Account through the Cloud API or an approved provider.',
+  'Guests have agreed to receive messages from you; marketing messages need separate opt-in.',
+];
+
+function AddNumber({ owner, onDone }: { owner: string; onDone: (sender: RsvpChatState['senders'][number]) => void }) {
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+  const [step, setStep] = useState<'details' | 'code'>('details');
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const digits = number.replace(/\D/g, '');
+  return (
+    <div className={styles.addNumberBody}>
+      <p className={styles.hint}>
+        Each team member can add the number they will message from today. Messages then show as sent by that number. Demo only — no code is sent and no number is registered.
+      </p>
+      <h3>WhatsApp requirements</h3>
+      <ul className={styles.rules}>
+        {NUMBER_RULES.map((rule) => (
+          <li key={rule}>
+            <Check size={15} aria-hidden="true" /> {rule}
+          </li>
+        ))}
+      </ul>
+      {step === 'details' ? (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!name.trim() || digits.length < 10 || digits.length > 13) {
+              setError('Enter a display name and a 10–13 digit number (use an invented number).');
+              return;
+            }
+            setError('');
+            setStep('code');
+          }}
+        >
+          <label>
+            Display name
+            <input value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Lotus Events RSVP" />
+          </label>
+          <label>
+            WhatsApp number
+            <input value={number} inputMode="tel" onChange={(e) => setNumber(e.target.value)} placeholder="+91 90000 00000 (invented)" />
+          </label>
+          {error && <p className={styles.error} role="alert">{error}</p>}
+          <button type="submit" className={styles.primary}>Send verification code (simulated)</button>
+        </form>
+      ) : (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (code !== '123456') {
+              setError('For the demo, the code is 123456.');
+              return;
+            }
+            onDone({
+              id: `sd-${Date.now()}`,
+              displayName: name.trim(),
+              number: `+${digits.slice(0, 2)} ${digits.slice(2, 4)}•• ••• ${digits.slice(-4)} (sample)`,
+              owner,
+              status: 'verified',
+            });
+          }}
+        >
+          <p className={styles.hint}>A 6-digit code would arrive by SMS or voice call. Demo code: 123456.</p>
+          <label>
+            Verification code
+            <input value={code} inputMode="numeric" maxLength={6} onChange={(e) => setCode(e.target.value)} />
+          </label>
+          {error && <p className={styles.error} role="alert">{error}</p>}
+          <button type="submit" className={styles.primary}>Verify and use this number</button>
+        </form>
+      )}
+    </div>
   );
 }

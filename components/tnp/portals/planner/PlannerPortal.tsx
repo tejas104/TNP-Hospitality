@@ -34,6 +34,7 @@ const roles = [
   'Executive',
   'Volunteer',
   'Hostess',
+  'Porter',
   'RSVP',
 ];
 type Draft = {

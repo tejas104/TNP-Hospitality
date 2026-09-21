@@ -1297,7 +1297,7 @@
   position: relative;
   transition:
     color 200ms ease,
-    padding-left 240ms cubic-bezier(0.16, 1, 0.3, 1);
+    padding-left 150ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .serviceItem button::before {
   background: #008080;
@@ -1308,7 +1308,7 @@
   position: absolute;
   top: 20%;
   transform: scaleY(0);
-  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 150ms cubic-bezier(0.16, 1, 0.3, 1);
   width: 4px;
 }
 .serviceItem button svg {
@@ -1316,7 +1316,7 @@
   box-sizing: content-box;
   padding: 8px;
   transition:
-    transform 240ms cubic-bezier(0.16, 1, 0.3, 1),
+    transform 150ms cubic-bezier(0.16, 1, 0.3, 1),
     background-color 200ms ease,
     color 200ms ease;
 }
@@ -1361,7 +1361,7 @@
   border-radius: 6px;
   transition:
     box-shadow 320ms ease,
-    scale 420ms cubic-bezier(0.16, 1, 0.3, 1);
+    scale 260ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 .destinationFrame::after {
   background: linear-gradient(180deg, transparent 50%, rgb(20 26 25 / 55%));
@@ -1885,4 +1885,9 @@
     height: 46px;
     width: 46px;
   }
+}
+/* Link glow on the teal hero: white text with a warm gold sweep. */
+.lightLink {
+  --glow-base: #ffffff;
+  --glow-hi: #ffd36a;
 }

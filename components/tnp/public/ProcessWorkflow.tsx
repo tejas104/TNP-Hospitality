@@ -91,7 +91,7 @@ export default function ProcessWorkflow() {
             onPointerMove={(e) => {
               if (e.pointerType !== 'mouse' || index === active) return;
               clearTimeout(hover.current);
-              hover.current = window.setTimeout(() => choose(index), 160);
+              hover.current = window.setTimeout(() => choose(index), 80);
             }}
             onPointerLeave={() => clearTimeout(hover.current)}
             onKeyDown={(e) => {

@@ -1063,3 +1063,8 @@
     transition: none;
   }
 }
+/* Link glow on teal headings: white text with a warm gold sweep. */
+.heading :global(.link-glow) {
+  --glow-base: #ffffff;
+  --glow-hi: #ffd36a;
+}

@@ -16,7 +16,10 @@ import {
   toXlsx,
 } from '../components/tnp/portals/admin/exporters.ts';
 import {
+  checkCompliance,
   eventStats,
+  personalize,
+  replaceTerm,
   seedRsvpChat,
   suggestFromMessage,
 } from '../components/tnp/portals/rsvp/rsvpChatData.ts';
@@ -157,4 +160,20 @@ test('RSVP suggestions never decide: they only suggest and extract', () => {
   const s = eventStats(state.threads.filter((t) => t.eventId === 'lotus-evening'));
   assert.equal(s.parties, 8);
   assert.ok(s.review >= 1);
+});
+
+test('RSVP assistant blocks promotional words in Utility messages and personalises per guest', () => {
+  const hits = checkCompliance('Exclusive offer: book now and get 20% off!');
+  const terms = hits.map((h) => h.term).sort();
+  assert.deepEqual(terms, ['% off', 'book now', 'exclusive', 'offer']);
+  assert.deepEqual(checkCompliance('Please share your arrival time and window seat preference.'), []);
+  let text = 'Exclusive offer: book now and get 20% off!';
+  for (const hit of hits) text = replaceTerm(text, hit);
+  assert.deepEqual(checkCompliance(text), []);
+  const state = seedRsvpChat();
+  const [a, b] = state.threads;
+  assert.notEqual(a.contactName, b.contactName);
+  assert.equal(personalize('Hi {name}', a), `Hi ${a.contactName}`);
+  assert.equal(personalize('Hi {name}', b), `Hi ${b.contactName}`);
+  assert.ok(state.logins.length >= 2 && state.senders.some((s) => s.status === 'verified'));
 });

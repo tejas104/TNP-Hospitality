@@ -17,7 +17,7 @@ export const profiles = [
   { id: 'tnp-demo-applicant-rejected', name: 'Sample application · rejected' },
   { id: 'tnp-demo-applicant-invalid', name: 'Sample application · invalid' },
 ] as const;
-export const roles = ['Event Coordinator', 'Volunteer', 'Hostess'] as const;
+export const roles = ['Event Coordinator', 'Volunteer', 'Hostess', 'Porter'] as const;
 export const questions = [
   {
     text: 'A guest needs help finding their function. What comes first?',

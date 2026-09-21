@@ -172,7 +172,7 @@ export default function DetailPage({ detail }: { detail: PublicDetail }) {
       </nav>
       <footer className={styles.footer}>
         <span>TNP HOSPITALITY · CONTENT PREVIEW</span>
-        <Link href="/">Back to the experience ↑</Link>
+        <Link className="link-glow" href="/">Back to the experience ↑</Link>
       </footer>
     </main>
   );

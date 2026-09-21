@@ -74,7 +74,7 @@ export default function PublicOverviewPage({
             <Link className={styles.creamButton} href="/contact">
               Start a conversation <ArrowUpRight size={18} />
             </Link>
-            <Link href={intro.home}>View homepage section ↓</Link>
+            <Link className="link-glow" href={intro.home}>View homepage section ↓</Link>
           </div>
         </div>
       </section>
@@ -118,7 +118,7 @@ function OverviewContent({ kind }: { kind: PublicOverviewKind }) {
               <div>
                 <h3>{item.title}</h3>
                 <p>{item.summary}</p>
-                <Link href={'/services/' + item.slug}>
+                <Link className="link-glow" href={'/services/' + item.slug}>
                   Explore service <ArrowUpRight size={17} />
                 </Link>
               </div>
@@ -144,7 +144,7 @@ function OverviewContent({ kind }: { kind: PublicOverviewKind }) {
               <figcaption>
                 <span>{item.place}</span>
                 <h3>{item.title.toLowerCase()}</h3>
-                <Link href="/contact?interest=event-request">
+                <Link className="link-glow" href="/contact?interest=event-request">
                   Discuss this direction →
                 </Link>
               </figcaption>
@@ -171,7 +171,7 @@ function OverviewContent({ kind }: { kind: PublicOverviewKind }) {
                 <span>{item.region}</span>
                 <h3>{item.city}</h3>
                 <p>{item.mood}</p>
-                <Link href="/contact?interest=venue-discovery">
+                <Link className="link-glow" href="/contact?interest=venue-discovery">
                   Discuss venues →
                 </Link>
               </figcaption>
@@ -197,7 +197,7 @@ function OverviewContent({ kind }: { kind: PublicOverviewKind }) {
               <div>
                 <h3>{item.title}</h3>
                 <p>{item.summary}</p>
-                <Link href={'/departments/' + item.slug}>
+                <Link className="link-glow" href={'/departments/' + item.slug}>
                   Explore the role →
                 </Link>
               </div>

@@ -20,6 +20,7 @@ export const serviceSlugs = [
   'event-executives',
   'volunteers',
   'guest-hospitality',
+  'porters',
   'rsvp',
   'venue-discovery',
 ];
@@ -28,12 +29,14 @@ export const departmentSlugs = [
   'executive',
   'volunteer',
   'hostess',
+  'porter',
 ];
 const serviceIntroductions = [
   'A considered event needs a clear point of coordination. Explore how event leadership, communication and on-ground decisions could fit your programme.',
   'Between the plan and the moment are dozens of small handovers. Explore event-floor support that keeps guest movement, vendors and checkpoints in view.',
   'A helpful person in the right place can change a guest’s experience. Explore support for entry, directions and the practical tasks around your event.',
   'Hospitality begins with how a guest is welcomed. Explore guest-facing support for arrivals, communication and a calm, considered experience.',
+  'Arrivals, luggage and equipment shape the first minutes of any event. Explore porter support for guests, stages and venue logistics.',
   'Before the first arrival, there is a conversation. Explore human-led RSVP and the planned tools for connecting guest responses, travel and hospitality needs.',
   'The place sets the tone. Explore a starting point for discussing destinations, venue preferences and the experience you want to create.',
 ];
@@ -59,6 +62,11 @@ const serviceDiscussions = [
     'Where are the important arrival and hospitality touchpoints?',
   ],
   [
+    'Where will guests arrive with luggage?',
+    'Which equipment or décor needs moving, and when?',
+    'Who will direct porters between venues and rooms?',
+  ],
+  [
     'Which functions need separate guest responses?',
     'What travel, pickup and stay needs should be coordinated?',
     'Is TNP-managed service or future vendor access the better fit?',
@@ -79,7 +87,7 @@ export const publicServices: PublicDetail[] = services.map(
     introduction: serviceIntroductions[index],
     discussion: serviceDiscussions[index],
     related:
-      index < 4 ? [departmentSlugs[index]] : ['coordinator', 'executive'],
+      index < 5 ? [departmentSlugs[index]] : ['coordinator', 'executive'],
     provenance:
       'Existing TNP service catalogue and preview imagery; supporting discussion prompts are editorial preview copy. Final service names, inclusions, experience criteria and imagery require client approval.',
   }),
