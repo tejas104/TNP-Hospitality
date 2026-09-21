@@ -43,11 +43,30 @@ test('homepage accordion, floating-image labels and settled filmstrip contracts 
     resolve('components/tnp/portals/planner/PlannerPortal.tsx'),
     'utf8',
   );
+  const plannerStudio = readFileSync(
+    resolve('components/tnp/portals/planner/PlannerEventStudio.tsx'),
+    'utf8',
+  );
+  const freelancer = readFileSync(
+    resolve('components/tnp/portals/freelancer/FreelancerPortal.tsx'),
+    'utf8',
+  );
+  const launcherMotion = readFileSync(
+    resolve('components/tnp/public/portal-launcher/PortalLauncher.module.css'),
+    'utf8',
+  );
   assert.match(home, /className=\{styles\.servicePanel\}/);
   assert.match(home, /hidden=\{!open\}/);
   assert.doesNotMatch(hero, />\{index \+ 1\}</);
   assert.match(hero, /FLOATING STORIES/);
   assert.doesNotMatch(scene, /<boxGeometry args=\{\[2\.8, 2\.8, 2\.8\]\}/);
   assert.match(planner, /showPlannerApplication = false/);
-  assert.match(planner, /You are already inside the Planner workspace/);
+  assert.match(planner, /showLegacyRequirementWorkflow = false/);
+  assert.match(planner, /<PlannerEventStudio \/>/);
+  assert.match(plannerStudio, /Create another event/);
+  assert.match(plannerStudio, /Final submit event team/);
+  assert.match(plannerStudio, /staffing: \[\]/);
+  assert.match(freelancer, /freelancer-workspace-drawer/);
+  assert.match(freelancer, /Sample wallet/);
+  assert.match(launcherMotion, /@keyframes genieOpen/);
 });

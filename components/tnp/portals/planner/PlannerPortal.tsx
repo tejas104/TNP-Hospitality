@@ -11,6 +11,7 @@ import type {
 } from '@/lib/contracts/preview';
 import { getBrowserPreviewService } from '@/lib/services/preview';
 import { PlannerRequirements } from './PlannerRequirements';
+import { PlannerEventStudio } from './PlannerEventStudio';
 import {
   actionFingerprint,
   clearAction,
@@ -879,6 +880,7 @@ export function PlannerPortal() {
   // Keep the legacy preview branch isolated for later extraction, but never
   // render it after a Planner has entered this demo workspace.
   const showPlannerApplication = false;
+  const showLegacyRequirementWorkflow = false;
   return (
     <main
       id="main-content"
@@ -907,9 +909,9 @@ export function PlannerPortal() {
       </section>
       <nav className={styles.localNav} aria-label="Planner workspace sections">
         <span>YOUR WORKSPACE</span>
-        <a href="#planner-profile">01 · Planner overview</a>
-        <a href="#planner-requirement">02 · Workforce brief</a>
-        <a href="#planner-directory">03 · Requirement directory</a>
+        <a href="#planner-requirement">01 · Event staffing studio</a>
+        <a href="#planner-requirement">02 · Created event shortcuts</a>
+        <a href="#planner-requirement">03 · Final team summaries</a>
       </nav>
       <section
         className={styles.entrySection}
@@ -921,8 +923,8 @@ export function PlannerPortal() {
             Planner tasks and workforce requirements
           </h2>
           <p>
-            These task controls persist locally in this browser and write only
-            to the shared synthetic scenario.
+            Build synthetic event teams locally in this browser. No live
+            staffing request or external message is created.
           </p>
         </header>
         <output className={styles.referenceState} aria-live="polite">
@@ -935,17 +937,269 @@ export function PlannerPortal() {
           )}
         </output>
         <output className={styles.draftNotice}>{draftStorage}</output>
-        <div className={styles.forms}>
-          {showPlannerApplication ? (
+        {showLegacyRequirementWorkflow ? (
+          <div className={styles.forms}>
+            {showPlannerApplication ? (
+              <form
+                id="planner-registration"
+                tabIndex={-1}
+                aria-label="Sample planner registration"
+                aria-busy={busy === 'registration'}
+                className="ops-card registration-card"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void exclusively('registration', registerPlanner);
+                }}
+                noValidate
+              >
+                <fieldset
+                  className={styles.formFields}
+                  disabled={Boolean(busy) || !draftReady}
+                >
+                  <legend className={styles.visuallyHidden}>
+                    Planner profile
+                  </legend>
+                  <p className="section-kicker">01 · PLANNER REGISTRATION</p>
+                  <h2>Introduce yourself.</h2>
+                  <p className={styles.formCopy}>
+                    A saved profile remains pending sample verification; it
+                    grants no production authority.
+                  </p>
+                  <p className={styles.contextNote}>
+                    {registrationId
+                      ? `Profile receipt: ${registrationId} · verification pending in the sample`
+                      : 'A planner profile is a sample record, not a production account.'}
+                  </p>
+                  <label>
+                    Planner name
+                    <input
+                      value={draft.displayName}
+                      onChange={(event) =>
+                        update('displayName', event.target.value)
+                      }
+                      aria-invalid={Boolean(registrationErrors.displayName)}
+                      aria-describedby={
+                        registrationErrors.displayName
+                          ? 'planner-name-error'
+                          : undefined
+                      }
+                    />
+                    {registrationErrors.displayName && (
+                      <span
+                        id="planner-name-error"
+                        className={styles.fieldError}
+                      >
+                        {registrationErrors.displayName}
+                      </span>
+                    )}
+                  </label>
+                  <label>
+                    Operating city
+                    <input
+                      value={draft.city}
+                      onChange={(event) => update('city', event.target.value)}
+                      aria-invalid={Boolean(registrationErrors.city)}
+                      aria-describedby={
+                        registrationErrors.city
+                          ? 'planner-city-error'
+                          : undefined
+                      }
+                    />
+                    {registrationErrors.city && (
+                      <span
+                        id="planner-city-error"
+                        className={styles.fieldError}
+                      >
+                        {registrationErrors.city}
+                      </span>
+                    )}
+                  </label>
+                  <details className={styles.applicationEvidence}>
+                    <summary>Professional profile details</summary>
+                    <p>
+                      These details stay in this browser as application
+                      preparation. The connected sample registration stores name
+                      and city only; it does not approve a senior planner.
+                    </p>
+                    {(
+                      [
+                        ['experience', 'Relevant experience'],
+                        ['cities', 'Cities you can work in'],
+                        ['categories', 'Event categories'],
+                        ['leadership', 'Leadership experience'],
+                        ['availability', 'Availability'],
+                      ] as const
+                    ).map(([field, label]) => (
+                      <label key={field}>
+                        {label}
+                        <input
+                          maxLength={300}
+                          value={draft[field]}
+                          onChange={(event) =>
+                            update(field, event.target.value)
+                          }
+                        />
+                      </label>
+                    ))}
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={draft.consent === 'yes'}
+                        onChange={(event) =>
+                          update('consent', event.target.checked ? 'yes' : '')
+                        }
+                      />{' '}
+                      I understand that this is a synthetic application draft.
+                    </label>
+                    <label>
+                      Application review scenario
+                      <select
+                        value={draft.applicationState}
+                        onChange={(event) =>
+                          update('applicationState', event.target.value)
+                        }
+                      >
+                        {[
+                          'saved draft',
+                          'submitted',
+                          'under review',
+                          'revision requested',
+                          'approved — unassigned',
+                          'declined',
+                          'suspended',
+                        ].map((state) => (
+                          <option key={state}>{state}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (
+                          [
+                            'experience',
+                            'cities',
+                            'categories',
+                            'leadership',
+                            'availability',
+                          ].some(
+                            (field) => !draft[field as keyof Draft].trim(),
+                          ) ||
+                          draft.consent !== 'yes'
+                        ) {
+                          setRegistrationNotice(
+                            'Complete professional details and consent before preparing the local submission.',
+                          );
+                          return;
+                        }
+                        update('applicationState', 'submitted');
+                        setRegistrationNotice(
+                          'Application prepared locally. No review service or assignment was invoked.',
+                        );
+                      }}
+                    >
+                      Prepare local application submission
+                    </button>
+                    <p>
+                      Status: {draft.applicationState}.{' '}
+                      {draft.applicationState === 'approved — unassigned'
+                        ? 'No assigned events. Approval alone does not expose client briefs or workforce resources.'
+                        : draft.applicationState === 'revision requested'
+                          ? 'Sample revision: add specific leadership evidence before resubmitting.'
+                          : draft.applicationState === 'suspended'
+                            ? 'Coordination actions are unavailable in this review scenario.'
+                            : 'No assignment or fulfilment access is granted.'}
+                    </p>
+                  </details>
+                  <button
+                    type="submit"
+                    className="magnetic-btn dark"
+                    disabled={Boolean(busy) || !draftReady}
+                  >
+                    {busy === 'registration'
+                      ? 'Saving sample…'
+                      : 'Save sample planner'}
+                  </button>
+                  {registrationNotice && (
+                    <output
+                      className={
+                        registrationId ? styles.success : styles.failure
+                      }
+                    >
+                      {registrationId ? <CheckCircle2 /> : <CircleAlert />}
+                      <div>
+                        <strong>
+                          {registrationId || 'No planner receipt yet'}
+                        </strong>
+                        <p>{registrationNotice}</p>
+                      </div>
+                    </output>
+                  )}
+                  {!registrationId &&
+                    pendingRegistration &&
+                    busy !== 'registration' && (
+                      <button
+                        type="button"
+                        className={styles.retry}
+                        onClick={() =>
+                          void exclusively('registration', () =>
+                            runRegistration(pendingRegistration),
+                          )
+                        }
+                      >
+                        <RefreshCcw size={15} /> Retry same request
+                      </button>
+                    )}
+                  {registrationId && (
+                    <button
+                      type="button"
+                      className={styles.retry}
+                      onClick={startNewRegistration}
+                    >
+                      Start another synthetic registration
+                    </button>
+                  )}
+                </fieldset>
+              </form>
+            ) : (
+              <article
+                id="planner-profile"
+                tabIndex={-1}
+                className="ops-card registration-card"
+                aria-labelledby="planner-overview-title"
+              >
+                <p className="section-kicker">01 · ACTIVE PLANNER</p>
+                <h2 id="planner-overview-title">
+                  Welcome back, {draft.displayName || 'Planner'}.
+                </h2>
+                <p className={styles.formCopy}>
+                  You are already inside the Planner workspace. Applicant
+                  onboarding stays outside this area; continue with the live
+                  demo tasks and linked event requirements.
+                </p>
+                <div className={styles.linkedContext}>
+                  <span>CURRENT DEMO CONTEXT</span>
+                  <strong>{draft.city || 'TNP planning desk'}</strong>
+                  <p>
+                    Synthetic identity active · no production authentication,
+                    assignment authority or client data is granted.
+                  </p>
+                </div>
+                <a className="magnetic-btn dark" href="#planner-requirement">
+                  Review workforce brief
+                </a>
+              </article>
+            )}
+
             <form
-              id="planner-registration"
+              id="planner-requirement"
               tabIndex={-1}
-              aria-label="Sample planner registration"
-              aria-busy={busy === 'registration'}
-              className="ops-card registration-card"
+              aria-label="Sample workforce requirement"
+              aria-busy={busy === 'requirement'}
+              className="ops-card requirement-card"
               onSubmit={(event) => {
                 event.preventDefault();
-                void exclusively('registration', registerPlanner);
+                void exclusively('requirement', submitRequirement);
               }}
               noValidate
             >
@@ -954,433 +1208,209 @@ export function PlannerPortal() {
                 disabled={Boolean(busy) || !draftReady}
               >
                 <legend className={styles.visuallyHidden}>
-                  Planner profile
+                  Connected workforce brief
                 </legend>
-                <p className="section-kicker">01 · PLANNER REGISTRATION</p>
-                <h2>Introduce yourself.</h2>
+                <p className="section-kicker">02 · WORKFORCE REQUIREMENT</p>
+                <h2>Connect the ask.</h2>
                 <p className={styles.formCopy}>
-                  A saved profile remains pending sample verification; it grants
-                  no production authority.
+                  Every sample requirement retains the selected booking and
+                  event identity.
                 </p>
-                <p className={styles.contextNote}>
-                  {registrationId
-                    ? `Profile receipt: ${registrationId} · verification pending in the sample`
-                    : 'A planner profile is a sample record, not a production account.'}
-                </p>
+                <aside
+                  className={styles.linkedContext}
+                  aria-label="Selected requirement context"
+                >
+                  <span>CONNECTED CONTEXT</span>
+                  <strong>
+                    {referenceState === 'ready'
+                      ? selectedBooking?.eventName || 'Choose a booking'
+                      : 'Sample references unavailable'}
+                  </strong>
+                  <p>
+                    {referenceState === 'ready'
+                      ? selectedEvent
+                        ? `${selectedEvent.name} · ${selectedEvent.status} · ${selectedEvent.timezone}`
+                        : 'No linked event selected'
+                      : 'Restore the reference catalogue before submitting.'}
+                  </p>
+                  {referenceState === 'ready' && selectedEvent && (
+                    <code>{selectedEvent.id}</code>
+                  )}
+                </aside>
                 <label>
-                  Planner name
-                  <input
-                    value={draft.displayName}
+                  Linked booking
+                  <select
+                    value={draft.bookingId}
                     onChange={(event) =>
-                      update('displayName', event.target.value)
+                      update('bookingId', event.target.value)
                     }
-                    aria-invalid={Boolean(registrationErrors.displayName)}
+                    aria-invalid={Boolean(requirementErrors.bookingId)}
                     aria-describedby={
-                      registrationErrors.displayName
-                        ? 'planner-name-error'
+                      requirementErrors.bookingId
+                        ? 'planner-booking-error'
                         : undefined
                     }
-                  />
-                  {registrationErrors.displayName && (
-                    <span id="planner-name-error" className={styles.fieldError}>
-                      {registrationErrors.displayName}
+                    disabled={referenceState !== 'ready'}
+                  >
+                    <option value="">Choose booking</option>
+                    {bookings.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.id} · {item.eventName}
+                      </option>
+                    ))}
+                  </select>
+                  {requirementErrors.bookingId && (
+                    <span
+                      id="planner-booking-error"
+                      className={styles.fieldError}
+                    >
+                      {requirementErrors.bookingId}
                     </span>
                   )}
                 </label>
                 <label>
-                  Operating city
-                  <input
-                    value={draft.city}
-                    onChange={(event) => update('city', event.target.value)}
-                    aria-invalid={Boolean(registrationErrors.city)}
+                  Linked event
+                  <select
+                    value={draft.eventId}
+                    onChange={(event) => update('eventId', event.target.value)}
+                    aria-invalid={Boolean(requirementErrors.eventId)}
                     aria-describedby={
-                      registrationErrors.city ? 'planner-city-error' : undefined
+                      requirementErrors.eventId
+                        ? 'planner-event-error'
+                        : undefined
                     }
-                  />
-                  {registrationErrors.city && (
-                    <span id="planner-city-error" className={styles.fieldError}>
-                      {registrationErrors.city}
+                    disabled={referenceState !== 'ready'}
+                  >
+                    <option value="">Choose event</option>
+                    {matchingEvents.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.id} · {item.name}
+                      </option>
+                    ))}
+                  </select>
+                  {requirementErrors.eventId && (
+                    <span
+                      id="planner-event-error"
+                      className={styles.fieldError}
+                    >
+                      {requirementErrors.eventId}
                     </span>
                   )}
                 </label>
-                <details className={styles.applicationEvidence}>
-                  <summary>Professional profile details</summary>
-                  <p>
-                    These details stay in this browser as application
-                    preparation. The connected sample registration stores name
-                    and city only; it does not approve a senior planner.
-                  </p>
-                  {(
-                    [
-                      ['experience', 'Relevant experience'],
-                      ['cities', 'Cities you can work in'],
-                      ['categories', 'Event categories'],
-                      ['leadership', 'Leadership experience'],
-                      ['availability', 'Availability'],
-                    ] as const
-                  ).map(([field, label]) => (
-                    <label key={field}>
-                      {label}
-                      <input
-                        maxLength={300}
-                        value={draft[field]}
-                        onChange={(event) => update(field, event.target.value)}
-                      />
-                    </label>
-                  ))}
+                <div className={styles.inlineFields}>
                   <label>
-                    <input
-                      type="checkbox"
-                      checked={draft.consent === 'yes'}
-                      onChange={(event) =>
-                        update('consent', event.target.checked ? 'yes' : '')
-                      }
-                    />{' '}
-                    I understand that this is a synthetic application draft.
-                  </label>
-                  <label>
-                    Application review scenario
+                    Role
                     <select
-                      value={draft.applicationState}
-                      onChange={(event) =>
-                        update('applicationState', event.target.value)
+                      value={draft.role}
+                      onChange={(event) => update('role', event.target.value)}
+                      aria-invalid={Boolean(requirementErrors.role)}
+                      aria-describedby={
+                        requirementErrors.role
+                          ? 'planner-role-error'
+                          : undefined
                       }
                     >
-                      {[
-                        'saved draft',
-                        'submitted',
-                        'under review',
-                        'revision requested',
-                        'approved — unassigned',
-                        'declined',
-                        'suspended',
-                      ].map((state) => (
-                        <option key={state}>{state}</option>
+                      {roles.map((item) => (
+                        <option key={item}>{item}</option>
                       ))}
                     </select>
+                    {requirementErrors.role && (
+                      <span
+                        id="planner-role-error"
+                        className={styles.fieldError}
+                      >
+                        {requirementErrors.role}
+                      </span>
+                    )}
                   </label>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (
-                        [
-                          'experience',
-                          'cities',
-                          'categories',
-                          'leadership',
-                          'availability',
-                        ].some(
-                          (field) => !draft[field as keyof Draft].trim(),
-                        ) ||
-                        draft.consent !== 'yes'
-                      ) {
-                        setRegistrationNotice(
-                          'Complete professional details and consent before preparing the local submission.',
-                        );
-                        return;
+                  <label>
+                    Quantity
+                    <input
+                      inputMode="numeric"
+                      value={draft.quantity}
+                      onChange={(event) =>
+                        update('quantity', event.target.value)
                       }
-                      update('applicationState', 'submitted');
-                      setRegistrationNotice(
-                        'Application prepared locally. No review service or assignment was invoked.',
-                      );
-                    }}
-                  >
-                    Prepare local application submission
-                  </button>
-                  <p>
-                    Status: {draft.applicationState}.{' '}
-                    {draft.applicationState === 'approved — unassigned'
-                      ? 'No assigned events. Approval alone does not expose client briefs or workforce resources.'
-                      : draft.applicationState === 'revision requested'
-                        ? 'Sample revision: add specific leadership evidence before resubmitting.'
-                        : draft.applicationState === 'suspended'
-                          ? 'Coordination actions are unavailable in this review scenario.'
-                          : 'No assignment or fulfilment access is granted.'}
-                  </p>
-                </details>
+                      aria-invalid={Boolean(requirementErrors.quantity)}
+                      aria-describedby={
+                        requirementErrors.quantity
+                          ? 'planner-quantity-error'
+                          : undefined
+                      }
+                    />
+                    {requirementErrors.quantity && (
+                      <span
+                        id="planner-quantity-error"
+                        className={styles.fieldError}
+                      >
+                        {requirementErrors.quantity}
+                      </span>
+                    )}
+                  </label>
+                </div>
+                <label>
+                  Sample instructions
+                  <textarea
+                    value={draft.notes}
+                    onChange={(event) => update('notes', event.target.value)}
+                  />
+                </label>
                 <button
                   type="submit"
                   className="magnetic-btn dark"
-                  disabled={Boolean(busy) || !draftReady}
+                  disabled={
+                    Boolean(busy) || !draftReady || referenceState !== 'ready'
+                  }
                 >
-                  {busy === 'registration'
+                  {busy === 'requirement'
                     ? 'Saving sample…'
-                    : 'Save sample planner'}
+                    : 'Submit sample requirement'}
                 </button>
-                {registrationNotice && (
+                {requirementNotice && (
                   <output
-                    className={registrationId ? styles.success : styles.failure}
+                    className={requirementId ? styles.success : styles.failure}
                   >
-                    {registrationId ? <CheckCircle2 /> : <CircleAlert />}
+                    {requirementId ? <CheckCircle2 /> : <CircleAlert />}
                     <div>
                       <strong>
-                        {registrationId || 'No planner receipt yet'}
+                        {requirementId || 'No requirement receipt yet'}
                       </strong>
-                      <p>{registrationNotice}</p>
+                      <p>{requirementNotice}</p>
                     </div>
                   </output>
                 )}
-                {!registrationId &&
-                  pendingRegistration &&
-                  busy !== 'registration' && (
+                {!requirementId &&
+                  pendingRequirement &&
+                  busy !== 'requirement' && (
                     <button
                       type="button"
                       className={styles.retry}
                       onClick={() =>
-                        void exclusively('registration', () =>
-                          runRegistration(pendingRegistration),
+                        void exclusively('requirement', () =>
+                          runRequirement(pendingRequirement),
                         )
                       }
                     >
                       <RefreshCcw size={15} /> Retry same request
                     </button>
                   )}
-                {registrationId && (
+                {requirementId && (
                   <button
                     type="button"
                     className={styles.retry}
-                    onClick={startNewRegistration}
+                    onClick={startNewRequirement}
                   >
-                    Start another synthetic registration
+                    Start another synthetic requirement
                   </button>
                 )}
               </fieldset>
             </form>
-          ) : (
-            <article
-              id="planner-profile"
-              tabIndex={-1}
-              className="ops-card registration-card"
-              aria-labelledby="planner-overview-title"
-            >
-              <p className="section-kicker">01 · ACTIVE PLANNER</p>
-              <h2 id="planner-overview-title">
-                Welcome back, {draft.displayName || 'Planner'}.
-              </h2>
-              <p className={styles.formCopy}>
-                You are already inside the Planner workspace. Applicant
-                onboarding stays outside this area; continue with the live demo
-                tasks and linked event requirements.
-              </p>
-              <div className={styles.linkedContext}>
-                <span>CURRENT DEMO CONTEXT</span>
-                <strong>{draft.city || 'TNP planning desk'}</strong>
-                <p>
-                  Synthetic identity active · no production authentication,
-                  assignment authority or client data is granted.
-                </p>
-              </div>
-              <a className="magnetic-btn dark" href="#planner-requirement">
-                Review workforce brief
-              </a>
-            </article>
-          )}
-
-          <form
-            id="planner-requirement"
-            tabIndex={-1}
-            aria-label="Sample workforce requirement"
-            aria-busy={busy === 'requirement'}
-            className="ops-card requirement-card"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void exclusively('requirement', submitRequirement);
-            }}
-            noValidate
-          >
-            <fieldset
-              className={styles.formFields}
-              disabled={Boolean(busy) || !draftReady}
-            >
-              <legend className={styles.visuallyHidden}>
-                Connected workforce brief
-              </legend>
-              <p className="section-kicker">02 · WORKFORCE REQUIREMENT</p>
-              <h2>Connect the ask.</h2>
-              <p className={styles.formCopy}>
-                Every sample requirement retains the selected booking and event
-                identity.
-              </p>
-              <aside
-                className={styles.linkedContext}
-                aria-label="Selected requirement context"
-              >
-                <span>CONNECTED CONTEXT</span>
-                <strong>
-                  {referenceState === 'ready'
-                    ? selectedBooking?.eventName || 'Choose a booking'
-                    : 'Sample references unavailable'}
-                </strong>
-                <p>
-                  {referenceState === 'ready'
-                    ? selectedEvent
-                      ? `${selectedEvent.name} · ${selectedEvent.status} · ${selectedEvent.timezone}`
-                      : 'No linked event selected'
-                    : 'Restore the reference catalogue before submitting.'}
-                </p>
-                {referenceState === 'ready' && selectedEvent && (
-                  <code>{selectedEvent.id}</code>
-                )}
-              </aside>
-              <label>
-                Linked booking
-                <select
-                  value={draft.bookingId}
-                  onChange={(event) => update('bookingId', event.target.value)}
-                  aria-invalid={Boolean(requirementErrors.bookingId)}
-                  aria-describedby={
-                    requirementErrors.bookingId
-                      ? 'planner-booking-error'
-                      : undefined
-                  }
-                  disabled={referenceState !== 'ready'}
-                >
-                  <option value="">Choose booking</option>
-                  {bookings.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.id} · {item.eventName}
-                    </option>
-                  ))}
-                </select>
-                {requirementErrors.bookingId && (
-                  <span
-                    id="planner-booking-error"
-                    className={styles.fieldError}
-                  >
-                    {requirementErrors.bookingId}
-                  </span>
-                )}
-              </label>
-              <label>
-                Linked event
-                <select
-                  value={draft.eventId}
-                  onChange={(event) => update('eventId', event.target.value)}
-                  aria-invalid={Boolean(requirementErrors.eventId)}
-                  aria-describedby={
-                    requirementErrors.eventId
-                      ? 'planner-event-error'
-                      : undefined
-                  }
-                  disabled={referenceState !== 'ready'}
-                >
-                  <option value="">Choose event</option>
-                  {matchingEvents.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.id} · {item.name}
-                    </option>
-                  ))}
-                </select>
-                {requirementErrors.eventId && (
-                  <span id="planner-event-error" className={styles.fieldError}>
-                    {requirementErrors.eventId}
-                  </span>
-                )}
-              </label>
-              <div className={styles.inlineFields}>
-                <label>
-                  Role
-                  <select
-                    value={draft.role}
-                    onChange={(event) => update('role', event.target.value)}
-                    aria-invalid={Boolean(requirementErrors.role)}
-                    aria-describedby={
-                      requirementErrors.role ? 'planner-role-error' : undefined
-                    }
-                  >
-                    {roles.map((item) => (
-                      <option key={item}>{item}</option>
-                    ))}
-                  </select>
-                  {requirementErrors.role && (
-                    <span id="planner-role-error" className={styles.fieldError}>
-                      {requirementErrors.role}
-                    </span>
-                  )}
-                </label>
-                <label>
-                  Quantity
-                  <input
-                    inputMode="numeric"
-                    value={draft.quantity}
-                    onChange={(event) => update('quantity', event.target.value)}
-                    aria-invalid={Boolean(requirementErrors.quantity)}
-                    aria-describedby={
-                      requirementErrors.quantity
-                        ? 'planner-quantity-error'
-                        : undefined
-                    }
-                  />
-                  {requirementErrors.quantity && (
-                    <span
-                      id="planner-quantity-error"
-                      className={styles.fieldError}
-                    >
-                      {requirementErrors.quantity}
-                    </span>
-                  )}
-                </label>
-              </div>
-              <label>
-                Sample instructions
-                <textarea
-                  value={draft.notes}
-                  onChange={(event) => update('notes', event.target.value)}
-                />
-              </label>
-              <button
-                type="submit"
-                className="magnetic-btn dark"
-                disabled={
-                  Boolean(busy) || !draftReady || referenceState !== 'ready'
-                }
-              >
-                {busy === 'requirement'
-                  ? 'Saving sample…'
-                  : 'Submit sample requirement'}
-              </button>
-              {requirementNotice && (
-                <output
-                  className={requirementId ? styles.success : styles.failure}
-                >
-                  {requirementId ? <CheckCircle2 /> : <CircleAlert />}
-                  <div>
-                    <strong>
-                      {requirementId || 'No requirement receipt yet'}
-                    </strong>
-                    <p>{requirementNotice}</p>
-                  </div>
-                </output>
-              )}
-              {!requirementId &&
-                pendingRequirement &&
-                busy !== 'requirement' && (
-                  <button
-                    type="button"
-                    className={styles.retry}
-                    onClick={() =>
-                      void exclusively('requirement', () =>
-                        runRequirement(pendingRequirement),
-                      )
-                    }
-                  >
-                    <RefreshCcw size={15} /> Retry same request
-                  </button>
-                )}
-              {requirementId && (
-                <button
-                  type="button"
-                  className={styles.retry}
-                  onClick={startNewRequirement}
-                >
-                  Start another synthetic requirement
-                </button>
-              )}
-            </fieldset>
-          </form>
-        </div>
+          </div>
+        ) : (
+          <PlannerEventStudio />
+        )}
       </section>
-      <PlannerRequirements />
+      {showLegacyRequirementWorkflow && <PlannerRequirements />}
       <section
         className={styles.illustrativeJourney}
         aria-label="Illustrative wider service journey"
@@ -1391,8 +1421,8 @@ export function PlannerPortal() {
         <p>
           These stages explain a possible wider workflow, not the status of your
           requirement. No verification, approval, publication or staffing is
-          performed here. The directory above shows actual sample record
-          statuses.
+          performed here. The event summaries above show only local selections
+          made in this demo.
         </p>
         {[
           'Draft',

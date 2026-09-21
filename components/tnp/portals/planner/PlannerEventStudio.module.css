@@ -1,0 +1,373 @@
+.studio {
+  display: grid;
+  gap: 24px;
+}
+.studioHeader {
+  align-items: end;
+  display: flex;
+  gap: 28px;
+  justify-content: space-between;
+}
+.studioHeader > div {
+  max-width: 760px;
+}
+.studioHeader h2 {
+  font: 650 clamp(30px, 4vw, 48px)/1.06 var(--font-product, sans-serif);
+  letter-spacing: -0.035em;
+  margin: 10px 0 12px;
+}
+.studioHeader p {
+  color: #505854;
+  line-height: 1.65;
+  margin: 0;
+}
+.createButton,
+.submitButton,
+.roleComposer button {
+  align-items: center;
+  background: #008080;
+  border: 1px solid #008080;
+  color: #fff;
+  cursor: pointer;
+  display: inline-flex;
+  font: 700 13px var(--font-product, sans-serif);
+  gap: 9px;
+  justify-content: center;
+  min-height: 48px;
+  padding: 12px 18px;
+}
+.createButton {
+  flex: 0 0 auto;
+}
+.eventRail {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+.eventRail > button {
+  align-items: center;
+  background: #fffdf8;
+  border: 1px solid #c8c0af;
+  color: #202423;
+  cursor: pointer;
+  display: grid;
+  gap: 3px 10px;
+  grid-template-columns: auto 1fr auto;
+  min-height: 82px;
+  padding: 14px;
+  text-align: left;
+}
+.eventRail > button > span {
+  align-self: start;
+  color: #006b6b;
+  font-size: 11px;
+  font-weight: 800;
+  grid-row: 1 / 3;
+}
+.eventRail > button strong {
+  font-size: 14px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.eventRail > button small {
+  color: #59615f;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+.eventRail > button svg {
+  grid-column: 3;
+  grid-row: 1 / 3;
+}
+.railTotal {
+  align-items: center;
+  background: #202423;
+  color: #fff;
+  display: flex;
+  gap: 10px;
+  min-height: 82px;
+  padding: 14px 18px;
+}
+.railTotal span {
+  display: grid;
+  font-size: 11px;
+}
+.railTotal strong {
+  color: #ffe4a3;
+  font-size: 22px;
+}
+.notice {
+  background: #e7efec;
+  border-left: 4px solid #008080;
+  color: #34413d;
+  display: block;
+  font-size: 13px;
+  min-height: 48px;
+  padding: 14px 16px;
+}
+.eventStack {
+  display: grid;
+  gap: 30px;
+}
+.eventWorkspace {
+  align-items: start;
+  background: #fffdf8;
+  border: 1px solid #c8c0af;
+  display: grid;
+  grid-template-columns: minmax(0, 1.22fr) minmax(300px, 0.78fr);
+  outline: none;
+  scroll-margin-top: 110px;
+}
+.eventWorkspace:focus-visible {
+  box-shadow: 0 0 0 4px #008080;
+}
+.builder {
+  display: grid;
+  gap: 22px;
+  padding: clamp(22px, 4vw, 42px);
+}
+.eventHeading {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+.eventHeading > span {
+  color: #006b6b;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.eventHeading > strong {
+  border: 1px solid #b3aa99;
+  border-radius: 999px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  padding: 6px 10px;
+  text-transform: uppercase;
+}
+.eventHeading > strong[data-status='submitted'] {
+  background: #008080;
+  border-color: #008080;
+  color: #fff;
+}
+.builder > h3,
+.summary > h3 {
+  font: 650 clamp(26px, 3vw, 38px)/1.12 var(--font-product, sans-serif);
+  letter-spacing: -0.025em;
+  margin: 0;
+}
+.eventFields {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.builder label {
+  color: #4f5955;
+  display: grid;
+  font-size: 11px;
+  font-weight: 800;
+  gap: 7px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.builder :is(input, select, textarea) {
+  background: #f8f5ed;
+  border: 1px solid #bcb4a5;
+  color: #202423;
+  font: 16px var(--font-product, sans-serif);
+  min-height: 48px;
+  padding: 11px 13px;
+  text-transform: none;
+  width: 100%;
+}
+.builder textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+.builder :is(input, select, textarea, button):focus-visible,
+.eventRail button:focus-visible {
+  outline: 3px solid #008080;
+  outline-offset: 3px;
+}
+.roleComposer {
+  align-items: end;
+  background: #f0ece2;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(100px, 0.45fr) auto;
+  padding: 18px;
+}
+.roleComposer button {
+  min-height: 48px;
+}
+.selectedRoles {
+  display: grid;
+  gap: 9px;
+}
+.selectedRoles > div {
+  align-items: center;
+  border: 1px solid #d1c9ba;
+  display: flex;
+  justify-content: space-between;
+  min-height: 54px;
+  padding: 9px 10px 9px 14px;
+}
+.selectedRoles span {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+.selectedRoles button {
+  background: transparent;
+  border: 0;
+  color: #202423;
+  cursor: pointer;
+  display: grid;
+  min-height: 44px;
+  min-width: 44px;
+  place-items: center;
+}
+.selectedRoles p {
+  color: #59615f;
+  font-size: 13px;
+  margin: 0;
+}
+.submitButton {
+  justify-self: start;
+  min-width: 230px;
+}
+.summary {
+  align-self: stretch;
+  background: #008080;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: clamp(24px, 4vw, 42px);
+  position: sticky;
+  top: 96px;
+}
+.summary :global(.section-kicker) {
+  color: #fff;
+}
+.summary > h3 {
+  color: #fff;
+  margin: 12px 0 24px;
+}
+.summaryMeta {
+  display: grid;
+  gap: 10px;
+}
+.summaryMeta span {
+  align-items: flex-start;
+  display: flex;
+  gap: 9px;
+  font-size: 13px;
+}
+.summaryMeta svg {
+  flex: 0 0 auto;
+}
+.summaryLines {
+  border-block: 1px solid rgb(255 255 255 / 36%);
+  display: grid;
+  gap: 0;
+  margin: 28px 0 20px;
+  padding: 10px 0;
+}
+.summaryLines > div {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  padding: 9px 0;
+}
+.summaryLines span {
+  font-size: 13px;
+}
+.summaryLines strong {
+  color: #ffe4a3;
+  font-size: 20px;
+}
+.summaryLines p {
+  color: #fff;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.total {
+  align-items: end;
+  display: flex;
+  justify-content: space-between;
+}
+.total span {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.total strong {
+  color: #ffe4a3;
+  font-size: 52px;
+  line-height: 1;
+}
+.summaryNotes {
+  background: rgb(255 255 255 / 11%);
+  border-left: 3px solid #ffe4a3;
+  font-size: 13px;
+  line-height: 1.55;
+  margin: 24px 0 0;
+  padding: 12px;
+}
+.summary > small {
+  color: #fff;
+  line-height: 1.5;
+  margin-top: auto;
+  padding-top: 28px;
+}
+@media (max-width: 1000px) {
+  .eventRail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .eventWorkspace {
+    grid-template-columns: 1fr;
+  }
+  .summary {
+    position: static;
+  }
+}
+@media (max-width: 700px) {
+  .studioHeader {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .createButton {
+    align-self: stretch;
+  }
+  .eventRail {
+    display: flex;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    scroll-snap-type: x proximity;
+  }
+  .eventRail > button,
+  .railTotal {
+    flex: 0 0 235px;
+    scroll-snap-align: start;
+  }
+  .eventFields,
+  .roleComposer {
+    grid-template-columns: 1fr;
+  }
+  .roleComposer button,
+  .submitButton {
+    justify-self: stretch;
+    width: 100%;
+  }
+  .builder,
+  .summary {
+    padding: 22px 18px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .studio * {
+    scroll-behavior: auto !important;
+  }
+}
