@@ -31,9 +31,9 @@ export function visibleSource(rect: Rect, width: number, height: number) {
     rect.y + rect.height <= height
   );
 }
-// Genie timing follows the user's 2026-09-21 direction (open 650–850ms,
-// close 550–750ms), which supersedes the earlier 220–320ms packet target.
-export const LAUNCHER_TIMING = { open: 720, close: 620 } as const;
+// Genie timing follows the user's 2026-09-21 direction: close 550–750ms, and
+// the open was later halved in speed (720ms -> 1440ms) for the client demo.
+export const LAUNCHER_TIMING = { open: 1440, close: 620 } as const;
 export const GENIE_EASE = {
   // Slower start than (0.16,1,0.3,1) so the bend/stretch frames are seen.
   open: [0.4, 0.2, 0.2, 1],
