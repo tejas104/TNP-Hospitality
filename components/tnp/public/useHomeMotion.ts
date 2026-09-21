@@ -2,7 +2,6 @@
 
 import { useEffect, type RefObject } from 'react';
 import { journeyProgress, motionPolicy } from './motion-policy';
-import { filmstripOffset } from './workspace-interaction';
 import {
   destinationMode,
   destinationProgress,
@@ -117,22 +116,6 @@ export function useHomeMotion(
           '--destination-drift',
           `${destinationEngine() === 'static' ? 0 : 5 - progress * 10}px`,
         );
-      }
-      const filmstrip = element.querySelector<HTMLElement>('[data-filmstrip]');
-      if (
-        filmstrip &&
-        policy().parallax &&
-        !filmstrip.contains(document.activeElement) &&
-        !filmstrip.hasAttribute('data-filmstrip-manual')
-      ) {
-        const bounds = filmstrip.getBoundingClientRect();
-        if (bounds.top < innerHeight && bounds.bottom > 0)
-          filmstrip.scrollLeft = filmstripOffset(
-            bounds.top,
-            bounds.height,
-            innerHeight,
-            filmstrip.scrollWidth - filmstrip.clientWidth,
-          );
       }
       const track = element.querySelector<HTMLElement>('[data-journey]');
       if (!track) return;

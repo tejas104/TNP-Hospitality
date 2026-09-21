@@ -19,6 +19,7 @@ import {
 } from './access/routes';
 import { profileFor } from './access/session';
 import WorkspaceDrawer from './public/WorkspaceDrawer';
+import { GenieWindow } from './public/portal-launcher/PortalLauncher';
 
 export default function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -206,72 +207,47 @@ function Shell({ children }: { children: ReactNode }) {
 function WorkspaceSwitcher({ current }: { current?: string }) {
   const { ready } = useDemoAccess();
   const [open, setOpen] = useState(false);
-  const root = useRef<HTMLDivElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (!open) return;
-    const dismiss = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.preventDefault();
-        setOpen(false);
-        trigger.current?.focus();
-      }
-    };
-    const outside = (event: PointerEvent) => {
-      if (!root.current?.contains(event.target as Node)) {
-        if (root.current?.contains(document.activeElement))
-          trigger.current?.focus();
-        setOpen(false);
-      }
-    };
-    document.addEventListener('keydown', dismiss);
-    document.addEventListener('pointerdown', outside);
-    return () => {
-      document.removeEventListener('keydown', dismiss);
-      document.removeEventListener('pointerdown', outside);
-    };
-  }, [open]);
   return (
-    <div
-      className="ux-switcher"
-      ref={root}
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false);
-      }}
-    >
+    <div className="ux-switcher">
       <button
         className="ux-workspace-pill"
         ref={trigger}
         type="button"
         disabled={!ready}
+        aria-haspopup="dialog"
         aria-expanded={open}
-        aria-controls="workspace-menu"
-        onClick={() => setOpen((value) => !value)}
+        onClick={() => setOpen(true)}
       >
         {`${demoWorkspaces.find((workspace) => workspace.id === current)?.label ?? 'Switch'} workspace`}
         <span aria-hidden="true">⌄</span>
       </button>
-      <nav
-        id="workspace-menu"
-        className="ux-workspace-menu"
-        aria-label="Choose workspace"
-        hidden={!open}
+      {/* Same source-anchored genie window as the launcher (2026-09-21). */}
+      <GenieWindow
+        sourceRef={trigger}
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Choose workspace"
+        label="Close workspace chooser"
+        align="end"
       >
-        {demoWorkspaces.map((workspace) => (
-          <Link
-            key={workspace.id}
-            href={chooserHref(workspace.id)}
-            aria-current={current === workspace.id ? 'page' : undefined}
-            onClick={() => setOpen(false)}
-          >
-            <strong>
-              {workspace.label}
-              {current === workspace.id ? ' · Current' : ''}
-            </strong>
-            <small>{workspace.purpose}</small>
-          </Link>
-        ))}
-      </nav>
+        <nav className="genie-workspace-list" aria-label="Choose workspace">
+          {demoWorkspaces.map((workspace) => (
+            <Link
+              key={workspace.id}
+              href={chooserHref(workspace.id)}
+              aria-current={current === workspace.id ? 'page' : undefined}
+              onClick={() => setOpen(false)}
+            >
+              <strong>
+                {workspace.label}
+                {current === workspace.id ? ' · Current' : ''}
+              </strong>
+              <small>{workspace.purpose}</small>
+            </Link>
+          ))}
+        </nav>
+      </GenieWindow>
     </div>
   );
 }

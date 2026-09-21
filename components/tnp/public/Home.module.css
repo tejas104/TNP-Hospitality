@@ -1545,3 +1545,344 @@
     background: linear-gradient(180deg, rgb(0 128 128 / 90%), rgb(0 128 128 / 70%) 60%, rgb(0 128 128 / 55%));
   }
 }
+
+/* ---- 2026-09-21: pinned horizontal events gallery ---- */
+.pinWrap {
+  position: relative;
+}
+.pinStage {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.pinWrap[data-pinned='true'] .pinStage {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding-top: 84px;
+  position: sticky;
+  top: 0;
+}
+.pinWrap[data-pinned='true'] .sectionHead {
+  margin-bottom: 18px;
+}
+.pinViewport {
+  overflow: hidden;
+}
+.pinWrap:not([data-pinned='true']) .pinViewport {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+}
+.pinTrack {
+  display: flex;
+  gap: 24px;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0 8px;
+  will-change: transform;
+}
+.pinTrack > li {
+  flex: 0 0 min(40vw, 600px);
+  scroll-snap-align: start;
+}
+.pinTrack figure {
+  margin: 0;
+}
+.pinFrame {
+  border-radius: 6px;
+  overflow: hidden;
+}
+.pinFrame img {
+  display: block;
+  height: clamp(220px, 44vh, 440px);
+  object-fit: cover;
+  transition:
+    transform 700ms cubic-bezier(0.16, 1, 0.3, 1),
+    filter 300ms ease;
+  width: 100%;
+}
+.pinTrack figcaption {
+  padding: 12px 0 0;
+}
+.pinTrack span {
+  color: #59615f;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+.pinTrack h3 {
+  font-size: clamp(20px, 2vw, 26px);
+  margin-top: 4px;
+  text-transform: capitalize;
+  transition: color 240ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pinTrack figure:hover img {
+    filter: brightness(1.08) saturate(1.15);
+    transform: scale(1.06);
+  }
+  .pinTrack figure:hover h3 {
+    color: #006b6b;
+  }
+}
+.filmCounter {
+  white-space: nowrap;
+  color: #67552e;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  margin-right: 6px;
+}
+.filmstripControls > div {
+  align-items: center;
+}
+.filmProgress {
+  background: #876a3630;
+  height: 2px;
+  margin: 0 0 18px;
+  overflow: hidden;
+}
+.filmProgress i {
+  background: #876a36;
+  display: block;
+  height: 100%;
+  transform: scaleX(var(--film-progress, 0));
+  transform-origin: left;
+}
+@media (max-width: 700px) {
+  .pinTrack > li {
+    flex-basis: 78vw;
+  }
+  .pinWrap[data-pinned='true'] .pinStage {
+    padding-top: 72px;
+  }
+  .pinWrap[data-pinned='true'] .sectionHead > p {
+    display: none;
+  }
+  .pinFrame img {
+    height: clamp(200px, 38vh, 340px);
+  }
+}
+
+/* ---- 2026-09-21: interactive "made simple" workflow ---- */
+.workflow {
+  margin: 0 auto;
+  max-width: 1180px;
+  position: relative;
+  text-align: left;
+}
+.wfTrack {
+  background: #876a3630;
+  height: 2px;
+  left: 12.5%;
+  position: absolute;
+  right: 12.5%;
+  top: 27px;
+}
+.wfTrack i {
+  background: #876a36;
+  display: block;
+  height: 100%;
+  transform: scaleX(var(--wf-progress, 0));
+  transform-origin: left;
+  transition: transform 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.wfSteps {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  position: relative;
+}
+.wfSteps button {
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 18px;
+  color: #202423;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 6px;
+  justify-items: center;
+  padding: 0 12px 16px;
+  text-align: center;
+  transition:
+    background-color 220ms ease,
+    border-color 220ms ease,
+    transform 220ms ease;
+}
+.wfDot {
+  align-items: center;
+  background: #f5f1e7;
+  border: 2px solid #876a36;
+  border-radius: 50%;
+  color: #67552e;
+  display: inline-flex;
+  font-size: 15px;
+  font-weight: 700;
+  height: 56px;
+  justify-content: center;
+  transition:
+    background-color 260ms ease,
+    color 260ms ease,
+    transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  width: 56px;
+}
+.wfSteps button[data-done='true'] .wfDot {
+  background: #876a36;
+  color: #fff;
+}
+.wfSteps button[aria-selected='true'] .wfDot {
+  background: #008080;
+  border-color: #008080;
+  color: #fff;
+  transform: scale(1.12);
+}
+.wfSteps button strong {
+  font-size: 18px;
+  margin-top: 6px;
+}
+.wfSteps button small {
+  color: #59615f;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.wfSteps button[aria-selected='true'] {
+  background: #fffdf8;
+  border-color: #d8d0bf;
+  box-shadow: 0 14px 30px rgb(32 36 35 / 8%);
+}
+@media (hover: hover) and (pointer: fine) {
+  .wfSteps button:hover:not([aria-selected='true']) {
+    background: rgb(255 224 138 / 45%);
+    transform: translateY(-3px);
+  }
+}
+.wfSteps button:focus-visible {
+  outline: 3px solid #8c692c;
+  outline-offset: 3px;
+}
+.wfPanel {
+  animation: wfIn 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  background: #fffdf8;
+  border: 1px solid #d8d0bf;
+  border-radius: 22px;
+  box-shadow: 0 20px 44px rgb(32 36 35 / 10%);
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  margin-top: 22px;
+  padding: clamp(20px, 3vw, 36px);
+}
+.wfPanel h3 {
+  font-size: clamp(24px, 2.4vw, 32px);
+  margin: 8px 0 8px;
+}
+.wfPanel p {
+  color: #505854;
+}
+.wfPanel dl {
+  display: grid;
+  gap: 10px;
+  margin: 18px 0 0;
+}
+.wfPanel dl div {
+  border-top: 1px solid #e6e0d2;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 90px 1fr;
+  padding-top: 10px;
+}
+.wfPanel dt {
+  color: #67552e;
+  font-size: 14px;
+  font-weight: 700;
+}
+.wfPanel dd {
+  font-size: 15px;
+  margin: 0;
+}
+.wfPanel ul {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.wfPanel li {
+  align-items: center;
+  background: #f5f1e7;
+  border-radius: 12px;
+  display: flex;
+  font-size: 15px;
+  gap: 10px;
+  padding: 12px 14px;
+}
+.wfPanel li svg {
+  color: #008080;
+}
+.wfActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+.wfActions :is(button, a) {
+  align-items: center;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  font: 600 14px var(--font-product, sans-serif);
+  gap: 8px;
+  min-height: 44px;
+  padding: 8px 18px;
+  text-decoration: none;
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+.wfActions button {
+  background: #008080;
+  border: 1px solid #008080;
+  color: #fff;
+}
+.wfActions a {
+  border: 1px solid #876a36;
+  color: #202423;
+}
+.wfActions :is(button, a):hover {
+  background: #ffe08a;
+  border-color: #e5b84c;
+  color: #202423;
+  transform: translateY(-2px);
+}
+.wfNote {
+  color: #59615f;
+  display: block;
+  font-size: 13px;
+  margin-top: 12px;
+}
+@keyframes wfIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+@media (max-width: 900px) {
+  .wfSteps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .wfTrack {
+    display: none;
+  }
+  .wfPanel {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 520px) {
+  .wfSteps button small {
+    display: none;
+  }
+  .wfDot {
+    height: 46px;
+    width: 46px;
+  }
+}

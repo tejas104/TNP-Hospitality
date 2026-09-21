@@ -6,13 +6,42 @@ import { useRef, useState } from 'react';
 import { byId, media } from '@/data/media';
 import { destinations, events, roles, services } from '@/data/tnp';
 import { departmentSlugs, serviceSlugs } from '@/data/public-content';
+import PinnedFilmstrip from './public/PinnedFilmstrip';
+import ProcessWorkflow from './public/ProcessWorkflow';
 import styles from './public/Home.module.css';
 import { useHomeMotion } from './public/useHomeMotion';
 import { heroSurface } from './public/destination-motion';
 
+// Ten illustrative settings for the pinned gallery (preview photography).
+const filmItems = [
+  ...events,
+  ...(
+    [
+      ['WEDDING MOMENTS', 'Udaipur', 'wedding-couple'],
+      ['FLORAL STORIES', 'Jaipur', 'floral'],
+      ['CANDLELIT BANQUET', 'Delhi', 'banquet'],
+      ['GUEST EXPERIENCE', 'Goa', 'guest-experience'],
+      ['HERITAGE SETTINGS', 'Jaipur', 'architecture'],
+    ] as const
+  ).map(([title, place, id]) => ({ title, place, image: byId(id) })),
+];
+
 export default function HomeExperience() {
   const [serviceIndex, setServiceIndex] = useState(0);
-  const filmstrip = useRef<HTMLDivElement>(null);
+  // Hover opens a service after a short intent delay; a brief lock after each
+  // change stops rows shifting under a still cursor from cascading open.
+  const hoverTimer = useRef(0);
+  const hoverLock = useRef(false);
+  const hoverOpen = (pointerType: string, index: number) => {
+    if (pointerType !== 'mouse' || index === serviceIndex) return;
+    if (hoverLock.current) return;
+    clearTimeout(hoverTimer.current);
+    hoverTimer.current = window.setTimeout(() => {
+      hoverLock.current = true;
+      window.setTimeout(() => (hoverLock.current = false), 450);
+      setServiceIndex(index);
+    }, 180);
+  };
   const home = useRef<HTMLElement>(null);
   useHomeMotion(home, false);
   return (
@@ -149,6 +178,8 @@ export default function HomeExperience() {
                       aria-expanded={open}
                       aria-controls={`home-service-${index}`}
                       onClick={() => setServiceIndex(index)}
+                      onPointerMove={(e) => hoverOpen(e.pointerType, index)}
+                      onPointerLeave={() => clearTimeout(hoverTimer.current)}
                     >
                       <span>{service.number}</span>
                       {service.title}
@@ -294,98 +325,26 @@ export default function HomeExperience() {
         id="events"
         aria-labelledby="events-title"
       >
-        <div className={styles.sectionHead}>
-          <div>
-            <p className={styles.eyebrow}>04 / THE OCCASIONS</p>
-            <h2 id="events-title" data-motion="copy">
-              A different setting.
-              <br />
-              <em>The same attention to detail.</em>
-            </h2>
-          </div>
-          <p>
-            From intimate gatherings to grand celebrations.
-            <br />
-            Explore the possibilities. Illustrative preview photography.
-          </p>
-        </div>
-        <div className={styles.filmstripControls}>
-          <p id="filmstrip-help">
-            A few possibilities, in pictures. Swipe, use the arrow keys, or
-            browse with the buttons.
-          </p>
-          <div>
-            <button
-              type="button"
-              aria-label="Previous photographs"
-              onClick={() => {
-                filmstrip.current?.setAttribute(
-                  'data-filmstrip-manual',
-                  'true',
-                );
-                filmstrip.current?.scrollBy({
-                  left: -(filmstrip.current.clientWidth * 0.8),
-                  behavior: 'instant',
-                });
-              }}
-            >
-              ←
-            </button>
-            <button
-              type="button"
-              aria-label="Next photographs"
-              onClick={() => {
-                filmstrip.current?.setAttribute(
-                  'data-filmstrip-manual',
-                  'true',
-                );
-                filmstrip.current?.scrollBy({
-                  left: filmstrip.current.clientWidth * 0.8,
-                  behavior: 'instant',
-                });
-              }}
-            >
-              →
-            </button>
-          </div>
-        </div>
-        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- Native horizontal scroll region needs keyboard and touch access. */}
-        <section
-          ref={filmstrip}
-          className={styles.eventGrid}
-          data-filmstrip
-          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Keyboard users must be able to focus and scroll the gallery.
-          tabIndex={0}
-          aria-label="Illustrative event photography"
-          aria-describedby="filmstrip-help"
-          onPointerDown={(event) =>
-            event.currentTarget.setAttribute('data-filmstrip-manual', 'true')
+        <PinnedFilmstrip
+          items={filmItems}
+          header={
+            <div className={styles.sectionHead}>
+              <div>
+                <p className={styles.eyebrow}>04 / THE OCCASIONS</p>
+                <h2 id="events-title" data-motion="copy">
+                  A different setting.
+                  <br />
+                  <em>The same attention to detail.</em>
+                </h2>
+              </div>
+              <p>
+                From intimate gatherings to grand celebrations.
+                <br />
+                Explore the possibilities. Illustrative preview photography.
+              </p>
+            </div>
           }
-          onKeyDown={(event) =>
-            event.currentTarget.setAttribute('data-filmstrip-manual', 'true')
-          }
-        >
-          {events.map((event, index) => (
-            <figure key={event.title}>
-              <img
-                src={event.image.src}
-                alt={event.image.alt}
-                width="800"
-                height="960"
-                data-motion="image"
-                data-stagger={index}
-                loading="lazy"
-                decoding="async"
-              />
-              <figcaption>
-                <span>
-                  0{index + 1} / {event.place}
-                </span>
-                <h3>{event.title.toLowerCase()}</h3>
-              </figcaption>
-            </figure>
-          ))}
-        </section>
+        />
         <p className={styles.imageNote}>
           Illustrative imagery for event inspiration; not a verified portfolio
           of TNP commissions.
@@ -482,42 +441,12 @@ export default function HomeExperience() {
       <section
         className={`${styles.section} ${styles.process}`}
         aria-labelledby="process-title"
-        data-journey
       >
         <p className={styles.eyebrow}>06 / MADE SIMPLE</p>
         <h2 id="process-title" data-motion="copy">
           Consider it <em>taken care of.</em>
         </h2>
-        <div className={styles.journeyTrack} aria-hidden="true">
-          <span />
-          <i />
-          <i />
-          <i />
-        </div>
-        <ol>
-          {[
-            [
-              'Share your vision',
-              'Tell us about your occasion, destination and the support you need.',
-            ],
-            [
-              'Shape the experience',
-              'Align on the team, guest journey, responsibilities and event details.',
-            ],
-            [
-              'Welcome the moment',
-              'Your hospitality team brings the plan together on the ground.',
-            ],
-          ].map(([title, copy], index) => (
-            <li key={title}>
-              <span>0{index + 1}</span>
-              <h3 data-motion="copy" data-stagger={index}>
-                {title}
-              </h3>
-              <p>{copy}</p>
-            </li>
-          ))}
-        </ol>
+        <ProcessWorkflow />
       </section>
 
       <section

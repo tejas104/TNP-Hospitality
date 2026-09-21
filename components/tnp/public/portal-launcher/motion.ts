@@ -37,7 +37,9 @@ export const LAUNCHER_TIMING = { open: 1440, close: 1240 } as const;
 export const GENIE_EASE = {
   // Slower start than (0.16,1,0.3,1) so the bend/stretch frames are seen.
   open: [0.4, 0.2, 0.2, 1],
-  close: [0.7, 0, 0.84, 0],
+  // Starts moving on the first frame (the old 0.7,0,0.84,0 ease-in held the
+  // window still for ~0.6s before it visibly closed).
+  close: [0.3, 0.05, 0.4, 1],
 } as const;
 
 /** CSS cubic-bezier(x1, y1, x2, y2) evaluated at time t (Newton + bisection). */
@@ -103,8 +105,8 @@ export function genieSlices(win: Rect, src: Rect, p: number, n: number) {
     d * (x ? src.x + src.width / 2 : src.y + src.height / 2),
   );
   const travel = sA - a0;
-  const bend = smooth(p / 0.45);
-  const slide = smooth((p - 0.25) / 0.75);
+  const bend = smooth(p / 0.35);
+  const slide = smooth((p - 0.12) / 0.88);
   const move = (u: number) => Math.min(u + slide * travel, sA);
   const edges = (v: number) => {
     const s = smooth((v - a0) / travel) * bend;

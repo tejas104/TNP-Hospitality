@@ -58,7 +58,9 @@
 
 html {
   scroll-behavior: smooth;
-  overflow-x: hidden;
+  /* clip, not hidden: hidden would make body a scroll container and break
+     position: sticky (used by the pinned events gallery). */
+  overflow-x: clip;
 }
 
 body {
@@ -67,7 +69,7 @@ body {
   color: var(--ink);
   font-family: var(--font-body);
   letter-spacing: 0;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 button,
@@ -3417,5 +3419,44 @@ body:has(.ux-header) textarea {
   .public-nav .magnetic-btn:hover,
   .ghost-btn:hover {
     transform: none;
+  }
+}
+
+/* Workspace chooser inside the genie window. */
+.genie-workspace-list {
+  display: grid;
+  gap: 8px;
+  padding: 16px;
+}
+.genie-workspace-list a {
+  background: rgb(255 255 255 / 70%);
+  border: 1px solid rgb(32 36 35 / 12%);
+  border-radius: 16px;
+  color: #202423;
+  display: grid;
+  gap: 4px;
+  min-height: 44px;
+  padding: 14px 16px;
+  text-decoration: none;
+  transition:
+    background-color 160ms ease,
+    transform 160ms ease;
+}
+.genie-workspace-list a[aria-current='page'] {
+  background: rgb(0 128 128 / 10%);
+  border-color: #008080;
+}
+.genie-workspace-list strong {
+  font-size: 17px;
+}
+.genie-workspace-list small {
+  color: #505854;
+  font-size: 14px;
+  line-height: 1.45;
+}
+@media (hover: hover) and (pointer: fine) {
+  .genie-workspace-list a:hover {
+    background: #ffe08a;
+    transform: translateX(3px);
   }
 }
