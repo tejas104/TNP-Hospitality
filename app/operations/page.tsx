@@ -1,5 +1,5 @@
-import { AdminOperations } from '@/components/tnp/portals/operations/AdminOperations';
+import AdminConsole from '@/components/tnp/portals/admin/AdminConsole';
 
 export default function OperationsPage() {
-  return <AdminOperations />;
+  return <AdminConsole />;
 }

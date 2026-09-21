@@ -1,104 +1,81 @@
 'use client';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useDemoAccess, StorageWarning } from '../../access/DemoAccess';
 import {
-  canUseRsvp,
-  events,
-  initialRsvp,
-  readRsvp,
-  scopeGuests,
-  updateReply,
-  importGuests,
-  reportCsv,
-  type RsvpState,
-  type Reply,
-} from './rsvp-state';
-import styles from './RsvpWorkspace.module.css';
-const KEY = 'tnp-rsvp-message-only-v1';
-const REPLY_LABEL: Record<Reply, string> = {
-  yes: 'Attending',
-  no: 'Declined',
-  pending: 'Awaiting reply',
-  'needs-review': 'Needs review',
-};
-const REPLY_ORDER: Reply[] = ['yes', 'no', 'pending', 'needs-review'];
-type GuestRow = ReturnType<typeof scopeGuests>[number];
-/** Response counts with one proportional bar; each count can open that state. */
-function ResponseSummary({
-  guests,
-  onPick,
-}: {
-  guests: GuestRow[];
-  onPick?: (reply: Reply) => void;
-}) {
-  const total = guests.length || 1;
-  return (
-    <div className={styles.summary}>
-      <div className={styles.bar} aria-hidden="true">
-        {REPLY_ORDER.map((r) => (
-          <span
-            key={r}
-            data-reply={r}
-            style={{
-              width: `${(guests.filter((g) => g.reply === r).length / total) * 100}%`,
-            }}
-          />
-        ))}
-      </div>
-      <ul>
-        {REPLY_ORDER.map((r) => {
-          const count = guests.filter((g) => g.reply === r).length;
-          const body = (
-            <>
-              <i data-reply={r} aria-hidden="true" />
-              <strong>{count}</strong> {REPLY_LABEL[r]}
-            </>
-          );
-          return (
-            <li key={r}>
-              {onPick ? (
-                <button type="button" onClick={() => onPick(r)}>
-                  {body}
-                </button>
-              ) : (
-                <span>{body}</span>
-              )}
-            </li>
-          );
-        })}
-      </ul>
-    </div>
-  );
-}
-export function RsvpEntry() {
-  const access = useDemoAccess();
-  const router = useRouter();
-  return (
-    <main id="main-content" tabIndex={-1} className={styles.page}>
-      <p className={styles.kicker}>Dedicated team access · synthetic</p>
-      <h1>RSVP team workspace</h1>
-      <p>
-        This dedicated preview is separate from public workspace entry. No real
-        guest information, live messages or production authentication.
-      </p>
-      <StorageWarning />
-      <button
-        disabled={!access.ready}
-        onClick={() => {
-          access.select('rsvp-team');
-          router.push('/rsvp/workspace');
-        }}
-      >
-        Enter sample RSVP team
-      </button>
-      <p>
-        <Link href="/services/rsvp">Read about the RSVP service →</Link>
-      </p>
-    </main>
-  );
-}
+  ArrowLeft,
+  BarChart3,
+  Check,
+  CheckCheck,
+  Info,
+  LayoutDashboard,
+  Megaphone,
+  MessageCircle,
+  Paperclip,
+  Search,
+  SendHorizontal,
+  Settings,
+  Sparkles,
+  UsersRound,
+  X,
+  type LucideIcon,
+} from 'lucide-react';
+import { StorageWarning } from '../../access/DemoAccess';
+import {
+  CATEGORY_LABEL,
+  eventStats,
+  fillTemplate,
+  ORGS,
+  seedRsvpChat,
+  suggestFromMessage,
+  TEMPLATES,
+  type Category,
+  type GuestThread,
+  type RsvpChatState,
+  type RsvpEvent,
+} from './rsvpChatData';
+import {
+  BroadcastsPanel,
+  GuestsPanel,
+  ReportsPanel,
+  SettingsPanel,
+  TodayPanel,
+} from './RsvpPanels';
+import styles from './RsvpChat.module.css';
+
+export type View = 'today' | 'chats' | 'broadcasts' | 'guests' | 'reports' | 'settings';
+export type Save = (change: (s: RsvpChatState) => RsvpChatState, message: string) => void;
+const KEY = 'tnp-rsvp-chat-v2';
+const RAIL: [View, string, LucideIcon][] = [
+  ['today', 'Today', LayoutDashboard],
+  ['chats', 'Chats', MessageCircle],
+  ['broadcasts', 'Broadcasts', Megaphone],
+  ['guests', 'Guests', UsersRound],
+  ['reports', 'Reports', BarChart3],
+  ['settings', 'Team & settings', Settings],
+];
+type Filter = 'all' | Category | 'review' | 'travel';
+const FILTERS: [Filter, string][] = [
+  ['all', 'All'],
+  ['review', 'Needs review'],
+  ['attending', 'Attending'],
+  ['declined', 'Declined'],
+  ['maybe', 'Maybe'],
+  ['no-reply', 'No reply'],
+  ['travel', 'Travel info missing'],
+];
+const now = () =>
+  new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+export const initials = (name: string) =>
+  name
+    .replace(/^Sample\s+/i, '')
+    .split(' ')
+    .map((p) => p[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+const needsReview = (t: GuestThread) => !t.confirmed && t.category !== 'no-reply';
+
 export default function RsvpWorkspace({
   eventId,
   orgId,
@@ -107,680 +84,509 @@ export default function RsvpWorkspace({
   orgId?: string;
 }) {
   const router = useRouter();
-  const event = events.find((e) => e.id === eventId);
-  const [org, setOrg] = useState<string>(
-    event?.org ?? (orgId === 'marigold' ? 'marigold' : 'lotus'),
+  const [state, setState] = useState<RsvpChatState>(seedRsvpChat);
+  const initialEvent = state.events.find((e) => e.id === eventId);
+  const [org, setOrg] = useState<'lotus' | 'marigold'>(
+    initialEvent?.org ?? (orgId === 'marigold' ? 'marigold' : 'lotus'),
   );
-  const [tab, setTab] = useState('Overview');
-  const [state, setState] = useState<RsvpState>(initialRsvp);
-  const [ready, setReady] = useState(false);
-  const [notice, setNotice] = useState('Loading local sample records…');
-  const [selected, setSelected] = useState('');
-  const [reply, setReply] = useState<Reply>('yes');
-  const [people, setPeople] = useState('2');
-  const [csv, setCsv] = useState('name,party,people\nSample Guest,Party C,2');
-  const [message, setMessage] = useState(
-    'Please share your attendance and travel information for our sample event.',
+  const [view, setView] = useState<View>(eventId ? 'chats' : 'today');
+  const [activeEvent, setActiveEvent] = useState(
+    initialEvent?.id ?? state.events.find((e) => e.org === org)!.id,
   );
-  const [filter, setFilter] = useState('');
-  const [entitlement, setEntitlement] = useState('active');
-  const [capabilityRole, setCapabilityRole] = useState('manager');
-  const [sampleDate, setSampleDate] = useState('2026-09-24');
-  const [mode, setMode] = useState('ready');
-  const busy = false;
+  const [notice, setNotice] = useState(
+    'Demo workspace. Messages are simulated — WhatsApp and any provider are not connected.',
+  );
   useEffect(() => {
     let active = true;
     void Promise.resolve().then(() => {
       if (!active) return;
       try {
-        setState(readRsvp(localStorage.getItem(KEY)));
-        setNotice('Local synthetic records. No WhatsApp message is sent.');
+        const saved = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+        if (saved?.version === 2) setState(saved);
       } catch {
-        setNotice(
-          'Storage unavailable. Changes will remain in memory for this visit.',
-        );
+        /* Seed stays. */
       }
-      setReady(true);
     });
     return () => {
       active = false;
     };
   }, []);
-  const currentEvent = event?.org === org ? event : undefined;
-  const guests = scopeGuests(state, org, currentEvent?.id);
-  const visible = guests.filter((g) =>
-    (g.name + ' ' + g.party + ' ' + g.reply + ' ' + REPLY_LABEL[g.reply])
-      .toLowerCase()
-      .includes(filter.toLowerCase()),
-  );
-  const guest = guests.find((g) => g.id === selected);
-  const writable =
-    ready &&
-    canUseRsvp(entitlement, capabilityRole, sampleDate, 'review') &&
-    mode === 'ready' &&
-    !busy;
-  const orgEvents = events.filter((e) => e.org === org);
-  function save(next: RsvpState, text: string) {
-    if (!writable) {
-      setNotice('Read-only sample scope: no changes saved.');
-      return;
-    }
-    setState(next);
-    try {
-      localStorage.setItem(KEY, JSON.stringify(next));
-      setNotice(text + ' Saved locally; nothing sent externally.');
-    } catch {
-      setNotice(text + ' Memory only: browser storage unavailable.');
-    }
-  }
-  function chooseTab(next: string) {
-    setSelected('');
-    setFilter('');
-    setTab(next);
-  }
-  if (eventId && !event)
+  const save: Save = (change, message) => {
+    setState((current) => {
+      const next = change(current);
+      try {
+        localStorage.setItem(KEY, JSON.stringify(next));
+      } catch {
+        /* Memory only. */
+      }
+      return next;
+    });
+    setNotice(message);
+  };
+  if (eventId && !initialEvent)
     return (
-      <main id="main-content" tabIndex={-1} className={styles.page}>
+      <main id="main-content" className={styles.missing}>
         <h1>Sample event not found</h1>
-        <Link href="/rsvp/workspace">Return to organization Today</Link>
+        <Link href="/rsvp/workspace">Back to RSVP workspace</Link>
       </main>
     );
+  const orgEvents = state.events.filter((e) => e.org === org);
+  const event = orgEvents.find((e) => e.id === activeEvent) ?? orgEvents[0];
+  const unread = eventStats(state.threads.filter((t) => t.eventId === event.id)).unread;
+  const openEvent = (id: string, next: View = 'chats') => {
+    setActiveEvent(id);
+    setView(next);
+  };
   return (
-    <main id="main-content" tabIndex={-1} className={styles.page}>
-      <header className={styles.header}>
-        <div>
-          <p className={styles.kicker}>
-            RSVP team workspace · {org === 'marigold' ? 'Marigold' : 'Lotus'}{' '}
-            sample organization
-          </p>
-          <h1>{currentEvent?.name ?? 'Today, across your events.'}</h1>
-          <p>
-            {currentEvent
-              ? currentEvent.date
-              : 'Review unanswered replies and missing information before your next message.'}
-          </p>
-        </div>
-        <label>
-          Sample organization
-          <select
-            value={org}
-            onChange={(e) => {
-              setSelected('');
-              setFilter('');
-              setOrg(e.target.value);
-              setTab('Overview');
-              if (eventId)
-                router.push('/rsvp/workspace?organization=' + e.target.value);
-            }}
+    <main id="main-content" tabIndex={-1} className={styles.app}
+      data-own-controls>
+      <nav className={styles.rail} aria-label="RSVP sections">
+        <span className={styles.logo} aria-hidden="true">
+          <MessageCircle size={22} />
+        </span>
+        {RAIL.map(([id, label, Icon]) => (
+          <button
+            key={id}
+            type="button"
+            title={label}
+            aria-current={view === id ? 'page' : undefined}
+            onClick={() => setView(id)}
           >
-            <option value="lotus">Lotus events</option>
-            <option value="marigold">Marigold events</option>
-          </select>
-        </label>
-      </header>
-      <p className={styles.staffNote}>
-        Staff workspace for the RSVP team. Guests never see this screen.{' '}
-        <Link href="/rsvp">Public RSVP information →</Link>
-      </p>
-      <p className={styles.warning}>
-        Synthetic preview data. Do not enter real personal information. No live
-        messaging, verification, tracking or payments.
-      </p>
-      <StorageWarning />
-      <details className={styles.controls}>
-        <summary>Sample scenario controls</summary>
-      <div className={styles.toolbar}>
-        <label>
-          Sample capability role
-          <select
-            value={capabilityRole}
-            onChange={(e) => {
-              setCapabilityRole(e.target.value);
-              setSelected('');
-            }}
-          >
-            <option value="manager">Event manager</option>
-            <option value="operator">Message operator</option>
-            <option value="viewer">Read-only viewer</option>
-          </select>
-        </label>
-        <label>
-          Sample entitlement date
-          <input
-            type="date"
-            value={sampleDate}
-            onChange={(e) => {
-              setSampleDate(e.target.value);
-              setSelected('');
-            }}
-          />
-        </label>
-        <label>
-          Entitlement preview
-          <select
-            value={entitlement}
-            onChange={(e) => {
-              setEntitlement(e.target.value);
-              setSelected('');
-            }}
-          >
-            {[
-              'active',
-              'scheduled',
-              'suspended',
-              'grace read-only',
-              'expired',
-              'revoked',
-            ].map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-        </label>
-        <label>
-          View state
-          <select value={mode} onChange={(e) => setMode(e.target.value)}>
-            {['ready', 'loading', 'empty', 'error'].map((s) => (
-              <option key={s}>{s}</option>
-            ))}
-          </select>
-        </label>
-        <Link href={'/rsvp/workspace?organization=' + org}>
-          Organization Today
-        </Link>
+            <Icon size={22} aria-hidden="true" />
+            <span>{label}</span>
+            {id === 'chats' && unread > 0 && (
+              <b aria-label={`${unread} unread`}>{unread}</b>
+            )}
+          </button>
+        ))}
+      </nav>
+      <div className={styles.shell}>
+        <header className={styles.topbar}>
+          <div className={styles.title}>
+            <strong>RSVP on WhatsApp</strong>
+            <small>{ORGS[org]} · team workspace · simulated messages only</small>
+          </div>
+          <label>
+            <span>Organisation</span>
+            <select
+              value={org}
+              onChange={(e) => {
+                const next = e.target.value as 'lotus' | 'marigold';
+                setOrg(next);
+                setActiveEvent(state.events.find((x) => x.org === next)!.id);
+                if (eventId) router.push('/rsvp/workspace?organization=' + next);
+              }}
+            >
+              <option value="lotus">{ORGS.lotus}</option>
+              <option value="marigold">{ORGS.marigold}</option>
+            </select>
+          </label>
+          <label>
+            <span>Event</span>
+            <select value={event.id} onChange={(e) => setActiveEvent(e.target.value)}>
+              {orgEvents.map((e) => (
+                <option key={e.id} value={e.id}>
+                  {e.name}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Link href="/rsvp" className={styles.publicLink}>
+            Public RSVP page
+          </Link>
+        </header>
+        <output className={styles.notice} aria-live="polite">
+          {notice}
+        </output>
+        <StorageWarning />
+        {view === 'chats' ? (
+          <Chats key={event.id} state={state} event={event} save={save} />
+        ) : (
+          <div className={styles.panelArea}>
+            {view === 'today' && <TodayPanel state={state} org={org} openEvent={openEvent} />}
+            {view === 'broadcasts' && <BroadcastsPanel state={state} event={event} save={save} />}
+            {view === 'guests' && <GuestsPanel state={state} event={event} save={save} openChat={() => setView('chats')} />}
+            {view === 'reports' && <ReportsPanel state={state} event={event} />}
+            {view === 'settings' && <SettingsPanel state={state} org={org} save={save} />}
+          </div>
+        )}
       </div>
-      </details>
-      {!canUseRsvp(entitlement, capabilityRole, sampleDate, 'review') && (
-        <p className={styles.warning}>
-          Read-only preview: entitlement is {entitlement}, role is{' '}
-          {capabilityRole}, and the permitted sample window is 1–30 September
-          2026. Provider readiness is separate. No record can be changed in this
-          state.
-        </p>
-      )}
-      <output aria-live="polite">{notice}</output>
-      {!ready || mode === 'loading' ? (
-        <section aria-busy="true">
-          <h2>Loading sample workspace…</h2>
-          <p>No stale actions are available.</p>
-          {ready && (
-            <button onClick={() => setMode('ready')}>
-              Finish loading preview
-            </button>
-          )}
-        </section>
-      ) : mode === 'error' ? (
-        <section>
-          <h2>Could not read the sample workspace</h2>
-          <p>Records are retained. Retry without creating a second message.</p>
-          <button onClick={() => setMode('ready')}>
-            Retry reading records
-          </button>
-        </section>
-      ) : mode === 'empty' ? (
-        <section>
-          <h2>No events in this sample view</h2>
-          <button onClick={() => setMode('ready')}>
-            Restore sample events
-          </button>
-        </section>
-      ) : (
-        <>
-          {!currentEvent ? (
-            <>
-              <section className={styles.next}>
-                <p className={styles.kicker}>Next action</p>
-                <h2>Resolve ambiguous replies.</h2>
-                <p>
-                  {guests.filter((g) => !g.reviewed).length} parties need a
-                  human decision. Original messages remain unchanged.
-                </p>
-                <Link
-                  className={styles.action}
-                  href={'/rsvp/events/' + orgEvents[0].id}
-                >
-                  Open next event →
-                </Link>
-              </section>
-              <div className={styles.events}>
-                {orgEvents.map((e) => {
-                  const rows = scopeGuests(state, org, e.id);
-                  return (
-                    <article key={e.id}>
-                      <p>{e.date}</p>
-                      <h2>{e.name}</h2>
-                      <ResponseSummary guests={rows} />
-                      <p>
-                        {rows.filter((g) => !g.reviewed).length} parties to
-                        review
-                      </p>
-                      <p>Owner: {e.owner} · synthetic</p>
-                      <Link
-                        className={styles.action}
-                        href={'/rsvp/events/' + e.id}
-                      >
-                        Open event workspace →
-                      </Link>
-                    </article>
-                  );
-                })}
+    </main>
+  );
+}
+
+function Chats({
+  state,
+  event,
+  save,
+}: {
+  state: RsvpChatState;
+  event: RsvpEvent;
+  save: Save;
+}) {
+  const threads = state.threads.filter((t) => t.eventId === event.id);
+  const [filter, setFilter] = useState<Filter>('all');
+  const [query, setQuery] = useState('');
+  const [openId, setOpenId] = useState('');
+  const [info, setInfo] = useState(true);
+  const [draft, setDraft] = useState('');
+  const [templatesOpen, setTemplatesOpen] = useState(false);
+  const scroller = useRef<HTMLDivElement>(null);
+  const shown = useMemo(
+    () =>
+      threads.filter((t) => {
+        const match =
+          filter === 'all' ||
+          (filter === 'review'
+            ? needsReview(t)
+            : filter === 'travel'
+              ? t.category === 'attending' && t.travel.mode === '—'
+              : t.category === filter);
+        return match && t.party.toLowerCase().includes(query.toLowerCase());
+      }),
+    [threads, filter, query],
+  );
+  const thread = threads.find((t) => t.id === openId);
+  const messageCount = thread?.messages.length ?? 0;
+  useEffect(() => {
+    scroller.current?.scrollTo({ top: scroller.current.scrollHeight });
+  }, [openId, messageCount]);
+  const setThread = (id: string, change: (t: GuestThread) => GuestThread, message: string) =>
+    save((s) => ({ ...s, threads: s.threads.map((t) => (t.id === id ? change(t) : t)) }), message);
+  const open = (t: GuestThread) => {
+    setOpenId(t.id);
+    // The info drawer is a third column on wide screens; on narrow screens it
+    // would cover the conversation, so it opens only on request there.
+    setInfo(window.matchMedia('(min-width: 1181px)').matches);
+    if (t.unread) setThread(t.id, (x) => ({ ...x, unread: 0 }), `Opened chat with ${t.party}.`);
+  };
+  const send = (text: string, template?: string) => {
+    if (!thread || !text.trim()) return;
+    setThread(
+      thread.id,
+      (t) => ({
+        ...t,
+        messages: [
+          ...t.messages,
+          {
+            id: `m${Date.now()}`,
+            from: 'team',
+            text: text.trim(),
+            at: now(),
+            template,
+            quickReplies: template ? TEMPLATES[template].quickReplies : undefined,
+            status: 'simulated',
+          },
+        ],
+      }),
+      `Message to ${thread.party} simulated — nothing was sent to WhatsApp.`,
+    );
+    setDraft('');
+    setTemplatesOpen(false);
+  };
+  const simulateGuestReply = (text: string) => {
+    if (!thread) return;
+    const s = suggestFromMessage(text, event.functions);
+    setThread(
+      thread.id,
+      (t) => ({
+        ...t,
+        suggested: s.category,
+        confirmed: false,
+        category: t.category === 'no-reply' ? 'needs-review' : t.category,
+        members: s.members ?? t.members,
+        messages: [...t.messages, { id: `g${Date.now()}`, from: 'guest', text, at: now() }],
+      }),
+      `Sample guest reply added. Suggested: ${CATEGORY_LABEL[s.category]} — please confirm.`,
+    );
+  };
+  return (
+    <div className={styles.chats} data-open={!!thread} data-info={info && !!thread}>
+      <section className={styles.list} aria-label="Guest chats">
+        <div className={styles.listHead}>
+          <h1>{event.name}</h1>
+          <small>
+            {event.city} · {event.dates} · {threads.length} parties
+          </small>
+          <label className={styles.searchBox}>
+            <Search size={16} aria-hidden="true" />
+            <span className={styles.srOnly}>Search chats</span>
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search chats" />
+          </label>
+          <div className={styles.filters}>
+            {FILTERS.map(([id, label]) => (
+              <button key={id} type="button" aria-pressed={filter === id} onClick={() => setFilter(id)}>
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+        <ul>
+          {shown.length === 0 && <li className={styles.emptyRow}>No chats match this filter.</li>}
+          {shown.map((t) => {
+            const last = t.messages.at(-1)!;
+            return (
+              <li key={t.id}>
+                <button type="button" aria-current={t.id === openId ? 'true' : undefined} onClick={() => open(t)}>
+                  <span className={styles.avatar} aria-hidden="true">
+                    {initials(t.party)}
+                  </span>
+                  <span className={styles.rowMain}>
+                    <span className={styles.rowTop}>
+                      <strong>{t.party}</strong>
+                      <small>{last.at}</small>
+                    </span>
+                    <span className={styles.rowBottom}>
+                      <span className={styles.preview}>
+                        {last.from === 'team' && <CheckCheck size={15} aria-hidden="true" className={styles.tick} />}
+                        {last.text}
+                      </span>
+                      {t.unread > 0 && (
+                        <b className={styles.unread} aria-label={`${t.unread} unread`}>
+                          {t.unread}
+                        </b>
+                      )}
+                    </span>
+                    <span className={styles.tag} data-cat={needsReview(t) ? 'needs-review' : t.category}>
+                      {needsReview(t) ? 'Needs review' : CATEGORY_LABEL[t.category]}
+                    </span>
+                  </span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+      <section className={styles.conversation} aria-label={thread ? `Chat with ${thread.party}` : 'No chat open'}>
+        {!thread ? (
+          <div className={styles.placeholder}>
+            <MessageCircle size={56} aria-hidden="true" />
+            <h2>RSVP on WhatsApp</h2>
+            <p>
+              Pick a chat to read replies, confirm responses and collect travel
+              and stay details. Messages here are simulated.
+            </p>
+          </div>
+        ) : (
+          <>
+            <header className={styles.chatHead}>
+              <button type="button" className={styles.back} aria-label="Back to chats" onClick={() => setOpenId('')}>
+                <ArrowLeft size={20} aria-hidden="true" />
+              </button>
+              <span className={styles.avatar} aria-hidden="true">
+                {initials(thread.party)}
+              </span>
+              <div>
+                <strong>{thread.party}</strong>
+                <small>
+                  {thread.contact} · {thread.members} in party
+                </small>
               </div>
-            </>
-          ) : (
-            <>
-              <nav className={styles.tabs} aria-label="Event workspace">
-                {[
-                  'Overview',
-                  'Guests',
-                  'WhatsApp inbox',
-                  'Campaigns',
-                  'Collected information',
-                  'Reports',
-                  'Team & settings',
-                ].map((name) => (
-                  <button
-                    key={name}
-                    aria-pressed={tab === name}
-                    onClick={() => chooseTab(name)}
-                  >
-                    {name}
+              <button type="button" className={styles.iconButton} aria-pressed={info} aria-label="Guest info" onClick={() => setInfo((v) => !v)}>
+                <Info size={20} aria-hidden="true" />
+              </button>
+            </header>
+            <div className={styles.messages} ref={scroller}>
+              <p className={styles.dayChip}>Messages are simulated for the demo · delivery is not connected</p>
+              {thread.messages.map((m) => (
+                <div key={m.id} className={styles.bubbleRow} data-from={m.from}>
+                  <div className={styles.bubble}>
+                    {m.template && (
+                      <small className={styles.templateTag}>Template · {TEMPLATES[m.template]?.label}</small>
+                    )}
+                    <p>{m.text}</p>
+                    <span className={styles.meta}>
+                      {m.at}
+                      {m.from === 'team' &&
+                        (m.status === 'simulated' ? (
+                          <Check size={14} aria-label="Simulated" />
+                        ) : (
+                          <CheckCheck size={14} aria-label={m.status === 'sample-read' ? 'Sample read' : 'Sample delivered'} data-read={m.status === 'sample-read'} />
+                        ))}
+                    </span>
+                    {m.quickReplies && (
+                      <div className={styles.quick}>
+                        {m.quickReplies.map((q) => (
+                          <button key={q} type="button" onClick={() => simulateGuestReply(q)} title="Simulate the guest tapping this reply">
+                            {q}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            {templatesOpen && (
+              <div className={styles.templates} aria-label="Message templates">
+                {Object.entries(TEMPLATES).map(([key, t]) => (
+                  <button key={key} type="button" onClick={() => send(fillTemplate(key, thread, event), key)}>
+                    <strong>{t.label}</strong>
+                    <small>{fillTemplate(key, thread, event)}</small>
                   </button>
                 ))}
-              </nav>
-              {tab === 'Overview' && (
-                <section className={styles.next}>
-                  <p className={styles.kicker}>Next action</p>
-                  <h2>
-                    {guests.filter((g) => !g.reviewed).length} replies need
-                    review
-                  </h2>
-                  <ResponseSummary
-                    guests={guests}
-                    onPick={(r) => {
-                      chooseTab('Guests');
-                      setFilter(REPLY_LABEL[r]);
-                    }}
-                  />
-                  <p>
-                    Check the original reply before confirming attendance.
-                    Information entries describe preferences, not reservations.
-                  </p>
-                  <button onClick={() => chooseTab('WhatsApp inbox')}>
-                    Review WhatsApp replies
-                  </button>
-                </section>
-              )}
-              {['Guests', 'WhatsApp inbox', 'Collected information'].includes(
-                tab,
-              ) && (
-                <>
-                  <label className={styles.search}>
-                    Filter parties
-                    <input
-                      value={filter}
-                      onChange={(e) => {
-                        setFilter(e.target.value);
-                        setSelected('');
-                      }}
-                      placeholder="Name, party or response"
-                    />
-                  </label>
-                  <div className={styles.split}>
-                    <section>
-                      {visible.length ? (
-                        visible.map((g) => (
-                          <button
-                            className={styles.row}
-                            key={g.id}
-                            aria-pressed={selected === g.id}
-                            onClick={() => {
-                              setSelected(g.id);
-                              setReply(g.reply);
-                              setPeople(String(g.people));
-                            }}
-                          >
-                            <strong>{g.name}</strong>
-                            <span>
-                              {g.party} · {g.people} people
-                            </span>
-                            <em data-reply={g.reply}>{REPLY_LABEL[g.reply]}</em>
-                          </button>
-                        ))
-                      ) : (
-                        <p>
-                          No matching parties.{' '}
-                          <button onClick={() => setFilter('')}>
-                            Clear filter
-                          </button>
-                        </p>
-                      )}
-                    </section>
-                    <section className={styles.detail}>
-                      {guest ? (
-                        <>
-                          <h2>{guest.name}</h2>
-                          <p>{guest.party}</p>
-                          <h3>Original message</h3>
-                          <blockquote>{guest.original}</blockquote>
-                          {tab === 'Collected information' ? (
-                            <dl>
-                              <dt>Travel information</dt>
-                              <dd>{guest.travel}</dd>
-                              <dt>Stay preference</dt>
-                              <dd>{guest.stay}</dd>
-                              <dt>Pickup information</dt>
-                              <dd>{guest.pickup}</dd>
-                            </dl>
-                          ) : (
-                            <form
-                              onSubmit={(e) => {
-                                e.preventDefault();
-                                try {
-                                  save(
-                                    updateReply(
-                                      state,
-                                      org,
-                                      currentEvent.id,
-                                      guest.id,
-                                      reply,
-                                      Number(people),
-                                    ),
-                                    'Human review recorded.',
-                                  );
-                                } catch (error) {
-                                  setNotice((error as Error).message);
-                                }
-                              }}
-                            >
-                              <label>
-                                Confirmed response
-                                <select
-                                  value={reply}
-                                  disabled={!writable}
-                                  onChange={(e) =>
-                                    setReply(e.target.value as Reply)
-                                  }
-                                >
-                                  {['pending', 'yes', 'no', 'needs-review'].map(
-                                    (v) => (
-                                      <option key={v}>{v}</option>
-                                    ),
-                                  )}
-                                </select>
-                              </label>
-                              <label>
-                                Party size
-                                <input
-                                  type="number"
-                                  min="0"
-                                  max="30"
-                                  value={people}
-                                  disabled={!writable}
-                                  onChange={(e) => setPeople(e.target.value)}
-                                />
-                              </label>
-                              <button disabled={!writable}>
-                                Save sample review
-                              </button>
-                              {(guest.reply === 'pending' ||
-                                guest.reply === 'needs-review') && (
-                                <button
-                                  type="button"
-                                  className={styles.secondary}
-                                  disabled={!writable}
-                                  onClick={() =>
-                                    save(
-                                      {
-                                        ...state,
-                                        campaigns: [
-                                          ...state.campaigns,
-                                          {
-                                            id: crypto.randomUUID(),
-                                            org,
-                                            event: currentEvent.id,
-                                            text: `Follow-up for ${guest.party}: a gentle reminder to confirm attendance and party size.`,
-                                            state: 'draft',
-                                          },
-                                        ],
-                                      },
-                                      `Follow-up draft prepared for ${guest.party}. Not sent — see Campaigns.`,
-                                    )
-                                  }
-                                >
-                                  Prepare follow-up draft (not sent)
-                                </button>
-                              )}
-                              {!writable && (
-                                <p className={styles.hint}>
-                                  Editing is off for this sample role or
-                                  entitlement. Change it under Sample scenario
-                                  controls.
-                                </p>
-                              )}
-                            </form>
-                          )}
-                        </>
-                      ) : (
-                        <>
-                          <h2>Select a party</h2>
-                          <p>
-                            Each event keeps its own guest, reply and
-                            information selection.
-                          </p>
-                        </>
-                      )}
-                    </section>
-                  </div>
-                  {tab === 'Guests' && (
-                    <form
-                      className={styles.detail}
-                      onSubmit={(e) => {
-                        e.preventDefault();
-                        try {
-                          const rows = importGuests(
-                            csv,
-                            org,
-                            currentEvent.id,
-                            crypto.randomUUID(),
-                          );
-                          save(
-                            { ...state, guests: [...state.guests, ...rows] },
-                            rows.length + ' sample parties imported.',
-                          );
-                          setCsv('name,party,people');
-                        } catch (error) {
-                          setNotice((error as Error).message);
-                        }
-                      }}
-                    >
-                      <h2>Add sample parties</h2>
-                      <label>
-                        Paste simple CSV (name,party,people)
-                        <textarea
-                          rows={4}
-                          value={csv}
-                          disabled={!writable}
-                          onChange={(e) => setCsv(e.target.value)}
-                        />
-                      </label>
-                      <p>
-                        1–50 rows. Use invented values; no commas inside fields.
-                      </p>
-                      <button disabled={!writable}>
-                        Validate and import locally
-                      </button>
-                    </form>
-                  )}
-                </>
-              )}
-              {tab === 'Campaigns' && (
-                <section className={styles.detail}>
-                  <h2>WhatsApp draft</h2>
-                  <p>
-                    Provider and template approval are not connected. Queue
-                    simulation is local only.
-                  </p>
-                  <label>
-                    Sample message
-                    <textarea
-                      rows={4}
-                      maxLength={1000}
-                      value={message}
-                      disabled={!writable}
-                      onChange={(e) => setMessage(e.target.value)}
-                    />
-                  </label>
-                  <button
-                    disabled={!writable || !message.trim()}
-                    onClick={() => {
-                      save(
-                        {
-                          ...state,
-                          campaigns: [
-                            ...state.campaigns,
-                            {
-                              id: crypto.randomUUID(),
-                              org,
-                              event: currentEvent.id,
-                              text: message,
-                              state: 'draft',
-                            },
-                          ],
-                        },
-                        'Draft saved.',
-                      );
-                    }}
-                  >
-                    Save draft
-                  </button>
-                  <button
-                    disabled={!writable || !message.trim()}
-                    onClick={() => {
-                      save(
-                        {
-                          ...state,
-                          campaigns: [
-                            ...state.campaigns,
-                            {
-                              id: crypto.randomUUID(),
-                              org,
-                              event: currentEvent.id,
-                              text: message,
-                              state: 'queued-preview',
-                            },
-                          ],
-                        },
-                        'Local queue simulated. No provider delivery.',
-                      );
-                    }}
-                  >
-                    {busy ? 'Preparing sample queue…' : 'Simulate local queue'}
-                  </button>
-                  {state.campaigns
-                    .filter((c) => c.org === org && c.event === currentEvent.id)
-                    .map((c) => (
-                      <article key={c.id} className={styles.campaign}>
-                        <strong>
-                          {c.state === 'draft'
-                            ? 'Draft · not sent'
-                            : 'Local queue simulation · not delivered'}
-                        </strong>
-                        <p>{c.text}</p>
-                      </article>
-                    ))}
-                </section>
-              )}
-              {tab === 'Reports' && (
-                <section className={styles.detail}>
-                  <h2>Event response report</h2>
-                  <p>
-                    {guests.length} sample parties. Export includes this event
-                    only and protects spreadsheet cells.
-                  </p>
-                  <button
-                    disabled={
-                      !writable ||
-                      !canUseRsvp(
-                        entitlement,
-                        capabilityRole,
-                        sampleDate,
-                        'export',
-                      )
-                    }
-                    onClick={() => {
-                      if (
-                        !writable ||
-                        !canUseRsvp(
-                          entitlement,
-                          capabilityRole,
-                          sampleDate,
-                          'export',
-                        )
-                      ) {
-                        setNotice('This sample scope cannot export.');
-                        return;
-                      }
-                      const url = URL.createObjectURL(
-                        new Blob([reportCsv(guests)], {
-                          type: 'text/csv;charset=utf-8',
-                        }),
-                      );
-                      const a = document.createElement('a');
-                      a.href = url;
-                      a.download = 'sample-rsvp-' + currentEvent.id + '.csv';
-                      a.click();
-                      setTimeout(() => URL.revokeObjectURL(url), 1000);
-                      setNotice(
-                        'Sample event report downloaded. No external data fetched.',
-                      );
-                    }}
-                  >
-                    Download sample CSV
-                  </button>
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Party</th>
-                        <th>Response</th>
-                        <th>People</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {guests.map((g) => (
-                        <tr key={g.id}>
-                          <td>{g.party}</td>
-                          <td>{REPLY_LABEL[g.reply]}</td>
-                          <td>{g.people}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </section>
-              )}
-              {tab === 'Team & settings' && (
-                <section className={styles.detail}>
-                  <h2>Team and entitlement</h2>
-                  <p>{currentEvent.owner} · sample event manager</p>
-                  <p>
-                    Scope: {org} / {currentEvent.id}. Entitlement: {entitlement}
-                    .
-                  </p>
-                  <p>
-                    Production invitations and capability administration require
-                    reviewed server authorization.
-                  </p>
-                  <button disabled aria-describedby="rsvp-invite-note">
-                    Invite teammate — not connected
-                  </button>
-                  <p id="rsvp-invite-note" className={styles.hint}>
-                    Disabled in this demo: inviting people needs real accounts
-                    and server authorization.
-                  </p>
-                </section>
-              )}
-            </>
-          )}
-        </>
+              </div>
+            )}
+            <form
+              className={styles.composer}
+              onSubmit={(e) => {
+                e.preventDefault();
+                send(draft);
+              }}
+            >
+              <button type="button" className={styles.iconButton} aria-pressed={templatesOpen} aria-label="Message templates" onClick={() => setTemplatesOpen((v) => !v)}>
+                <Sparkles size={20} aria-hidden="true" />
+              </button>
+              <button type="button" className={styles.iconButton} aria-label="Attachments are disabled in the demo" disabled>
+                <Paperclip size={20} aria-hidden="true" />
+              </button>
+              <label className={styles.srOnly} htmlFor="rsvp-composer">
+                Type a message
+              </label>
+              <input id="rsvp-composer" value={draft} onChange={(e) => setDraft(e.target.value)} placeholder="Type a message (simulated)" />
+              <button type="submit" className={styles.sendButton} aria-label="Send simulated message" disabled={!draft.trim()}>
+                <SendHorizontal size={20} aria-hidden="true" />
+              </button>
+            </form>
+          </>
+        )}
+      </section>
+      {thread && info && (
+        <GuestInfo thread={thread} event={event} setThread={setThread} close={() => setInfo(false)} />
       )}
-    </main>
+    </div>
+  );
+}
+
+function GuestInfo({
+  thread,
+  event,
+  setThread,
+  close,
+}: {
+  thread: GuestThread;
+  event: RsvpEvent;
+  setThread: (id: string, change: (t: GuestThread) => GuestThread, message: string) => void;
+  close: () => void;
+}) {
+  const lastGuest = [...thread.messages].reverse().find((m) => m.from === 'guest');
+  const edit = (change: (t: GuestThread) => GuestThread, message: string) =>
+    setThread(thread.id, change, message);
+  return (
+    <aside className={styles.info} aria-label="Guest info">
+      <header>
+        <button type="button" className={styles.iconButton} aria-label="Close guest info" onClick={close}>
+          <X size={20} aria-hidden="true" />
+        </button>
+        <strong>Guest info</strong>
+      </header>
+      <div className={styles.infoBody}>
+        <div className={styles.infoHero}>
+          <span className={styles.avatarLarge} aria-hidden="true">
+            {initials(thread.party)}
+          </span>
+          <h2>{thread.party}</h2>
+          <small>{thread.contact}</small>
+        </div>
+        <section className={styles.infoCard}>
+          <h3>Response</h3>
+          {lastGuest && (
+            <blockquote>
+              “{lastGuest.text}”
+              <small>Original message kept exactly as received</small>
+            </blockquote>
+          )}
+          {needsReview(thread) ? (
+            <div className={styles.suggest}>
+              <p>
+                Suggested: <b>{CATEGORY_LABEL[thread.suggested]}</b>. A person
+                confirms before it counts.
+              </p>
+              <div className={styles.chipRow}>
+                {(['attending', 'declined', 'maybe'] as Category[]).map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    data-primary={c === thread.suggested}
+                    onClick={() => edit((t) => ({ ...t, category: c, confirmed: true }), `${thread.party} confirmed as ${CATEGORY_LABEL[c]} by a team member (sample).`)}
+                  >
+                    Confirm {CATEGORY_LABEL[c]}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <p className={styles.confirmed}>
+              <span className={styles.tag} data-cat={thread.category}>
+                {CATEGORY_LABEL[thread.category]}
+              </span>
+              {thread.confirmed && ' · confirmed by team'}
+              {thread.confirmed && (
+                <button type="button" className={styles.textButton} onClick={() => edit((t) => ({ ...t, confirmed: false, category: 'needs-review' }), `${thread.party} sent back to review.`)}>
+                  Re-open review
+                </button>
+              )}
+            </p>
+          )}
+          <label>
+            Party size
+            <input type="number" min="0" max="30" value={thread.members} onChange={(e) => edit((t) => ({ ...t, members: Math.max(0, Math.min(30, Number(e.target.value))) }), `Party size updated for ${thread.party}.`)} />
+          </label>
+        </section>
+        <section className={styles.infoCard}>
+          <h3>Function-wise</h3>
+          {event.functions.map((f) => (
+            <div key={f} className={styles.fnRow}>
+              <span>{f}</span>
+              <div className={styles.segment}>
+                {(['yes', 'no', 'unknown'] as const).map((v) => (
+                  <button key={v} type="button" aria-pressed={thread.functions[f] === v} aria-label={`${f}: ${v}`} onClick={() => edit((t) => ({ ...t, functions: { ...t.functions, [f]: v } }), `${thread.party}: ${f} set to ${v}.`)}>
+                    {v === 'unknown' ? '?' : v === 'yes' ? 'Yes' : 'No'}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </section>
+        <section className={styles.infoCard}>
+          <h3>Travel & stay (information only)</h3>
+          <label>
+            Travel mode
+            <select value={thread.travel.mode} onChange={(e) => edit((t) => ({ ...t, travel: { ...t.travel, mode: e.target.value } }), 'Travel mode updated.')}>
+              {['—', 'Flight', 'Train', 'Road', 'Local'].map((m) => (
+                <option key={m}>{m}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Arrival
+            <input value={thread.travel.arrival} onChange={(e) => edit((t) => ({ ...t, travel: { ...t.travel, arrival: e.target.value } }), 'Arrival updated.')} />
+          </label>
+          <label>
+            Flight / train reference
+            <input value={thread.travel.reference} onChange={(e) => edit((t) => ({ ...t, travel: { ...t.travel, reference: e.target.value } }), 'Travel reference updated.')} />
+          </label>
+          <label>
+            Pickup
+            <select value={thread.pickup} onChange={(e) => edit((t) => ({ ...t, pickup: e.target.value as GuestThread['pickup'] }), 'Pickup need updated.')}>
+              <option value="unknown">Not known</option>
+              <option value="needed">Pickup needed</option>
+              <option value="not-needed">Not needed</option>
+            </select>
+          </label>
+          <label>
+            Stay
+            <input value={thread.stay} placeholder="e.g. Need 2 rooms" onChange={(e) => edit((t) => ({ ...t, stay: e.target.value }), 'Stay preference updated.')} />
+          </label>
+          <label>
+            Dietary notes
+            <input value={thread.dietary} onChange={(e) => edit((t) => ({ ...t, dietary: e.target.value }), 'Dietary notes updated.')} />
+          </label>
+          <p className={styles.hint}>
+            Collected details only — RSVP never books tickets, rooms or vehicles.
+          </p>
+        </section>
+      </div>
+    </aside>
   );
 }

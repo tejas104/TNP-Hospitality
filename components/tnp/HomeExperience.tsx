@@ -6,7 +6,6 @@ import { useRef, useState } from 'react';
 import { byId, media } from '@/data/media';
 import { destinations, events, roles, services } from '@/data/tnp';
 import { departmentSlugs, serviceSlugs } from '@/data/public-content';
-import HomeHero from './public/HomeHero';
 import styles from './public/Home.module.css';
 import { useHomeMotion } from './public/useHomeMotion';
 import { heroSurface } from './public/destination-motion';
@@ -14,9 +13,8 @@ import { heroSurface } from './public/destination-motion';
 export default function HomeExperience() {
   const [serviceIndex, setServiceIndex] = useState(0);
   const filmstrip = useRef<HTMLDivElement>(null);
-  const [motionPaused, setMotionPaused] = useState(false);
   const home = useRef<HTMLElement>(null);
-  useHomeMotion(home, motionPaused);
+  useHomeMotion(home, false);
   return (
     <main ref={home} className={styles.home} id="main-content" tabIndex={-1}>
       <section
@@ -56,7 +54,19 @@ export default function HomeExperience() {
             Luxury in Service, Excellence in Care
           </p>
         </div>
-        <HomeHero paused={motionPaused} onPauseChange={setMotionPaused} />
+        {/* Moving photo background replaces the 3D cube (2026-09-21). */}
+        <div className={styles.heroBackdrop} aria-hidden="true">
+          {events.slice(0, 4).map((event) => (
+            <img
+              key={event.title}
+              src={event.image.src}
+              alt=""
+              width="1600"
+              height="1000"
+              decoding="async"
+            />
+          ))}
+        </div>
         <div className={styles.heroFoot}>
           <span>HOSPITALITY, WITH INTENTION</span>
           <a href="#services">

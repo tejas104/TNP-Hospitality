@@ -3315,12 +3315,12 @@ body:has(.ux-header),
 }
 
 /* Workspace actions remain visible at rest, with a light interactive state. */
-body:has(.ux-header) :is(main, .admin-shell, .ux-orientation) button {
+body:has(.ux-header) :is(main:not([data-own-controls]), .admin-shell, .ux-orientation) button {
   min-height: 44px;
   border: 1px solid #008080;
 }
 body:has(.ux-header)
-  :is(main, .admin-shell, .ux-orientation)
+  :is(main:not([data-own-controls]), .admin-shell, .ux-orientation)
   :is(button, a.ux-action, a.magnetic-btn):hover:not(:disabled) {
   background: #ffe08a;
   color: #202423;
@@ -3405,7 +3405,7 @@ body:has(.ux-header) textarea {
     transform: translateY(-2px);
   }
   body:has(.ux-header)
-    :is(main, .admin-shell, .ux-orientation)
+    :is(main:not([data-own-controls]), .admin-shell, .ux-orientation)
     :is(button, a.ux-action, a.magnetic-btn):hover:not(:disabled) {
     box-shadow:
       0 0 0 3px rgb(255 205 80 / 45%),
