@@ -17,12 +17,67 @@ import {
 } from './rsvp-state';
 import styles from './RsvpWorkspace.module.css';
 const KEY = 'tnp-rsvp-message-only-v1';
+const REPLY_LABEL: Record<Reply, string> = {
+  yes: 'Attending',
+  no: 'Declined',
+  pending: 'Awaiting reply',
+  'needs-review': 'Needs review',
+};
+const REPLY_ORDER: Reply[] = ['yes', 'no', 'pending', 'needs-review'];
+type GuestRow = ReturnType<typeof scopeGuests>[number];
+/** Response counts with one proportional bar; each count can open that state. */
+function ResponseSummary({
+  guests,
+  onPick,
+}: {
+  guests: GuestRow[];
+  onPick?: (reply: Reply) => void;
+}) {
+  const total = guests.length || 1;
+  return (
+    <div className={styles.summary}>
+      <div className={styles.bar} aria-hidden="true">
+        {REPLY_ORDER.map((r) => (
+          <span
+            key={r}
+            data-reply={r}
+            style={{
+              width: `${(guests.filter((g) => g.reply === r).length / total) * 100}%`,
+            }}
+          />
+        ))}
+      </div>
+      <ul>
+        {REPLY_ORDER.map((r) => {
+          const count = guests.filter((g) => g.reply === r).length;
+          const body = (
+            <>
+              <i data-reply={r} aria-hidden="true" />
+              <strong>{count}</strong> {REPLY_LABEL[r]}
+            </>
+          );
+          return (
+            <li key={r}>
+              {onPick ? (
+                <button type="button" onClick={() => onPick(r)}>
+                  {body}
+                </button>
+              ) : (
+                <span>{body}</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
 export function RsvpEntry() {
   const access = useDemoAccess();
   const router = useRouter();
   return (
     <main id="main-content" tabIndex={-1} className={styles.page}>
-      <p className={styles.kicker}>DEDICATED TEAM ACCESS · SYNTHETIC</p>
+      <p className={styles.kicker}>Dedicated team access · synthetic</p>
       <h1>RSVP team workspace</h1>
       <p>
         This dedicated preview is separate from public workspace entry. No real
@@ -94,7 +149,7 @@ export default function RsvpWorkspace({
   const currentEvent = event?.org === org ? event : undefined;
   const guests = scopeGuests(state, org, currentEvent?.id);
   const visible = guests.filter((g) =>
-    (g.name + ' ' + g.party + ' ' + g.reply)
+    (g.name + ' ' + g.party + ' ' + g.reply + ' ' + REPLY_LABEL[g.reply])
       .toLowerCase()
       .includes(filter.toLowerCase()),
   );
@@ -135,7 +190,8 @@ export default function RsvpWorkspace({
       <header className={styles.header}>
         <div>
           <p className={styles.kicker}>
-            RSVP / {org.toUpperCase()} SAMPLE ORGANIZATION
+            RSVP team workspace · {org === 'marigold' ? 'Marigold' : 'Lotus'}{' '}
+            sample organization
           </p>
           <h1>{currentEvent?.name ?? 'Today, across your events.'}</h1>
           <p>
@@ -162,11 +218,17 @@ export default function RsvpWorkspace({
           </select>
         </label>
       </header>
+      <p className={styles.staffNote}>
+        Staff workspace for the RSVP team. Guests never see this screen.{' '}
+        <Link href="/rsvp">Public RSVP information →</Link>
+      </p>
       <p className={styles.warning}>
         Synthetic preview data. Do not enter real personal information. No live
         messaging, verification, tracking or payments.
       </p>
       <StorageWarning />
+      <details className={styles.controls}>
+        <summary>Sample scenario controls</summary>
       <div className={styles.toolbar}>
         <label>
           Sample capability role
@@ -226,6 +288,7 @@ export default function RsvpWorkspace({
           Organization Today
         </Link>
       </div>
+      </details>
       {!canUseRsvp(entitlement, capabilityRole, sampleDate, 'review') && (
         <p className={styles.warning}>
           Read-only preview: entitlement is {entitlement}, role is{' '}
@@ -265,7 +328,7 @@ export default function RsvpWorkspace({
           {!currentEvent ? (
             <>
               <section className={styles.next}>
-                <p className={styles.kicker}>NEXT ACTION</p>
+                <p className={styles.kicker}>Next action</p>
                 <h2>Resolve ambiguous replies.</h2>
                 <p>
                   {guests.filter((g) => !g.reviewed).length} parties need a
@@ -285,9 +348,9 @@ export default function RsvpWorkspace({
                     <article key={e.id}>
                       <p>{e.date}</p>
                       <h2>{e.name}</h2>
+                      <ResponseSummary guests={rows} />
                       <p>
-                        {rows.filter((g) => g.reply === 'yes').length} attending
-                        parties · {rows.filter((g) => !g.reviewed).length} to
+                        {rows.filter((g) => !g.reviewed).length} parties to
                         review
                       </p>
                       <p>Owner: {e.owner} · synthetic</p>
@@ -325,11 +388,18 @@ export default function RsvpWorkspace({
               </nav>
               {tab === 'Overview' && (
                 <section className={styles.next}>
-                  <p className={styles.kicker}>NEXT ACTION</p>
+                  <p className={styles.kicker}>Next action</p>
                   <h2>
                     {guests.filter((g) => !g.reviewed).length} replies need
                     review
                   </h2>
+                  <ResponseSummary
+                    guests={guests}
+                    onPick={(r) => {
+                      chooseTab('Guests');
+                      setFilter(REPLY_LABEL[r]);
+                    }}
+                  />
                   <p>
                     Check the original reply before confirming attendance.
                     Information entries describe preferences, not reservations.
@@ -337,14 +407,6 @@ export default function RsvpWorkspace({
                   <button onClick={() => chooseTab('WhatsApp inbox')}>
                     Review WhatsApp replies
                   </button>
-                  <dl>
-                    <dt>Attending parties</dt>
-                    <dd>{guests.filter((g) => g.reply === 'yes').length}</dd>
-                    <dt>Awaiting response</dt>
-                    <dd>
-                      {guests.filter((g) => g.reply === 'pending').length}
-                    </dd>
-                  </dl>
                 </section>
               )}
               {['Guests', 'WhatsApp inbox', 'Collected information'].includes(
@@ -378,8 +440,9 @@ export default function RsvpWorkspace({
                           >
                             <strong>{g.name}</strong>
                             <span>
-                              {g.party} · {g.reply} · {g.people} people
+                              {g.party} · {g.people} people
                             </span>
+                            <em data-reply={g.reply}>{REPLY_LABEL[g.reply]}</em>
                           </button>
                         ))
                       ) : (
@@ -458,6 +521,41 @@ export default function RsvpWorkspace({
                               <button disabled={!writable}>
                                 Save sample review
                               </button>
+                              {(guest.reply === 'pending' ||
+                                guest.reply === 'needs-review') && (
+                                <button
+                                  type="button"
+                                  className={styles.secondary}
+                                  disabled={!writable}
+                                  onClick={() =>
+                                    save(
+                                      {
+                                        ...state,
+                                        campaigns: [
+                                          ...state.campaigns,
+                                          {
+                                            id: crypto.randomUUID(),
+                                            org,
+                                            event: currentEvent.id,
+                                            text: `Follow-up for ${guest.party}: a gentle reminder to confirm attendance and party size.`,
+                                            state: 'draft',
+                                          },
+                                        ],
+                                      },
+                                      `Follow-up draft prepared for ${guest.party}. Not sent — see Campaigns.`,
+                                    )
+                                  }
+                                >
+                                  Prepare follow-up draft (not sent)
+                                </button>
+                              )}
+                              {!writable && (
+                                <p className={styles.hint}>
+                                  Editing is off for this sample role or
+                                  entitlement. Change it under Sample scenario
+                                  controls.
+                                </p>
+                              )}
                             </form>
                           )}
                         </>
@@ -580,8 +678,12 @@ export default function RsvpWorkspace({
                   {state.campaigns
                     .filter((c) => c.org === org && c.event === currentEvent.id)
                     .map((c) => (
-                      <article key={c.id}>
-                        <strong>{c.state}</strong>
+                      <article key={c.id} className={styles.campaign}>
+                        <strong>
+                          {c.state === 'draft'
+                            ? 'Draft · not sent'
+                            : 'Local queue simulation · not delivered'}
+                        </strong>
                         <p>{c.text}</p>
                       </article>
                     ))}
@@ -646,7 +748,7 @@ export default function RsvpWorkspace({
                       {guests.map((g) => (
                         <tr key={g.id}>
                           <td>{g.party}</td>
-                          <td>{g.reply}</td>
+                          <td>{REPLY_LABEL[g.reply]}</td>
                           <td>{g.people}</td>
                         </tr>
                       ))}
@@ -666,7 +768,13 @@ export default function RsvpWorkspace({
                     Production invitations and capability administration require
                     reviewed server authorization.
                   </p>
-                  <button disabled>Invite teammate — not connected</button>
+                  <button disabled aria-describedby="rsvp-invite-note">
+                    Invite teammate — not connected
+                  </button>
+                  <p id="rsvp-invite-note" className={styles.hint}>
+                    Disabled in this demo: inviting people needs real accounts
+                    and server authorization.
+                  </p>
                 </section>
               )}
             </>

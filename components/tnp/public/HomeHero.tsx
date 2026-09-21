@@ -12,7 +12,6 @@ import {
   type ReactNode,
   type PointerEvent,
 } from 'react';
-import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import styles from './Home.module.css';
 import cube from './HospitalityCube.module.css';
 import HospitalityCubeFallback from './HospitalityCubeFallback';
@@ -25,7 +24,6 @@ import {
   dragTo,
   endDrag,
   pointerIntent,
-  selectService,
   serviceAt,
 } from './hospitality-cube-motion';
 
@@ -68,10 +66,11 @@ class SceneBoundary extends Component<
 
 export default function HomeHero({
   paused,
-  onPauseChange,
 }: {
   paused: boolean;
-  onPauseChange: (paused: boolean) => void;
+  // Still passed by HomeExperience; the visible pause control was removed
+  // per the 2026-09-21 user direction.
+  onPauseChange?: (paused: boolean) => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const motion = useRef(createMotion());
@@ -186,11 +185,6 @@ export default function HomeHero({
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [policy.animate, ready, publish]);
-  const choose = (index: number) => {
-    const normalized = (index + SERVICES.length) % SERVICES.length;
-    motion.current = selectService(motion.current, normalized, !policy.animate);
-    publish(true);
-  };
   const start = (event: PointerEvent<HTMLDivElement>) => {
     if (policy.tier === 'static' || !event.isPrimary || event.button !== 0)
       return;
@@ -284,50 +278,6 @@ export default function HomeHero({
         ) : (
           fallback
         )}
-      </div>
-      <div className={cube.footer}>
-        <p className={cube.hint}>
-          {still
-            ? 'Explore our four hospitality services'
-            : 'Drag or use the arrows · space between every story'}
-        </p>
-        <fieldset
-          className={cube.selectors}
-          aria-label="Browse hospitality service images"
-        >
-          <button
-            type="button"
-            className={cube.selector}
-            aria-label="Show previous hospitality image"
-            onClick={() => choose(presentation.service - 1)}
-          >
-            <ChevronLeft size={17} aria-hidden="true" />
-          </button>
-          <button
-            type="button"
-            className={cube.selector}
-            aria-label="Show next hospitality image"
-            onClick={() => choose(presentation.service + 1)}
-          >
-            <ChevronRight size={17} aria-hidden="true" />
-          </button>
-          {!still && (
-            <button
-              type="button"
-              className={cube.pause}
-              aria-label={
-                paused ? 'Play cube animation' : 'Pause cube animation'
-              }
-              aria-pressed={paused}
-              onClick={() => onPauseChange(!paused)}
-            >
-              {paused ? <Play size={14} /> : <Pause size={14} />}
-            </button>
-          )}
-        </fieldset>
-        <p className={cube.sample}>
-          Original illustrated scenes · no live event data
-        </p>
       </div>
     </div>
   );

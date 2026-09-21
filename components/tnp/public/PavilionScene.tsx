@@ -2,6 +2,7 @@
 
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber';
 import {
+  useCallback,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -14,6 +15,7 @@ import {
   BoxGeometry,
   EdgesGeometry,
   Group,
+  type Material,
   SRGBColorSpace,
   TextureLoader,
 } from 'three';
@@ -74,13 +76,31 @@ function IllustratedCube({
     },
     [maps, edges],
   );
+  // Per-face materials, faded by how directly each face looks at the camera:
+  // the presented face is fully opaque, turning faces dissolve toward the side.
+  const faces = useRef<Material[][]>([]);
+  const pose = useCallback(() => {
+    if (!root.current) return;
+    const angle = motion.current.angle;
+    root.current.rotation.y = -angle;
+    faces.current.forEach((materials, index) => {
+      const facing = Math.cos(index * QUARTER - angle);
+      const t = Math.min(1, Math.max(0, (facing - 0.25) / 0.7));
+      const opacity = t * t * (3 - 2 * t);
+      materials.forEach((material) => {
+        material.opacity = opacity;
+        material.visible = opacity > 0.01;
+      });
+    });
+  }, [motion]);
+  // `revision` changes whenever the angle moves without a running frame loop.
   useLayoutEffect(() => {
-    if (root.current) root.current.rotation.y = -motion.current.angle;
+    pose();
     invalidate();
-  }, [revision, motion, invalidate]);
+  }, [revision, invalidate, pose]);
   useFrame(() => {
     if (!root.current) return;
-    root.current.rotation.y = -motion.current.angle;
+    pose();
     root.current.position.y = Math.sin(clock.current * 0.38) * 0.025;
   });
   return (
@@ -90,19 +110,32 @@ function IllustratedCube({
           <mesh position={[0, 0, 1.48]}>
             <planeGeometry args={[2.68, 2.68]} />
             <meshStandardMaterial
+              ref={(material) => {
+                (faces.current[index] ??= [])[0] = material!;
+              }}
               color="#c9ad73"
               metalness={0.5}
               roughness={0.38}
+              transparent
+              depthWrite={false}
             />
           </mesh>
           <mesh position={[0, 0, 1.495]}>
             <planeGeometry args={[2.48, 2.48]} />
-            <meshBasicMaterial map={map} toneMapped={false} />
+            <meshBasicMaterial
+              ref={(material) => {
+                (faces.current[index] ??= [])[1] = material!;
+              }}
+              map={map}
+              toneMapped={false}
+              transparent
+              depthWrite={false}
+            />
           </mesh>
         </group>
       ))}
       <lineSegments geometry={edges}>
-        <lineBasicMaterial color="#ead6ae" transparent opacity={0.8} />
+        <lineBasicMaterial color="#ead6ae" transparent opacity={0.35} />
       </lineSegments>
     </group>
   );
@@ -159,7 +192,7 @@ export default function PavilionScene({
   return (
     <Canvas
       dpr={[1, mobile ? 1 : 1.5]}
-      camera={{ position: [2.3, 1.3, 7.5], fov: 34 }}
+      camera={{ position: [0, 0, 7.5], fov: 34 }}
       frameloop={active ? 'always' : 'demand'}
       gl={{ alpha: true, antialias: !mobile, powerPreference: 'low-power' }}
       fallback={fallback}

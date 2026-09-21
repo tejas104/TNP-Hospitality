@@ -5,14 +5,18 @@ import {
   ArrowRight,
   Banknote,
   CalendarDays,
+  BarChart3,
+  BookOpen,
   ClipboardCheck,
+  ClipboardList,
   LayoutDashboard,
+  PanelLeftClose,
+  PanelLeftOpen,
   RefreshCw,
   Search,
   UsersRound,
 } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Metric } from '@/components/tnp/shared/Metric';
 import { StatusPill } from '@/components/tnp/shared/StatusPill';
 import type {
   Quote,
@@ -57,6 +61,52 @@ import {
   type OperationsSection as Panel,
 } from './operationsState';
 import styles from './AdminOperations.module.css';
+
+const SECTION_ICONS = {
+  overview: LayoutDashboard,
+  events: CalendarDays,
+  requirements: ClipboardList,
+  verification: ClipboardCheck,
+  attendance: AlertCircle,
+  finance: Banknote,
+  catalogue: BookOpen,
+  reports: BarChart3,
+} as const;
+const SECTION_LABEL = Object.fromEntries(
+  operationsSectionItems('overview').map((item) => [item.id, item.label]),
+) as Record<keyof typeof SECTION_ICONS, string>;
+// Sidebar groups: the numbered order still follows the section catalogue.
+const SECTION_GROUPS: { label: string; ids: string[] }[] = [
+  { label: 'Run the day', ids: ['overview', 'events', 'requirements'] },
+  { label: 'People', ids: ['verification', 'attendance'] },
+  { label: 'Money & records', ids: ['finance', 'catalogue', 'reports'] },
+];
+const QUICK_ACTIONS = [
+  {
+    id: 'overview',
+    label: 'Overview',
+    hint: 'Whole operation at a glance',
+    Icon: LayoutDashboard,
+  },
+  {
+    id: 'events',
+    label: 'Run events',
+    hint: 'Functions, positions and roster',
+    Icon: CalendarDays,
+  },
+  {
+    id: 'verification',
+    label: 'Review people',
+    hint: 'Applications and role checks',
+    Icon: ClipboardCheck,
+  },
+  {
+    id: 'finance',
+    label: 'Finance',
+    hint: 'Quotes, earnings and payouts',
+    Icon: Banknote,
+  },
+] as const;
 
 type LoadState =
   | { kind: 'loading'; message: string }
@@ -168,6 +218,7 @@ export function AdminOperations() {
     run: (epoch: number) => Promise<void>;
   } | null>(null);
   const [panel, setPanel] = useState<Panel>('overview');
+  const [collapsed, setCollapsed] = useState(false);
   const [loadState, setLoadState] = useState<LoadState>({
     kind: 'loading',
     message: 'Loading Operations preview…',
@@ -618,6 +669,7 @@ export function AdminOperations() {
   const feedbackCanRetry =
     feedback.kind === 'error' && feedback.retryable === true;
   const sections = operationsSectionItems(panel);
+  const currentLabel = SECTION_LABEL[panel];
 
   const openSection = (id: Panel) => {
     setPanel(id);
@@ -634,167 +686,206 @@ export function AdminOperations() {
   };
 
   return (
-    <main id="main-content" tabIndex={-1} className="admin-shell">
-      <aside className="admin-sidebar" aria-label="Operations sections">
-        <strong>TNP OPERATIONS</strong>
-        {sections.map((item, index) => (
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className={`admin-shell ${styles.shell}`}
+      data-collapsed={collapsed}
+    >
+      <aside
+        className={`admin-sidebar ${styles.sidebar}`}
+        aria-label="Operations sections"
+      >
+        <div className={styles.sidebarHead}>
+          <strong>TNP Operations</strong>
           <button
-            className={`${styles.navButton} ${item.current ? styles.navButtonActive : ''}`}
-            key={item.id}
             type="button"
-            aria-current={item.current ? 'page' : undefined}
-            aria-controls="operations-workspace"
-            onClick={() => openSection(item.id)}
+            className={styles.collapseButton}
+            aria-expanded={!collapsed}
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            onClick={() => setCollapsed((value) => !value)}
           >
-            <small>{String(index + 1).padStart(2, '0')}</small>
-            <span>{item.label}</span>
+            {collapsed ? (
+              <PanelLeftOpen size={18} aria-hidden="true" />
+            ) : (
+              <PanelLeftClose size={18} aria-hidden="true" />
+            )}
           </button>
+        </div>
+        {SECTION_GROUPS.map((group) => (
+          <div key={group.label} className={styles.navGroup}>
+            <span className={styles.navLabel}>{group.label}</span>
+            {sections
+              .filter((item) => group.ids.includes(item.id))
+              .map((item) => {
+                const Icon = SECTION_ICONS[item.id];
+                const number = sections.indexOf(item) + 1;
+                return (
+                  <button
+                    className={`${styles.navButton} ${item.current ? styles.navButtonActive : ''}`}
+                    key={item.id}
+                    type="button"
+                    title={collapsed ? item.label : undefined}
+                    aria-current={item.current ? 'page' : undefined}
+                    aria-controls="operations-workspace"
+                    onClick={() => openSection(item.id)}
+                  >
+                    <Icon size={18} aria-hidden="true" />
+                    <small>{String(number).padStart(2, '0')}</small>
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+          </div>
         ))}
+        <p className={styles.sidebarNote}>
+          Development preview · sample records only
+        </p>
       </aside>
-      <section className="admin-main">
-        <div className="admin-header">
-          <p className="section-kicker">
-            TNP OPERATIONS · SYNTHETIC WORKFORCE PREVIEW
-          </p>
-          <div className={styles.headerIntro}>
-            <div>
-              <h1>Today in Operations</h1>
-              <p>
-                Move from the overview to events, people, attendance and finance
-                without losing context.
-              </p>
-            </div>
-            <div className={styles.currentDesk}>
-              <span>CURRENT DESK</span>
-              <strong>{sections.find((item) => item.current)?.label}</strong>
-              <small>All records are synthetic</small>
-            </div>
+      <section className={`admin-main ${styles.main}`}>
+        <div className={`admin-header ${styles.topbar}`}>
+          <div>
+            <p className={styles.crumbs}>
+              <span>Operations</span>
+              <span aria-hidden="true">/</span>
+              <strong>{currentLabel}</strong>
+            </p>
+            <h1>Today in Operations</h1>
+            <p className={styles.lede}>
+              See what needs attention, then open one desk at a time.
+            </p>
           </div>
-          <div className={styles.headerMeta}>
-            <StatusPill
-              tone="green"
-              label={
-                loadState.kind === 'ready'
-                  ? loadState.message
-                  : 'Synthetic data only'
-              }
-            />
-            <span>
-              No live tracking, allocation authority, identity decision or
-              payment.
-            </span>
+          <div className={styles.currentDesk} aria-live="polite">
+            <span>Current desk</span>
+            <strong>{currentLabel}</strong>
+            <small>All records are synthetic</small>
           </div>
+        </div>
+        <div className={styles.headerMeta}>
+          <StatusPill
+            tone="green"
+            label={
+              loadState.kind === 'ready'
+                ? loadState.message
+                : 'Synthetic data only'
+            }
+          />
+          <span>
+            Development preview. No live tracking, allocation authority,
+            identity decision or payment.
+          </span>
         </div>
         {loadState.kind === 'ready' ? (
           <>
-            <div
+            <nav
               className={styles.commandBar}
               aria-label="Operations quick actions"
             >
-              <button type="button" onClick={() => openSection('overview')}>
-                <LayoutDashboard aria-hidden="true" />
-                <span>
-                  <strong>Overview</strong>
-                  <small>Whole operation at a glance</small>
-                </span>
-              </button>
-              <button type="button" onClick={() => openSection('events')}>
-                <CalendarDays aria-hidden="true" />
-                <span>
-                  <strong>Run events</strong>
-                  <small>Functions, positions and roster</small>
-                </span>
-              </button>
-              <button type="button" onClick={() => openSection('verification')}>
-                <ClipboardCheck aria-hidden="true" />
-                <span>
-                  <strong>Review people</strong>
-                  <small>Applications and role checks</small>
-                </span>
-              </button>
-              <button type="button" onClick={() => openSection('finance')}>
-                <Banknote aria-hidden="true" />
-                <span>
-                  <strong>Finance desk</strong>
-                  <small>Quotes, earnings and payouts</small>
-                </span>
-              </button>
-            </div>
+              {QUICK_ACTIONS.map(({ id, label, hint, Icon }) => (
+                <button
+                  key={id}
+                  type="button"
+                  aria-pressed={panel === id}
+                  onClick={() => openSection(id)}
+                >
+                  <Icon aria-hidden="true" />
+                  <span>
+                    <strong>{label}</strong>
+                    <small>{hint}</small>
+                  </span>
+                  <ArrowRight
+                    size={16}
+                    aria-hidden="true"
+                    className={styles.commandArrow}
+                  />
+                </button>
+              ))}
+            </nav>
             <div className={styles.metricsHeading}>
-              <span>AT A GLANCE</span>
-              <small>Click any metric to open its working area</small>
+              <h2>At a glance</h2>
+              <small>Select a figure to open the desk that owns it</small>
             </div>
-            <div className="admin-stats" aria-label="Operations metrics">
-              <button
-                className={styles.metricButton}
-                type="button"
-                onClick={() => setPanel('events')}
-              >
-                <Metric
-                  value={String(data.metrics.events ?? 0)}
-                  label="Linked functions"
-                />
-              </button>
-              <button
-                className={styles.metricButton}
-                type="button"
-                onClick={() => setPanel('requirements')}
-              >
-                <Metric
-                  value={String(data.metrics.positions ?? 0)}
-                  label="Required positions"
-                />
-              </button>
-              <button
-                className={styles.metricButton}
-                type="button"
-                onClick={() => setPanel('events')}
-              >
-                <Metric
-                  value={String(data.metrics.activeAssignments ?? 0)}
-                  label="Active assignments"
-                />
-              </button>
-              <button
-                className={styles.metricButton}
-                type="button"
-                onClick={() => setPanel('verification')}
-              >
-                <Metric
-                  value={String(
-                    data.applications.filter(
-                      (item) => item.status === 'pending',
-                    ).length,
-                  )}
-                  label="Pending reviews"
-                />
-              </button>
-              <button
-                className={styles.metricButton}
-                type="button"
-                onClick={() => setPanel('attendance')}
-              >
-                <Metric
-                  value={String(data.metrics.attendanceExceptions ?? 0)}
-                  label="Attendance exceptions"
-                />
-              </button>
+            <div className={styles.kpiGrid} aria-label="Operations metrics">
+              {[
+                {
+                  target: 'events' as const,
+                  value: data.metrics.events ?? 0,
+                  label: 'Linked functions',
+                  hint: 'Events in this sample',
+                  Icon: CalendarDays,
+                  attention: false,
+                },
+                {
+                  target: 'requirements' as const,
+                  value: data.metrics.positions ?? 0,
+                  label: 'Required positions',
+                  hint: 'Roles to fill',
+                  Icon: ClipboardList,
+                  attention: false,
+                },
+                {
+                  target: 'events' as const,
+                  value: data.metrics.activeAssignments ?? 0,
+                  label: 'Active assignments',
+                  hint: 'People placed',
+                  Icon: UsersRound,
+                  attention: false,
+                },
+                {
+                  target: 'verification' as const,
+                  value: data.applications.filter(
+                    (item) => item.status === 'pending',
+                  ).length,
+                  label: 'Pending reviews',
+                  hint: 'Waiting for a decision',
+                  Icon: ClipboardCheck,
+                  attention: true,
+                },
+                {
+                  target: 'attendance' as const,
+                  value: data.metrics.attendanceExceptions ?? 0,
+                  label: 'Attendance exceptions',
+                  hint: 'Need a supervisor check',
+                  Icon: AlertCircle,
+                  attention: true,
+                },
+              ].map(({ target, value, label, hint, Icon, attention }) => (
+                <button
+                  key={label}
+                  className={styles.kpi}
+                  type="button"
+                  data-attention={attention && value > 0 ? 'true' : undefined}
+                  aria-label={`${value} ${label}. Open ${SECTION_LABEL[target]}`}
+                  onClick={() => openSection(target)}
+                >
+                  <Icon size={18} aria-hidden="true" />
+                  <strong>{value}</strong>
+                  <span>{label}</span>
+                  <small>
+                    {attention && value > 0 ? 'Needs attention' : hint}
+                  </small>
+                </button>
+              ))}
             </div>
             <nav className={styles.compactNav} aria-label="Operations sections">
               <ul>
-                {sections.map((item) => (
-                  <li key={item.id}>
-                    <button
-                      className={item.current ? styles.compactNavActive : ''}
-                      type="button"
-                      aria-current={item.current ? 'page' : undefined}
-                      aria-controls="operations-workspace"
-                      onClick={() => openSection(item.id)}
-                    >
-                      {item.label}
-                    </button>
-                  </li>
-                ))}
+                {sections.map((item) => {
+                  const Icon = SECTION_ICONS[item.id];
+                  return (
+                    <li key={item.id}>
+                      <button
+                        className={item.current ? styles.compactNavActive : ''}
+                        type="button"
+                        aria-current={item.current ? 'page' : undefined}
+                        aria-controls="operations-workspace"
+                        onClick={() => openSection(item.id)}
+                      >
+                        <Icon size={16} aria-hidden="true" />
+                        {item.label}
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             </nav>
             <section
@@ -802,7 +893,7 @@ export function AdminOperations() {
               id="operations-workspace"
               ref={workspaceRef}
               tabIndex={-1}
-              aria-label={`${sections.find((item) => item.current)?.label} workspace`}
+              aria-label={`${currentLabel} workspace`}
             >
               {panel === 'finance' && (
                 <FinancePanel

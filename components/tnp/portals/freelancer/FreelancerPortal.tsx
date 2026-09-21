@@ -10,7 +10,6 @@ import {
   RefreshCw,
   Search,
   WalletCards,
-  X,
 } from 'lucide-react';
 import { getBrowserPreviewService } from '@/lib/services/preview';
 import type {
@@ -31,9 +30,23 @@ import {
   OpportunityWorkspace,
   UpdatesWorkspace,
 } from './OpportunityWorkspace';
+import { GenieWindow } from '../../public/portal-launcher/PortalLauncher';
 import { profiles } from './freelancerState.ts';
 import { useFreelancer } from './useFreelancer';
 import styles from './FreelancerPortal.module.css';
+
+const PAGES = [
+  ['application', 'Application', ClipboardList],
+  ['opportunities', 'Opportunities', Search],
+  ['assignments', 'Assignments', BriefcaseBusiness],
+  ['pass & attendance', 'Pass & attendance', CalendarCheck2],
+  ['earnings & standing', 'Earnings & standing', BadgeIndianRupee],
+  ['updates', 'Updates', Bell],
+] as const;
+const pageLabel = (value: string) =>
+  PAGES.find(([key]) => key === value)?.[1] ?? 'Application';
+// Illustrative figure for the demo wallet; never a payable balance.
+const SAMPLE_BALANCE = '₹12,480';
 
 export function FreelancerPortal() {
   const [profile, setProfile] = useState<string | null>(null);
@@ -84,19 +97,18 @@ function FreelancerWorkspace({
   const [section, setSection] = useState('application');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const content = useRef<HTMLDivElement>(null);
-  const drawerClose = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    if (!drawerOpen) return;
-    drawerClose.current?.focus();
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') setDrawerOpen(false);
-    };
-    window.addEventListener('keydown', closeOnEscape);
-    return () => window.removeEventListener('keydown', closeOnEscape);
-  }, [drawerOpen]);
+  const menuTrigger = useRef<HTMLButtonElement>(null);
   function navigate(next: string) {
     setSection(next);
-    setDrawerOpen(false);
+    if (drawerOpen) {
+      // Focus returns to the menu button as the window folds back into it;
+      // the chosen page is revealed behind it.
+      setDrawerOpen(false);
+      window.setTimeout(() =>
+        content.current?.scrollIntoView({ block: 'start', behavior: 'instant' }),
+      );
+      return;
+    }
     window.setTimeout(() => {
       content.current?.focus();
       content.current?.scrollIntoView({ block: 'start', behavior: 'instant' });
@@ -171,96 +183,88 @@ function FreelancerWorkspace({
           'Use sample choices only. No real identity checks, tracking or payments.'}
         {w.storageWarning && <p>{w.storageWarning}</p>}
       </output>
-      <div className={styles.workspaceTools}>
-        <button
-          type="button"
-          className={styles.menuTrigger}
-          aria-expanded={drawerOpen}
-          aria-controls="freelancer-workspace-drawer"
-          onClick={() => setDrawerOpen(true)}
-        >
-          <Menu size={21} aria-hidden="true" />
-          <span>Workspace</span>
-        </button>
+      <div className={styles.workspaceBar}>
+        <p>
+          <small>You are viewing</small>
+          <strong>{pageLabel(section)}</strong>
+        </p>
         <button
           type="button"
           className={styles.walletTrigger}
           onClick={() => navigate('earnings & standing')}
         >
-          <WalletCards size={21} aria-hidden="true" />
-          <span>Wallet</span>
+          <WalletCards size={19} aria-hidden="true" />
+          <span>
+            <small>Sample wallet</small>
+            {SAMPLE_BALANCE}
+          </span>
+        </button>
+        <button
+          ref={menuTrigger}
+          type="button"
+          className={styles.menuTrigger}
+          aria-haspopup="dialog"
+          aria-expanded={drawerOpen}
+          aria-label="Open workspace pages"
+          onClick={() => setDrawerOpen(true)}
+        >
+          <Menu size={22} aria-hidden="true" />
         </button>
       </div>
-      {drawerOpen && (
-        <button
-          type="button"
-          className={styles.drawerBackdrop}
-          aria-label="Close workspace menu"
-          onClick={() => setDrawerOpen(false)}
-        />
-      )}
-      <aside
-        id="freelancer-workspace-drawer"
-        className={styles.workspaceDrawer}
-        data-open={drawerOpen}
-        aria-hidden={!drawerOpen}
+      <GenieWindow
+        sourceRef={menuTrigger}
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        title="Freelancer workspace"
+        label="Close workspace menu"
+        align="end"
       >
-        <header>
-          <div>
-            <p className={styles.eyebrow}>FREELANCER WORKSPACE</p>
-            <h2>Where do you want to go?</h2>
-          </div>
-          <button
-            ref={drawerClose}
-            type="button"
-            aria-label="Close workspace menu"
-            onClick={() => setDrawerOpen(false)}
-          >
-            <X size={20} aria-hidden="true" />
-          </button>
-        </header>
-        <button
-          type="button"
-          className={styles.walletCard}
-          onClick={() => navigate('earnings & standing')}
+        <div
+          id="freelancer-workspace-drawer"
+          className={styles.workspaceDrawer}
         >
-          <span>
-            <WalletCards size={22} aria-hidden="true" /> Sample wallet
-          </span>
-          <strong>₹12,480</strong>
-          <small>View earnings, payouts and standing</small>
-        </button>
-        <nav aria-label="Freelancer pages">
-          {[
-            ['application', 'Application', ClipboardList],
-            ['opportunities', 'Opportunities', Search],
-            ['assignments', 'Assignments', BriefcaseBusiness],
-            ['pass & attendance', 'Pass & attendance', CalendarCheck2],
-            ['earnings & standing', 'Earnings & standing', BadgeIndianRupee],
-            ['updates', 'Updates', Bell],
-          ].map(([value, label, Icon], index) => (
-            <button
-              key={String(value)}
-              type="button"
-              aria-current={section === value ? 'page' : undefined}
-              onClick={() => navigate(String(value))}
-            >
-              <Icon size={19} aria-hidden="true" />
-              <span>
-                <small>0{index + 1}</small>
-                <strong>{String(label)}</strong>
-              </span>
-              {value === 'assignments' && w.data && (
-                <b>{w.data.assignments.length}</b>
-              )}
-            </button>
-          ))}
-        </nav>
-        <p className={styles.drawerNote}>
-          Synthetic navigation and sample balance only. No payment or production
-          account is connected.
-        </p>
-      </aside>
+          <h2>Where do you want to go?</h2>
+          <button
+            type="button"
+            className={styles.walletCard}
+            onClick={() => navigate('earnings & standing')}
+          >
+            <span>
+              <WalletCards size={22} aria-hidden="true" /> Sample wallet
+            </span>
+            <strong>{SAMPLE_BALANCE}</strong>
+            <small>
+              Illustrative balance · not payable or withdrawable. View earnings,
+              payouts and standing.
+            </small>
+          </button>
+          <nav aria-label="Freelancer pages">
+            {PAGES.map(([value, label, Icon], index) => (
+              <button
+                key={value}
+                type="button"
+                aria-current={section === value ? 'page' : undefined}
+                onClick={() => navigate(value)}
+              >
+                <Icon size={19} aria-hidden="true" />
+                <span>
+                  <small>0{index + 1}</small>
+                  <strong>{label}</strong>
+                </span>
+                {value === 'assignments' && w.data && (
+                  <b aria-label={`${w.data.assignments.length} assignments`}>
+                    {w.data.assignments.length}
+                  </b>
+                )}
+              </button>
+            ))}
+          </nav>
+          <p className={styles.drawerNote}>
+            Synthetic navigation and sample balance only. No payment or
+            production account is connected.
+          </p>
+        </div>
+      </GenieWindow>
       {w.pendingRequests.length > 0 && (
         <section
           className={styles.recovery}

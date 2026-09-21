@@ -41,60 +41,160 @@
 }
 .eventRail {
   display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  padding: 6px;
 }
-.eventRail > button {
-  align-items: center;
-  background: #fffdf8;
-  border: 1px solid #c8c0af;
+/* Neumorphic "window" cards: soft extruded surface, pressed when active. */
+.windowCard {
+  --neu-light: rgb(255 255 255 / 92%);
+  --neu-dark: rgb(150 138 112 / 34%);
+  animation: cardIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  background: linear-gradient(145deg, #faf7f0, #ebe6da);
+  border: 1px solid rgb(255 255 255 / 60%);
+  border-radius: 18px;
+  box-shadow:
+    -7px -7px 16px var(--neu-light),
+    8px 8px 18px var(--neu-dark);
   color: #202423;
   cursor: pointer;
   display: grid;
-  gap: 3px 10px;
-  grid-template-columns: auto 1fr auto;
-  min-height: 82px;
-  padding: 14px;
+  min-height: 136px;
+  overflow: hidden;
+  padding: 0;
   text-align: left;
+  transition:
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
-.eventRail > button > span {
-  align-self: start;
+.windowCard:hover {
+  box-shadow:
+    -9px -9px 20px var(--neu-light),
+    10px 10px 22px var(--neu-dark);
+  transform: translateY(-2px);
+}
+.windowCard:active,
+.windowCard[aria-current] {
+  box-shadow:
+    inset 5px 5px 12px var(--neu-dark),
+    inset -5px -5px 12px var(--neu-light);
+  transform: none;
+}
+.windowCard[aria-current] {
+  border-color: rgb(0 128 128 / 45%);
+}
+.windowBar {
+  align-items: center;
+  border-bottom: 1px solid rgb(150 138 112 / 22%);
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
+}
+.windowBar i {
+  background: #d6ceba;
+  border-radius: 50%;
+  box-shadow: inset 1px 1px 2px rgb(120 108 84 / 35%);
+  height: 9px;
+  width: 9px;
+}
+.windowBar em {
   color: #006b6b;
-  font-size: 11px;
-  font-weight: 800;
-  grid-row: 1 / 3;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 700;
+  margin-left: auto;
 }
-.eventRail > button strong {
-  font-size: 14px;
+.windowBody {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px 14px;
+}
+.windowBody > strong {
+  font-size: 17px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.eventRail > button small {
-  color: #59615f;
-  font-size: 11px;
-  text-transform: capitalize;
+.windowBody > small {
+  color: #505854;
+  font-size: 13px;
 }
-.eventRail > button svg {
-  grid-column: 3;
-  grid-row: 1 / 3;
+.windowMeta {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+.windowMeta > span {
+  font-size: 14px;
+}
+.windowMeta b {
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+}
+.windowMeta em,
+.eventHeading > strong {
+  border: 1px solid #b3aa99;
+  border-radius: 999px;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 700;
+  padding: 4px 10px;
+}
+.windowMeta em[data-status='submitted'],
+.eventHeading > strong[data-status='submitted'] {
+  background: #008080;
+  border-color: #008080;
+  color: #fff;
 }
 .railTotal {
   align-items: center;
   background: #202423;
+  border-radius: 18px;
   color: #fff;
   display: flex;
-  gap: 10px;
-  min-height: 82px;
-  padding: 14px 18px;
+  gap: 12px;
+  min-height: 136px;
+  padding: 18px 20px;
 }
 .railTotal span {
   display: grid;
-  font-size: 11px;
+  font-size: 14px;
 }
 .railTotal strong {
   color: #ffe4a3;
-  font-size: 22px;
+  font-size: 34px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+.fieldError {
+  background: #fdf0ec;
+  border-left: 4px solid #b3261e;
+  color: #7a1c14;
+  font-size: 14px;
+  margin: -8px 0 0;
+  padding: 10px 14px;
+}
+.submittedBanner {
+  align-items: center;
+  background: #e3f0ec;
+  border-radius: 12px;
+  color: #202423;
+  display: flex;
+  font-size: 14px;
+  gap: 10px;
+  line-height: 1.5;
+  margin: 0;
+  padding: 12px 14px;
+}
+.submittedBanner svg {
+  flex: none;
+}
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
 }
 .notice {
   background: #e7efec;
@@ -118,6 +218,10 @@
   outline: none;
   scroll-margin-top: 110px;
 }
+.eventWorkspace[data-status='submitted'] {
+  border-color: #008080;
+  box-shadow: 0 0 0 1px #008080;
+}
 .eventWorkspace:focus-visible {
   box-shadow: 0 0 0 4px #008080;
 }
@@ -133,22 +237,8 @@
 }
 .eventHeading > span {
   color: #006b6b;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
-}
-.eventHeading > strong {
-  border: 1px solid #b3aa99;
-  border-radius: 999px;
-  font-size: 10px;
-  letter-spacing: 0.08em;
-  padding: 6px 10px;
-  text-transform: uppercase;
-}
-.eventHeading > strong[data-status='submitted'] {
-  background: #008080;
-  border-color: #008080;
-  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
 }
 .builder > h3,
 .summary > h3 {
@@ -161,14 +251,14 @@
   gap: 14px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
-.builder label {
-  color: #4f5955;
+.builder.builder label {
+  color: #3f4945;
   display: grid;
-  font-size: 11px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 600;
   gap: 7px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 .builder :is(input, select, textarea) {
   background: #f8f5ed;
@@ -281,7 +371,7 @@
   padding: 9px 0;
 }
 .summaryLines span {
-  font-size: 13px;
+  font-size: 15px;
 }
 .summaryLines strong {
   color: #ffe4a3;
@@ -298,10 +388,8 @@
   justify-content: space-between;
 }
 .total span {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 15px;
+  font-weight: 700;
 }
 .total strong {
   color: #ffe4a3;
@@ -349,7 +437,7 @@
   }
   .eventRail > button,
   .railTotal {
-    flex: 0 0 235px;
+    flex: 0 0 240px;
     scroll-snap-align: start;
   }
   .eventFields,
@@ -369,5 +457,12 @@
 @media (prefers-reduced-motion: reduce) {
   .studio * {
     scroll-behavior: auto !important;
+  }
+  .windowCard {
+    animation: none;
+    transition: none;
+  }
+  .windowCard:hover {
+    transform: none;
   }
 }

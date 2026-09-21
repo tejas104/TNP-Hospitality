@@ -15,7 +15,6 @@ import {
   demoWorkspaces,
   publicNavigation,
   routeInfo,
-  shouldMountCursor,
   workspaceNavigation,
 } from './access/routes';
 import { profileFor } from './access/session';
@@ -116,7 +115,6 @@ function Shell({ children }: { children: ReactNode }) {
       >
         Skip to main content
       </a>
-      {shouldMountCursor(pathname) && <CustomCursor />}
       {pathname === '/' && (
         <>
           <Preloader active={showPreloader} />
@@ -297,53 +295,6 @@ function WorkspaceSwitcher({ current }: { current?: string }) {
           </Link>
         ))}
       </nav>
-    </div>
-  );
-}
-function CustomCursor() {
-  const cursor = useRef<HTMLDivElement>(null);
-  const [label, setLabel] = useState('');
-
-  useEffect(() => {
-    if (
-      window.matchMedia('(pointer: coarse), (prefers-reduced-motion: reduce)')
-        .matches
-    )
-      return;
-    const move = (event: PointerEvent) => {
-      const target = event.target as HTMLElement | null;
-      const cursorTarget = target?.closest?.(
-        '[data-cursor]',
-      ) as HTMLElement | null;
-      if (cursor.current) {
-        cursor.current.style.transform = `translate3d(${event.clientX}px, ${event.clientY}px, 0)`;
-        cursor.current.style.opacity = '1';
-      }
-      setLabel(cursorTarget?.dataset.cursor ?? '');
-    };
-    const hide = () => {
-      if (cursor.current) cursor.current.style.opacity = '0';
-    };
-    window.addEventListener('pointermove', move);
-    document.addEventListener('pointerleave', hide);
-    window.addEventListener('blur', hide);
-    document.body.classList.add('has-custom-cursor');
-    return () => {
-      window.removeEventListener('pointermove', move);
-      document.removeEventListener('pointerleave', hide);
-      window.removeEventListener('blur', hide);
-      document.body.classList.remove('has-custom-cursor');
-    };
-  }, []);
-
-  return (
-    <div
-      ref={cursor}
-      className={`custom-cursor ${label ? 'active' : ''}`}
-      aria-hidden="true"
-    >
-      <i className="cursor-ring" />
-      <span>{label}</span>
     </div>
   );
 }

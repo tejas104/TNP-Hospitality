@@ -3,7 +3,6 @@
 import {
   CalendarDays,
   Check,
-  ChevronDown,
   MapPin,
   Plus,
   Trash2,
@@ -53,6 +52,9 @@ function createId(prefix: string) {
   return `${prefix}-${suffix}`;
 }
 
+const statusLabel = (status: EventPlan['status']) =>
+  status === 'submitted' ? 'Submitted' : 'Draft';
+
 export function PlannerEventStudio() {
   const [events, setEvents] = useState<EventPlan[]>([firstEvent]);
   const [roleDrafts, setRoleDrafts] = useState<Record<string, RoleDraft>>({
@@ -61,7 +63,11 @@ export function PlannerEventStudio() {
   const [notice, setNotice] = useState(
     'Choose a role and quantity, then add as many workforce lines as this event needs.',
   );
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [activeId, setActiveId] = useState(firstEvent.id);
   const eventRefs = useRef<Record<string, HTMLElement | null>>({});
+  const setError = (id: string, message = '') =>
+    setErrors((current) => ({ ...current, [id]: message }));
 
   const totalPeople = useMemo(
     () =>
@@ -81,6 +87,7 @@ export function PlannerEventStudio() {
           : event,
       ),
     );
+    setError(id);
   }
 
   function setRoleDraft(id: string, patch: Partial<RoleDraft>) {
@@ -101,9 +108,12 @@ export function PlannerEventStudio() {
     };
     const quantity = Number(draft.quantity);
     if (!Number.isSafeInteger(quantity) || quantity < 1 || quantity > 500) {
-      setNotice('Enter a whole-number quantity between 1 and 500.');
+      setError(eventId, 'Enter a whole number of people between 1 and 500.');
       return;
     }
+    const replaced = events
+      .find((event) => event.id === eventId)
+      ?.staffing.some((line) => line.role === draft.role);
     setEvents((current) =>
       current.map((event) => {
         if (event.id !== eventId) return event;
@@ -124,8 +134,11 @@ export function PlannerEventStudio() {
         };
       }),
     );
+    setError(eventId);
     setNotice(
-      `${quantity} × ${draft.role} added. Choose another role to build the same event team.`,
+      replaced
+        ? `${draft.role} updated to ${quantity}. Other roles on this event are unchanged.`
+        : `${quantity} × ${draft.role} added. Choose another role to build the same event team.`,
     );
     setRoleDraft(eventId, { quantity: '1' });
   }
@@ -152,20 +165,27 @@ export function PlannerEventStudio() {
       !event.functionName.trim() ||
       !event.city.trim()
     ) {
-      setNotice('Add the event, function and city before final submission.');
+      setError(
+        eventId,
+        'Add the event name, function and city before submitting this event.',
+      );
       return;
     }
     if (!event.staffing.length) {
-      setNotice('Add at least one workforce role before final submission.');
+      setError(
+        eventId,
+        'Add at least one workforce role (for example 3 × Hostess) before submitting.',
+      );
       return;
     }
+    setError(eventId);
     setEvents((current) =>
       current.map((item) =>
         item.id === eventId ? { ...item, status: 'submitted' } : item,
       ),
     );
     setNotice(
-      `${event.title} is ready in the synthetic demo. Its complete team is shown in the summary card.`,
+      `${event.title} is submitted in this synthetic demo. No staffing, booking or message has been made.`,
     );
   }
 
@@ -186,6 +206,7 @@ export function PlannerEventStudio() {
       ...current,
       [id]: { role: 'Hostess', quantity: '1' },
     }));
+    setActiveId(id);
     setNotice('A new empty event has been added below.');
     window.requestAnimationFrame(() =>
       eventRefs.current[id]?.scrollIntoView({
@@ -196,6 +217,7 @@ export function PlannerEventStudio() {
   }
 
   function focusEvent(id: string) {
+    setActiveId(id);
     eventRefs.current[id]?.scrollIntoView({
       behavior: 'smooth',
       block: 'start',
@@ -235,25 +257,44 @@ export function PlannerEventStudio() {
             (sum, line) => sum + line.quantity,
             0,
           );
+          const where = [event.city, event.date].filter(Boolean).join(' · ');
           return (
             <button
               key={event.id}
               type="button"
+              className={styles.windowCard}
+              data-status={event.status}
+              aria-current={activeId === event.id ? 'true' : undefined}
+              aria-label={`Event 0${index + 1}: ${event.title || `New event ${index + 1}`}. ${statusLabel(event.status)}, ${people} ${people === 1 ? 'person' : 'people'}. Go to event.`}
               onClick={() => focusEvent(event.id)}
             >
-              <span>0{index + 1}</span>
-              <strong>{event.title || `New event ${index + 1}`}</strong>
-              <small>
-                {event.status} · {people} people
-              </small>
-              <ChevronDown size={16} aria-hidden="true" />
+              <span className={styles.windowBar} aria-hidden="true">
+                <i />
+                <i />
+                <i />
+                <em>Event 0{index + 1}</em>
+              </span>
+              <span className={styles.windowBody}>
+                <strong>{event.title || `New event ${index + 1}`}</strong>
+                <small>{where || 'City and date not added yet'}</small>
+                <span className={styles.windowMeta}>
+                  <span>
+                    <b>{people}</b> {people === 1 ? 'person' : 'people'}
+                  </span>
+                  <em data-status={event.status}>
+                    {statusLabel(event.status)}
+                  </em>
+                </span>
+              </span>
             </button>
           );
         })}
         <div className={styles.railTotal}>
-          <UsersRound size={18} aria-hidden="true" />
+          <UsersRound size={20} aria-hidden="true" />
           <span>
-            <strong>{totalPeople}</strong> across all events
+            <strong>{totalPeople}</strong>
+            people across {events.length}{' '}
+            {events.length === 1 ? 'event' : 'events'}
           </span>
         </div>
       </nav>
@@ -280,16 +321,26 @@ export function PlannerEventStudio() {
               }}
               tabIndex={-1}
               className={styles.eventWorkspace}
+              data-status={event.status}
               aria-labelledby={`${event.id}-title`}
             >
               <div className={styles.builder}>
                 <div className={styles.eventHeading}>
-                  <span>EVENT 0{eventIndex + 1}</span>
-                  <strong data-status={event.status}>{event.status}</strong>
+                  <span>Event 0{eventIndex + 1}</span>
+                  <strong data-status={event.status}>
+                    {statusLabel(event.status)}
+                  </strong>
                 </div>
                 <h3 id={`${event.id}-title`}>
                   {event.title || `New event ${eventIndex + 1}`}
                 </h3>
+                {event.status === 'submitted' && (
+                  <p className={styles.submittedBanner}>
+                    <Check size={18} aria-hidden="true" />
+                    Submitted in this demo. Editing any detail returns it to
+                    draft. No real staffing or booking was made.
+                  </p>
+                )}
                 <div className={styles.eventFields}>
                   <label>
                     Event name
@@ -366,6 +417,15 @@ export function PlannerEventStudio() {
                     <Plus size={17} aria-hidden="true" /> Add to event
                   </button>
                 </div>
+                {errors[event.id] && (
+                  <p
+                    className={styles.fieldError}
+                    id={`${event.id}-error`}
+                    role="alert"
+                  >
+                    {errors[event.id]}
+                  </p>
+                )}
 
                 <div
                   className={styles.selectedRoles}
@@ -410,6 +470,9 @@ export function PlannerEventStudio() {
                 <button
                   type="button"
                   className={styles.submitButton}
+                  aria-describedby={
+                    errors[event.id] ? `${event.id}-error` : undefined
+                  }
                   onClick={() => submitEvent(event.id)}
                 >
                   <Check size={18} aria-hidden="true" />{' '}
@@ -425,8 +488,8 @@ export function PlannerEventStudio() {
               >
                 <p className="section-kicker">
                   {event.status === 'submitted'
-                    ? 'SUBMITTED EVENT BRIEF'
-                    : 'LIVE EVENT SUMMARY'}
+                    ? 'Submitted event brief'
+                    : 'Live event summary'}
                 </p>
                 <h3>{event.title || 'Name this event'}</h3>
                 <div className={styles.summaryMeta}>

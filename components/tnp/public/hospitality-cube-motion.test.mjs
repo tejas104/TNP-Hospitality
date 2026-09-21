@@ -25,12 +25,12 @@ function advance(state, ms) {
   }
   return state;
 }
-test('literal timing contracts remain 4500ms hold, 1500ms turn and 6000ms resume', () => {
-  assert.equal(HOLD_MS, 4500);
-  assert.equal(TURN_MS, 1500);
+test('literal timing contracts remain 2200ms hold, 900ms turn and 6000ms resume', () => {
+  assert.equal(HOLD_MS, 2200);
+  assert.equal(TURN_MS, 900);
   assert.equal(RESUME_MS, 6000);
 });
-test('four services present for 4.5s and turn forward 90 degrees over 1.5s, including seamless wrap', () => {
+test('four services present for 2.2s and turn forward 90 degrees over 0.9s, including seamless wrap', () => {
   let state = createMotion();
   assert.deepEqual(SERVICES, [
     'Venue',

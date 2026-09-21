@@ -5,8 +5,9 @@ export const SERVICES = [
   'Hire Planner',
 ] as const;
 export const QUARTER = Math.PI / 2;
-export const HOLD_MS = 4500;
-export const TURN_MS = 1500;
+// Faster autorotation per the 2026-09-21 user direction (was 4500/1500).
+export const HOLD_MS = 2200;
+export const TURN_MS = 900;
 export const RESUME_MS = 6000;
 const TAU = Math.PI * 2;
 

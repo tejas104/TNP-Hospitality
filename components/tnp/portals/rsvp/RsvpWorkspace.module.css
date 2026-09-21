@@ -200,3 +200,135 @@
   background: #fff5df;
   color: #202423;
 }
+
+/* ---- M5: response summary, state chips, disclosure ---- */
+.kicker {
+  color: #006b6b;
+  font-size: 14px;
+  letter-spacing: 0;
+}
+.staffNote {
+  align-items: center;
+  background: #fffdf8;
+  border: 1px solid #d8d0bf;
+  border-radius: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin: 0 0 16px;
+  padding: 6px 14px;
+}
+.staffNote a {
+  align-items: center;
+  color: #006b6b;
+  display: inline-flex;
+  font-weight: 600;
+  min-height: 44px;
+}
+.controls {
+  background: #fbf8f1;
+  border: 1px solid #d8d0bf;
+  border-radius: 12px;
+  margin: 16px 0;
+  padding: 0 16px;
+}
+.controls summary {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  font-weight: 600;
+  min-height: 44px;
+}
+.summary {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0;
+}
+.bar {
+  background: #e6e0d2;
+  border-radius: 999px;
+  display: flex;
+  height: 10px;
+  overflow: hidden;
+}
+.bar span {
+  transition: width 240ms ease;
+}
+[data-reply='yes'] {
+  --reply: #008080;
+}
+[data-reply='no'] {
+  --reply: #8b897f;
+}
+[data-reply='pending'] {
+  --reply: #bba879;
+}
+[data-reply='needs-review'] {
+  --reply: #b3561e;
+}
+.bar span,
+.summary i {
+  background: var(--reply);
+}
+.summary ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.page .summary li > :is(button, span) {
+  align-items: center;
+  background: #fffdf8;
+  border: 1px solid #c4baab;
+  border-radius: 999px;
+  color: #202423;
+  display: inline-flex;
+  font: 500 14px var(--font-product, sans-serif);
+  gap: 8px;
+  margin: 0;
+  min-height: 44px;
+  padding: 6px 14px;
+}
+.summary i {
+  border-radius: 50%;
+  height: 10px;
+  width: 10px;
+}
+.summary strong {
+  font-variant-numeric: tabular-nums;
+}
+.page .row em {
+  border: 1px solid var(--reply);
+  border-radius: 999px;
+  box-shadow: inset 4px 0 0 var(--reply);
+  color: #202423;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 600;
+  justify-self: start;
+  padding: 2px 10px 2px 12px;
+}
+.row span {
+  font-size: 14px;
+}
+.page .secondary {
+  background: #fffdf8;
+  color: #006b6b;
+}
+.hint {
+  color: #505854;
+  font-size: 14px;
+}
+.campaign {
+  background: #f5f1e7;
+  border-left: 3px solid #bba879;
+  margin-top: 12px;
+  padding: 8px 12px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .bar span {
+    transition: none;
+  }
+}

@@ -88,7 +88,8 @@ test('launcher geometry uses the exact current source and rejects invalid dimens
     visibleSource({ x: 10, y: 20, width: 44, height: 44 }, 320, 844),
     true,
   );
-  assert.deepEqual(LAUNCHER_TIMING, { open: 420, close: 300 });
+  // 2026-09-21 user direction: genie open 650–850ms, close 550–750ms.
+  assert.deepEqual(LAUNCHER_TIMING, { open: 720, close: 620 });
 });
 const brief = {
   mode: 'event',
