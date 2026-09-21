@@ -36,3 +36,10 @@ test('filmstrip native-scroll offset stays finite and within its available trave
   for (const value of [NaN, Infinity, -Infinity])
     assert.equal(filmstripOffset(value, 500, 900, 1000), 0);
 });
+test('filmstrip holds its first frame until the complete image row has settled', () => {
+  // 500px strip inside a 900px viewport settles when top reaches 328px:
+  // 0.92 * 900 - 500. It must not move a pixel before that point.
+  assert.equal(filmstripOffset(329, 500, 900, 1000), 0);
+  assert.equal(filmstripOffset(328, 500, 900, 1000), 0);
+  assert.ok(filmstripOffset(327, 500, 900, 1000) > 0);
+});

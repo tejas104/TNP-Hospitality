@@ -19,7 +19,7 @@ export const workspaceRegistry = [
   },
   {
     id: 'operations',
-    label: 'Operations',
+    label: 'Admin / Operations',
     path: '/operations',
     available: true,
     purpose: 'Explore review queues and event operations.',
@@ -43,28 +43,29 @@ export const workspaces = workspaceRegistry.filter(
   (item) => item.id === 'tnp-planner' || item.id === 'freelancer',
 );
 
+// Temporary client-demo catalogue. This intentionally stays separate from the
+// production/public allowlist above so the extra workspaces can be removed as
+// one bounded demo change after the walkthrough.
+export const demoWorkspaces = workspaceRegistry;
+
 export const publicNavigation = [
-  { label: 'Services', href: '/#services' },
-  { label: 'Events', href: '/#events' },
-  { label: 'Destinations', href: '/#destinations' },
-  { label: 'RSVP', href: '/#rsvp' },
-  { label: 'Work with TNP', href: '/#people' },
-  { label: 'About', href: '/#about' },
+  { label: 'Services', href: '/services' },
+  { label: 'Events', href: '/events' },
+  { label: 'Destinations', href: '/destinations' },
+  { label: 'RSVP', href: '/rsvp' },
+  { label: 'Work with TNP', href: '/people' },
+  { label: 'About', href: '/about' },
 ] as const;
 export const workspaceNavigation = [
   { label: 'Home', href: '/' },
-  { label: 'Workspaces', href: '/login' },
+  { label: 'Demo workspaces', href: '/login' },
 ] as const;
 
 export function workspaceById(id: unknown) {
   return workspaceRegistry.find((workspace) => workspace.id === id);
 }
 export function chooserHref(id: WorkspaceId) {
-  return id === 'operations'
-    ? '/operations'
-    : id === 'rsvp'
-      ? '/rsvp/login'
-      : `/login?workspace=${id}`;
+  return `/login?workspace=${id}`;
 }
 export function workspaceHref(id: WorkspaceId) {
   const workspace = workspaceById(id)!;
@@ -90,8 +91,14 @@ export function routeInfo(path: string): {
       workspace: 'operations',
       label: 'Operations',
     };
+  if (
+    pathname === '/rsvp/workspace' ||
+    pathname.startsWith('/rsvp/workspace/') ||
+    pathname.startsWith('/rsvp/events/')
+  )
+    return { surface: 'workspace', workspace: 'rsvp', label: 'RSVP' };
   for (const workspace of workspaceRegistry) {
-    const root = workspace.id === 'rsvp' ? '/rsvp' : workspace.path;
+    const root = workspace.path;
     if (pathname === root || pathname.startsWith(`${root}/`))
       return {
         surface: 'workspace',

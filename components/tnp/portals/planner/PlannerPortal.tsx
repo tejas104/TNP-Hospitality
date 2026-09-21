@@ -875,10 +875,18 @@ export function PlannerPortal() {
     }
   }
 
+  // Application intake belongs outside an authenticated Planner workspace.
+  // Keep the legacy preview branch isolated for later extraction, but never
+  // render it after a Planner has entered this demo workspace.
+  const showPlannerApplication = false;
   return (
-    <main id="main-content" tabIndex={-1} className={`portal-page product-page ${styles.plannerRoot}`}>
-      <a className={styles.skip} href="#planner-registration">
-        Skip to planner entry
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className={`portal-page product-page ${styles.plannerRoot}`}
+    >
+      <a className={styles.skip} href="#planner-requirement">
+        Skip to planner tasks
       </a>
       <section className={styles.workspaceHero}>
         <div>
@@ -887,8 +895,8 @@ export function PlannerPortal() {
           </p>
           <h1>Your planning workspace</h1>
           <p>
-            Complete your senior planner profile, then inspect the requirements
-            connected to each sample event.
+            Review event requirements, connect the workforce brief and inspect
+            the current synthetic planning queue.
           </p>
           <small>
             No live verification, staffing or messages. Use sample information
@@ -899,7 +907,7 @@ export function PlannerPortal() {
       </section>
       <nav className={styles.localNav} aria-label="Planner workspace sections">
         <span>YOUR WORKSPACE</span>
-        <a href="#planner-registration">01 · Planner profile</a>
+        <a href="#planner-profile">01 · Planner overview</a>
         <a href="#planner-requirement">02 · Workforce brief</a>
         <a href="#planner-directory">03 · Requirement directory</a>
       </nav>
@@ -909,10 +917,12 @@ export function PlannerPortal() {
       >
         <header className={styles.sectionHeader}>
           <p className="section-kicker">PLANNER ENTRY</p>
-          <h2 id="planner-entry-title">Profile and workforce requirements</h2>
+          <h2 id="planner-entry-title">
+            Planner tasks and workforce requirements
+          </h2>
           <p>
-            These forms persist locally in this browser and write only to the
-            shared synthetic scenario.
+            These task controls persist locally in this browser and write only
+            to the shared synthetic scenario.
           </p>
         </header>
         <output className={styles.referenceState} aria-live="polite">
@@ -926,211 +936,245 @@ export function PlannerPortal() {
         </output>
         <output className={styles.draftNotice}>{draftStorage}</output>
         <div className={styles.forms}>
-          <form
-            id="planner-registration"
-            tabIndex={-1}
-            aria-label="Sample planner registration"
-            aria-busy={busy === 'registration'}
-            className="ops-card registration-card"
-            onSubmit={(event) => {
-              event.preventDefault();
-              void exclusively('registration', registerPlanner);
-            }}
-            noValidate
-          >
-            <fieldset
-              className={styles.formFields}
-              disabled={Boolean(busy) || !draftReady}
+          {showPlannerApplication ? (
+            <form
+              id="planner-registration"
+              tabIndex={-1}
+              aria-label="Sample planner registration"
+              aria-busy={busy === 'registration'}
+              className="ops-card registration-card"
+              onSubmit={(event) => {
+                event.preventDefault();
+                void exclusively('registration', registerPlanner);
+              }}
+              noValidate
             >
-              <legend className={styles.visuallyHidden}>Planner profile</legend>
-              <p className="section-kicker">01 · PLANNER REGISTRATION</p>
-              <h2>Introduce yourself.</h2>
-              <p className={styles.formCopy}>
-                A saved profile remains pending sample verification; it grants
-                no production authority.
-              </p>
-              <p className={styles.contextNote}>
-                {registrationId
-                  ? `Profile receipt: ${registrationId} · verification pending in the sample`
-                  : 'A planner profile is a sample record, not a production account.'}
-              </p>
-              <label>
-                Planner name
-                <input
-                  value={draft.displayName}
-                  onChange={(event) =>
-                    update('displayName', event.target.value)
-                  }
-                  aria-invalid={Boolean(registrationErrors.displayName)}
-                  aria-describedby={
-                    registrationErrors.displayName
-                      ? 'planner-name-error'
-                      : undefined
-                  }
-                />
-                {registrationErrors.displayName && (
-                  <span id="planner-name-error" className={styles.fieldError}>
-                    {registrationErrors.displayName}
-                  </span>
-                )}
-              </label>
-              <label>
-                Operating city
-                <input
-                  value={draft.city}
-                  onChange={(event) => update('city', event.target.value)}
-                  aria-invalid={Boolean(registrationErrors.city)}
-                  aria-describedby={
-                    registrationErrors.city ? 'planner-city-error' : undefined
-                  }
-                />
-                {registrationErrors.city && (
-                  <span id="planner-city-error" className={styles.fieldError}>
-                    {registrationErrors.city}
-                  </span>
-                )}
-              </label>
-              <details className={styles.applicationEvidence}>
-                <summary>Professional profile details</summary>
-                <p>
-                  These details stay in this browser as application preparation.
-                  The connected sample registration stores name and city only;
-                  it does not approve a senior planner.
-                </p>
-                {(
-                  [
-                    ['experience', 'Relevant experience'],
-                    ['cities', 'Cities you can work in'],
-                    ['categories', 'Event categories'],
-                    ['leadership', 'Leadership experience'],
-                    ['availability', 'Availability'],
-                  ] as const
-                ).map(([field, label]) => (
-                  <label key={field}>
-                    {label}
-                    <input
-                      maxLength={300}
-                      value={draft[field]}
-                      onChange={(event) => update(field, event.target.value)}
-                    />
-                  </label>
-                ))}
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={draft.consent === 'yes'}
-                    onChange={(event) =>
-                      update('consent', event.target.checked ? 'yes' : '')
-                    }
-                  />{' '}
-                  I understand that this is a synthetic application draft.
-                </label>
-                <label>
-                  Application review scenario
-                  <select
-                    value={draft.applicationState}
-                    onChange={(event) =>
-                      update('applicationState', event.target.value)
-                    }
-                  >
-                    {[
-                      'saved draft',
-                      'submitted',
-                      'under review',
-                      'revision requested',
-                      'approved — unassigned',
-                      'declined',
-                      'suspended',
-                    ].map((state) => (
-                      <option key={state}>{state}</option>
-                    ))}
-                  </select>
-                </label>
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (
-                      [
-                        'experience',
-                        'cities',
-                        'categories',
-                        'leadership',
-                        'availability',
-                      ].some((field) => !draft[field as keyof Draft].trim()) ||
-                      draft.consent !== 'yes'
-                    ) {
-                      setRegistrationNotice(
-                        'Complete professional details and consent before preparing the local submission.',
-                      );
-                      return;
-                    }
-                    update('applicationState', 'submitted');
-                    setRegistrationNotice(
-                      'Application prepared locally. No review service or assignment was invoked.',
-                    );
-                  }}
-                >
-                  Prepare local application submission
-                </button>
-                <p>
-                  Status: {draft.applicationState}.{' '}
-                  {draft.applicationState === 'approved — unassigned'
-                    ? 'No assigned events. Approval alone does not expose client briefs or workforce resources.'
-                    : draft.applicationState === 'revision requested'
-                      ? 'Sample revision: add specific leadership evidence before resubmitting.'
-                      : draft.applicationState === 'suspended'
-                        ? 'Coordination actions are unavailable in this review scenario.'
-                        : 'No assignment or fulfilment access is granted.'}
-                </p>
-              </details>
-              <button
-                type="submit"
-                className="magnetic-btn dark"
+              <fieldset
+                className={styles.formFields}
                 disabled={Boolean(busy) || !draftReady}
               >
-                {busy === 'registration'
-                  ? 'Saving sample…'
-                  : 'Save sample planner'}
-              </button>
-              {registrationNotice && (
-                <output
-                  className={registrationId ? styles.success : styles.failure}
+                <legend className={styles.visuallyHidden}>
+                  Planner profile
+                </legend>
+                <p className="section-kicker">01 · PLANNER REGISTRATION</p>
+                <h2>Introduce yourself.</h2>
+                <p className={styles.formCopy}>
+                  A saved profile remains pending sample verification; it grants
+                  no production authority.
+                </p>
+                <p className={styles.contextNote}>
+                  {registrationId
+                    ? `Profile receipt: ${registrationId} · verification pending in the sample`
+                    : 'A planner profile is a sample record, not a production account.'}
+                </p>
+                <label>
+                  Planner name
+                  <input
+                    value={draft.displayName}
+                    onChange={(event) =>
+                      update('displayName', event.target.value)
+                    }
+                    aria-invalid={Boolean(registrationErrors.displayName)}
+                    aria-describedby={
+                      registrationErrors.displayName
+                        ? 'planner-name-error'
+                        : undefined
+                    }
+                  />
+                  {registrationErrors.displayName && (
+                    <span id="planner-name-error" className={styles.fieldError}>
+                      {registrationErrors.displayName}
+                    </span>
+                  )}
+                </label>
+                <label>
+                  Operating city
+                  <input
+                    value={draft.city}
+                    onChange={(event) => update('city', event.target.value)}
+                    aria-invalid={Boolean(registrationErrors.city)}
+                    aria-describedby={
+                      registrationErrors.city ? 'planner-city-error' : undefined
+                    }
+                  />
+                  {registrationErrors.city && (
+                    <span id="planner-city-error" className={styles.fieldError}>
+                      {registrationErrors.city}
+                    </span>
+                  )}
+                </label>
+                <details className={styles.applicationEvidence}>
+                  <summary>Professional profile details</summary>
+                  <p>
+                    These details stay in this browser as application
+                    preparation. The connected sample registration stores name
+                    and city only; it does not approve a senior planner.
+                  </p>
+                  {(
+                    [
+                      ['experience', 'Relevant experience'],
+                      ['cities', 'Cities you can work in'],
+                      ['categories', 'Event categories'],
+                      ['leadership', 'Leadership experience'],
+                      ['availability', 'Availability'],
+                    ] as const
+                  ).map(([field, label]) => (
+                    <label key={field}>
+                      {label}
+                      <input
+                        maxLength={300}
+                        value={draft[field]}
+                        onChange={(event) => update(field, event.target.value)}
+                      />
+                    </label>
+                  ))}
+                  <label>
+                    <input
+                      type="checkbox"
+                      checked={draft.consent === 'yes'}
+                      onChange={(event) =>
+                        update('consent', event.target.checked ? 'yes' : '')
+                      }
+                    />{' '}
+                    I understand that this is a synthetic application draft.
+                  </label>
+                  <label>
+                    Application review scenario
+                    <select
+                      value={draft.applicationState}
+                      onChange={(event) =>
+                        update('applicationState', event.target.value)
+                      }
+                    >
+                      {[
+                        'saved draft',
+                        'submitted',
+                        'under review',
+                        'revision requested',
+                        'approved — unassigned',
+                        'declined',
+                        'suspended',
+                      ].map((state) => (
+                        <option key={state}>{state}</option>
+                      ))}
+                    </select>
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (
+                        [
+                          'experience',
+                          'cities',
+                          'categories',
+                          'leadership',
+                          'availability',
+                        ].some(
+                          (field) => !draft[field as keyof Draft].trim(),
+                        ) ||
+                        draft.consent !== 'yes'
+                      ) {
+                        setRegistrationNotice(
+                          'Complete professional details and consent before preparing the local submission.',
+                        );
+                        return;
+                      }
+                      update('applicationState', 'submitted');
+                      setRegistrationNotice(
+                        'Application prepared locally. No review service or assignment was invoked.',
+                      );
+                    }}
+                  >
+                    Prepare local application submission
+                  </button>
+                  <p>
+                    Status: {draft.applicationState}.{' '}
+                    {draft.applicationState === 'approved — unassigned'
+                      ? 'No assigned events. Approval alone does not expose client briefs or workforce resources.'
+                      : draft.applicationState === 'revision requested'
+                        ? 'Sample revision: add specific leadership evidence before resubmitting.'
+                        : draft.applicationState === 'suspended'
+                          ? 'Coordination actions are unavailable in this review scenario.'
+                          : 'No assignment or fulfilment access is granted.'}
+                  </p>
+                </details>
+                <button
+                  type="submit"
+                  className="magnetic-btn dark"
+                  disabled={Boolean(busy) || !draftReady}
                 >
-                  {registrationId ? <CheckCircle2 /> : <CircleAlert />}
-                  <div>
-                    <strong>
-                      {registrationId || 'No planner receipt yet'}
-                    </strong>
-                    <p>{registrationNotice}</p>
-                  </div>
-                </output>
-              )}
-              {!registrationId &&
-                pendingRegistration &&
-                busy !== 'registration' && (
+                  {busy === 'registration'
+                    ? 'Saving sample…'
+                    : 'Save sample planner'}
+                </button>
+                {registrationNotice && (
+                  <output
+                    className={registrationId ? styles.success : styles.failure}
+                  >
+                    {registrationId ? <CheckCircle2 /> : <CircleAlert />}
+                    <div>
+                      <strong>
+                        {registrationId || 'No planner receipt yet'}
+                      </strong>
+                      <p>{registrationNotice}</p>
+                    </div>
+                  </output>
+                )}
+                {!registrationId &&
+                  pendingRegistration &&
+                  busy !== 'registration' && (
+                    <button
+                      type="button"
+                      className={styles.retry}
+                      onClick={() =>
+                        void exclusively('registration', () =>
+                          runRegistration(pendingRegistration),
+                        )
+                      }
+                    >
+                      <RefreshCcw size={15} /> Retry same request
+                    </button>
+                  )}
+                {registrationId && (
                   <button
                     type="button"
                     className={styles.retry}
-                    onClick={() =>
-                      void exclusively('registration', () =>
-                        runRegistration(pendingRegistration),
-                      )
-                    }
+                    onClick={startNewRegistration}
                   >
-                    <RefreshCcw size={15} /> Retry same request
+                    Start another synthetic registration
                   </button>
                 )}
-              {registrationId && (
-                <button
-                  type="button"
-                  className={styles.retry}
-                  onClick={startNewRegistration}
-                >
-                  Start another synthetic registration
-                </button>
-              )}
-            </fieldset>
-          </form>
+              </fieldset>
+            </form>
+          ) : (
+            <article
+              id="planner-profile"
+              tabIndex={-1}
+              className="ops-card registration-card"
+              aria-labelledby="planner-overview-title"
+            >
+              <p className="section-kicker">01 · ACTIVE PLANNER</p>
+              <h2 id="planner-overview-title">
+                Welcome back, {draft.displayName || 'Planner'}.
+              </h2>
+              <p className={styles.formCopy}>
+                You are already inside the Planner workspace. Applicant
+                onboarding stays outside this area; continue with the live demo
+                tasks and linked event requirements.
+              </p>
+              <div className={styles.linkedContext}>
+                <span>CURRENT DEMO CONTEXT</span>
+                <strong>{draft.city || 'TNP planning desk'}</strong>
+                <p>
+                  Synthetic identity active · no production authentication,
+                  assignment authority or client data is granted.
+                </p>
+              </div>
+              <a className="magnetic-btn dark" href="#planner-requirement">
+                Review workforce brief
+              </a>
+            </article>
+          )}
 
           <form
             id="planner-requirement"

@@ -28,10 +28,10 @@ export function filmstripOffset(
     travel <= 0
   )
     return 0;
-  return (
-    Math.max(
-      0,
-      Math.min(1, (viewport * 0.8 - top) / (height + viewport * 0.1)),
-    ) * travel
-  );
+  // Hold the first frame until the complete strip is inside the comfortable
+  // viewport band. The previous 80vh trigger moved the images while the user
+  // was still arriving at the first photograph.
+  const settledTop = Math.max(viewport * 0.08, viewport * 0.92 - height);
+  const progress = (settledTop - top) / (height + viewport * 0.35);
+  return Math.max(0, Math.min(1, progress)) * travel;
 }

@@ -24,11 +24,15 @@ import {
   validateBrief,
 } from '../components/tnp/public/enquiry-state.ts';
 
-test('public catalogue is exactly Planner and Freelancer; Client cannot regain identity or route access', () => {
-  for (const catalogue of [workspaces, productAudiences, accessAudiences])
+test('temporary demo catalogue adds existing internal workspaces while Client remains absent', () => {
+  assert.deepEqual(
+    workspaces.map((x) => x.id),
+    ['tnp-planner', 'freelancer'],
+  );
+  for (const catalogue of [productAudiences, accessAudiences])
     assert.deepEqual(
       catalogue.map((x) => x.id),
-      ['tnp-planner', 'freelancer'],
+      ['tnp-planner', 'freelancer', 'operations', 'rsvp'],
     );
   assert.ok(workspaceRegistry.every((x) => x.id !== 'client'));
   assert.ok(demoProfiles.every((x) => x.workspace !== 'client'));

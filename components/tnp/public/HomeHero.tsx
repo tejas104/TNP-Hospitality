@@ -12,7 +12,7 @@ import {
   type ReactNode,
   type PointerEvent,
 } from 'react';
-import { Pause, Play } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react';
 import styles from './Home.module.css';
 import cube from './HospitalityCube.module.css';
 import HospitalityCubeFallback from './HospitalityCubeFallback';
@@ -187,7 +187,8 @@ export default function HomeHero({
     return () => cancelAnimationFrame(frame);
   }, [policy.animate, ready, publish]);
   const choose = (index: number) => {
-    motion.current = selectService(motion.current, index, !policy.animate);
+    const normalized = (index + SERVICES.length) % SERVICES.length;
+    motion.current = selectService(motion.current, normalized, !policy.animate);
     publish(true);
   };
   const start = (event: PointerEvent<HTMLDivElement>) => {
@@ -247,7 +248,7 @@ export default function HomeHero({
         className={cube.heading}
         data-turning={presentation.turning && policy.animate}
       >
-        <span className={cube.number}>FOUR WORLDS. ONE CELEBRATION.</span>
+        <span className={cube.number}>FLOATING STORIES · ONE CELEBRATION</span>
         <span className={cube.title}>{SERVICES[presentation.service]}</span>
       </div>
       <div
@@ -288,24 +289,28 @@ export default function HomeHero({
         <p className={cube.hint}>
           {still
             ? 'Explore our four hospitality services'
-            : 'Drag to explore · a different world on every side'}
+            : 'Drag or use the arrows · space between every story'}
         </p>
         <fieldset
           className={cube.selectors}
-          aria-label="Choose a hospitality service"
+          aria-label="Browse hospitality service images"
         >
-          {SERVICES.map((name, index) => (
-            <button
-              key={name}
-              type="button"
-              className={cube.selector}
-              aria-label={`Show ${name}`}
-              aria-pressed={presentation.service === index}
-              onClick={() => choose(index)}
-            >
-              {index + 1}
-            </button>
-          ))}
+          <button
+            type="button"
+            className={cube.selector}
+            aria-label="Show previous hospitality image"
+            onClick={() => choose(presentation.service - 1)}
+          >
+            <ChevronLeft size={17} aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            className={cube.selector}
+            aria-label="Show next hospitality image"
+            onClick={() => choose(presentation.service + 1)}
+          >
+            <ChevronRight size={17} aria-hidden="true" />
+          </button>
           {!still && (
             <button
               type="button"

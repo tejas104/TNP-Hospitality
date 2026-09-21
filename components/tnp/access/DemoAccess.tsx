@@ -160,7 +160,7 @@ export function WorkspaceGate({ children }: { children: ReactNode }) {
         <NextAction
           title={
             info.workspace === 'tnp-planner'
-              ? 'Complete your planner profile'
+              ? 'Review planner requirements'
               : info.workspace === 'freelancer'
                 ? 'Review your application or assignment'
                 : info.workspace === 'rsvp'

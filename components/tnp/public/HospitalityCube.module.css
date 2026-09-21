@@ -47,7 +47,7 @@
 }
 .heading {
   position: absolute;
-  top: 4px;
+  top: -2px;
   left: 0;
   right: 0;
   text-align: center;
@@ -58,19 +58,20 @@
   color: #fff;
   font-size: 9px;
   letter-spacing: 2.4px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 .title {
   display: block;
-  color: #fff6e5;
-  font-size: clamp(14px, 1.4vw, 19px);
-  font-weight: 500;
-  letter-spacing: 3px;
+  color: #ffe4a3;
+  font-size: clamp(24px, 2.5vw, 36px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 2px;
   text-transform: uppercase;
   transition:
     opacity 240ms,
     transform 240ms;
-  text-shadow: 0 0 18px rgb(250 226 179 / 18%);
+  text-shadow: 0 3px 24px rgb(32 36 35 / 32%);
 }
 .heading[data-turning='true'] .title {
   opacity: 0;
@@ -147,11 +148,11 @@
 }
 @media (max-width: 700px) {
   .footer {
-    bottom: calc(76px + env(safe-area-inset-bottom, 0px));
+    bottom: env(safe-area-inset-bottom, 0px);
   }
   .stage {
-    inset: 35px -4px 68px;
-    transform: translateY(-64px);
+    inset: 48px -4px 72px;
+    transform: none;
   }
   .stage::before {
     inset: -12% 0 -3%;
@@ -163,8 +164,8 @@
     display: none;
   }
   .title {
-    font-size: 12px;
-    letter-spacing: 2px;
+    font-size: 22px;
+    letter-spacing: 1.4px;
   }
   .hint {
     font-size: 9px;
@@ -191,7 +192,7 @@
   perspective: 1000px;
 }
 .stillCube {
-  --edge: 260px;
+  --edge: 248px;
   position: relative;
   width: var(--edge);
   height: var(--edge);
@@ -200,19 +201,20 @@
 }
 .stillFace {
   position: absolute;
-  inset: 0;
+  inset: 9px;
   background-image: url('/images/hospitality-cube-worlds.webp');
   background-size: 200% 200%;
   background-color: #bba879;
-  border: 1px solid #d9c49a;
+  border: 6px solid #d9c49a;
+  box-shadow: 0 18px 42px rgb(32 36 35 / 18%);
   backface-visibility: hidden;
-  transform: rotateY(var(--face-turn)) translateZ(calc(var(--edge) / 2));
+  transform: rotateY(var(--face-turn)) translateZ(calc(var(--edge) / 2 + 18px));
 }
 .stillTop {
   position: absolute;
   inset: 0;
-  background: #bba879;
-  border: 1px solid #d9c49a;
+  background: transparent;
+  border: 2px solid #d9c49a;
   transform: rotateX(90deg) translateZ(calc(var(--edge) / 2));
   backface-visibility: hidden;
 }

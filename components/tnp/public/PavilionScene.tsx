@@ -62,7 +62,7 @@ function IllustratedCube({
     [atlas],
   );
   const edges = useMemo(() => {
-    const box = new BoxGeometry(2.81, 2.81, 2.81);
+    const box = new BoxGeometry(2.26, 2.26, 2.26);
     const geometry = new EdgesGeometry(box);
     box.dispose();
     return geometry;
@@ -85,18 +85,18 @@ function IllustratedCube({
   });
   return (
     <group ref={root}>
-      <mesh>
-        <boxGeometry args={[2.8, 2.8, 2.8]} />
-        <meshStandardMaterial
-          color="#bba879"
-          metalness={0.55}
-          roughness={0.34}
-        />
-      </mesh>
       {maps.map((map, index) => (
         <group key={index} rotation={[0, index * QUARTER, 0]}>
-          <mesh position={[0, 0, 1.405]}>
-            <planeGeometry args={[2.8, 2.8]} />
+          <mesh position={[0, 0, 1.48]}>
+            <planeGeometry args={[2.68, 2.68]} />
+            <meshStandardMaterial
+              color="#c9ad73"
+              metalness={0.5}
+              roughness={0.38}
+            />
+          </mesh>
+          <mesh position={[0, 0, 1.495]}>
+            <planeGeometry args={[2.48, 2.48]} />
             <meshBasicMaterial map={map} toneMapped={false} />
           </mesh>
         </group>

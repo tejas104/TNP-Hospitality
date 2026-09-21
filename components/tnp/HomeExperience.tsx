@@ -9,14 +9,10 @@ import { departmentSlugs, serviceSlugs } from '@/data/public-content';
 import HomeHero from './public/HomeHero';
 import styles from './public/Home.module.css';
 import { useHomeMotion } from './public/useHomeMotion';
-import { canPreviewService } from './public/workspace-interaction';
 import { heroSurface } from './public/destination-motion';
 
 export default function HomeExperience() {
   const [serviceIndex, setServiceIndex] = useState(0);
-  const [previewIndex, setPreviewIndex] = useState<number | null>(null);
-  const activeService = previewIndex ?? serviceIndex;
-  const serviceList = useRef<HTMLDivElement>(null);
   const filmstrip = useRef<HTMLDivElement>(null);
   const [motionPaused, setMotionPaused] = useState(false);
   const home = useRef<HTMLElement>(null);
@@ -125,105 +121,64 @@ export default function HomeExperience() {
           </p>
         </div>
         <div className={styles.serviceLayout}>
-          <div
-            ref={serviceList}
-            className={styles.serviceList}
-            onPointerLeave={() => setPreviewIndex(null)}
-            onFocus={(event) => {
-              if (
-                (event.target as HTMLElement).closest(
-                  '[data-service-details]',
-                ) &&
-                previewIndex !== null
-              )
-                setServiceIndex(previewIndex);
-              setPreviewIndex(null);
-            }}
-          >
-            {services.map((service, index) => (
-              <div
-                key={service.number}
-                className={styles.serviceItem}
-                data-active={activeService === index}
-              >
-                <h3>
-                  <button
-                    type="button"
-                    data-motion="control"
-                    data-stagger={index}
-                    id={`home-service-trigger-${index}`}
-                    aria-expanded={activeService === index}
-                    aria-controls={`home-service-${index}`}
-                    onPointerEnter={(event) => {
-                      if (
-                        canPreviewService(
-                          event.pointerType,
-                          matchMedia('(hover: hover) and (pointer: fine)')
-                            .matches,
-                          Boolean(
-                            serviceList.current?.contains(
-                              document.activeElement,
-                            ),
-                          ),
-                        )
-                      )
-                        setPreviewIndex(index);
-                    }}
-                    onClick={() => {
-                      setServiceIndex(index);
-                      setPreviewIndex(null);
-                    }}
-                  >
-                    <span>{service.number}</span>
-                    {service.title}
-                    <Plus size={18} />
-                  </button>
-                </h3>
-              </div>
-            ))}
-            <div className={styles.serviceDetails}>
-              {services.map((service, index) => (
-                <section
+          <div className={styles.serviceList}>
+            {services.map((service, index) => {
+              const open = serviceIndex === index;
+              return (
+                <article
                   key={service.number}
-                  id={`home-service-${index}`}
-                  data-service-details
-                  aria-labelledby={`home-service-trigger-${index}`}
-                  hidden={activeService !== index}
+                  className={styles.serviceItem}
+                  data-active={open}
                 >
-                  <h4>{service.title}</h4>
-                  <p>{service.copy}</p>
-                  <Link
-                    href={`/services/${serviceSlugs[index]}`}
-                    className={styles.textLink}
+                  <h3>
+                    <button
+                      type="button"
+                      data-motion="control"
+                      data-stagger={index}
+                      id={`home-service-trigger-${index}`}
+                      aria-expanded={open}
+                      aria-controls={`home-service-${index}`}
+                      onClick={() => setServiceIndex(index)}
+                    >
+                      <span>{service.number}</span>
+                      {service.title}
+                      <Plus size={18} aria-hidden="true" />
+                    </button>
+                  </h3>
+                  <section
+                    id={`home-service-${index}`}
+                    className={styles.servicePanel}
+                    aria-labelledby={`home-service-trigger-${index}`}
+                    hidden={!open}
                   >
-                    Explore this service <ArrowUpRight size={16} />
-                  </Link>
-                </section>
-              ))}
-            </div>
+                    <img
+                      src={service.image.src}
+                      alt={service.image.alt}
+                      width="900"
+                      height="620"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <div>
+                      <p className={styles.eyebrow}>
+                        THE PEOPLE BEHIND THE EXPERIENCE
+                      </p>
+                      <h4>{service.title}</h4>
+                      <p>{service.copy}</p>
+                      <Link
+                        href={`/services/${serviceSlugs[index]}`}
+                        className={styles.textLink}
+                      >
+                        Explore this service <ArrowUpRight size={16} />
+                      </Link>
+                    </div>
+                  </section>
+                </article>
+              );
+            })}
             <p className={styles.imageNote}>
-              Illustrative service preview. Select a row to keep its details
-              open.
+              Select a service to open its story and illustrative image.
             </p>
-          </div>
-          <div className={styles.servicePhoto}>
-            {services.map((service, index) => (
-              <img
-                key={service.number}
-                hidden={activeService !== index}
-                src={service.image.src}
-                alt={service.image.alt}
-                width="900"
-                height="1100"
-                loading="lazy"
-                decoding="async"
-                data-motion="image"
-              />
-            ))}
-            <div className={styles.photoLabel}>
-              <span>THE PEOPLE BEHIND THE EXPERIENCE</span>
-              <p>{services[activeService].title}</p>
-            </div>
           </div>
         </div>
       </section>

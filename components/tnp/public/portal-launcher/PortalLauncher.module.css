@@ -1,16 +1,27 @@
 .trigger {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  z-index: 80;
   display: inline-flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 7px;
-  min-height: 44px;
-  padding: 8px 12px;
+  width: 60px;
+  min-height: 132px;
+  padding: 14px 10px;
   border: 1px solid currentColor;
-  border-radius: 24px;
-  color: inherit;
-  background: transparent;
+  border-right: 0;
+  border-radius: 34px 0 0 34px;
+  color: #202423;
+  background: #f5f1e7;
+  box-shadow: -8px 10px 34px rgb(32 36 35 / 16%);
   font: 600 12px var(--font-product, sans-serif);
   cursor: pointer;
+}
+.trigger span {
+  writing-mode: vertical-rl;
 }
 .trigger:hover,
 .trigger:focus-visible {
@@ -143,9 +154,19 @@
 }
 @media (max-width: 700px) {
   .trigger {
+    position: static;
+    flex-direction: row;
+    width: auto;
+    min-height: 44px;
     padding: 8px;
     font-size: 10px;
     gap: 4px;
+    border-right: 1px solid currentColor;
+    border-radius: 24px;
+    box-shadow: none;
+  }
+  .trigger span {
+    writing-mode: horizontal-tb;
   }
   .trigger svg {
     width: 15px;

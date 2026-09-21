@@ -1,7 +1,7 @@
-import { chooserHref, workspaces } from '../access/routes.ts';
+import { chooserHref, demoWorkspaces } from '../access/routes.ts';
 export { publicNavigation } from '../access/routes.ts';
 
-export const productAudiences = workspaces.map((workspace) => ({
+export const productAudiences = demoWorkspaces.map((workspace) => ({
   id: workspace.id,
   name: workspace.label,
   href: chooserHref(workspace.id),

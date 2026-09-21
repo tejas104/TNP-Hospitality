@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { createPortal } from 'react-dom';
 import { useState } from 'react';
 import { ArrowUpRight, Compass, X } from 'lucide-react';
-import { workspaces, chooserHref } from '../../access/routes';
+import { demoWorkspaces, chooserHref } from '../../access/routes';
 import { LAUNCHER_TIMING, sourceTransform, visibleSource } from './motion';
 import styles from './PortalLauncher.module.css';
 
@@ -114,7 +114,7 @@ export default function PortalLauncher() {
         className={styles.trigger}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-controls={id}
+        aria-controls={open ? id : undefined}
         onClick={() => setOpen(true)}
       >
         <Compass size={18} aria-hidden="true" />
@@ -143,11 +143,14 @@ export default function PortalLauncher() {
               </button>
             </div>
             <div className={styles.content}>
-              <p className={styles.kicker}>GOOD PEOPLE. SHARED PURPOSE.</p>
-              <h2 id={`${id}-title`}>Your work starts here.</h2>
-              <p>Find your place in the TNP team.</p>
-              <nav aria-label="Public workspaces">
-                {workspaces.map((item, index) => (
+              <p className={styles.kicker}>TEMPORARY CLIENT DEMO</p>
+              <h2 id={`${id}-title`}>Open a working space.</h2>
+              <p>
+                Choose a temporary demo identity and walk through the frontend.
+                No real credentials are required.
+              </p>
+              <nav aria-label="Temporary demo workspaces">
+                {demoWorkspaces.map((item, index) => (
                   <Link
                     key={item.id}
                     href={chooserHref(item.id)}

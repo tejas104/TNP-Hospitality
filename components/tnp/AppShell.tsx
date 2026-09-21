@@ -12,11 +12,11 @@ import {
 } from './access/DemoAccess';
 import {
   chooserHref,
+  demoWorkspaces,
   publicNavigation,
   routeInfo,
   shouldMountCursor,
   workspaceNavigation,
-  workspaces,
 } from './access/routes';
 import { profileFor } from './access/session';
 import WorkspaceDrawer from './public/WorkspaceDrawer';
@@ -102,7 +102,9 @@ function Shell({ children }: { children: ReactNode }) {
         href="#main-content"
         onClick={(event) => {
           const main =
-            Array.from(document.querySelectorAll('main#main-content, main')).find((element)=>element.getClientRects().length>0) ??
+            Array.from(
+              document.querySelectorAll('main#main-content, main'),
+            ).find((element) => element.getClientRects().length > 0) ??
             document.querySelector('h1');
           if (main instanceof HTMLElement) {
             event.preventDefault();
@@ -132,7 +134,7 @@ function Shell({ children }: { children: ReactNode }) {
           </Link>
           <nav
             className="desktop-nav"
-            aria-label={publicPage ? 'Homepage sections' : 'Primary navigation'}
+            aria-label={publicPage ? 'Public pages' : 'Primary navigation'}
           >
             {links.map((link) => (
               <Link
@@ -271,7 +273,7 @@ function WorkspaceSwitcher({ current }: { current?: string }) {
         aria-controls="workspace-menu"
         onClick={() => setOpen((value) => !value)}
       >
-        {`${workspaces.find((workspace) => workspace.id === current)?.label ?? 'Switch'} workspace`}
+        {`${demoWorkspaces.find((workspace) => workspace.id === current)?.label ?? 'Switch'} workspace`}
         <span aria-hidden="true">⌄</span>
       </button>
       <nav
@@ -280,7 +282,7 @@ function WorkspaceSwitcher({ current }: { current?: string }) {
         aria-label="Choose workspace"
         hidden={!open}
       >
-        {workspaces.map((workspace) => (
+        {demoWorkspaces.map((workspace) => (
           <Link
             key={workspace.id}
             href={chooserHref(workspace.id)}

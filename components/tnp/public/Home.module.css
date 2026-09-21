@@ -1,6 +1,7 @@
 .home {
   background: #f5f1e7;
   color: #202423;
+  font-family: var(--font-product, var(--font-body));
   font-size: 16px;
   line-height: 1.6;
 }
@@ -14,8 +15,8 @@
 .home h1,
 .home h2,
 .home h3 {
-  font-family: Georgia, 'Times New Roman', serif;
-  font-weight: 400;
+  font-family: var(--font-product, var(--font-body));
+  font-weight: 600;
 }
 .home h2 {
   font-size: clamp(34px, 3.5vw, 54px);
@@ -24,6 +25,8 @@
 }
 .home h2 em {
   color: #59615f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
 }
 .home img {
   object-fit: cover;
@@ -104,6 +107,8 @@
 }
 .hero h1 em {
   color: #fff;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-weight: 400;
 }
 .hero h1 > span,
 .hero h1 > em {
@@ -172,7 +177,11 @@
   position: relative;
   min-width: 0;
   height: 555px;
-  background: radial-gradient(ellipse at 50% 50%, rgb(255 255 255 / 9%), transparent 67%);
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgb(255 255 255 / 9%),
+    transparent 67%
+  );
 }
 .pavilion {
   position: absolute;
@@ -339,9 +348,7 @@
   max-width: 310px;
 }
 .serviceLayout {
-  display: grid;
-  grid-template-columns: 1.08fr 1fr;
-  gap: 70px;
+  max-width: 1180px;
 }
 .serviceItem {
   border-top: 1px solid #20242330;
@@ -361,8 +368,48 @@
   border: 0;
   background: none;
   padding: 22px 0;
-  font-size: 16px;
+  font-size: clamp(17px, 1.5vw, 21px);
+  font-weight: 600;
   color: #202423;
+}
+.servicePanel {
+  display: grid;
+  grid-template-columns: minmax(250px, 0.9fr) minmax(0, 1.1fr);
+  gap: 34px;
+  margin: 0 0 22px;
+  padding: 18px;
+  border: 1px solid #c8c0b2;
+  background: #fffdf8;
+  box-shadow: 0 18px 42px rgb(32 36 35 / 9%);
+  animation: service-open 220ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.servicePanel img {
+  width: 100%;
+  height: 290px;
+}
+.servicePanel > div {
+  align-self: center;
+  padding: 14px 18px 14px 0;
+}
+.servicePanel h4 {
+  margin: 10px 0 14px;
+  font-size: clamp(26px, 3vw, 40px);
+  line-height: 1.08;
+}
+.servicePanel > div > p:not(.eyebrow) {
+  color: #59615f;
+  font-size: 14px;
+  margin-bottom: 18px;
+}
+@keyframes service-open {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 .serviceItem button span {
   font-size: 10px;
@@ -1096,6 +1143,17 @@
   .serviceLayout {
     grid-template-columns: 1fr;
     gap: 28px;
+  }
+  .servicePanel {
+    grid-template-columns: 1fr;
+    gap: 0;
+    padding: 12px;
+  }
+  .servicePanel img {
+    height: 230px;
+  }
+  .servicePanel > div {
+    padding: 22px 10px 12px;
   }
   .serviceItem button {
     font-size: 14px;
