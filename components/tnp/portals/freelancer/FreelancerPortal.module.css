@@ -706,12 +706,12 @@
 }
 .menuTrigger:hover,
 .menuTrigger:focus-visible {
-  background: #fff5df;
+  background: #ffe08a;
   color: #202423;
 }
 .walletTrigger:hover,
 .walletTrigger:focus-visible {
-  background: #fff5df;
+  background: #ffe08a;
 }
 /* Glass window content (rendered inside the shared GenieWindow panel). */
 .workspaceDrawer {
@@ -1692,7 +1692,7 @@
   flex-wrap: wrap;
 }
 .workspace :is(button, a):hover:not(:disabled) {
-  background: #fff5df;
+  background: #ffe08a;
   color: #202423;
   border-color: #008080;
 }

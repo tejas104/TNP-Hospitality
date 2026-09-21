@@ -132,6 +132,16 @@ html {
   pointer-events: auto;
   transform: translateY(0);
 }
+/* Failsafe: never trap the page behind the loader if scripts fail. */
+.preloader.active {
+  animation: preloader-failsafe 0s 6s forwards;
+}
+@keyframes preloader-failsafe {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
 
 .preloader-mark {
   display: flex;
@@ -174,7 +184,7 @@ html {
 }
 
 .preloader i::after {
-  animation: load-line 1.05s ease both;
+  animation: load-line 1.9s ease both;
   background: var(--champagne);
   content: '';
   inset: 0;
@@ -3312,7 +3322,7 @@ body:has(.ux-header) :is(main, .admin-shell, .ux-orientation) button {
 body:has(.ux-header)
   :is(main, .admin-shell, .ux-orientation)
   :is(button, a.ux-action, a.magnetic-btn):hover:not(:disabled) {
-  background: #fff5df;
+  background: #ffe08a;
   color: #202423;
   border-color: #008080;
 }
@@ -3358,3 +3368,54 @@ body:has(.ux-header) textarea {
 .admin-shell .admin-sidebar button {border-color:rgb(255 255 255 / 45%);margin-block:4px;border-radius:8px;}
 
 @media print{@page{size:A4;margin:15mm;}body:has([data-sample-quote]) :is(.site-nav,.public-skip,.ux-orientation,.ux-preview-tools,.ux-preview-warning,.admin-sidebar,.admin-header,.admin-stats,nav){display:none!important;}body:has([data-sample-quote]) .admin-shell{display:block;padding:0;min-height:0;background:#fff;color:#000;}body:has([data-sample-quote]) .admin-main{padding:0;}body:has([data-sample-quote]) *{box-shadow:none!important;text-shadow:none!important;}}
+
+/* ---- Bright interaction layer (2026-09-21: hovers were too dull) ---- */
+@media (hover: hover) and (pointer: fine) {
+  .desktop-nav a {
+    position: relative;
+    transition: color 180ms ease;
+  }
+  .desktop-nav a::after {
+    background: #ffd36a;
+    border-radius: 2px;
+    bottom: -6px;
+    content: '';
+    height: 2px;
+    left: 0;
+    position: absolute;
+    right: 0;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .desktop-nav a:hover::after,
+  .desktop-nav a[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+  .public-nav:not(.is-scrolled) .desktop-nav a:hover {
+    color: #ffe08a;
+  }
+  .magnetic-btn:hover,
+  .public-nav .magnetic-btn:hover,
+  .ghost-btn:hover {
+    background: #ffe08a;
+    border-color: #ffe08a;
+    box-shadow: 0 10px 24px rgb(255 190 60 / 35%);
+    color: #202423;
+    transform: translateY(-2px);
+  }
+  body:has(.ux-header)
+    :is(main, .admin-shell, .ux-orientation)
+    :is(button, a.ux-action, a.magnetic-btn):hover:not(:disabled) {
+    box-shadow:
+      0 0 0 3px rgb(255 205 80 / 45%),
+      0 8px 18px rgb(32 36 35 / 14%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .magnetic-btn:hover,
+  .public-nav .magnetic-btn:hover,
+  .ghost-btn:hover {
+    transform: none;
+  }
+}

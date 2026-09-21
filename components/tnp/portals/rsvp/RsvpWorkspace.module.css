@@ -75,7 +75,7 @@
   text-decoration: none;
 }
 .page :is(button, a):hover {
-  background: #fff5df;
+  background: #ffe08a;
   color: #202423;
 }
 .page :is(button, a, input, select, textarea):focus-visible {
@@ -197,7 +197,7 @@
 }
 .page .tabs button:hover:not(:disabled),
 .page .row:hover:not(:disabled) {
-  background: #fff5df;
+  background: #ffe08a;
   color: #202423;
 }
 

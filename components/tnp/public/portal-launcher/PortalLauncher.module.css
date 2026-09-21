@@ -40,7 +40,7 @@
 .trigger:focus-visible,
 .inlineTrigger:hover,
 .inlineTrigger:focus-visible {
-  background: #fff5df;
+  background: #ffe08a;
   color: #202423;
 }
 .trigger:focus-visible,
@@ -213,7 +213,7 @@
   font-size: 14px;
 }
 .window :is(a, button):hover {
-  background: #fff5df;
+  background: #ffe08a;
   color: #202423;
 }
 .window :is(a, button):focus-visible {

@@ -936,7 +936,11 @@ export function AdminOperations() {
                   events={data.events}
                   positions={data.positions}
                   requirements={data.requirements}
+                  assignments={data.assignments}
+                  applications={data.applications}
+                  attendanceExceptions={data.metrics.attendanceExceptions ?? 0}
                   onSelectEvent={(id) => void selectEvent(id)}
+                  onOpen={openSection}
                 />
               )}
               {panel === 'events' && (
@@ -1074,13 +1078,75 @@ function OverviewPanel({
   events,
   positions,
   requirements,
+  assignments,
+  applications,
+  attendanceExceptions,
   onSelectEvent,
+  onOpen,
 }: {
   events: PreviewEvent[];
   positions: Position[];
   requirements: Requirement[];
+  assignments: Assignment[];
+  applications: Application[];
+  attendanceExceptions: number;
   onSelectEvent: (id: string) => void;
+  onOpen: (panel: Panel) => void;
 }) {
+  const pending = applications.filter((item) => item.status === 'pending');
+  const desks: {
+    id: Panel;
+    title: string;
+    value: string;
+    note: string;
+    Icon: typeof LayoutDashboard;
+    attention?: boolean;
+  }[] = [
+    {
+      id: 'verification',
+      title: 'Review queue',
+      value: String(pending.length),
+      note: pending.length
+        ? `${pending
+            .slice(0, 2)
+            .map((item) => item.role)
+            .join(', ')} waiting`
+        : 'Nothing waiting',
+      Icon: ClipboardCheck,
+      attention: pending.length > 0,
+    },
+    {
+      id: 'attendance',
+      title: 'Attendance',
+      value: String(attendanceExceptions),
+      note: attendanceExceptions
+        ? 'Exceptions need a supervisor check'
+        : 'No exceptions',
+      Icon: AlertCircle,
+      attention: attendanceExceptions > 0,
+    },
+    {
+      id: 'finance',
+      title: 'Finance desk',
+      value: 'Quotes',
+      note: 'Sample quotes, earnings and payouts',
+      Icon: Banknote,
+    },
+    {
+      id: 'reports',
+      title: 'Reports & audit',
+      value: 'Audit',
+      note: 'Read-only sample reports and history',
+      Icon: BarChart3,
+    },
+    {
+      id: 'catalogue',
+      title: 'Catalogue & access',
+      value: 'Catalogue',
+      note: 'Services, media and access presets',
+      Icon: BookOpen,
+    },
+  ];
   return (
     <>
       <div className={styles.panelHeading}>
@@ -1093,53 +1159,91 @@ function OverviewPanel({
           fixture.
         </p>
       </div>
-      <div className="admin-grid">
+      <div className={styles.bento}>
         {events.map((event) => {
           const eventPositions = positions.filter(
             (item) => item.eventId === event.id,
           );
+          const needed = eventPositions.reduce(
+            (total, item) => total + item.quantity,
+            0,
+          );
+          const placed = assignments.filter(
+            (item) =>
+              item.eventId === event.id && item.allocationState === 'active',
+          ).length;
+          const percent = needed ? Math.min(100, (placed / needed) * 100) : 0;
           return (
-            <article className="ops-card" key={event.id}>
-              <p className="section-kicker">
-                {event.status.toUpperCase()} · {event.id}
-              </p>
-              <h2>{event.name}</h2>
+            <article className={styles.bentoEvent} key={event.id}>
+              <header>
+                <span className={styles.bentoChip} data-status={event.status}>
+                  {event.status}
+                </span>
+                <small>{event.id}</small>
+              </header>
+              <h3>{event.name}</h3>
               <p>
                 {formatDate(event.startsAt)} · {event.timezone}
               </p>
-              <div className={styles.summaryRows}>
+              <div className={styles.bentoStats}>
                 <span>
                   <strong>
                     {
                       requirements.filter((item) => item.eventId === event.id)
                         .length
                     }
-                  </strong>{' '}
-                  linked requirement
+                  </strong>
+                  requirements
                 </span>
                 <span>
-                  <strong>
-                    {eventPositions.reduce(
-                      (total, item) => total + item.quantity,
-                      0,
-                    )}
-                  </strong>{' '}
-                  required professionals
+                  <strong>{eventPositions.length}</strong>
+                  position types
                 </span>
                 <span>
-                  <strong>{eventPositions.length}</strong> position types
+                  <strong>{needed}</strong>
+                  people needed
                 </span>
               </div>
+              <div className={styles.progress} aria-hidden="true">
+                <i style={{ width: `${percent}%` }} />
+              </div>
+              <small className={styles.progressNote}>
+                {placed} of {needed} placed in the sample
+              </small>
               <button
-                className="magnetic-btn dark"
+                className={styles.bentoAction}
                 type="button"
-                onClick={() => onSelectEvent(event.id)}
+                onClick={() => {
+                  onSelectEvent(event.id);
+                  onOpen('events');
+                }}
               >
                 Open event control <ArrowRight size={17} aria-hidden="true" />
               </button>
             </article>
           );
         })}
+        {desks.map(({ id, title, value, note, Icon, attention }) => (
+          <button
+            key={id}
+            type="button"
+            className={styles.bentoDesk}
+            data-attention={attention ? 'true' : undefined}
+            onClick={() => onOpen(id)}
+          >
+            <span className={styles.bentoIcon}>
+              <Icon size={20} aria-hidden="true" />
+            </span>
+            <span className={styles.bentoTitle}>{title}</span>
+            <strong>{value}</strong>
+            <small>{note}</small>
+            <ArrowRight
+              size={18}
+              aria-hidden="true"
+              className={styles.bentoArrow}
+            />
+          </button>
+        ))}
       </div>
     </>
   );

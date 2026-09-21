@@ -130,15 +130,15 @@
 .pause:hover,
 .selector:focus-visible,
 .pause:focus-visible {
-  background: #fff5df;
+  background: #ffe08a;
   color: #202423;
-  border-color: #fff5df;
+  border-color: #ffe08a;
 }
 .selector:focus-visible,
 .pause:focus-visible {
   outline: 2px solid #202423 !important;
   outline-offset: 2px !important;
-  box-shadow: 0 0 0 6px #fff5df;
+  box-shadow: 0 0 0 6px #ffe08a;
 }
 .sample {
   margin: 0 !important;

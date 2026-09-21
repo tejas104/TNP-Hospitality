@@ -47,7 +47,7 @@ test('mid-flight the window funnels toward its own source, not a fixed origin', 
 
 test('genie timing and easing follow the requested ranges', () => {
   assert.equal(LAUNCHER_TIMING.open, 1440); // half-speed open per user
-  assert.ok(LAUNCHER_TIMING.close >= 550 && LAUNCHER_TIMING.close <= 750);
+  assert.equal(LAUNCHER_TIMING.close, 1240); // half-speed close per user
   assert.deepEqual(GENIE_EASE.close, [0.7, 0, 0.84, 0]);
   assert.equal(cubicBezier(GENIE_EASE.open, 0), 0);
   assert.equal(cubicBezier(GENIE_EASE.open, 1), 1);

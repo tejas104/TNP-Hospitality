@@ -40,36 +40,17 @@ function Shell({ children }: { children: ReactNode }) {
       (typeof value === 'function' ? value(menuOpen) : value) ? pathname : null,
     );
   const [scrolled, setScrolled] = useState(false);
-  const [showPreloader, setShowPreloader] = useState(false);
-  const preloaderChecked = useRef(false);
+  // Launch loader: rendered on the server so no page content shows first,
+  // then held for 2 seconds on the first load of any route (2026-09-21).
+  const [showPreloader, setShowPreloader] = useState(true);
   const menuTrigger = useRef<HTMLButtonElement>(null);
   const publicPage = info.surface === 'marketing';
   const guest = info.surface === 'guest-invitation';
   const links = publicPage ? publicNavigation : workspaceNavigation;
-  // Preserve the existing homepage-only presentation during the shared refactor.
   useEffect(() => {
-    if (pathname !== '/' || preloaderChecked.current) return;
-    preloaderChecked.current = true;
-    try {
-      if (sessionStorage.getItem('tnp-preloader-seen')) return;
-    } catch {
-      return;
-    }
-    const start = window.setTimeout(() => setShowPreloader(true), 0);
-    const timer = window.setTimeout(() => {
-      try {
-        sessionStorage.setItem('tnp-preloader-seen', 'true');
-      } catch {
-        /* Optional visual preference. */
-      }
-      setShowPreloader(false);
-    }, 1450);
-    return () => {
-      window.clearTimeout(start);
-      window.clearTimeout(timer);
-      setShowPreloader(false);
-    };
-  }, [pathname]);
+    const timer = window.setTimeout(() => setShowPreloader(false), 2000);
+    return () => window.clearTimeout(timer);
+  }, []);
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 30);
     onScroll();
@@ -115,11 +96,7 @@ function Shell({ children }: { children: ReactNode }) {
       >
         Skip to main content
       </a>
-      {pathname === '/' && (
-        <>
-          <Preloader active={showPreloader} />
-        </>
-      )}
+      <Preloader active={showPreloader} />
       {guest ? (
         <header className="ux-guest-header">TNP · RSVP invitation</header>
       ) : (
