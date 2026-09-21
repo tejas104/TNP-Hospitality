@@ -195,6 +195,10 @@ export function GenieWindow({
     if (!mounted) return;
     const node = dialog.current;
     const oldOverflow = document.body.style.overflow;
+    const oldPadding = document.body.style.paddingRight;
+    // Keep the page from shifting when its scrollbar disappears.
+    const gutter = innerWidth - document.documentElement.clientWidth;
+    if (gutter > 0) document.body.style.paddingRight = `${gutter}px`;
     document.body.style.overflow = 'hidden';
     const back = () => onCloseRef.current();
     window.addEventListener('popstate', back);
@@ -209,6 +213,7 @@ export function GenieWindow({
       cancelAnimationFrame(frame.current);
       clearTimeout(fallback.current);
       document.body.style.overflow = oldOverflow;
+      document.body.style.paddingRight = oldPadding;
       window.removeEventListener('popstate', back);
       if (node?.open) node.close();
     };

@@ -83,6 +83,8 @@
 .panel {
   max-height: calc(100dvh - 32px - env(safe-area-inset-bottom, 0px));
   overflow: auto;
+  /* Scrollable, but without a visible bar that fights the genie deformation. */
+  scrollbar-width: none;
   border: 1px solid rgb(255 255 255 / 70%);
   border-radius: 22px;
   background: rgb(250 247 240 / 78%);
@@ -92,6 +94,9 @@
     0 2px 6px rgb(32 36 35 / 8%),
     0 18px 40px rgb(32 36 35 / 16%),
     0 40px 90px rgb(32 36 35 / 12%);
+}
+.panel::-webkit-scrollbar {
+  display: none;
 }
 .panel[data-motion='reduced'],
 .panel[data-motion='fade'] {
