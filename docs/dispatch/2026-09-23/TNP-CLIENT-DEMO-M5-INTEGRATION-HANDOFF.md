@@ -1,0 +1,184 @@
+# TNP-CLIENT-DEMO-M5 — integration handoff prompt
+
+Paste everything below the line into the integrating session (Codex / GPT Sol 6 or a human integrator).
+
+---
+
+## Role and authority
+
+You are the **integrator** for the TNP Hospitality frontend. Your job is to review, verify and integrate branch `claude/tnp-client-demo-m5` into `main` as the platform's main frontend. Follow `AGENTS.md`, `CLAUDE.md`, `docs/START-HERE.md`, `docs/LAUNCH-PROTOCOL.md` and `docs/REVIEW-CADENCE.md`. Codex reviews Claude-authored work; the author (Claude) must not self-approve. Kartik is the human acceptance owner. **Do not deploy, change providers, or touch production.** Push only what your task lease authorises.
+
+## Exact source
+
+| Item | Value |
+|---|---|
+| Repository | `https://github.com/tejas104/TNP-Hospitality` (local base clone `D:\TNP Hospitality`) |
+| Branch | `claude/tnp-client-demo-m5` |
+| Code tip | `5e5e118e7a2b62577c4880d22c1130b8bb61da24` (a docs-only commit carrying this file may sit on top) |
+| Branch base on `main` | `e4fab8e2f9874a7d2df51a9bc55f3c33c2e86a66` — `main` has **not** moved since, so the branch is strictly ahead (fast-forwardable) |
+| Author worktree | `D:\TNP-worktrees\TNP-CLIENT-DEMO-M5` (do not write in it) |
+| Preview used during authoring | `http://localhost:3126` (`npm run dev -- --port 3126`) |
+
+The branch carries **16 commits** over `main`: 8 earlier frontend commits that were never merged (M3 portals/RSVP/finance review, hospitality cube, M4 client-demo) plus 8 M5 commits:
+
+```
+5e5e118 feat: team estimator, admin search and RSVP setup guide
+a335519 feat: link glow, porters, RSVP numbers and assistant
+1137be5 feat: pinned events gallery, workflow, genie switcher
+b341ec7 feat: admin console, WhatsApp-style RSVP and moving hero
+b67cd06 fix: hide genie window scrollbar and keep page from shifting
+e14211c feat: bento admin, brighter hovers and livelier public pages
+58213c9 feat: slow genie open to half speed
+8f88f51 feat: polish demo workspaces with genie windows
+-- earlier, not yet on main --
+d5dcd4b feat: refine demo workspaces
+bc0d070 feat: open synthetic client demo frontend
+be78ffa fix: remove stale public portal promotion
+43dbc19 fix: keep hospitality cube controls reachable on mobile
+51539dc feat: present illustrated hospitality service cube
+c41db1c feat: add hospitality cube interaction foundation
+8062b5a Expand portal previews, financial review and message-only RSVP
+5c96af4 feat: unify public enquiries and two-role workspace access
+```
+
+## Preflight (record the output)
+
+```powershell
+git fetch origin
+git rev-parse origin/claude/tnp-client-demo-m5          # expect 5e5e118… or a docs commit on top of it
+git merge-base --is-ancestor origin/main origin/claude/tnp-client-demo-m5; $LASTEXITCODE   # expect 0
+git log --oneline origin/main..origin/claude/tnp-client-demo-m5
+git diff --stat origin/main...origin/claude/tnp-client-demo-m5 | Select-Object -Last 1
+```
+
+Create a **detached, clean review worktree** at the exact tip (e.g. `D:\TNP-review\TNP-CLIENT-DEMO-M5-<sha7>`), `npm ci`, and review there. Never review a moving branch.
+
+## Required checks (run in the review worktree)
+
+```powershell
+npm ci
+$tests = git ls-files '*.test.mjs'
+node --experimental-strip-types --test $tests          # expect 159+ pass, 0 fail
+npm run lint                                            # only the inherited hooks/use-mobile.ts warning is expected
+npx --no-install tsc --noEmit --incremental false       # expect exit 0
+npm run build:vercel                                    # see note on EBUSY below
+git diff --check origin/main...HEAD
+```
+
+**Build note:** on this Windows host `npm run build:vercel` intermittently fails with `EBUSY: resource busy or locked, copyfile …node_modules…` during the nf3 trace step (file locks from dev servers/antivirus). It is environmental; retry until exit 0 and record the attempt count. A real compile error will fail every attempt with a different message.
+
+**Dev-server note:** Vite occasionally served a stale `app/globals.css` after rapid edits. If a new global rule seems missing, `touch app/globals.css` and hard-refresh.
+
+## What changed (review map)
+
+### Global / shell
+- `app/globals.css`
+  - multicolour arrow cursor site-wide; the circular spectrum cursor and its component were removed from `components/tnp/AppShell.tsx`.
+  - `html, body { overflow-x: clip }` (was `hidden`) so `position: sticky` works.
+  - bright interaction layer: hover gold `#ffe08a` replaced dull cream `#fff5df` everywhere, nav underline, button glow.
+  - `.link-glow` — left-to-right gold sweep on text links (**house rule: every text link uses it**; on teal set `--glow-base:#fff; --glow-hi:#ffd36a`).
+  - 2 s launch preloader rendered from the server (`AppShell` `useState(true)`, CSS failsafe hides it after 6 s).
+  - opt-out selector `main:not([data-own-controls])` so Admin and RSVP own their button styling.
+  - `.genie-workspace-list` styles.
+- `components/tnp/AppShell.tsx` — the workspace switcher now opens a **GenieWindow**; the Preloader shows on every first load.
+
+### Genie window system (reusable)
+- `components/tnp/public/portal-launcher/motion.ts` — pure geometry: `genieSlices`, `genieAxis`, `cubicBezier`, `LAUNCHER_TIMING {open:1440, close:1240}`, `GENIE_EASE`.
+- `components/tnp/public/portal-launcher/PortalLauncher.tsx` — exports `GenieWindow({sourceRef, open, onClose, title, label, align?})` (modal `<dialog>`, sliced-strip deformation from the source element, rAF + timer fallback, focus in/out, Escape/backdrop, reduced-motion fade) and the side-dock launcher (portalled to `<body>` because the header is transformed).
+- Used by: the launcher, the Freelancer page menu, the workspace switcher, the admin freelancer profile, the admin command palette and RSVP "Add number".
+
+### Public site
+- `components/tnp/HomeExperience.tsx`:
+  - hero cube replaced by a moving photo background (`.heroBackdrop`).
+  - Services hover-to-open (90 ms intent, lock after change).
+  - pinned horizontal events gallery (`PinnedFilmstrip.tsx`, 10 photos, 1:1 scroll scrub).
+  - interactive 4-step workflow (`ProcessWorkflow.tsx`).
+  - destinations scroll/auto/hover motion.
+  - "Estimate your team" link.
+- `components/tnp/public/HomeHero.tsx`, `PavilionScene.tsx` and `hospitality-cube-motion.ts` are now **unused by the homepage** but kept, because tests reference them. Decide whether to delete them in a follow-up (see limitations).
+- `PublicOverviewPage.tsx` + `OverviewExtras.tsx` — sample context (stats, steps, FAQ, occasion chips, destination season table) plus scroll reveal and hover on Services/Events/Destinations/RSVP.
+- `TeamEstimator.tsx` + `team-estimate.ts` (tested) — on `/services`; "Send this team to TNP" opens `/contact?interest=event-request&occasion=…&guests=…&team=Role:n,…`.
+- `app/contact/page.tsx` + `EnquiryForm.tsx` — decode the `team` parameter (unknown roles and bad numbers are dropped) to pre-fill the workforce quantities; the receipt now shows "What happens next".
+- `data/tnp.ts`, `data/public-content.ts` — **Porter** added to the services (item 05), people roles, Planner and Freelancer role lists.
+
+### Workspaces
+- **Planner** (`portals/planner/PlannerEventStudio.*`) — neumorphic event "window" cards, inline validation, submitted state; `PlannerPortal.tsx` role list.
+- **Freelancer** (`portals/freelancer/FreelancerPortal.*`) — in-flow sticky workspace bar, sample wallet, genie glass page menu.
+- **Admin** — new console at **`/operations`** (`portals/admin/*`):
+  - two glass designs (A ivory / B teal).
+  - Dashboard, Events & assignments (publish assignment, approve applicants without overfilling), Freelancer applications (approve/reject), Freelancers & ratings (genie profile), Attendance, Quotations (quote maker from the client request, discount and adjustment, PDF/XLSX), Finance & payouts (earned/paid/remaining, record payout), RSVP access (per-event grants, team logins), Admins & co-admins (capabilities), Reports (xlsx/pdf).
+  - Ctrl/Cmd+K command palette (`CommandPalette.tsx`, logic in `palette.ts`, tested).
+  - The previous preview-service console moved to **`/operations/desk`**.
+  - Exporters: `portals/admin/exporters.ts` (dependency-free stored-ZIP XLSX + text PDF, formula-injection guard; tested).
+- **RSVP on WhatsApp** (`portals/rsvp/RsvpWorkspace.tsx`, `RsvpPanels.tsx`, `rsvpChatData.ts`, `RsvpChat.module.css`; `RsvpEntry.tsx` split out for `/rsvp/login`):
+  - chat list, conversation bubbles and templates, guest info drawer.
+  - human-confirmed reply suggestions.
+  - multiple team logins per day, each with a sending number (Add number with WhatsApp requirements checklist, demo code 123456).
+  - wording assistant blocking promotional words in Utility messages.
+  - `{name}` per-guest personalisation.
+  - guest categories.
+  - collected photos/documents (sample) and a Files page.
+  - broadcasts, guests CSV import, reports, team & settings, Assistant page with a WhatsApp setup recommendation.
+  - a "Get set up" checklist.
+  - Data lives in localStorage `tnp-rsvp-chat-v3`. `rsvp-state.ts` remains for its existing tests.
+
+### Tests touched
+- `tests/client-demo-m5.test.mjs` (new): genie geometry and timing, launcher dock, planner/admin/RSVP wiring, admin rules, exporters, RSVP suggestions, compliance and personalisation, estimator, palette.
+- `tests/frontend-completion-m3.test.mjs`: launcher timing now `{open:1440, close:1240}` (user direction).
+- `components/tnp/public/hospitality-cube-motion.test.mjs`: cube timing 2200/900 (user direction; the cube is no longer rendered on the homepage).
+
+## Browser acceptance (record viewport, result, screenshot)
+
+At 1440×900, 1100×900, 390×844 and 320×844, with reduced motion also checked once:
+1. **Home.**
+   - The 2 s loader shows first.
+   - The hero photos move.
+   - The Workspaces dock sits at the right, vertically centred, and opens/closes with the genie effect; focus returns to it.
+   - Services opens on hover and click.
+   - The events gallery pins and travels 10 photos, then releases.
+   - Workflow tabs respond to click, hover and arrow keys.
+   - Text links glow.
+   - There is no horizontal overflow.
+2. **`/services`.** The estimator updates live. "Send this team" pre-fills `/contact`. The submitted receipt shows "What happens next".
+3. **Planner.**
+   - Add 3 Hostess + 4 Volunteer → total 7.
+   - Submit.
+   - A second event starts empty; the cards scroll to their events.
+4. **Freelancer.** The menu opens as a glass genie; all 6 pages work; the wallet opens Earnings; focus returns.
+5. **Admin `/operations`.**
+   - Switch design A/B.
+   - Approve an application.
+   - Publish an assignment and approve an applicant (overfill is refused).
+   - Make a quote, mark it ready, download PDF and XLSX (open both files).
+   - Record a payout.
+   - Open a freelancer profile.
+   - Ctrl+K "orbit" → Enter.
+   - Download "All reports · Excel".
+6. **RSVP `/rsvp/workspace`.**
+   - The checklist shows.
+   - Add a number (code 123456).
+   - Switch "Signed in as".
+   - In a chat, type a Utility message with "exclusive offer 20% off" → Send is blocked → apply fixes → send.
+   - Ask for photo/ID, then simulate an upload → it appears in Files.
+   - A broadcast preview shows a different first name per guest.
+   - At 390×844 the bottom tab bar is used and the composer/send is not clipped.
+7. **Console.** No page errors. Only the pre-existing single 404 resource request is known.
+
+## Integration
+
+After independent review passes and Kartik accepts:
+- Prefer `git merge --ff-only origin/claude/tnp-client-demo-m5` onto `main` in a serialized integration checkout. If `main` has moved, do a normal reviewed merge instead; never force-push.
+- Update `docs/STATUS.md` / `docs/LANES.md` only in the dispatcher's serialized docs task.
+- Tag or record the integrated SHA.
+
+## Known limitations (must stay truthful)
+
+- **Everything is synthetic frontend.** There is no backend, auth, database, WhatsApp provider, payment or KYC.
+  - Admin state is sessionStorage and RSVP state is localStorage.
+  - Payouts, quotes, messages, broadcasts, number verification and uploads are simulated and labelled as such.
+- **Public/demo access conflict.** `docs/PRODUCT.md`/ADR-0008 say the public launcher exposes only Planner and Freelancer. This demo exposes four roles (Planner, Freelancer, Admin/Operations, RSVP) per the user's temporary client-demo instruction; `demoWorkspaces` in `components/tnp/access/routes.ts` is the single switch to revert.
+- **Homepage cube.** The homepage cube was removed at the user's request; the DESIGN.md cube exception is now superseded in practice. Record it as a decision or restore the cube.
+- **Hero controls.** The hero auto-rotation pause control was removed at the user's request (WCAG 2.2.2 consideration); the photo slideshow respects reduced motion.
+- **Wording assistant.** Its promotional-word list is TNP's own heuristic, not Meta policy; Meta can still re-categorise templates.
+- **Documents.** ID documents are only demonstrated; real collection needs a secure storage/retention/access design first (DOMAIN-RULES).
+- **Build.** EBUSY build flakiness on this host (environmental).
