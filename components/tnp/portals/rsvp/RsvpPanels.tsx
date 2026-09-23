@@ -16,7 +16,7 @@ import {
   type RsvpChatState,
   type RsvpEvent,
 } from './rsvpChatData';
-import type { Save } from './RsvpWorkspace';
+import type { Save, View } from './RsvpWorkspace';
 import styles from './RsvpChat.module.css';
 
 const NOTE = 'TNP RSVP - synthetic demo report. Sample guests and messages only.';
@@ -28,13 +28,51 @@ export function TodayPanel({
 }: {
   state: RsvpChatState;
   org: 'lotus' | 'marigold';
-  openEvent: (id: string, view?: 'chats' | 'reports') => void;
+  openEvent: (id: string, view?: View) => void;
 }) {
   const events = state.events.filter((e) => e.org === org);
-  const all = eventStats(state.threads.filter((t) => events.some((e) => e.id === t.eventId)));
+  const threads = state.threads.filter((t) => events.some((e) => e.id === t.eventId));
+  const all = eventStats(threads);
+  const first = events[0].id;
+  const login = state.logins.find((l) => l.id === state.activeLogin);
+  const sender = state.senders.find((s) => s.id === login?.senderId);
+  const attending = threads.filter((t) => t.category === 'attending');
+  // Setup order a new RSVP team follows; each step is derived from live data.
+  const steps: { title: string; detail: string; done: boolean; view: View }[] = [
+    { title: 'Choose your sending number', detail: sender ? `${sender.displayName} · ${sender.status === 'verified' ? 'verified' : 'pending verification'}` : 'Use “Add number” at the top left', done: sender?.status === 'verified', view: 'settings' },
+    { title: 'Add your guests', detail: `${threads.length} parties added`, done: threads.length > 0, view: 'guests' },
+    { title: 'Send the invitation', detail: 'Personalised, from your number', done: threads.some((t) => t.messages.some((m) => m.template === 'invitation')), view: 'broadcasts' },
+    { title: 'Review unclear replies', detail: all.review ? `${all.review} waiting for a person` : 'Nothing waiting', done: all.review === 0, view: 'chats' },
+    { title: 'Collect travel details', detail: `${attending.filter((t) => t.travel.mode !== '—').length} of ${attending.length} attending parties`, done: attending.every((t) => t.travel.mode !== '—'), view: 'chats' },
+  ];
+  const doneCount = steps.filter((s) => s.done).length;
   return (
     <div className={styles.panel}>
       <h1>Today across {ORGS[org]}</h1>
+      <section className={styles.setup} aria-labelledby="setup-title">
+        <div className={styles.setupHead}>
+          <h2 id="setup-title">{doneCount === steps.length ? 'You’re all set' : 'Get set up'}</h2>
+          <span>{doneCount} of {steps.length} done</span>
+        </div>
+        <div className={styles.setupBar} aria-hidden="true">
+          <i style={{ width: `${(doneCount / steps.length) * 100}%` }} />
+        </div>
+        <ol className={styles.setupSteps}>
+          {steps.map((s) => (
+            <li key={s.title} data-done={s.done}>
+              <div>
+                <strong>{s.title}</strong>
+                <small>{s.detail}</small>
+              </div>
+              {!s.done && (
+                <button type="button" className={styles.secondary} onClick={() => openEvent(first, s.view)}>
+                  Do this
+                </button>
+              )}
+            </li>
+          ))}
+        </ol>
+      </section>
       <div className={styles.stats}>
         {[
           [all.unread, 'Unread messages'],

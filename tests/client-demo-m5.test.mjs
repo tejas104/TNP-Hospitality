@@ -177,3 +177,29 @@ test('RSVP assistant blocks promotional words in Utility messages and personalis
   assert.equal(personalize('Hi {name}', b), `Hi ${b.contactName}`);
   assert.ok(state.logins.length >= 2 && state.senders.some((s) => s.status === 'verified'));
 });
+
+test('team estimator: sane teams, always a coordinator, safe contact hand-off', async () => {
+  const { estimateTeam, encodeTeam, decodeTeam } = await import('../components/tnp/public/team-estimate.ts');
+  const small = estimateTeam('Private celebration', 20, 1);
+  assert.ok(small.roles.find((r) => r.role === 'Event Coordinator').people >= 1);
+  const wedding = estimateTeam('Wedding', 300, 2);
+  assert.equal(wedding.personDays, wedding.perDay * 2);
+  assert.ok(wedding.perDay > small.perDay);
+  const roles = ['Event Coordinator', 'Event Executive', 'Hostess', 'Volunteer', 'Porter'];
+  assert.deepEqual(decodeTeam(encodeTeam(wedding.roles), roles), Object.fromEntries(wedding.roles.map((r) => [r.role, String(r.people)])));
+  // Unknown roles, negatives and junk never reach the form.
+  assert.deepEqual(decodeTeam('Hostess:4,Hacker:9,Volunteer:-2,Porter:abc', roles), { Hostess: '4' });
+});
+
+test('admin search finds records by any word and defaults to sections', async () => {
+  const { paletteItems, filterItems } = await import('../components/tnp/portals/admin/palette.ts');
+  const state = seedAdmin();
+  const visited = [];
+  const items = paletteItems(state, (section, focus) => visited.push([section, focus]), { dashboard: 'Dashboard', finance: 'Finance & payouts' });
+  const hit = filterItems(items, 'rahul coordinator');
+  assert.equal(hit.length, 1);
+  hit[0].run();
+  assert.deepEqual(visited, [['people', 'fl-01']]);
+  assert.ok(filterItems(items, '').every((i) => i.group === 'Go to' || i.group === 'Pending applications'));
+  assert.deepEqual(filterItems(items, 'zzzz-nothing'), []);
+});

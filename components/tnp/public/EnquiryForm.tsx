@@ -19,8 +19,10 @@ import styles from './Public.module.css';
 
 export default function EnquiryForm({
   interest = 'Event enquiry',
+  prefill,
 }: {
   interest?: string;
+  prefill?: { team: Record<string, string>; guests?: string; occasion?: string };
 }) {
   const [fields, setFields] = useState({
     name: '',
@@ -29,16 +31,16 @@ export default function EnquiryForm({
   });
   const [brief, setBrief] = useState<RequestBrief>({
     mode: interest === 'General conversation' ? 'talk' : 'event',
-    products: [],
-    occasion: '',
+    products: prefill ? ['Hospitality workforce'] : [],
+    occasion: prefill?.occasion ?? '',
     date: '',
     city: '',
-    guests: '',
+    guests: prefill?.guests ?? '',
     requester: 'My event',
     billing: '',
     ownVenue: false,
     ownPlanner: false,
-    quantities: {},
+    quantities: prefill?.team ?? {},
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState('Loading your synthetic enquiry…');
@@ -368,6 +370,12 @@ export default function EnquiryForm({
                   I have my own planner
                 </label>
               </div>
+              {prefill && brief.products.includes('Hospitality workforce') && (
+                <p className={styles.prefillNote}>
+                  Team filled in from the estimator. Adjust any number — TNP
+                  refines it with you.
+                </p>
+              )}
               {brief.products.includes('Hospitality workforce') && (
                 <div className={styles.formGrid}>
                   {WORKFORCE_ROLES.map((role) => (
@@ -486,6 +494,26 @@ export default function EnquiryForm({
               No follow-up is sent in this preview. A reference does not grant
               access to private records.
             </p>
+            <h3 className={styles.nextTitle}>What happens next</h3>
+            <ol className={styles.nextSteps}>
+              <li data-done="true">
+                <strong>Request received</strong>
+                <span>Keep your reference {receipt.id} for any follow-up.</span>
+              </li>
+              <li>
+                <strong>A TNP lead calls or writes back</strong>
+                <span>Usually within one working day, to confirm the details.</span>
+              </li>
+              <li>
+                <strong>You receive a quotation</strong>
+                <span>Team, dates and pricing to review and adjust together.</span>
+              </li>
+              <li>
+                <strong>Your team is confirmed</strong>
+                <span>Named people and a shared brief before the event.</span>
+              </li>
+            </ol>
+            <small>Typical timings for illustration; the preview contacts no one.</small>
           </div>
         )}
         <div className={styles.actions}>

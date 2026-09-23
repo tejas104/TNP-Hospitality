@@ -288,9 +288,12 @@ export function ApplicationsSection({ state, update }: SectionProps) {
 }
 
 /* ---------------- Freelancers & profiles ---------------- */
-export function PeopleSection({ state }: SectionProps) {
+export function PeopleSection({ state, focus }: SectionProps) {
   const [query, setQuery] = useState('');
-  const [open, setOpen] = useState<Freelancer | null>(null);
+  // Opening from search (focus = freelancer id) shows that profile directly.
+  const [open, setOpen] = useState<Freelancer | null>(
+    () => state.freelancers.find((f) => f.id === focus) ?? null,
+  );
   const source = useRef<HTMLElement | null>(null);
   const list = state.freelancers.filter((f) => `${f.name} ${f.role} ${f.city}`.toLowerCase().includes(query.toLowerCase()));
   const history = (id: string) =>

@@ -220,6 +220,9 @@ export default function HomeExperience() {
             <p className={styles.imageNote}>
               Select a service to open its story and illustrative image.
             </p>
+            <Link href="/services#estimator-title" className={`${styles.textLink} link-glow`}>
+              Not sure how many people you need? Estimate your team <ArrowUpRight size={16} />
+            </Link>
           </div>
         </div>
       </section>

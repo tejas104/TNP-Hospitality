@@ -4,6 +4,7 @@ import { publicDepartments, publicServices } from '@/data/public-content';
 import { destinations, events } from '@/data/tnp';
 import { byId } from '@/data/media';
 import OverviewExtras from './OverviewExtras';
+import TeamEstimator from './TeamEstimator';
 import styles from './Public.module.css';
 
 export type PublicOverviewKind =
@@ -79,6 +80,7 @@ export default function PublicOverviewPage({
         </div>
       </section>
       <OverviewContent kind={kind} />
+      {kind === 'services' && <TeamEstimator />}
       <OverviewExtras kind={kind} />
       <section className={styles.detailCta}>
         <p className={styles.eyebrow}>A GOOD PLACE TO BEGIN</p>

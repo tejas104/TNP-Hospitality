@@ -1068,3 +1068,245 @@
   --glow-base: #ffffff;
   --glow-hi: #ffd36a;
 }
+
+/* ---- Team estimator (public) ---- */
+.estimator {
+  background: #008080;
+  color: #fff;
+  display: grid;
+  gap: 28px;
+  margin: 0 8% 40px;
+  border-radius: 28px;
+  padding: clamp(24px, 4vw, 48px);
+  scroll-margin-top: 110px;
+}
+.estimatorIntro h2 {
+  font-size: clamp(28px, 3.4vw, 44px);
+  line-height: 1.1;
+  margin: 0 0 10px;
+  max-width: 22ch;
+  text-wrap: balance;
+}
+.estimatorIntro p {
+  color: rgb(255 255 255 / 88%);
+  font-size: 16px;
+  margin: 0;
+  max-width: 60ch;
+}
+.estimatorBody {
+  align-items: start;
+  display: grid;
+  gap: 28px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+}
+.estimatorInputs {
+  display: grid;
+  gap: 22px;
+}
+.estimatorInputs fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+.estimatorInputs legend,
+.estimatorInputs label > span {
+  display: flex;
+  font-size: 15px;
+  font-weight: 600;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  width: 100%;
+}
+.estimatorInputs output {
+  color: #ffe08a;
+  font-size: 22px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+.estimatorInputs label {
+  display: grid;
+}
+.estimatorInputs input[type='range'] {
+  accent-color: #ffe08a;
+  min-height: 44px;
+  width: 100%;
+}
+.estimatorChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.estimatorChips button {
+  background: rgb(255 255 255 / 10%);
+  border: 1px solid rgb(255 255 255 / 55%);
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  font: 600 14px var(--font-product, sans-serif);
+  min-height: 44px;
+  padding: 8px 16px;
+  transition: background-color 150ms ease, color 150ms ease;
+}
+.estimatorChips button[aria-pressed='true'] {
+  background: #fffdf8;
+  border-color: #fffdf8;
+  color: #006b6b;
+}
+.estimatorChips button:hover:not([aria-pressed='true']) {
+  background: #ffe08a;
+  color: #202423;
+}
+.estimatorChips button:focus-visible,
+.estimator :is(a, input):focus-visible {
+  outline: 3px solid #ffe08a;
+  outline-offset: 3px;
+}
+.estimatorResult {
+  background: #fffdf8;
+  border-radius: 22px;
+  box-shadow: 0 18px 40px rgb(0 0 0 / 18%);
+  color: #202423;
+  display: grid;
+  gap: 14px;
+  padding: 24px;
+}
+.estimatorTotal {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 16px;
+  gap: 4px 10px;
+  margin: 0;
+}
+.estimatorTotal svg {
+  align-self: center;
+  color: #008080;
+}
+.estimatorTotal strong {
+  color: #006b6b;
+  font-size: 44px;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+.estimatorTotal small {
+  color: #505854;
+  flex-basis: 100%;
+  font-size: 14px;
+}
+.estimatorResult ul {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.estimatorResult li {
+  align-items: center;
+  display: grid;
+  font-size: 15px;
+  gap: 12px;
+  grid-template-columns: 150px 1fr 40px;
+}
+.estimatorResult li i {
+  background: #008080;
+  border-radius: 999px;
+  display: block;
+  height: 10px;
+  transition: width 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.estimatorResult li b {
+  font-size: 18px;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+.estimatorResult .creamButton {
+  background: #008080;
+  color: #fff;
+  justify-self: start;
+}
+.estimatorResult .creamButton:hover {
+  background: #ffe08a;
+  color: #202423;
+}
+.estimatorNote {
+  color: #505854;
+  font-size: 13px;
+}
+/* ---- Enquiry: estimator note + next steps ---- */
+.prefillNote {
+  background: #fff3cf;
+  border: 1px solid #e5c56b;
+  border-radius: 12px;
+  color: #4d3f12;
+  font-size: 14px;
+  margin: 8px 0;
+  padding: 10px 14px;
+}
+.nextTitle {
+  font-size: 18px;
+  margin: 20px 0 10px;
+}
+.nextSteps {
+  counter-reset: next;
+  display: grid;
+  gap: 12px;
+  list-style: none;
+  margin: 0 0 10px;
+  padding: 0;
+}
+.nextSteps li {
+  counter-increment: next;
+  display: grid;
+  gap: 2px 12px;
+  grid-template-columns: 32px 1fr;
+}
+.nextSteps li::before {
+  align-items: center;
+  border: 2px solid #bba879;
+  border-radius: 50%;
+  color: #67552e;
+  content: counter(next);
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  grid-row: span 2;
+  height: 32px;
+  justify-content: center;
+  width: 32px;
+}
+.nextSteps li[data-done='true']::before {
+  background: #008080;
+  border-color: #008080;
+  color: #fff;
+}
+.nextSteps strong {
+  font-size: 15px;
+}
+.nextSteps span {
+  color: #505854;
+  font-size: 14px;
+}
+@media (max-width: 860px) {
+  .estimatorBody {
+    grid-template-columns: 1fr;
+  }
+  .estimator {
+    margin-inline: 16px;
+  }
+  .estimatorResult li {
+    grid-template-columns: 120px 1fr 36px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .estimatorResult li i,
+  .estimatorChips button {
+    transition: none;
+  }
+}
+/* The shared uppercase label style is unreadable on the teal estimator. */
+.estimator .estimatorInputs label,
+.estimator .estimatorInputs legend {
+  color: #fff;
+  letter-spacing: 0;
+  text-transform: none;
+}

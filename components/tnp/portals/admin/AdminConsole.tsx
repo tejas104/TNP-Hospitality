@@ -14,6 +14,7 @@ import {
   Palette,
   ReceiptText,
   RotateCcw,
+  Search,
   ShieldCheck,
   SquareArrowOutUpRight,
   UsersRound,
@@ -39,6 +40,8 @@ import {
   RsvpAccessSection,
 } from './AdminSections';
 import { Card, REPORT_NOTE } from './adminUi';
+import CommandPalette from './CommandPalette';
+import { GenieWindow } from '../../public/portal-launcher/PortalLauncher';
 import styles from './AdminConsole.module.css';
 
 export type Section =
@@ -111,6 +114,19 @@ export default function AdminConsole() {
     'Sample data only. Nothing here sends messages, pays anyone or creates real logins.',
   );
   const main = useRef<HTMLDivElement>(null);
+  const searchButton = useRef<HTMLButtonElement>(null);
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  useEffect(() => {
+    // Ctrl+K / Cmd+K opens search from anywhere in the console.
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPaletteOpen(true);
+      }
+    };
+    addEventListener('keydown', onKey);
+    return () => removeEventListener('keydown', onKey);
+  }, []);
   useEffect(() => {
     let active = true;
     void Promise.resolve().then(() => {
@@ -215,6 +231,18 @@ export default function AdminConsole() {
             <h1>{LABEL[section]}</h1>
           </div>
           <div className={styles.topActions}>
+            <button
+              ref={searchButton}
+              type="button"
+              className={styles.searchButton}
+              aria-haspopup="dialog"
+              aria-keyshortcuts="Control+K Meta+K"
+              onClick={() => setPaletteOpen(true)}
+            >
+              <Search size={17} aria-hidden="true" />
+              Search
+              <kbd>Ctrl K</kbd>
+            </button>
             <button type="button" className={styles.ghost} onClick={switchDesign}>
               <Palette size={17} aria-hidden="true" />
               Design {design === 'light' ? 'A · Ivory glass' : 'B · Teal glass'}
@@ -231,6 +259,17 @@ export default function AdminConsole() {
             </button>
           </div>
         </header>
+        <GenieWindow
+          sourceRef={searchButton}
+          open={paletteOpen}
+          onClose={() => setPaletteOpen(false)}
+          title="Search the admin console"
+          label="Close search"
+        >
+          {paletteOpen && (
+            <CommandPalette state={state} go={go} labels={LABEL} close={() => setPaletteOpen(false)} />
+          )}
+        </GenieWindow>
         <output className={styles.notice} aria-live="polite">
           {notice}
         </output>
