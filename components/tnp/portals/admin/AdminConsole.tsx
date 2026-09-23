@@ -1,6 +1,5 @@
 'use client';
 import { useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import {
   BadgeIndianRupee,
   BarChart3,
@@ -9,6 +8,7 @@ import {
   ClipboardCheck,
   FileSpreadsheet,
   FileText,
+  History,
   LayoutDashboard,
   MessageCircle,
   Palette,
@@ -16,12 +16,14 @@ import {
   RotateCcw,
   Search,
   ShieldCheck,
-  SquareArrowOutUpRight,
+  Tags,
   UsersRound,
   type LucideIcon,
 } from 'lucide-react';
 import {
+  ACTOR,
   CAPABILITIES,
+  collectionStatus,
   earnings,
   quoteTotals,
   rupees,
@@ -33,6 +35,8 @@ import { download, toPdf, toXlsx, type Table } from './exporters';
 import {
   ApplicationsSection,
   AttendanceSection,
+  AuditSection,
+  CatalogueSection,
   EventsSection,
   FinanceSection,
   PeopleSection,
@@ -54,7 +58,9 @@ export type Section =
   | 'finance'
   | 'rsvp'
   | 'team'
-  | 'reports';
+  | 'catalogue'
+  | 'reports'
+  | 'audit';
 export type Go = (section: Section, focus?: string) => void;
 export type Update = (
   change: (state: AdminState) => AdminState,
@@ -91,18 +97,25 @@ const NAV: { group: string; items: [Section, string, LucideIcon][] }[] = [
     ],
   },
   {
-    group: 'Access',
+    group: 'Setup & access',
     items: [
+      ['catalogue', 'Catalogue & rates', Tags],
       ['rsvp', 'RSVP access', MessageCircle],
       ['team', 'Admins & co-admins', ShieldCheck],
     ],
   },
-  { group: 'Records', items: [['reports', 'Reports', BarChart3]] },
+  {
+    group: 'Records',
+    items: [
+      ['reports', 'Reports', BarChart3],
+      ['audit', 'Audit log', History],
+    ],
+  },
 ];
 const LABEL = Object.fromEntries(
   NAV.flatMap((g) => g.items.map(([id, label]) => [id, label])),
 ) as Record<Section, string>;
-const KEY = 'tnp-admin-console-v1';
+const KEY = 'tnp-admin-console-v2';
 const today = () => new Date().toISOString().slice(0, 10);
 
 export default function AdminConsole() {
@@ -133,7 +146,7 @@ export default function AdminConsole() {
       if (!active) return;
       try {
         const saved = JSON.parse(sessionStorage.getItem(KEY) ?? 'null');
-        if (saved?.version === 1) setState(saved);
+        if (saved?.version === 2) setState(saved);
         const look = sessionStorage.getItem(KEY + '-design');
         if (look === 'teal' || look === 'light') setDesign(look);
       } catch {
@@ -148,7 +161,7 @@ export default function AdminConsole() {
     setState((current) => {
       const next = change(current);
       next.log = [
-        { at: new Date().toLocaleString('en-IN'), text: message },
+        { at: new Date().toLocaleString('en-IN'), text: message, actor: ACTOR },
         ...next.log,
       ].slice(0, 40);
       try {
@@ -213,13 +226,6 @@ export default function AdminConsole() {
               ))}
             </div>
           ))}
-          <div className={styles.navGroup}>
-            <span>Detailed tools</span>
-            <Link href="/operations/desk">
-              <SquareArrowOutUpRight size={18} aria-hidden="true" />
-              Operations desk
-            </Link>
-          </div>
         </nav>
       </aside>
       <div className={styles.body}>
@@ -300,6 +306,8 @@ export default function AdminConsole() {
           {section === 'finance' && <FinanceSection {...props} />}
           {section === 'rsvp' && <RsvpAccessSection {...props} />}
           {section === 'team' && <TeamSection {...props} />}
+          {section === 'catalogue' && <CatalogueSection {...props} />}
+          {section === 'audit' && <AuditSection {...props} />}
           {section === 'reports' && <ReportsSection {...props} />}
         </div>
       </div>
@@ -320,6 +328,13 @@ function Dashboard({ state, go }: SectionProps) {
     (sum, f) => sum + earnings(state, f.id).remaining,
     0,
   );
+  const awaiting = state.freelancers.reduce(
+    (sum, f) => sum + earnings(state, f.id).awaitingApproval,
+    0,
+  );
+  const outstanding = state.quotations
+    .filter((q) => q.status === 'accepted-sample')
+    .reduce((n, q) => n + collectionStatus(state, q).outstanding, 0);
   const drafts = state.quotations.filter((q) => q.status === 'draft');
   const kpis: [string, string, string, Section][] = [
     [String(by('ongoing').length), 'Ongoing events', 'Happening now', 'events'],
@@ -328,13 +343,15 @@ function Dashboard({ state, go }: SectionProps) {
     [String(newRequests.length), 'Client requests', 'Waiting for a quote', 'quotations'],
     [String(pending.length), 'Applications', 'Waiting for approval', 'applications'],
     [String(involved.size), 'People on duty', 'In ongoing events', 'people'],
-    [rupees(remaining), 'Payouts remaining', 'Earned but not paid', 'finance'],
+    [rupees(awaiting + remaining), 'Payouts pending', 'Awaiting approval or payment', 'finance'],
   ];
   const todo: [string, Section, boolean][] = [
     [`${pending.length} freelancer applications to review`, 'applications', pending.length > 0],
     [`${newRequests.length} client requests need a quotation`, 'quotations', newRequests.length > 0],
     [`${drafts.length} quotation drafts to finish`, 'quotations', drafts.length > 0],
-    [`${rupees(remaining)} in payouts still to release`, 'finance', remaining > 0],
+    [`${rupees(awaiting)} in earnings waiting for approval`, 'finance', awaiting > 0],
+    [`${rupees(remaining)} approved and ready to pay`, 'finance', remaining > 0],
+    [`${rupees(outstanding)} still to collect from clients`, 'finance', outstanding > 0],
     [
       `${state.assignments.filter((a) => a.approved.length < a.quantity && state.events.find((e) => e.id === a.eventId)?.status !== 'finished').length} assignments still have open places`,
       'events',
@@ -589,11 +606,26 @@ export function reportTables(state: AdminState): Record<string, Table> {
     },
     payouts: {
       title: 'Freelancer payouts',
-      head: ['Freelancer', 'Role', 'Earned (INR)', 'Paid (INR)', 'Remaining (INR)'],
+      head: ['Freelancer', 'Role', 'Earned (INR)', 'Awaiting approval (INR)', 'Paid (INR)', 'Ready to pay (INR)'],
       rows: state.freelancers.map((f) => {
         const e = earnings(state, f.id);
-        return [f.name, f.role, e.earned / 100, e.paid / 100, e.remaining / 100];
+        return [f.name, f.role, e.earned / 100, e.awaitingApproval / 100, e.paid / 100, e.remaining / 100];
       }),
+    },
+    collections: {
+      title: 'Client collections',
+      head: ['Quote', 'Client', 'Total (INR)', 'Received (INR)', 'Outstanding (INR)'],
+      rows: state.quotations
+        .filter((q) => q.status === 'accepted-sample')
+        .map((q) => {
+          const c = collectionStatus(state, q);
+          return [q.id, q.client, c.total / 100, c.received / 100, c.outstanding / 100];
+        }),
+    },
+    audit: {
+      title: 'Audit log',
+      head: ['When', 'Who', 'What'],
+      rows: state.log.map((l) => [l.at, l.actor, l.text]),
     },
     applications: {
       title: 'Freelancer applications',

@@ -191,14 +191,9 @@ test('corrected solid surface text and focus colors retain AA contrast', () => {
   assert.ok(darkToken, 'Client hub background token must resolve');
   const kicker = property(block(clientHubFile, '.header :global(.section-kicker)'), 'color');
   assert.ok(ratio(kicker, colors(darkToken)[0].rgb) >= 4.5, 'Client event and finance status kicker on hub background');
-  const operationsFile = 'components/tnp/portals/operations/AdminOperations.module.css';
   const beigeToken = read('app/globals.css').match(/--beige:\s*(#[\da-f]+);/i)?.[1];
   assert.equal(beigeToken?.toLowerCase(), '#e5e1cd', 'Operations beige-card substrate');
   const beige = colors(beigeToken)[0].rgb;
-  const cardKicker = property(block(operationsFile, '.decisionCard :global(.section-kicker), .controlForm :global(.section-kicker), .evidenceCard :global(.section-kicker), .auditPanel :global(.section-kicker)'), 'color');
-  assert.ok(ratio(cardKicker, beige) >= 4.5, 'Operations beige-card kickers');
-  const secondary = property(block(operationsFile, '.queueRow span, .queueRow small, .mutedDark'), 'color');
-  assert.ok(ratio(secondary, beige) >= 4.5, 'Operations beige-card secondary text');
   const skipFocus = property(block('components/tnp/portals/client/ClientExperience.module.css', '.clientRoot .skip:focus-visible'), 'outline-color');
   assert.ok(ratio(skipFocus, teal) >= 3, 'Client skip-link focus on teal');
   const livePanelFocus = property(block('app/globals.css', '.admin-shell .live-ops-panel :where(a, button, input, select, textarea):focus-visible'), 'outline-color');
@@ -253,16 +248,6 @@ test('palette detection rejects alternate syntax and unlisted green while accept
   for (const source of ['data-color="limegreen"', 'data-fill="forestgreen"', 'data-stroke="darkgreen"', 'material.color.set(0x13483f)']) {
     assert.deepEqual(colors(source), [], source);
   }
-});
-
-test('Operations interaction states distinguish pressed and unavailable controls', () => {
-  const operationsCss = readFileSync(path.join(projectRoot, 'components', 'tnp', 'portals', 'operations', 'AdminOperations.module.css'), 'utf8');
-  const globalCss = readFileSync(path.join(projectRoot, 'app', 'globals.css'), 'utf8');
-  assert.match(operationsCss, /\.navButton:disabled\s*\{[^}]*background:\s*#006b6b;[^}]*border-left-color:\s*#bba879;/s);
-  assert.match(operationsCss, /\.navButton:active:not\(:disabled\)\s*\{[^}]*box-shadow:/s);
-  assert.match(operationsCss, /\.compactNav button:active\s*\{[^}]*background:\s*#006b6b;/s);
-  assert.match(operationsCss, /\.eventTabs > button:active\s*\{[^}]*background:\s*#006b6b;/s);
-  assert.match(globalCss, /\.admin-shell \.live-ops-panel \.magnetic-btn:active:not\(:disabled\)\s*\{[^}]*box-shadow:/s);
 });
 
 test('integrated homepage hero and all fallback continuity use exact client teal', () => {

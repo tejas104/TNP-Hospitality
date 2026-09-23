@@ -1,9 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
   approveApplicant,
+  approveEarning,
+  collectionStatus,
   earnings,
   quoteFromRequest,
   quoteTotals,
@@ -100,10 +102,9 @@ test('planner cards, admin quick actions, RSVP states and cursor stay wired', ()
   assert.match(planner, /className=\{styles\.windowCard\}/);
   assert.match(planner, /role="alert"/);
   assert.doesNotMatch(planner, /alert\(/);
-  const admin = read('components/tnp/portals/operations/AdminOperations.tsx');
-  for (const id of ['overview', 'events', 'verification', 'finance'])
-    assert.match(admin, new RegExp(`id: '${id}',\\s*label:`));
-  assert.match(admin, /aria-pressed=\{panel === id\}/);
+  const admin = read('components/tnp/portals/admin/AdminConsole.tsx');
+  assert.doesNotMatch(admin, /operations\/desk/);
+  assert.equal(existsSync(resolve('app/operations/desk/page.tsx')), false);
   const rsvp = read('components/tnp/portals/rsvp/RsvpWorkspace.tsx');
   assert.match(rsvp, /RSVP on WhatsApp/);
   assert.match(rsvp, /nothing was sent to WhatsApp/);
@@ -130,7 +131,26 @@ test('admin rules: quotes in paise, no overfilled assignments, earnings from att
   assert.equal(earnings(state, 'fl-10').earned, 0);
   // fl-03 appeared at ev-101 (3 days) and is unmarked at ev-102: 3 × ₹2,500.
   assert.equal(earnings(state, 'fl-03').earned, 250000 * 3);
-  assert.equal(earnings(state, 'fl-01').remaining, earnings(state, 'fl-01').earned - 450000);
+  const fl01 = earnings(state, 'fl-01');
+  assert.equal(fl01.remaining, Math.max(0, fl01.approved - fl01.paid));
+  assert.equal(fl01.awaitingApproval, fl01.earned - fl01.approved);
+});
+
+test('admin: two-person earning approval, live rate card, separate collections', () => {
+  assert.throws(() => approveEarning({}, 'finance', 'Zoya'), /coordinator must approve/);
+  const coord = approveEarning({}, 'coordinator', 'Rahul');
+  assert.throws(() => approveEarning(coord, 'finance', 'Rahul'), /different person/);
+  assert.deepEqual(approveEarning(coord, 'finance', 'Zoya'), { coordinator: 'Rahul', finance: 'Zoya' });
+  const state = seedAdmin();
+  const request = state.requests[0];
+  const rates = { ...state.rateCard, [request.lines[0].role]: 999900 };
+  const quote = quoteFromRequest(request, 'QT-R', '2026-09-23', rates);
+  assert.equal(quote.lines[0].ratePaise, 999900);
+  const total = quoteTotals(quote).total;
+  const withCash = { ...state, collections: [{ id: 'c1', quoteId: 'QT-R', amountPaise: 100000, receivedOn: '2026-09-23', reference: 'S' }] };
+  assert.deepEqual(collectionStatus(withCash, quote), { total, received: 100000, outstanding: total - 100000 });
+  // Collections never touch freelancer payouts.
+  assert.deepEqual(earnings(withCash, 'fl-01'), earnings(state, 'fl-01'));
 });
 
 test('exporters build a real xlsx zip and a pdf, and neutralise formulas', async () => {
@@ -175,6 +195,10 @@ test('RSVP assistant blocks promotional words in Utility messages and personalis
   assert.notEqual(a.contactName, b.contactName);
   assert.equal(personalize('Hi {name}', a), `Hi ${a.contactName}`);
   assert.equal(personalize('Hi {name}', b), `Hi ${b.contactName}`);
+  // The imported guest-list name wins over whatever the guest calls themselves on WhatsApp.
+  const raj = { ...a, contactName: 'Raj', whatsappName: 'RJ 🔥' };
+  assert.equal(personalize('Hi {name}', raj), 'Hi Raj');
+  assert.ok(state.threads.some((t) => t.whatsappName && t.whatsappName !== t.contactName));
   assert.ok(state.logins.length >= 2 && state.senders.some((s) => s.status === 'verified'));
 });
 

@@ -41,7 +41,10 @@ export type GuestThread = {
   id: string;
   eventId: string;
   party: string;
-  contactName: string; // first name used in personalised messages
+  /** Name from the imported guest list — the only name ever used for {name}. */
+  contactName: string;
+  /** Name the guest set on their WhatsApp profile. Display-only, never used in messages. */
+  whatsappName: string;
   group: Group;
   media: MediaItem[];
   optIn: boolean; // marketing opt-in (sample)
@@ -231,6 +234,8 @@ const ev = (id: string, org: RsvpEvent['org'], name: string, host: string, city:
 type Seed = [string, number, Category, string, Record<string, FunctionReply>, string, string, RsvpChatState['threads'][number]['pickup'], string, number];
 
 const FIRST_NAMES = ['Diya', 'Satya', 'Aarav', 'Meera', 'Rohan', 'Isha', 'Vikram', 'Priya', 'Kabir', 'Zara', 'Anil', 'Leela', 'Nisha', 'Dev'];
+// Profile names guests pick on WhatsApp — often nicknames, emojis or blank.
+const PROFILE_NAMES = ['Diyu ✨', 'S. Rao', 'Aaru', '', 'RK', 'Ishu', 'Vicky', 'P', 'Kabs', 'zara_b', 'Anil Uncle', '', 'N', 'Devvv'];
 
 function thread(eventId: string, event: RsvpEvent, i: number, s: Seed, order: number): GuestThread {
   const [party, members, category, reply, functions, travel, stay, pickup, dietary, unread] = s;
@@ -261,6 +266,7 @@ function thread(eventId: string, event: RsvpEvent, i: number, s: Seed, order: nu
     eventId,
     party,
     contactName,
+    whatsappName: PROFILE_NAMES[order % PROFILE_NAMES.length],
     group: (['Family', 'Friends', 'VIP', 'Colleagues'] as Group[])[i % 4],
     media,
     optIn: i % 3 !== 0,

@@ -132,8 +132,44 @@ export const EXTRA_RATES: Record<string, number> = {
   'TNP Planner (per day)': 900000,
 };
 
+export type Approval = { coordinator?: string; finance?: string };
+export type AttendanceChange = {
+  id: string;
+  eventId: string;
+  freelancerId: string;
+  from: Attendance;
+  to: Attendance;
+  reason: string;
+  actor: string;
+  at: string;
+};
+export type RateRevision = {
+  rev: number;
+  role: Role;
+  fromPaise: number;
+  toPaise: number;
+  reason: string;
+  actor: string;
+  at: string;
+};
+export type Collection = {
+  id: string;
+  quoteId: string;
+  amountPaise: number;
+  receivedOn: string;
+  reference: string;
+};
+export type ServiceListing = { title: string; startingPaise: number; published: boolean };
+
 export type AdminState = {
-  version: 1;
+  version: 2;
+  /** `${assignmentId}:${freelancerId}` → who approved the earned amount. */
+  approvals: Record<string, Approval>;
+  attendanceLog: AttendanceChange[];
+  rateCard: Record<Role, number>;
+  rateRevisions: RateRevision[];
+  services: ServiceListing[];
+  collections: Collection[];
   events: AdminEvent[];
   freelancers: Freelancer[];
   applications: Application[];
@@ -143,8 +179,11 @@ export type AdminState = {
   payouts: Payout[];
   rsvpMembers: RsvpMember[];
   coAdmins: CoAdmin[];
-  log: { at: string; text: string }[];
+  log: { at: string; text: string; actor: string }[];
 };
+export const ACTOR = 'Kavya Rao (Main admin)';
+export const COORDINATOR_ACTOR = 'Rahul Sharma (event coordinator, sample)';
+export const FINANCE_ACTOR = 'Zoya Qureshi (finance co-admin, sample)';
 
 const fl = (
   id: string,
@@ -179,6 +218,7 @@ export function seedAdmin(): AdminState {
     fl('fl-08', 'Arjun Nair', 'Porter', 'Mumbai', 3, 4.0, ['Hindi', 'Malayalam']),
     fl('fl-09', 'Tara Kapoor', 'Event Executive', 'Delhi', 6, 4.7, ['English', 'Hindi']),
     fl('fl-10', 'Dev Malhotra', 'Volunteer', 'Delhi', 1, 3.4, ['Hindi'], 'under-review'),
+    fl('fl-11', 'Riya Sen', 'Hostess', 'Udaipur', 2, 4.4, ['English', 'Hindi', 'Bengali']),
   ];
   const events: AdminEvent[] = [
     {
@@ -278,8 +318,30 @@ export function seedAdmin(): AdminState {
           note: notes[f.name.length % notes.length],
         });
       }
+  // Finished events are fully approved; ongoing ones wait for approvals.
+  const approvals: Record<string, Approval> = {};
+  for (const a of ['as-296', 'as-297', 'as-290', 'as-291'])
+    for (const id of ['fl-01', 'fl-02', 'fl-04', 'fl-06', 'fl-07', 'fl-09', 'fl-10'])
+      approvals[`${a}:${id}`] = { coordinator: COORDINATOR_ACTOR, finance: FINANCE_ACTOR };
+  approvals['as-301:fl-01'] = { coordinator: COORDINATOR_ACTOR };
   return {
-    version: 1,
+    version: 2,
+    approvals,
+    attendanceLog: [
+      { id: 'al-1', eventId: 'ev-099', freelancerId: 'fl-06', from: 'late', to: 'absent', reason: 'Left before the gala started; confirmed by coordinator.', actor: COORDINATOR_ACTOR, at: '2026-08-30 23:10' },
+    ],
+    rateCard: { ...RATE_CARD },
+    rateRevisions: [],
+    services: [
+      { title: 'Event Coordinators', startingPaise: 450000, published: true },
+      { title: 'Event Executives', startingPaise: 300000, published: true },
+      { title: 'Volunteers', startingPaise: 150000, published: true },
+      { title: 'Hostesses / Guest Hospitality', startingPaise: 250000, published: true },
+      { title: 'Porters', startingPaise: 120000, published: true },
+      { title: 'RSVP Services', startingPaise: 2500000, published: true },
+      { title: 'Venue / Event Discovery', startingPaise: 1500000, published: false },
+    ],
+    collections: [],
     events,
     freelancers,
     applications: [
@@ -315,7 +377,7 @@ export function seedAdmin(): AdminState {
         { id: 'l2', label: 'Hostess', quantity: 4, days: 2, ratePaise: 250000 },
         { id: 'l3', label: 'Porter', quantity: 3, days: 2, ratePaise: 120000 },
         { id: 'l4', label: 'Venue discovery support', quantity: 1, days: 1, ratePaise: 1500000 },
-      ], discountPct: 5, adjustmentPaise: 0, status: 'draft', updatedOn: '2026-09-19' },
+      ], discountPct: 5, adjustmentPaise: 0, status: 'ready', updatedOn: '2026-09-19' },
     ],
     payouts: [
       { id: 'po-1', freelancerId: 'fl-01', amountPaise: 450000, paidOn: '2026-09-05', reference: 'SAMPLE-PAY-0098' },
@@ -333,7 +395,7 @@ export function seedAdmin(): AdminState {
       { id: 'ca-2', name: 'Aman Sethi', main: false, capabilities: ['Applications', 'Events', 'RSVP access'] },
       { id: 'ca-3', name: 'Zoya Qureshi', main: false, capabilities: ['Quotations', 'Finance', 'Reports'] },
     ],
-    log: [{ at: '2026-09-21 09:00', text: 'Sample data loaded.' }],
+    log: [{ at: '2026-09-21 09:00', text: 'Sample data loaded.', actor: 'System' }],
   };
 }
 
@@ -354,7 +416,12 @@ export function quoteTotals(quote: Pick<Quotation, 'lines' | 'discountPct' | 'ad
   return { subtotal, discount, total: subtotal - discount + quote.adjustmentPaise };
 }
 
-export function quoteFromRequest(request: ClientRequest, id: string, today: string): Quotation {
+export function quoteFromRequest(
+  request: ClientRequest,
+  id: string,
+  today: string,
+  rates: Record<Role, number> = RATE_CARD,
+): Quotation {
   let n = 0;
   return {
     id,
@@ -367,7 +434,7 @@ export function quoteFromRequest(request: ClientRequest, id: string, today: stri
         label: line.role,
         quantity: line.quantity,
         days: line.days,
-        ratePaise: RATE_CARD[line.role],
+        ratePaise: rates[line.role],
       })),
       ...request.extras.map((extra) => ({
         id: `l${++n}`,
@@ -384,20 +451,63 @@ export function quoteFromRequest(request: ClientRequest, id: string, today: stri
   };
 }
 
-/** Earned = attended (appeared/late) days × day rate across approved assignments. */
-export function earnings(state: AdminState, freelancerId: string) {
-  let earned = 0;
-  for (const assignment of state.assignments) {
-    if (!assignment.approved.includes(freelancerId)) continue;
-    const event = state.events.find((e) => e.id === assignment.eventId);
-    const mark = event?.attendance[freelancerId];
-    if (mark === 'appeared' || mark === 'late')
-      earned += assignment.dayRatePaise * assignment.days;
+export type EarningLine = {
+  key: string;
+  assignmentId: string;
+  eventId: string;
+  eventName: string;
+  freelancerId: string;
+  role: Role;
+  amountPaise: number;
+  approval: Approval;
+};
+/** One earning line per attended (appeared/late) assignment: days × day rate. */
+export function earningLines(state: AdminState, freelancerId?: string): EarningLine[] {
+  const lines: EarningLine[] = [];
+  for (const a of state.assignments) {
+    const event = state.events.find((e) => e.id === a.eventId);
+    for (const id of a.approved) {
+      if (freelancerId && id !== freelancerId) continue;
+      const mark = event?.attendance[id];
+      if (mark !== 'appeared' && mark !== 'late') continue;
+      const key = `${a.id}:${id}`;
+      lines.push({ key, assignmentId: a.id, eventId: a.eventId, eventName: event!.name, freelancerId: id, role: a.role, amountPaise: a.dayRatePaise * a.days, approval: state.approvals[key] ?? {} });
+    }
   }
+  return lines;
+}
+/**
+ * Earned counts every attended line; only lines approved by BOTH the
+ * coordinator and finance are payable. Remaining = approved − paid.
+ */
+export function earnings(state: AdminState, freelancerId: string) {
+  const lines = earningLines(state, freelancerId);
+  const earned = lines.reduce((n, l) => n + l.amountPaise, 0);
+  const approved = lines
+    .filter((l) => l.approval.coordinator && l.approval.finance)
+    .reduce((n, l) => n + l.amountPaise, 0);
   const paid = state.payouts
     .filter((p) => p.freelancerId === freelancerId)
     .reduce((sum, p) => sum + p.amountPaise, 0);
-  return { earned, paid, remaining: Math.max(0, earned - paid) };
+  return { earned, approved, awaitingApproval: earned - approved, paid, remaining: Math.max(0, approved - paid) };
+}
+
+/** Finance approval only after the coordinator's; the same person can't do both. */
+export function approveEarning(approval: Approval, stage: 'coordinator' | 'finance', actor: string): Approval {
+  if (stage === 'finance' && !approval.coordinator)
+    throw Error('The event coordinator must approve before finance.');
+  if (stage === 'finance' && approval.coordinator === actor)
+    throw Error('Finance approval needs a different person from the coordinator.');
+  return { ...approval, [stage]: actor };
+}
+
+/** Collections for a quote: total, received and outstanding (separate from payouts). */
+export function collectionStatus(state: AdminState, quote: Quotation) {
+  const total = quoteTotals(quote).total;
+  const received = state.collections
+    .filter((c) => c.quoteId === quote.id)
+    .reduce((n, c) => n + c.amountPaise, 0);
+  return { total, received, outstanding: Math.max(0, total - received) };
 }
 
 /** Approving respects the assignment's quantity: never overfill. */

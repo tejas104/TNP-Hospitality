@@ -233,6 +233,10 @@
   gap: 18px;
   min-width: 0;
 }
+/* Grid items default to min-width:auto; let wide tables scroll inside their card. */
+.stack > * {
+  min-width: 0;
+}
 .split {
   display: grid;
   gap: 18px;
@@ -1064,4 +1068,22 @@ div.eventCard {
 /* The search field's frame carries the focus ring; no second ring inside. */
 .paletteSearch input:focus-visible {
   outline: none;
+}
+
+.correction,
+.inlinePay {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+  margin-top: 8px;
+}
+.correction label {
+  display: grid;
+  gap: 4px;
+  flex: 1 1 220px;
+  font-size: 0.8rem;
+}
+.inlinePay input {
+  width: 110px;
 }

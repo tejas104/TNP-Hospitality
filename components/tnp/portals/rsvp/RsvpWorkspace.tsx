@@ -60,7 +60,7 @@ import styles from './RsvpChat.module.css';
 
 export type View = 'today' | 'chats' | 'broadcasts' | 'guests' | 'files' | 'assistant' | 'reports' | 'settings';
 export type Save = (change: (s: RsvpChatState) => RsvpChatState, message: string) => void;
-const KEY = 'tnp-rsvp-chat-v3';
+const KEY = 'tnp-rsvp-chat-v4';
 const RAIL: [View, string, LucideIcon][] = [
   ['today', 'Today', LayoutDashboard],
   ['chats', 'Chats', MessageCircle],
@@ -459,6 +459,7 @@ function Chats({
                 </strong>
                 <small>
                   {thread.contact} · {thread.members} in party · {thread.group}
+                  {thread.whatsappName ? ` · WhatsApp: “${thread.whatsappName}”` : ''}
                 </small>
               </div>
               <button type="button" className={styles.iconButton} aria-pressed={info} aria-label="Guest info" onClick={() => setInfo((v) => !v)}>
@@ -626,9 +627,12 @@ function GuestInfo({
         <section className={styles.infoCard}>
           <h3>Contact & category</h3>
           <label>
-            First name used in messages
-            <input value={thread.contactName} onChange={(e) => edit((t) => ({ ...t, contactName: e.target.value }), 'First name updated.')} />
+            Name from your guest list (used in messages)
+            <input value={thread.contactName} onChange={(e) => edit((t) => ({ ...t, contactName: e.target.value }), 'Guest-list name updated.')} />
           </label>
+          <p className={styles.hint}>
+            WhatsApp profile name: {thread.whatsappName ? `“${thread.whatsappName}”` : 'not set'} — shown for recognition only, never used in messages.
+          </p>
           <label>
             Guest category
             <select value={thread.group} onChange={(e) => edit((t) => ({ ...t, group: e.target.value as Group }), `${thread.contactName} moved to ${e.target.value}.`)}>

@@ -12,8 +12,14 @@ import {
 } from 'lucide-react';
 import { GenieWindow } from '../../public/portal-launcher/PortalLauncher';
 import {
+  ACTOR,
   approveApplicant,
+  approveEarning,
+  collectionStatus,
+  COORDINATOR_ACTOR,
+  earningLines,
   earnings,
+  FINANCE_ACTOR,
   quoteFromRequest,
   quoteTotals,
   RATE_CARD,
@@ -389,15 +395,41 @@ const MARKS: Attendance[] = ['appeared', 'late', 'absent', 'unmarked'];
 export function AttendanceSection({ state, update }: SectionProps) {
   const candidates = state.events.filter((e) => e.status !== 'upcoming');
   const [eventId, setEventId] = useState(candidates[0]?.id ?? '');
+  // A change to an already-marked person needs a reason (append-only history).
+  const [pending, setPending] = useState<{ id: string; to: Attendance } | null>(null);
+  const [reason, setReason] = useState('');
+  const [replacing, setReplacing] = useState('');
   const event = state.events.find((e) => e.id === eventId);
   if (!event) return <Card><p className={styles.empty}>No events to show.</p></Card>;
-  const rows = state.assignments.filter((a) => a.eventId === event.id).flatMap((a) => a.approved.map((id) => ({ id, role: a.role })));
-  const count = (m: Attendance) => rows.filter((r) => (event.attendance[r.id] ?? 'unmarked') === m).length;
+  const rows = state.assignments
+    .filter((a) => a.eventId === event.id)
+    .flatMap((a) => a.approved.map((id) => ({ id, role: a.role, assignmentId: a.id })));
+  const markOf = (id: string) => event.attendance[id] ?? 'unmarked';
+  const count = (m: Attendance) => rows.filter((r) => markOf(r.id) === m).length;
+  const setMark = (id: string, to: Attendance, why: string) => {
+    const from = markOf(id);
+    update(
+      (s) => ({
+        ...s,
+        events: s.events.map((e) => (e.id === event.id ? { ...e, attendance: { ...e.attendance, [id]: to } } : e)),
+        attendanceLog:
+          from === 'unmarked'
+            ? s.attendanceLog
+            : [...s.attendanceLog, { id: `al-${Date.now()}`, eventId: event.id, freelancerId: id, from, to, reason: why, actor: ACTOR, at: new Date().toLocaleString('en-IN') }],
+      }),
+      from === 'unmarked'
+        ? `${nameOf(state, id)} marked ${to} at ${event.name} (sample).`
+        : `${nameOf(state, id)} corrected from ${from} to ${to} at ${event.name} — reason recorded.`,
+    );
+    setPending(null);
+    setReason('');
+  };
+  const history = state.attendanceLog.filter((l) => l.eventId === event.id).slice().reverse();
   return (
     <div className={styles.stack}>
       <label className={styles.search}>
         Event
-        <select value={eventId} onChange={(e) => setEventId(e.target.value)}>
+        <select value={eventId} onChange={(e) => { setEventId(e.target.value); setPending(null); setReplacing(''); }}>
           {candidates.map((e) => <option key={e.id} value={e.id}>{e.name} · {e.status}</option>)}
         </select>
       </label>
@@ -411,36 +443,111 @@ export function AttendanceSection({ state, update }: SectionProps) {
       </div>
       <Card>
         <h2>Who appeared at {event.name}</h2>
-        <p className={styles.muted}>Sample attendance marks. Real attendance needs scan evidence; nothing here proves presence.</p>
+        <p className={styles.muted}>
+          First marks save straight away. Changing a mark asks for a reason and keeps the original in the history below. Sample marks only — real attendance needs scan evidence.
+        </p>
         <div className={styles.tableWrap}>
           <table className={styles.table}>
-            <thead><tr><th>Freelancer</th><th>Role</th><th>Attendance</th></tr></thead>
+            <thead><tr><th>Freelancer</th><th>Role</th><th>Attendance</th><th>Action</th></tr></thead>
             <tbody>
-              {rows.map((r) => (
-                <tr key={r.id}>
-                  <th scope="row">{nameOf(state, r.id)}</th>
-                  <td>{r.role}</td>
-                  <td>
-                    <div className={styles.markGroup}>
-                      {MARKS.map((m) => (
-                        <button
-                          key={m}
-                          type="button"
-                          data-tone={m}
-                          aria-pressed={(event.attendance[r.id] ?? 'unmarked') === m}
-                          aria-label={`Mark ${nameOf(state, r.id)} as ${m}`}
-                          onClick={() => update((s) => ({ ...s, events: s.events.map((e) => (e.id === event.id ? { ...e, attendance: { ...e.attendance, [r.id]: m } } : e)) }), `${nameOf(state, r.id)} marked ${m} at ${event.name} (sample).`)}
+              {rows.map((r) => {
+                const current = markOf(r.id);
+                const pool = state.freelancers.filter((f) => f.role === r.role && f.status === 'active' && !rows.some((x) => x.id === f.id));
+                return (
+                  <tr key={r.id}>
+                    <th scope="row">{nameOf(state, r.id)}</th>
+                    <td>{r.role}</td>
+                    <td>
+                      <div className={styles.markGroup}>
+                        {MARKS.map((m) => (
+                          <button
+                            key={m}
+                            type="button"
+                            data-tone={m}
+                            aria-pressed={current === m}
+                            aria-label={`Mark ${nameOf(state, r.id)} as ${m}`}
+                            onClick={() => {
+                              if (m === current) return;
+                              if (current === 'unmarked') setMark(r.id, m, '');
+                              else setPending({ id: r.id, to: m });
+                            }}
+                          >
+                            {m === 'unmarked' ? '—' : m}
+                          </button>
+                        ))}
+                      </div>
+                      {pending?.id === r.id && (
+                        <form
+                          className={styles.correction}
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            if (reason.trim().length < 5) return;
+                            setMark(r.id, pending.to, reason.trim());
+                          }}
                         >
-                          {m === 'unmarked' ? '—' : m}
-                        </button>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                          <label>
+                            Why change {current} → {pending.to}?
+                            <input value={reason} onChange={(e) => setReason(e.target.value)} placeholder="e.g. Arrived after briefing; confirmed by coordinator" />
+                          </label>
+                          <button type="submit" className={styles.primarySmall} disabled={reason.trim().length < 5}>Save correction</button>
+                          <button type="button" className={styles.small} onClick={() => { setPending(null); setReason(''); }}>Cancel</button>
+                        </form>
+                      )}
+                    </td>
+                    <td>
+                      {current === 'absent' && event.status !== 'finished' ? (
+                        replacing === r.id ? (
+                          <label className={styles.compactLabel}>
+                            Replace with
+                            <select
+                              defaultValue=""
+                              onChange={(e) => {
+                                const next = e.target.value;
+                                if (!next) return;
+                                update((s) => ({
+                                  ...s,
+                                  assignments: s.assignments.map((a) => (a.id === r.assignmentId ? { ...a, approved: a.approved.map((x) => (x === r.id ? next : x)), applicants: a.applicants.includes(next) ? a.applicants : [...a.applicants, next] } : a)),
+                                }), `${nameOf(state, next)} replaces ${nameOf(state, r.id)} as ${r.role} at ${event.name} (sample — no message sent).`);
+                                setReplacing('');
+                              }}
+                            >
+                              <option value="">Choose a {r.role}</option>
+                              {pool.map((f) => <option key={f.id} value={f.id}>{f.name} · {f.city} · {f.rating.toFixed(1)}★</option>)}
+                            </select>
+                          </label>
+                        ) : (
+                          <button type="button" className={styles.small} disabled={!pool.length} onClick={() => setReplacing(r.id)}>
+                            {pool.length ? 'Find replacement' : 'No one available'}
+                          </button>
+                        )
+                      ) : (
+                        <span className={styles.muted}>—</span>
+                      )}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
+      </Card>
+      <Card>
+        <h2>Correction history</h2>
+        {history.length === 0 ? (
+          <p className={styles.empty}>No corrections for this event. Original marks are never overwritten silently.</p>
+        ) : (
+          <ul className={styles.list}>
+            {history.map((l) => (
+              <li key={l.id}>
+                <div>
+                  <strong>{nameOf(state, l.freelancerId)}: {l.from} → {l.to}</strong>
+                  <small>{l.reason}</small>
+                  <small>{l.actor} · {l.at}</small>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
       </Card>
     </div>
   );
@@ -452,12 +559,12 @@ export function QuotationsSection({ state, update, focus }: SectionProps) {
     if (!focus) return null;
     const existing = state.quotations.find((q) => q.requestId === focus);
     const request = state.requests.find((r) => r.id === focus);
-    return existing ?? (request ? quoteFromRequest(request, `QT-${String(state.quotations.length + 8).padStart(4, '0')}`, new Date().toISOString().slice(0, 10)) : null);
+    return existing ?? (request ? quoteFromRequest(request, `QT-${String(state.quotations.length + 8).padStart(4, '0')}`, new Date().toISOString().slice(0, 10), state.rateCard) : null);
   });
   const start = (requestId: string) => {
     const existing = state.quotations.find((q) => q.requestId === requestId);
     const request = state.requests.find((r) => r.id === requestId)!;
-    setEditing(existing ?? quoteFromRequest(request, `QT-${String(state.quotations.length + 8).padStart(4, '0')}`, new Date().toISOString().slice(0, 10)));
+    setEditing(existing ?? quoteFromRequest(request, `QT-${String(state.quotations.length + 8).padStart(4, '0')}`, new Date().toISOString().slice(0, 10), state.rateCard));
   };
   const save = (status: Quotation['status']) => {
     if (!editing) return;
@@ -512,7 +619,12 @@ export function QuotationsSection({ state, update, focus }: SectionProps) {
             {state.quotations.map((q) => (
               <li key={q.id}>
                 <div><strong>{q.id} · {q.client}</strong><small>{q.title} · {rupees(quoteTotals(q).total)}</small></div>
-                <span className={styles.chip} data-tone={q.status}>{q.status === 'ready' ? 'Ready to send' : q.status}</span>
+                <span className={styles.chip} data-tone={q.status}>{q.status === 'ready' ? 'Ready to send' : q.status === 'accepted-sample' ? 'Accepted (sample)' : q.status}</span>
+                {q.status === 'ready' && (
+                  <button type="button" className={styles.primarySmall} onClick={() => update((s) => ({ ...s, quotations: s.quotations.map((x) => (x.id === q.id ? { ...x, status: 'accepted-sample' } : x)) }), `${q.id} marked accepted by the client (sample). Collections can now be recorded in Finance.`)}>
+                    Mark accepted
+                  </button>
+                )}
                 <button type="button" className={styles.small} onClick={() => setEditing(q)}>Edit</button>
               </li>
             ))}
@@ -585,34 +697,75 @@ export function QuotationsSection({ state, update, focus }: SectionProps) {
 /* ---------------- Finance ---------------- */
 export function FinanceSection({ state, update }: SectionProps) {
   const [filter, setFilter] = useState<'all' | 'remaining' | 'settled'>('remaining');
+  const [error, setError] = useState('');
+  const [payment, setPayment] = useState<Record<string, string>>({});
   const rows = state.freelancers.map((f) => ({ f, ...earnings(state, f.id) })).filter((r) => r.earned > 0);
-  const shown = rows.filter((r) => filter === 'all' || (filter === 'remaining' ? r.remaining > 0 : r.remaining === 0));
-  const total = (key: 'earned' | 'paid' | 'remaining') => rows.reduce((n, r) => n + r[key], 0);
+  const shown = rows.filter((r) => filter === 'all' || (filter === 'remaining' ? r.remaining > 0 || r.awaitingApproval > 0 : r.remaining === 0 && r.awaitingApproval === 0));
+  const total = (key: 'earned' | 'awaitingApproval' | 'paid' | 'remaining') => rows.reduce((n, r) => n + r[key], 0);
+  const waiting = earningLines(state).filter((l) => !(l.approval.coordinator && l.approval.finance));
+  const approve = (key: string, stage: 'coordinator' | 'finance') => {
+    try {
+      const next = approveEarning(state.approvals[key] ?? {}, stage, stage === 'coordinator' ? COORDINATOR_ACTOR : FINANCE_ACTOR);
+      update((s) => ({ ...s, approvals: { ...s.approvals, [key]: next } }), `${stage === 'coordinator' ? 'Coordinator' : 'Finance'} approval recorded (sample).`);
+      setError('');
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+  const accepted = state.quotations.filter((q) => q.status === 'accepted-sample');
   return (
     <div className={styles.stack}>
       <div className={styles.kpiGrid}>
-        <Card className={styles.kpi}><strong>{rupees(total('earned'))}</strong><span>Earned by freelancers</span><small>Attended days × day rate</small></Card>
+        <Card className={styles.kpi}><strong>{rupees(total('earned'))}</strong><span>Earned</span><small>Attended days × day rate</small></Card>
+        <Card className={styles.kpi} data-tone="attention"><strong>{rupees(total('awaitingApproval'))}</strong><span>Awaiting approval</span><small>Coordinator, then finance</small></Card>
         <Card className={styles.kpi}><strong>{rupees(total('paid'))}</strong><span>Disbursed</span><small>Sample payouts recorded</small></Card>
-        <Card className={styles.kpi} data-tone="attention"><strong>{rupees(total('remaining'))}</strong><span>Remaining</span><small>Still to be paid</small></Card>
+        <Card className={styles.kpi}><strong>{rupees(total('remaining'))}</strong><span>Ready to pay</span><small>Approved but not paid</small></Card>
       </div>
+      <Card>
+        <h2>Approve earnings</h2>
+        <p className={styles.muted}>Every earned amount needs two approvals by different people — the event coordinator first, then finance — before it can be paid.</p>
+        {error && <p className={styles.error} role="alert">{error}</p>}
+        {waiting.length === 0 ? (
+          <p className={styles.empty}>Nothing waiting for approval.</p>
+        ) : (
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead><tr><th>Freelancer</th><th>Event</th><th className={styles.num}>Amount</th><th>Coordinator</th><th>Finance</th></tr></thead>
+              <tbody>
+                {waiting.map((l) => (
+                  <tr key={l.key}>
+                    <th scope="row">{nameOf(state, l.freelancerId)}</th>
+                    <td>{l.eventName} · {l.role}</td>
+                    <td className={styles.num}>{rupees(l.amountPaise)}</td>
+                    <td>{l.approval.coordinator ? <span className={styles.chip} data-tone="finished">Approved</span> : <button type="button" className={styles.primarySmall} onClick={() => approve(l.key, 'coordinator')}>Approve</button>}</td>
+                    <td><button type="button" className={styles.primarySmall} disabled={!l.approval.coordinator} title={l.approval.coordinator ? undefined : 'Needs the coordinator first'} onClick={() => approve(l.key, 'finance')}>Approve</button></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
       <div className={styles.segmented} aria-label="Payout filter">
         {(['remaining', 'settled', 'all'] as const).map((f) => (
           <button key={f} type="button" aria-pressed={filter === f} onClick={() => setFilter(f)}>
-            {f === 'remaining' ? 'Payment remaining' : f === 'settled' ? 'Fully paid' : 'Everyone'}
+            {f === 'remaining' ? 'Still to pay' : f === 'settled' ? 'Fully paid' : 'Everyone'}
           </button>
         ))}
       </div>
       <Card>
+        <h2>Freelancer payouts</h2>
         <div className={styles.tableWrap}>
           <table className={styles.table}>
-            <thead><tr><th>Freelancer</th><th>Role</th><th className={styles.num}>Earned</th><th className={styles.num}>Paid</th><th className={styles.num}>Remaining</th><th>Action</th></tr></thead>
+            <thead><tr><th>Freelancer</th><th>Role</th><th className={styles.num}>Earned</th><th className={styles.num}>Awaiting approval</th><th className={styles.num}>Paid</th><th className={styles.num}>Ready to pay</th><th>Action</th></tr></thead>
             <tbody>
-              {shown.length === 0 && <tr><td colSpan={6} className={styles.empty}>Nobody in this view.</td></tr>}
-              {shown.map(({ f, earned, paid, remaining }) => (
+              {shown.length === 0 && <tr><td colSpan={7} className={styles.empty}>Nobody in this view.</td></tr>}
+              {shown.map(({ f, earned, awaitingApproval, paid, remaining }) => (
                 <tr key={f.id}>
                   <th scope="row">{f.name}</th>
                   <td>{f.role}</td>
                   <td className={styles.num}>{rupees(earned)}</td>
+                  <td className={styles.num}>{rupees(awaitingApproval)}</td>
                   <td className={styles.num}>{rupees(paid)}</td>
                   <td className={styles.num}><b>{rupees(remaining)}</b></td>
                   <td>
@@ -620,6 +773,8 @@ export function FinanceSection({ state, update }: SectionProps) {
                       <button type="button" className={styles.primarySmall} onClick={() => update((s) => ({ ...s, payouts: [...s.payouts, { id: `po-${Date.now()}`, freelancerId: f.id, amountPaise: remaining, paidOn: new Date().toISOString().slice(0, 10), reference: `SAMPLE-PAY-${Date.now().toString().slice(-4)}` }] }), `${rupees(remaining)} recorded as disbursed to ${f.name} (sample — no money moved).`)}>
                         Record payout
                       </button>
+                    ) : awaitingApproval > 0 ? (
+                      <span className={styles.chip} data-tone="attention">Needs approval</span>
                     ) : (
                       <span className={styles.chip} data-tone="finished">Settled</span>
                     )}
@@ -631,6 +786,56 @@ export function FinanceSection({ state, update }: SectionProps) {
         </div>
       </Card>
       <Card>
+        <h2>Client collections</h2>
+        <p className={styles.muted}>Money received from clients against accepted quotations. Kept separate from freelancer payouts.</p>
+        {accepted.length === 0 ? (
+          <p className={styles.empty}>No accepted quotations yet. Mark a ready quotation as accepted in Quotations.</p>
+        ) : (
+          <div className={styles.tableWrap}>
+            <table className={styles.table}>
+              <thead><tr><th>Quote</th><th>Client</th><th className={styles.num}>Total</th><th className={styles.num}>Received</th><th className={styles.num}>Outstanding</th><th>Record a payment</th></tr></thead>
+              <tbody>
+                {accepted.map((q) => {
+                  const c = collectionStatus(state, q);
+                  return (
+                    <tr key={q.id}>
+                      <th scope="row">{q.id}</th>
+                      <td>{q.client}</td>
+                      <td className={styles.num}>{rupees(c.total)}</td>
+                      <td className={styles.num}>{rupees(c.received)}</td>
+                      <td className={styles.num}><b>{rupees(c.outstanding)}</b></td>
+                      <td>
+                        {c.outstanding > 0 ? (
+                          <form
+                            className={styles.inlinePay}
+                            onSubmit={(e) => {
+                              e.preventDefault();
+                              const amount = Math.round(Number(payment[q.id]) * 100);
+                              if (!(amount > 0) || amount > c.outstanding) {
+                                setError(`Enter an amount between ₹1 and ${rupees(c.outstanding)}.`);
+                                return;
+                              }
+                              setError('');
+                              update((s) => ({ ...s, collections: [...s.collections, { id: `co-${Date.now()}`, quoteId: q.id, amountPaise: amount, receivedOn: new Date().toISOString().slice(0, 10), reference: `SAMPLE-RCPT-${Date.now().toString().slice(-4)}` }] }), `${rupees(amount)} received from ${q.client} against ${q.id} (sample — no bank link).`);
+                              setPayment({ ...payment, [q.id]: '' });
+                            }}
+                          >
+                            <input aria-label={`Amount received for ${q.id} in rupees`} type="number" min="1" value={payment[q.id] ?? ''} onChange={(e) => setPayment({ ...payment, [q.id]: e.target.value })} placeholder="₹ amount" />
+                            <button type="submit" className={styles.primarySmall}>Record</button>
+                          </form>
+                        ) : (
+                          <span className={styles.chip} data-tone="finished">Paid in full</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+      <Card>
         <h2>Disbursement history</h2>
         <ul className={styles.list}>
           {[...state.payouts].reverse().map((p) => (
@@ -640,7 +845,120 @@ export function FinanceSection({ state, update }: SectionProps) {
             </li>
           ))}
         </ul>
-        <p className={styles.muted}>Sample ledger only. No bank, provider or real payout is connected.</p>
+        <p className={styles.muted}>Sample ledgers only. No bank, provider or real payout is connected.</p>
+      </Card>
+    </div>
+  );
+}
+
+/* ---------------- Catalogue & rates ---------------- */
+export function CatalogueSection({ state, update }: SectionProps) {
+  const [draft, setDraft] = useState<Record<string, string>>({});
+  const [reason, setReason] = useState<Record<string, string>>({});
+  return (
+    <div className={styles.stack}>
+      <Card>
+        <h2>Workforce rate card</h2>
+        <p className={styles.muted}>New quotations start from these day rates. Changing a rate needs a reason and creates a revision; quotations already issued keep their own rates.</p>
+        <div className={styles.tableWrap}>
+          <table className={styles.table}>
+            <thead><tr><th>Role</th><th className={styles.num}>Current day rate</th><th>New rate (₹)</th><th>Reason</th><th>Action</th></tr></thead>
+            <tbody>
+              {ROLES.map((role) => {
+                const value = draft[role] ?? '';
+                const why = reason[role] ?? '';
+                const next = Math.round(Number(value) * 100);
+                const valid = next > 0 && next !== state.rateCard[role] && why.trim().length >= 5;
+                return (
+                  <tr key={role}>
+                    <th scope="row">{role}</th>
+                    <td className={styles.num}>{rupees(state.rateCard[role])}</td>
+                    <td><input aria-label={`New day rate for ${role}`} type="number" min="1" value={value} placeholder={String(state.rateCard[role] / 100)} onChange={(e) => setDraft({ ...draft, [role]: e.target.value })} /></td>
+                    <td><input aria-label={`Reason for the ${role} rate change`} value={why} placeholder="e.g. Wedding season demand" onChange={(e) => setReason({ ...reason, [role]: e.target.value })} /></td>
+                    <td>
+                      <button
+                        type="button"
+                        className={styles.primarySmall}
+                        disabled={!valid}
+                        onClick={() => {
+                          update((s) => ({
+                            ...s,
+                            rateCard: { ...s.rateCard, [role]: next },
+                            rateRevisions: [...s.rateRevisions, { rev: s.rateRevisions.length + 1, role, fromPaise: s.rateCard[role], toPaise: next, reason: why.trim(), actor: ACTOR, at: new Date().toLocaleString('en-IN') }],
+                          }), `${role} day rate changed to ${rupees(next)} (revision ${state.rateRevisions.length + 1}).`);
+                          setDraft({ ...draft, [role]: '' });
+                          setReason({ ...reason, [role]: '' });
+                        }}
+                      >
+                        Save revision
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        {state.rateRevisions.length > 0 && (
+          <ul className={styles.list}>
+            {[...state.rateRevisions].reverse().map((r) => (
+              <li key={r.rev}>
+                <div>
+                  <strong>Revision {r.rev} · {r.role}: {rupees(r.fromPaise)} → {rupees(r.toPaise)}</strong>
+                  <small>{r.reason} · {r.actor} · {r.at}</small>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+      <Card>
+        <h2>Public service listings</h2>
+        <p className={styles.muted}>What visitors see on the website and the “starting at” price shown. Hiding a service takes it off the public pages (sample — the demo website does not read this yet).</p>
+        <div className={styles.cardGrid}>
+          {state.services.map((svc, i) => (
+            <article key={svc.title} className={styles.person} data-inactive={!svc.published}>
+              <strong>{svc.title}</strong>
+              <small className={styles.muted}>Starting at {rupees(svc.startingPaise)}{svc.title.includes('RSVP') ? ' per event' : ' per person per day'}</small>
+              <button
+                type="button"
+                className={svc.published ? styles.ghost : styles.primary}
+                onClick={() => update((s) => ({ ...s, services: s.services.map((x, j) => (j === i ? { ...x, published: !x.published } : x)) }), `${svc.title} ${svc.published ? 'hidden from' : 'published to'} the public catalogue (sample).`)}
+              >
+                {svc.published ? 'Hide from website' : 'Publish to website'}
+              </button>
+            </article>
+          ))}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+/* ---------------- Audit log ---------------- */
+export function AuditSection({ state }: SectionProps) {
+  const [query, setQuery] = useState('');
+  const entries = state.log.filter((l) => `${l.text} ${l.actor}`.toLowerCase().includes(query.toLowerCase()));
+  return (
+    <div className={styles.stack}>
+      <label className={styles.search}>
+        Search the audit log
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Name, event, quote, payout…" />
+      </label>
+      <Card>
+        <h2>Every change, who made it and when</h2>
+        <p className={styles.muted}>Approvals, corrections, rates, payouts, access and quotations are recorded here. Newest first. This browser only (sample).</p>
+        <ul className={styles.list}>
+          {entries.length === 0 && <li className={styles.empty}>Nothing matches.</li>}
+          {entries.map((l, i) => (
+            <li key={i}>
+              <div>
+                <strong>{l.text}</strong>
+                <small>{l.actor} · {l.at}</small>
+              </div>
+            </li>
+          ))}
+        </ul>
       </Card>
     </div>
   );

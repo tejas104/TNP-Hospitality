@@ -332,7 +332,7 @@ export function AssistantPanel() {
 
 export function GuestsPanel({ state, event, save, openChat }: { state: RsvpChatState; event: RsvpEvent; save: Save; openChat: () => void }) {
   const threads = state.threads.filter((t) => t.eventId === event.id);
-  const [csv, setCsv] = useState('name,party,members,category\nAsha,Sample New family,3,Family');
+  const [csv, setCsv] = useState('name,phone,party,members,category\nRaj,+91 90000 00001,Sample Mehra family,3,Family');
   const [error, setError] = useState('');
   return (
     <div className={styles.panel}>
@@ -366,7 +366,8 @@ export function GuestsPanel({ state, event, save, openChat }: { state: RsvpChatS
       </section>
       <section className={styles.card}>
         <h2>Add sample parties</h2>
-        <label>Paste CSV (name,party,members,category)
+        <p className={styles.hint}>The name you import is the name every message uses (“Hi Raj”), whatever the guest calls themselves on WhatsApp.</p>
+        <label>Paste CSV (name,phone,party,members,category)
           <textarea rows={4} value={csv} onChange={(e) => setCsv(e.target.value)} />
         </label>
         {error && <p className={styles.error} role="alert">{error}</p>}
@@ -376,9 +377,9 @@ export function GuestsPanel({ state, event, save, openChat }: { state: RsvpChatS
             className={styles.primary}
             onClick={() => {
               const rows = csv.trim().split(/\r?\n/).slice(1).map((line) => line.split(','));
-              const bad = rows.find((r) => r.length !== 4 || !r[0].trim() || !r[1].trim() || !(Number(r[2]) >= 1 && Number(r[2]) <= 30) || !GROUPS.includes(r[3].trim() as (typeof GROUPS)[number]));
+              const bad = rows.find((r) => r.length !== 5 || !r[0].trim() || !/^\+?[\d\s-]{10,16}$/.test(r[1].trim()) || !r[2].trim() || !(Number(r[3]) >= 1 && Number(r[3]) <= 30) || !GROUPS.includes(r[4].trim() as (typeof GROUPS)[number]));
               if (!rows.length || bad || rows.length > 50) {
-                setError(`Use “name,party,members,category” with 1–50 rows, 1–30 members and a category (${GROUPS.join(', ')}). Invented names only.`);
+                setError(`Use “name,phone,party,members,category” with 1–50 rows, a 10–16 digit phone, 1–30 members and a category (${GROUPS.join(', ')}). Invented names and numbers only.`);
                 return;
               }
               setError('');
@@ -386,15 +387,16 @@ export function GuestsPanel({ state, event, save, openChat }: { state: RsvpChatS
                 ...s,
                 threads: [
                   ...s.threads,
-                  ...rows.map(([name, party, members, group], i) => ({
+                  ...rows.map(([name, phone, party, members, group], i) => ({
                     id: `${event.id}-n${Date.now()}${i}`,
                     eventId: event.id,
                     party: party.trim(),
                     contactName: name.trim(),
+                    whatsappName: '',
                     group: group.trim() as (typeof GROUPS)[number],
                     media: [],
                     optIn: false,
-                    contact: '+91 ••••• ••••• (sample)',
+                    contact: `${phone.trim().replace(/\d(?=(?:\D*\d){3})/g, '•')} (sample)`,
                     members: Number(members),
                     category: 'no-reply' as const,
                     suggested: 'no-reply' as const,
