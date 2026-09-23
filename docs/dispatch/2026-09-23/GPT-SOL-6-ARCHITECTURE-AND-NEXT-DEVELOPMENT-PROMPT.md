@@ -1,4 +1,8 @@
-# Prompt for GPT Sol 6 — TNP Hospitality architecture handover and next development
+# Prompt for GPT Sol 6 — TNP Hospitality architecture handover and next development (revision 2)
+
+Revision 2 reflects commit `15502c3`:
+- the Operations desk (`/operations/desk`) is deleted and its rules are folded into the admin console;
+- RSVP messages always use the imported guest-list name.
 
 Paste everything below the line into a **fresh GPT Sol 6 (Codex) session**. It is written to be self-contained.
 
@@ -31,14 +35,14 @@ You are **GPT Sol 6**, taking over architecture and further development of the *
 | Item | Value |
 |---|---|
 | Repo | `https://github.com/tejas104/TNP-Hospitality`, base clone `D:\TNP Hospitality` (Windows host DESKTOP-DL9FDM7) |
-| Frontend branch | `claude/tnp-client-demo-m5`, code tip `5e5e118e7a2b62577c4880d22c1130b8bb61da24` (a docs commit carrying this prompt may sit on top) |
-| `main` | `e4fab8e2f9874a7d2df51a9bc55f3c33c2e86a66` — the branch is 16 commits ahead and fast-forwardable (see the integration handoff for the list) |
+| Frontend branch | `claude/tnp-client-demo-m5`, code tip `15502c3bfdc0ba3e8df9a39a0cc8a04b83340e8d` (a docs commit carrying this prompt may sit on top) |
+| `main` | `e4fab8e2f9874a7d2df51a9bc55f3c33c2e86a66` — the branch is 18 commits ahead and fast-forwardable (see the integration handoff for the list) |
 | Stack | React 19.2 · Vinext 1.0 beta (Next-style `app/` router on Vite 8) · Nitro 3 · TypeScript 5.9 · oxlint · CSS Modules + a large `app/globals.css` · lucide-react icons · Tailwind v4 present for `components/ui` (shadcn primitives, mostly unused) · three/r3f installed (cube, now unused on the homepage) · gsap, lenis, recharts, cmdk installed |
 | Scripts | `npm run dev` (use `-- --port <n>`), `npm run build:vercel`, `npm run lint`; tests: `node --experimental-strip-types --test $(git ls-files '*.test.mjs')`; types: `npx --no-install tsc --noEmit --incremental false` |
 | Backend | **None yet.** `mongodb` is a dependency but unused. `app/api` exists but holds no production logic. |
 
 ### Step 1 — Review before building
-Independently review `origin/main..5e5e118` in a clean detached worktree using the checklist in the integration handoff:
+Independently review `origin/main..15502c3` in a clean detached worktree using the checklist in the integration handoff:
 - tests, lint, types, build;
 - browser acceptance at 1440/1100/390/320 plus reduced motion;
 - a11y spot checks.
@@ -59,8 +63,7 @@ Return one prioritized findings packet, then stop for Kartik's disposition. Do *
 | `/login` | access | `public/WorkspaceAccess.tsx` — synthetic profile chooser per workspace |
 | `/planner` | workspace | `portals/planner/PlannerPortal.tsx` + `PlannerEventStudio.tsx` |
 | `/freelancer` | workspace | `portals/freelancer/FreelancerPortal.tsx` (+ `ApplicationFlow`, `OpportunityWorkspace`) |
-| `/operations` | workspace | `portals/admin/AdminConsole.tsx` — **new admin console** |
-| `/operations/desk` | workspace | `portals/operations/AdminOperations.tsx` — previous preview-service console |
+| `/operations` | workspace | `portals/admin/AdminConsole.tsx` — **the only admin surface** (the old `/operations/desk` console was deleted in `15502c3`) |
 | `/admin` | — | redirect to `/operations` |
 | `/rsvp/login`, `/rsvp/workspace`, `/rsvp/events/[id]` | workspace | `portals/rsvp/RsvpEntry.tsx`, `RsvpWorkspace.tsx` ("RSVP on WhatsApp") |
 | `/rsvp/guest/[token]` | guest-invitation | guest-facing invitation page |
@@ -90,11 +93,11 @@ Route classification, the workspace registry and the demo catalogue live in `com
 
 | Area | Where state lives | Model file |
 |---|---|---|
-| Planner, Freelancer, Operations desk, enquiries | `lib/demo/store.ts` + `lib/demo/scenario.ts` behind `lib/services/preview.ts` (`getBrowserPreviewService()`), typed by `lib/contracts/preview.ts` | preview contract (S1) |
-| Admin console | sessionStorage `tnp-admin-console-v1` | `portals/admin/adminData.ts` (types, seed, `quoteTotals`, `quoteFromRequest`, `earnings`, `approveApplicant`) |
+| Planner, Freelancer, enquiries | `lib/demo/store.ts` + `lib/demo/scenario.ts` behind `lib/services/preview.ts` (`getBrowserPreviewService()`), typed by `lib/contracts/preview.ts` | preview contract (S1) |
+| Admin console | sessionStorage `tnp-admin-console-v2` (`AdminState` version 2) | `portals/admin/adminData.ts` (types, seed, `quoteTotals`, `quoteFromRequest(request, id, today, rates)`, `earningLines`, `earnings` → `{earned, approved, awaitingApproval, paid, remaining}`, `approveEarning`, `collectionStatus`, `approveApplicant`; state has `approvals`, `attendanceLog`, `rateCard`, `rateRevisions`, `services`, `collections`, `log[{at,text,actor}]`). UI in `AdminConsole.tsx` + `AdminSections.tsx` (Attendance, Finance, Catalogue & rates, Audit log, …) |
 | Admin search | — | `portals/admin/palette.ts` |
 | Exports | built in browser | `portals/admin/exporters.ts` (`toXlsx`, `toPdf`, `safeText`, `crc32`, `zip`) |
-| RSVP | localStorage `tnp-rsvp-chat-v3` | `portals/rsvp/rsvpChatData.ts`: types `RsvpEvent`, `GuestThread`, `Message`, `Sender`, `TeamLogin`, `Broadcast`, `MediaItem`, `Group`; helpers `suggestFromMessage`, `checkCompliance`, `replaceTerm`, `personalize`, `fillTemplate`, `eventStats` |
+| RSVP | localStorage `tnp-rsvp-chat-v4` | `portals/rsvp/rsvpChatData.ts`: types `RsvpEvent`, `GuestThread` (`contactName` = imported guest-list name used for `{name}`; `whatsappName` = profile name, display-only), `Message`, `Sender`, `TeamLogin`, `Broadcast`, `MediaItem`, `Group`; helpers `suggestFromMessage`, `checkCompliance`, `replaceTerm`, `personalize`, `fillTemplate`, `eventStats` |
 | Public estimator | — | `public/team-estimate.ts` (`estimateTeam`, `encodeTeam`, `decodeTeam`) |
 | Content | static | `data/tnp.ts`, `data/public-content.ts`, `data/media.ts` (Unsplash preview media, not client-approved) |
 
@@ -104,9 +107,9 @@ Route classification, the workspace registry and the demo catalogue live in `com
 Node's built-in runner with type stripping (`*.test.mjs`). Import TS modules with an explicit `.ts` extension; `.tsx` with JSX cannot be imported by the runner, so keep testable logic in `.ts` files. `tests/client-demo-m5.test.mjs` covers:
 - genie geometry and timing;
 - launcher wiring;
-- admin rules;
+- admin rules (two-person approval order, live rate card, separate collections);
 - exporters (a real xlsx ZIP header, PDF, formula guard);
-- RSVP suggestion, compliance and personalisation;
+- RSVP suggestion, compliance and personalisation (the imported name wins over the WhatsApp profile name);
 - the estimator;
 - the palette.
 
@@ -130,7 +133,8 @@ These come from `docs/DOMAIN-RULES.md` and the ADRs. The UI only simulates them.
 4. **Attendance.**
    - Attendance needs an eligible assignment, an authorised event-scoped coordinator, a valid event token and server evidence.
    - Missing, denied, low-accuracy and outside-radius GPS results stay distinct.
-   - Corrections append (reason/actor/time) and never overwrite.
+   - Corrections append (reason/actor/time) and never overwrite. The console already models this with `attendanceLog`.
+   - A replacement for an absent worker goes through the same allocation service as the original assignment, with no bypass.
 5. **Earnings and payouts.**
    - Earnings = verified attendance days × the day-rate snapshot.
    - One payable per worker per month.
@@ -138,9 +142,14 @@ These come from `docs/DOMAIN-RULES.md` and the ADRs. The UI only simulates them.
    - Batches freeze before provider processing.
    - Idempotent provider attempts; reconcile before any retry.
    - Collections and payouts use separate ledgers.
+   - Rates are revisioned with reason/actor. Quotations and earnings snapshot the rate at issue time.
 6. **RSVP.**
    - WhatsApp messages only (no calls).
    - The original guest message is preserved as evidence; categorisation never overwrites it.
+   - **Guest name source of truth.**
+     - The name on the organiser's imported guest list is the only value used for `{name}` and template parameters.
+     - The WhatsApp profile name from webhooks is stored separately, is display-only and must never be substituted into messages.
+     - The phone number is the join key between an import row and the WhatsApp contact.
    - A person confirms ambiguous replies.
    - Travel, stay and pickup are collected information only (no booking, dispatch or payment).
    - Event-scoped reads and writes; the org-level dashboard aggregates counts only.
@@ -258,20 +267,29 @@ Each item is a separately leased task with a fixed-SHA review.
 7. **Attendance.**
    - Coordinator scan with event token and point-in-time location evidence (the GPS states stay distinct).
    - Append-only corrections.
-   - Wire the admin Attendance page.
+   - Connect the existing admin Attendance page (it already has corrections with reason and history, and absent-worker replacement) to the API.
 8. **Finance.**
    - Earnings from verified attendance days × the rate snapshot.
    - Monthly payables; two approvals; batch freeze.
-   - The Finance page shows the real earned/paid/remaining.
+   - The Finance page already has the UI: approval queue, awaiting/approved/paid/remaining, and the client collections ledger. Back it with real data, using real signed-in actors instead of the sample `COORDINATOR_ACTOR`/`FINANCE_ACTOR`.
    - Razorpay stays deactivated until DEC-28.
 9. **Exports.** Server-side authorised XLSX (use a vetted library server-side) and PDF, audited and expiring. Keep the browser exporters only for demo mode.
-10. **Audit log.** Write it on every sensitive mutation and add an admin viewer.
+10. **Audit log.**
+    - Write it server-side on every sensitive mutation.
+    - The admin viewer (Records → Audit log) and its export already exist; connect them to the API.
+    - Also connect Catalogue & rates (rate revisions, service listing publish) so the public pages read published listings.
 
 **P2 — RSVP product (Days 9–13, provider activation gated)**
 11. **RSVP tenancy.**
     - Orgs, members, entitlements (active, grace read-only, suspended, expired).
     - The admin "RSVP access" page manages them.
-12. **Messaging backbone.** Inbound webhook, immutable messages, human-confirmed categorisation, broadcasts with per-recipient personalisation, sender registration flow, template submission and status. Everything runs in a sandbox until Meta approval.
+12. **Messaging backbone.**
+    - Inbound webhook and immutable messages.
+    - Human-confirmed categorisation.
+    - Broadcasts with per-recipient personalisation from the **imported guest-list name** (never the profile name).
+    - Guest import (`name,phone,party,members,category`) with phone normalisation to E.164 and de-duplication.
+    - Sender registration flow; template submission and status.
+    - Everything runs in a sandbox until Meta approval.
 13. **WhatsApp Flows** for structured collection. The Files page lists media metadata only until the document policy is approved.
 
 **P3 — UX value (only before the Day-10 cosmetic freeze, or after release)**
