@@ -1,0 +1,12 @@
+SESSION TYPE: NEW SESSION
+DO NOT REUSE AN OLD SESSION.
+
+# RSVP provider-independent backend — fresh independent review
+
+This is a read-only fixed-SHA appointment for a fresh GPT-6 Sol reviewer (high or xhigh), followed by separate Claude source review and Kartik exact-SHA acceptance. The candidate's author task `01a0d2d3-e18b-7920-bbf8-ca67a9947edc` cannot act as its own independent reviewer. Each reviewer records actual identity, runtime model/effort, host and a separate clean detached worktree; a missing identity or unavailable required model means the review has not started.
+
+Target: `3334a14dbb600fa09387734bbadbea378e5560b8` on `codex/tnp-rsvp-fullstack-20260924` in `D:\TNP-worktrees\TNP-HOMEPAGE-REDESIGN-20260924`. Source before the candidate continuation: `c24ee62f76b642b3ec7624c416f863995673d4f5`. Verify ancestry, clean status, exact range and live remote state rather than assuming this packet proves them. The candidate has not been pushed or integrated as of dispatcher preflight; arrange permitted review sharing before a remote-equality claim. Read `AGENTS.md`, the task/continuation lease, `docs/rsvp/IMPLEMENTATION-STATUS-2026-09-24.md`, `docs/rsvp/AUTH-DESIGN-CHECKPOINT-2026-09-24.md`, product/domain/architecture, and the RSVP service blueprint.
+
+Review in risk order: server-derived tenant and event authorization; entitlement/status and event closure; party/person/function counting; unmatched and older/newer reply ordering; human confirmation/provenance; import duplicate/shared-contact and transaction races; consent and suppression; campaign audience exclusion; idempotency/replay/audit; scoped pagination; report snapshot/export authorization and CSV safety; index/migration readiness. Prove the candidate does not send WhatsApp messages (`provider_disabled`) and does not claim configured identity, Mongo integration, approved sender/template or browser/API connection. Run meaningful mutation/concurrency/tenant isolation tests, lint, non-incremental TypeScript, Vercel build and safe synthetic API probes where feasible. Preserve exact commands, failures and limits.
+
+Return findings with path/line and reproduction, or a bounded fixed-SHA no-findings disposition. Reviewers edit nothing. Builder corrections require a new successor SHA and focused re-review. No main integration, deployment, provider activation or production data action follows from review alone.

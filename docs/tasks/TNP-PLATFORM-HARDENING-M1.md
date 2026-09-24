@@ -1,10 +1,10 @@
 # TNP-PLATFORM-HARDENING-M1 — required-index readiness and replay regression
 
-Status: DRAFT — prerequisite Platform M1 is now accepted and locally integrated/verified at merge `8544a2a5a9fcff7eefc35bcde2430cf9e1ea3ba6`, but no writer, branch, worktree, port, Ready launch commit or lease exists. This hardening remains required before staging can be declared ready and before a commercial-domain writer relies on production-style database idempotency guarantees.
+Status: DRAFT / REVIEW CAPACITY HOLD — prerequisite Platform M1 is accepted and integrated at merge `8544a2a5a9fcff7eefc35bcde2430cf9e1ea3ba6`, but no writer, branch, worktree, port, Ready launch commit or lease exists. Frontend aggregate and RSVP backend reviews currently occupy the two waiting-review slots. This hardening remains required before staging can be declared ready and before a commercial-domain writer relies on production-style database idempotency guarantees.
 
 Source findings: `docs/reviews/TNP-PLATFORM-M1-CLAUDE-REVIEW.md`, all P3/non-blocking for local integration.
 
-Responsible owner and sole human fixed-SHA acceptance reviewer: Kartik. Proposed author: fresh verified `gpt-5.6-sol` / high. Fresh independent security/concurrency review and external Claude review follow authorship.
+Responsible owner and sole human fixed-SHA acceptance reviewer: Kartik. Proposed author: current P task `01a0d2d3-e18b-7920-bbf8-ca67a9947edc` at locally verified `gpt-6-sol` / xhigh only after P hands its serialized dispatcher role to a separate session or records an explicit pause of dispatch during authorship, and after a new exact Ready writer lease is published. Fresh independent GPT-6 Sol security/concurrency review in a different session and external Claude review follow authorship.
 
 ## Bounded result
 
@@ -18,6 +18,7 @@ Responsible owner and sole human fixed-SHA acceptance reviewer: Kartik. Proposed
 - `app/api/ready/route.ts`
 - `server/health/readiness.ts`
 - `server/data/indexes.ts`
+- `server/data/mongo.ts` (narrow read-only index inventory method; `getMongoRepository` currently exposes only `checkConnection` to readiness)
 - `tests/platform-foundation.test.mjs`
 - `docs/runbooks/PLATFORM-FOUNDATION.md`
 
