@@ -1,6 +1,6 @@
 # TNP-PLATFORM-HARDENING-M1 — required-index readiness and replay regression
 
-Status: DRAFT / REVIEW CAPACITY HOLD — prerequisite Platform M1 is accepted and integrated at merge `8544a2a5a9fcff7eefc35bcde2430cf9e1ea3ba6`, but no writer, branch, worktree, port, Ready launch commit or lease exists. Frontend aggregate and RSVP backend reviews currently occupy the two waiting-review slots. This hardening remains required before staging can be declared ready and before a commercial-domain writer relies on production-style database idempotency guarantees.
+Status: DRAFT / REVIEW CAPACITY HOLD — prerequisite Platform M1 is accepted and integrated at merge `8544a2a5a9fcff7eefc35bcde2430cf9e1ea3ba6`, but no writer, branch, worktree, port, Ready launch commit or lease exists. Claude client-demo M5 code 15502c3 supersedes the earlier frontend aggregate as the frontend review target; M5 and RSVP backend 3334a14d are the two waiting-review slots. This hardening remains required before staging can be declared ready and before a commercial-domain writer relies on production-style database idempotency guarantees.
 
 Source findings: `docs/reviews/TNP-PLATFORM-M1-CLAUDE-REVIEW.md`, all P3/non-blocking for local integration.
 

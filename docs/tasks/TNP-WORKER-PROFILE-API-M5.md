@@ -1,31 +1,25 @@
-# TNP-WORKER-PROFILE-API-M5 - secure worker profile backend
+# TNP-WORKER-PROFILE-API-M5 - normal profile and admin-console projection
 
-Status: DRAFT / REVIEW CAPACITY HOLD. No writer, branch, worktree, port, Ready launch SHA, reviewer appointment, or push authority is active. Current integrated source baseline is main 831597573fe6898f8a19e5cf416d36a364c3544b. Verify fresh state before Ready. Frontend aggregate and RSVP backend currently occupy both waiting-review slots.
+Status: DRAFT / DEPENDENCY AND REVIEW CAPACITY HOLD. No writer, branch, worktree, port, Ready SHA, reviewer appointment or push authority. Source baseline must be reverified after M5 and access-foundation integration.
 
-Human owner and exact-SHA acceptance reviewer: Kartik. Proposed author is a verified GPT-6 Sol backend session after P's dispatcher handoff/pause and a published Ready lease. Fresh non-author GPT-6 Sol security/data review plus external Claude review at one fixed SHA are required.
+Human owner and fixed-SHA acceptance reviewer: Kartik. Proposed author: verified GPT-6 Sol backend session after P handoff/pause. Fresh non-author Sol security/data review and external Claude review required.
 
 ## Result
 
-Build the authenticated normal worker-profile API and tenant-scoped Operations worker projection described in W1-CAREERS-WORKER-PROFILE. Create separately protected photo/document and payout-destination seams that fail closed until ADR-0009 storage, Aadhaar/retention, provider, and capability decisions are accepted. Do not collect real bank details, Aadhaar files, or passbook files in Mongo or the synthetic preview.
+Build the normal authenticated worker profile and tenant-scoped staffing projection in W1. This milestone does not accept file bytes, Aadhaar data, passbook images, exact bank values or payout destination changes. Private document and payout endpoints are a later sensitive milestone after ADR-0009 decisions. The M5 /operations frontend is the admin console under components/tnp/portals/admin, not the deleted Operations desk.
+
+## Prerequisites
+
+- Client-demo M5 reviewed, product conflicts resolved and integrated.
+- TNP-WORKER-ACCESS-FOUNDATION-M5 accepted and integrated: real worker/Operations identity and capabilities.
+- Platform required-index hardening accepted before staging.
+- DEC-33 role/field projection approved. DEC-34/35/36 gate later private work, not this normal profile.
+- Exact Ready source/launch SHA, clean isolated writer worktree, model/host/reviewer evidence and serialized file ownership.
 
 ## Proposed ownership
 
-- server/workers/**: validation, profile service, separate private metadata models, authorization projections.
-- server/data/repository.ts, server/data/mongo.ts, server/data/indexes.ts: narrow tenant-scoped profile persistence and indexes after exact allowlist review.
-- app/api/v1/workers/** and app/api/v1/operations/workers/**: thin protected handlers.
-- server/security/authorization.ts only if the capability contract is explicitly approved.
-- focused server tests and one runbook/contract update.
-
-No public/frontend components, shared preview fixture/service, RSVP, finance ledger, provider integration, production Atlas mutation, package migration, or deployment is owned. An exact path allowlist replaces this proposal before Ready.
+server/workers/** normal profile model, validation, service and projections; narrow server/data/repository.ts, mongo.ts and indexes.ts changes; app/api/v1/workers/me/** and app/api/v1/operations/workers/**; server/audit/model.ts for a reviewed sensitive-read audit extension; focused tests and runbook. The exact Ready allowlist replaces this proposal. No frontend, shared preview fixture, RSVP, provider, finance ledger or live Atlas mutation is owned.
 
 ## Acceptance
 
-1. Worker session userId is the only source of own-profile identity; cross-user and cross-tenant reads/writes are rejected.
-2. Normal profile data persists with revision conflict handling and auditable sensitive changes. Operations list/detail receives the authorized projection without account numbers or document bytes.
-3. Verification and payout data have separate storage models and capability checks. Generic organization_admin is not automatically a verifier or Finance actor.
-4. Upload/finalization methods reject requests while private storage/scanning/consent/retention are unconfigured. No accepted test can confuse metadata creation with a scanned private file.
-5. Profile/photo/payout changes cannot change an existing frozen payout or assignment rate.
-6. Required unique/query indexes, migration/rollback, readiness compatibility, and error responses are documented and tested.
-7. Tests cover stale revisions, forged IDs, revoked session, CSRF, wrong role, cross-tenant lookup, duplicate request, malformed input, and no leakage in errors/logs.
-
-Prerequisites: platform required-index hardening before staging; accepted ADR-0009 and approved storage/provider policy before activating upload or payout destination collection. Execute all project checks, focused adversarial tests, diff check, and local HTTP tests with synthetic actors. Fixed-SHA independent review and Kartik acceptance precede integration.
+Worker session userId and active worker membership in a TNP-kind organization are the sole own-profile identity. GET/PATCH uses the W1 field matrix. PATCH requires CSRF, If-Match profile revision and Idempotency-Key. A profile edit is independent of document/Finance revisions. Operations list/detail exposes exact allowed fields only, bounded by TNP tenant, with no generic admin or platform cross-tenant bypass. Sensitive contact access is separately gated/audited. Tests cover wrong tenant, worker and role; forged IDs; stale/duplicate writes; revoked sessions; exact response keys; export leakage; pagination and index failures. Run project checks and fixed-SHA independent review before integration.

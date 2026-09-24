@@ -1,6 +1,8 @@
 SESSION TYPE: NEW SESSION
 DO NOT REUSE AN OLD SESSION.
 
+SUPERSEDED REVIEW TARGET NOTICE (2026-09-24): Claude client-demo M5 code 15502c3 contains this aggregate and is now the single proposed frontend review target. Do not launch a separate review of be78ffa from this historical packet. See CLIENT-DEMO-M5-SOL-REVIEW.md. RSVP backend remains the other waiting review; review capacity is still full. M5 is not accepted or integrated, and its four-workspace public dock and removed cube need DEC-38 disposition.
+
 # TNP frontend aggregate M3 — independent fixed-SHA review packet
 
 This is a read-only review appointment, not a writer lease. A fresh independent Claude reviewer operates under Kartik. The author, prior cube reviewer and P cannot self-certify. Record actual reviewer identity, model, host and detached review worktree before review. If those cannot be verified, return an unstarted review rather than an approval.

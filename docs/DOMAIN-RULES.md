@@ -72,6 +72,14 @@ No entry below is approved merely because a source proposed a default. H1 collec
 | DEC-29 | RSVP service/grace dates, limits, shared sender versus branded onboarding and late-reply handling | Anjaneya + Kartik + client | Before entitlement/provider activation |
 | DEC-30 | Export formats, columns, recipients, retention, branding and privileged JSON/bulk access per module | Anjaneya + Kartik + client | Before production exports |
 | DEC-31 | Minimum Android/iOS browser versions, representative devices/routes, Lighthouse profile, invoice/receipt numbering/tax/signature/correction rules | Anjaneya + Kartik + client | Before mobile performance and official document release gates |
+| DEC-32 | Worker and Operations sign-in method, applicant-to-active-worker promotion, recovery, anti-abuse and session issuance; no browser-selected demo identity may authorize a real API | Kartik + client | Before access-foundation Ready and real worker API |
+| DEC-33 | Versioned verifier/Finance/contact capability grants, Main Admin authority and role-by-field projection/export matrix; no generic admin or platform bypass | Kartik | Before access-foundation and profile API Ready |
+| DEC-34 | Aadhaar purpose and verification method: offline/QR, proven server-masked upload, or alternative ID; reject unmasked storage and agree applicable UIDAI/privacy pathway | Kartik + client | Before any real identity evidence collection |
+| DEC-35 | Private object storage, malware scanning, file type/size, consent text/version/withdrawal, retention/deletion, portrait visibility and emergency-contact need | Kartik + Anjaneya + client | Before live photo/document upload |
+| DEC-36 | Payout destination step-up, independent notice, provider verification, cooling/maker-checker, effective-version snapshot and passbook necessity; refines DEC-28 | Kartik + client | Before bank/passbook submission or payout destination activation |
+| DEC-37 | Teal/Beige is the user-confirmed main default and Gradient the second theme; confirm site-wide coverage, exact gradient stops and supporting accent mapping | Anjaneya + Kartik + client | Before site-theme UI Ready |
+| DEC-38 | Client-demo M5 four-item public dock and removed homepage cube conflict with ADR-0008/DESIGN; choose accepted product change or focused correction | Kartik + Anjaneya + client | Before M5 fixed-SHA acceptance and integration |
+| DEC-39 | Homepage display font, type scale/casing and evidence-backed trust content; DEC-11 supplies real media/proof rights and DEC-25 governs public prices | Anjaneya + client | Before homepage/content UI Ready |
 
 Record actual decisions with evidence in decisions/CLIENT-DECISIONS.md. Pending policy may be represented as labelled scenario assumptions in preview fixtures, never silently used as production authority.
 

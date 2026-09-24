@@ -1,5 +1,9 @@
 # Product and delivery baseline
 
+## Careers and themes direction (2026-09-24)
+
+The user wants the human-facing Freelancer entry named "Careers With Us" and Hostess shown as "Hostess/Welcome Girls", while preserving route and stored role-key compatibility. The worker profile ultimately includes photo, identity and bank evidence and connects to internal Operations through server-authorized projections. Teal/Beige is the main/default appearance, with supporting accents; Gradient is the second selectable theme. Site-wide coverage is the working scope pending DEC-37. Live identity/bank files require the reviewed access, private-storage, consent and payout gates in proposed ADR-0009 and W1. Claude's M5 client-demo branch is a review candidate, not accepted integrated source; its four public dock entries and removed homepage cube remain DEC-38 product questions.
+
 ## Confirmed user decisions
 The 2026-09-20 public-access correction removes the public Client portal/login and public Operations Demo. Clients learn through the public service, Planner, Freelancer/workforce, Venue and RSVP information pages, then use one `/contact` experience for either a specific mixed-product event need or a general conversation. The public side launcher contains only TNP Planner and Freelancer access, with a premium source-to-window open/close transition and reduced-motion parity. Operations/Admin remains an internal product surface but is not linked or presented as a public demo; RSVP vendor/team access remains a dedicated later flow, not part of the public launcher. Existing `/client` must redirect to Contact rather than render a Client workspace. For frontend accounting, old F03/F04 Client-workspace expectations are replaced by public enquiry/confirmation and reference/status/contact-follow-up experiences without Client authentication. See ADR-0008.
 

@@ -4,6 +4,13 @@
 
 The user directs the overall human-facing Freelancer journey to say "Careers With Us" and the Hostess role to display "Hostess/Welcome Girls". The workforce profile should offer a gradient theme and a teal/beige theme and include complete details, portrait, Aadhaar identity evidence, passbook/bank evidence, and an Operations connection. Architecture keeps current route/domain keys compatible while changing visible labels, and separates normal staffing data from private identity/finance records. The requested real uploads require a reviewed private storage, consent, access, retention and payout-provider path before activation. See proposed ADR-0009 and W1-CAREERS-WORKER-PROFILE.
 
+## Teal/Beige default and Gradient option (2026-09-24)
+
+The user clarified that the current teal/beige look is the main theme, with supporting accent colours, and Gradient is a second selectable theme. Site-wide coverage is the working interpretation of the earlier "possibly across the whole site" direction, not a final scope approval. Exact gradient stops, accent mapping and coverage are DEC-37. The current #008080 brand and beige/ivory support remain the Teal default.
+
+## Client-demo M5 deviations awaiting product disposition (2026-09-24)
+
+Claude's client-demo M5 code tip 15502c3 shows four workspaces in the public dock via demoWorkspaces and replaces the homepage cube with a moving photo background. The client has seen this branch, but viewing is not acceptance. ADR-0008 still limits the public launcher to Planner and Freelancer, and DESIGN still retains the bounded cube exception. DEC-38 asks Kartik, Anjaneya and the client to accept explicit changes or require corrections before M5 integration. M5 is a superseding frontend review target, not approved source.
 ## No Client login, no public Operations Demo, and Planner/Freelancer launcher (2026-09-20)
 
 Kartik explicitly removes the Client portal/login from the product-facing frontend. Clients browse the public website to understand TNP Planner, hospitality Freelancers/workforce, Venue and RSVP, then use Contact for a specific event requirement or a general conversation. `/client` becomes a compatibility redirect to Contact; it is not a workspace.

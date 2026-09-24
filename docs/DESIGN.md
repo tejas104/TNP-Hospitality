@@ -1,5 +1,11 @@
 # Preserve the approved TNP design
 
+## Draft two-theme direction (2026-09-24)
+
+The user confirms Teal/Beige as the main default, using exact #008080, beige/ivory #f5f1e7, champagne #bba879 and restrained supporting accents. Gradient is a second selectable theme. Site-wide tokens across public pages and workspaces are the working scope; DEC-37 records final coverage, gradient stops and accent mapping before a Ready UI lease. Keep text and controls on solid contrast-safe surfaces, with gradients limited to large visual surfaces. Theme choice contains no personal information, applies before first paint, and respects keyboard focus and reduced motion. The older prohibition on a full-section gradient still governs the Teal default and the current approved hero until a reviewed Gradient-theme design explicitly changes that surface.
+
+The Claude M5 client-demo branch currently shows four public dock choices and replaces the homepage cube. These are observed demo deviations, not accepted changes to ADR-0008 or the cube exception. DEC-38 requires product disposition before integrating M5.
+
 ## Platform usability direction (2026-09-19)
 
 The platform now follows a task-first hierarchy. Keep the established TNP editorial character, `#008080`/ivory/champagne palette and restrained motion, but ensure each role sees current state, next action and navigation before secondary storytelling. The homepage is excluded from the 19/19 non-homepage completion metric and remains frozen outside the bounded cube task.
