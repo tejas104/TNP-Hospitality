@@ -1,5 +1,9 @@
 # Client and owner decision log
 
+## Careers With Us, worker profile, themes and Operations connection (2026-09-24)
+
+The user directs the overall human-facing Freelancer journey to say "Careers With Us" and the Hostess role to display "Hostess/Welcome Girls". The workforce profile should offer a gradient theme and a teal/beige theme and include complete details, portrait, Aadhaar identity evidence, passbook/bank evidence, and an Operations connection. Architecture keeps current route/domain keys compatible while changing visible labels, and separates normal staffing data from private identity/finance records. The requested real uploads require a reviewed private storage, consent, access, retention and payout-provider path before activation. See proposed ADR-0009 and W1-CAREERS-WORKER-PROFILE.
+
 ## No Client login, no public Operations Demo, and Planner/Freelancer launcher (2026-09-20)
 
 Kartik explicitly removes the Client portal/login from the product-facing frontend. Clients browse the public website to understand TNP Planner, hospitality Freelancers/workforce, Venue and RSVP, then use Contact for a specific event requirement or a general conversation. `/client` becomes a compatibility redirect to Contact; it is not a workspace.
