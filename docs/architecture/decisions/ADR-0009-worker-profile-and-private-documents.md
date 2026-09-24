@@ -14,7 +14,7 @@ Photos and documents use private staged object storage, content sniffing, strict
 
 Payout onboarding is versioned. Routine reads return provider destination reference, masked display, verification state, and effective version only. A destination change cannot rewrite a frozen payout. Exact account values and passbook images are not exposed to planners or ordinary co-admins. A provider-backed beneficiary method and private file store must be selected before real account or passbook collection.
 
-For Aadhaar, prefer a reviewed masked or offline-verification path that does not retain a full Aadhaar number. The UI must not invite an unmasked scan into the current preview. The exact verification method, consent text, authorized storage, access, and retention need a recorded decision before activation. UIDAI guidance distinguishes Aadhaar authentication/requesting-entity storage from offline verification; the team must review the applicable path rather than assume ordinary object storage is sufficient.
+For Aadhaar, prefer a reviewed masked or offline-verification path that does not retain a full Aadhaar number. The UI must not invite an unmasked scan into the current preview. The exact verification method, consent text, authorized storage, access, and retention need a recorded decision before activation. UIDAI guidance distinguishes Aadhaar authentication/requesting-entity storage from offline verification; the team must review the applicable path rather than assume ordinary object storage is sufficient. Relevant primary references: https://uidai.gov.in/images/Circular-No.14_of-2025.pdf and https://uidai.gov.in/en/921-faqs/aadhaar-online.
 
 ## Architecture
 
