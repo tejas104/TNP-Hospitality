@@ -3,7 +3,7 @@ DO NOT REUSE AN OLD SESSION.
 
 # Claude client-demo M5 - proposed independent Sol review packet
 
-Status: proposed read-only review appointment. This packet does not launch a reviewer or authorize integration. P must record actual reviewer identity/model/host/detached worktree before formal review.
+Status: read-only review in progress. P appointed independent collaboration reviewer `/root/m5_sol_review` in this architect task on DESKTOP-DL9FDM7. The orchestration request specifies `gpt-6-sol` / high; the reviewer reports that runtime model/effort metadata are not exposed, so this is not independently certified runtime identity. Review path is clean detached `D:\TNP-review\TNP-CLIENT-DEMO-M5-15502c3` at `15502c3bfdc0ba3e8df9a39a0cc8a04b83340e8d`. The reviewer has no writer lease. Any formal model-evidence gap must remain visible in the verdict. This appointment does not authorize integration.
 
 ## Fixed repository facts at 2026-09-24 preflight
 
