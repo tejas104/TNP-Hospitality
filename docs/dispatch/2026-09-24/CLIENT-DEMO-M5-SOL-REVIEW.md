@@ -3,7 +3,7 @@ DO NOT REUSE AN OLD SESSION.
 
 # Claude client-demo M5 - independent Sol review packet
 
-Status: read-only assessment complete, **CHANGES REQUESTED** at exact `15502c3bfdc0ba3e8df9a39a0cc8a04b83340e8d`; see `docs/reviews/TNP-CLIENT-DEMO-M5-SOL-REVIEW.md`. P appointed independent collaboration reviewer `/root/m5_sol_review` in this architect task on DESKTOP-DL9FDM7. The orchestration request specified `gpt-6-sol` / high; the reviewer reports that runtime model/effort metadata were not exposed, so this is not independently certified runtime identity. Review path remained clean detached `D:\TNP-review\TNP-CLIENT-DEMO-M5-15502c3`. The reviewer had no writer lease. The formal model-evidence gap remains visible in the verdict. This appointment does not authorize integration.
+Status: read-only assessment complete, **CHANGES REQUESTED** at exact `15502c3bfdc0ba3e8df9a39a0cc8a04b83340e8d`; see `docs/reviews/TNP-CLIENT-DEMO-M5-SOL-REVIEW.md`. P appointed independent collaboration reviewer `/root/m5_sol_review`, thread `01a0d429-6843-7bc1-8be6-295016aaaa64`, on DESKTOP-DL9FDM7. The reviewer could not inspect runtime model/effort metadata during its turn; P subsequently verified its own session JSONL `turn_context` records actual `gpt-6-sol` / high. Review path remained clean detached `D:\TNP-review\TNP-CLIENT-DEMO-M5-15502c3`. The reviewer had no writer lease. This appointment does not authorize integration.
 
 ## Fixed repository facts at 2026-09-24 preflight
 

@@ -6,7 +6,7 @@ Date: 2026-09-24. Verdict: **CHANGES REQUESTED / do not integrate**.
 
 - Candidate: Claude-authored `claude/tnp-client-demo-m5`, exact application code `15502c3bfdc0ba3e8df9a39a0cc8a04b83340e8d`. The subsequent branch tip `42ada80e0ef448e5262c6d7b18057bf28592dfb6` carries author handoff documentation, not a new application candidate.
 - Review range: merge-base `e4fab8e2f9874a7d2df51a9bc55f3c33c2e86a66..15502c3`. Earlier frontend candidates `be78ffa` and `8062b5a` are ancestors, included in this one combined review.
-- Independent reviewer: collaboration task `/root/m5_sol_review`, separate from the Claude author, on `DESKTOP-DL9FDM7`. The orchestration request specified `gpt-6-sol` / high, but the reviewer runtime did not expose model or effort metadata. This limitation prevents an independently verified runtime-model claim; retain it for formal gate assessment.
+- Independent reviewer: collaboration task `/root/m5_sol_review`, thread `01a0d429-6843-7bc1-8be6-295016aaaa64`, separate from the Claude author, on `DESKTOP-DL9FDM7`. The reviewer could not inspect runtime metadata during its turn; P later verified its own session JSONL `turn_context` in `C:\Users\DELL\.codex\sessions\2026\09\24\rollout-2026-09-24T21-34-38-01a0d429-6843-7bc1-8be6-295016aaaa64.jsonl` records actual `gpt-6-sol` / high. This is independent runtime evidence for the completed review.
 - Review checkout: clean detached `D:\TNP-review\TNP-CLIENT-DEMO-M5-15502c3` at the exact code SHA. Review was read-only. Dispatcher P performed a separate supplemental in-app-browser observation; it is labelled below.
 - Current main and live remote main: `831597573fe6898f8a19e5cf416d36a364c3544b`. Main is not an ancestor of this candidate; the author handoff's fast-forward assertion is stale.
 
